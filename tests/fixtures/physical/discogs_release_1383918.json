@@ -1,0 +1,412 @@
+{
+  "id": 1383918,
+  "status": "Accepted",
+  "year": 1991,
+  "resource_url": "https://api.discogs.com/releases/1383918",
+  "uri": "https://www.discogs.com/release/1383918-Ministry-In-Case-You-Didnt-Feel-Like-Showing-Up-Live",
+  "artists": [
+    {
+      "name": "Ministry",
+      "anv": "",
+      "join": "",
+      "role": "",
+      "tracks": "",
+      "id": 12209,
+      "resource_url": "https://api.discogs.com/artists/12209",
+      "thumbnail_url": "https://i.discogs.com/CGbmf3I_mYqzbU311t3wcMpob2XGqFARpsvVlgmhXA4/rs:fit/g:sm/q:90/h:183/w:275/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9BLTEyMjA5/LTE3Mzk1MTk1NDUt/MTYwOC5qcGVn.jpeg"
+    }
+  ],
+  "artists_sort": "Ministry",
+  "labels": [
+    {
+      "name": "Lumivision",
+      "catno": "LVD9104",
+      "entity_type": "1",
+      "entity_type_name": "Label",
+      "id": 118076,
+      "resource_url": "https://api.discogs.com/labels/118076",
+      "thumbnail_url": "https://i.discogs.com/JO5jDPHbOhMEO0PSpZR3KGdZ0mwzlWxfQRoETs14cLk/rs:fit/g:sm/q:90/h:307/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9MLTExODA3/Ni0xNjQwNDA0NDUz/LTk0ODkuanBlZw.jpeg"
+    },
+    {
+      "name": "Sire",
+      "catno": "LVD9104",
+      "entity_type": "1",
+      "entity_type_name": "Label",
+      "id": 27031,
+      "resource_url": "https://api.discogs.com/labels/27031",
+      "thumbnail_url": "https://i.discogs.com/m5O3b7wQfWBy9at93axlAjSSe_tNiaxL11oB0773IPY/rs:fit/g:sm/q:90/h:512/w:512/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9MLTI3MDMx/LTE2MDI5MjA0MDAt/MjE1NC5qcGVn.jpeg"
+    },
+    {
+      "name": "Warner Reprise Video",
+      "catno": "LVD9104",
+      "entity_type": "1",
+      "entity_type_name": "Label",
+      "id": 20581,
+      "resource_url": "https://api.discogs.com/labels/20581",
+      "thumbnail_url": "https://i.discogs.com/j-m_29d2efFFvQEmxGOcele-C4Q7oNWM8yU5eHodvBI/rs:fit/g:sm/q:90/h:300/w:300/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9MLTIwNTgx/LTEzOTc5Mjg3NTkt/OTQwNS5wbmc.jpeg"
+    },
+    {
+      "name": "Warner Bros.",
+      "catno": "LVD9104",
+      "entity_type": "1",
+      "entity_type_name": "Label",
+      "id": 25946,
+      "resource_url": "https://api.discogs.com/labels/25946",
+      "thumbnail_url": "https://i.discogs.com/an_smLsoYwVMYJZUsn4zqNLQ2rpbi36RpkTrGpYo08E/rs:fit/g:sm/q:90/h:184/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9MLTI1OTQ2/LTE2MDMyNjg3OTEt/Nzc2OC5qcGVn.jpeg"
+    }
+  ],
+  "series": [],
+  "companies": [
+    {
+      "name": "Warner Bros. Records Inc.",
+      "catno": "",
+      "entity_type": "4",
+      "entity_type_name": "Record Company",
+      "id": 90718,
+      "resource_url": "https://api.discogs.com/labels/90718",
+      "thumbnail_url": "https://i.discogs.com/0p_FtS_A52grt0La9_L96khb4zeprvXbonLRFPgm9nk/rs:fit/g:sm/q:90/h:107/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9MLTkwNzE4/LTE3NzYzNDQzMjEt/MTI2MS5qcGVn.jpeg"
+    },
+    {
+      "name": "Warner Communications",
+      "catno": "",
+      "entity_type": "4",
+      "entity_type_name": "Record Company",
+      "id": 552180,
+      "resource_url": "https://api.discogs.com/labels/552180",
+      "thumbnail_url": "https://i.discogs.com/S_f58w7fIK9rNZ3U5whQEZTIi2iFjwgB2vgoNCBgAvk/rs:fit/g:sm/q:90/h:156/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9MLTU1MjE4/MC0xNDQ0NjE2MTQy/LTk2NTcucG5n.jpeg"
+    },
+    {
+      "name": "Sire Records Company",
+      "catno": "",
+      "entity_type": "14",
+      "entity_type_name": "Copyright (c)",
+      "id": 1682,
+      "resource_url": "https://api.discogs.com/labels/1682"
+    }
+  ],
+  "formats": [
+    {
+      "name": "Laserdisc",
+      "qty": "1",
+      "descriptions": [
+        "12\"",
+        "Single Sided",
+        "Stereo",
+        "NTSC"
+      ],
+      "text": "CLV"
+    }
+  ],
+  "data_quality": "Needs Vote",
+  "community": {
+    "have": 73,
+    "want": 138,
+    "rating": {
+      "count": 14,
+      "average": 4.79
+    },
+    "submitter": {
+      "username": "justremember",
+      "resource_url": "https://api.discogs.com/users/justremember"
+    },
+    "contributors": [
+      {
+        "username": "justremember",
+        "resource_url": "https://api.discogs.com/users/justremember"
+      },
+      {
+        "username": "sTemwinder7",
+        "resource_url": "https://api.discogs.com/users/sTemwinder7"
+      },
+      {
+        "username": "al1",
+        "resource_url": "https://api.discogs.com/users/al1"
+      },
+      {
+        "username": "dalhembe",
+        "resource_url": "https://api.discogs.com/users/dalhembe"
+      },
+      {
+        "username": "death2disco",
+        "resource_url": "https://api.discogs.com/users/death2disco"
+      },
+      {
+        "username": "pakva",
+        "resource_url": "https://api.discogs.com/users/pakva"
+      },
+      {
+        "username": "eighties1",
+        "resource_url": "https://api.discogs.com/users/eighties1"
+      },
+      {
+        "username": "TReimer",
+        "resource_url": "https://api.discogs.com/users/TReimer"
+      },
+      {
+        "username": "CoolCDCollector",
+        "resource_url": "https://api.discogs.com/users/CoolCDCollector"
+      }
+    ],
+    "data_quality": "Needs Vote",
+    "status": "Accepted"
+  },
+  "format_quantity": 1,
+  "date_added": "2008-07-01T16:48:17-07:00",
+  "date_changed": "2025-12-09T06:23:44-08:00",
+  "num_for_sale": 4,
+  "lowest_price": 150.0,
+  "master_id": 292715,
+  "master_url": "https://api.discogs.com/masters/292715",
+  "title": "In Case You Didn't Feel Like Showing Up (Live)",
+  "country": "US",
+  "released": "1991-06-30",
+  "notes": "\u00a9 1990 Sire Records Company\nMade in U.S.A.\n\nRunning time is approximately 58 minutes.\n\nTrack 8 is a spoken word piece by Jello Biafra.\nJello Biafra gives a performance art like routine by marching with an American flag, sucking his thumb and giving a Nazi salute during The Land Of Rape And Honey, but offers no vocal contributions to the track at all.\n\nAside being footage of a concert, it is also interspersed with portions of the group's music videos.",
+  "released_formatted": "30 Jun 1991",
+  "identifiers": [
+    {
+      "type": "Barcode",
+      "value": "7 24117-9104-6 4",
+      "description": "Text"
+    },
+    {
+      "type": "Barcode",
+      "value": "724117910464",
+      "description": "Scanned"
+    },
+    {
+      "type": "Matrix / Runout",
+      "value": "07-400B5-43 14A67310",
+      "description": "Side one"
+    },
+    {
+      "type": "Matrix / Runout",
+      "value": "51-878A1-07 22A60706",
+      "description": "This side down"
+    }
+  ],
+  "videos": [
+    {
+      "uri": "https://www.youtube.com/watch?v=gP0q901YHbg",
+      "title": "Ministry - In Case You Didn't Feel Like Showing Up. 480p. FULL CONCERT",
+      "description": "Live, Merrillville, 1990. \"WMG\", \"The Orchard Music\", \"Cleopatra Records\", \"Warner Rhino Off Roster-Audio\"",
+      "duration": 0,
+      "embed": true
+    }
+  ],
+  "genres": [
+    "Electronic",
+    "Rock",
+    "Non-Music",
+    "Stage & Screen"
+  ],
+  "styles": [
+    "Industrial",
+    "Spoken Word",
+    "Hard Rock",
+    "Concert Film"
+  ],
+  "tracklist": [
+    {
+      "position": "1",
+      "type_": "track",
+      "title": "Breathe",
+      "duration": ""
+    },
+    {
+      "position": "2",
+      "type_": "track",
+      "title": "The Missing",
+      "duration": ""
+    },
+    {
+      "position": "3",
+      "type_": "track",
+      "title": "Diety",
+      "duration": ""
+    },
+    {
+      "position": "4",
+      "type_": "track",
+      "title": "So What",
+      "duration": ""
+    },
+    {
+      "position": "5",
+      "type_": "track",
+      "title": "Burning Inside",
+      "duration": ""
+    },
+    {
+      "position": "6",
+      "type_": "track",
+      "title": "Thieves",
+      "duration": ""
+    },
+    {
+      "position": "7",
+      "type_": "track",
+      "title": "Stigmata",
+      "duration": ""
+    },
+    {
+      "position": "8",
+      "type_": "track",
+      "title": "Jello Biafra",
+      "duration": ""
+    },
+    {
+      "position": "9",
+      "type_": "track",
+      "title": "The Land Of Rape And Honey",
+      "duration": ""
+    }
+  ],
+  "extraartists": [
+    {
+      "name": "Al Jourgensen",
+      "anv": "Alien Jourgensen",
+      "join": "",
+      "role": "Art Direction",
+      "tracks": "",
+      "id": 86726,
+      "resource_url": "https://api.discogs.com/artists/86726"
+    },
+    {
+      "name": "Kim Assaley",
+      "anv": "",
+      "join": "",
+      "role": "Artwork",
+      "tracks": "",
+      "id": 297578,
+      "resource_url": "https://api.discogs.com/artists/297578"
+    },
+    {
+      "name": "Tom Recchion",
+      "anv": "",
+      "join": "",
+      "role": "Design",
+      "tracks": "",
+      "id": 65713,
+      "resource_url": "https://api.discogs.com/artists/65713"
+    },
+    {
+      "name": "H-Gun And Dead Batteries, Inc.",
+      "anv": "",
+      "join": "",
+      "role": "Directed By, Producer",
+      "tracks": "",
+      "id": 1519855,
+      "resource_url": "https://api.discogs.com/artists/1519855"
+    },
+    {
+      "name": "Howie Klein",
+      "anv": "",
+      "join": "",
+      "role": "Liner Notes",
+      "tracks": "",
+      "id": 249956,
+      "resource_url": "https://api.discogs.com/artists/249956"
+    },
+    {
+      "name": "Hypo Luxa & Hermes Pan",
+      "anv": "Luxa/Pan",
+      "join": "",
+      "role": "Producer [Audio Produced By]",
+      "tracks": "",
+      "id": 75189,
+      "resource_url": "https://api.discogs.com/artists/75189"
+    },
+    {
+      "name": "Al Jourgensen",
+      "anv": "Jourgensen",
+      "join": "",
+      "role": "Songwriter",
+      "tracks": "1, 4 to 6",
+      "id": 86726,
+      "resource_url": "https://api.discogs.com/artists/86726"
+    },
+    {
+      "name": "Chris Connelly",
+      "anv": "Connelly",
+      "join": "",
+      "role": "Songwriter",
+      "tracks": "1, 4 to 6",
+      "id": 37940,
+      "resource_url": "https://api.discogs.com/artists/37940"
+    },
+    {
+      "name": "Kevin Ogilvie",
+      "anv": "Oglivie",
+      "join": "",
+      "role": "Songwriter",
+      "tracks": "1, 6",
+      "id": 503984,
+      "resource_url": "https://api.discogs.com/artists/503984"
+    },
+    {
+      "name": "Ministry",
+      "anv": "",
+      "join": "",
+      "role": "Songwriter",
+      "tracks": "2, 3, 7, 9",
+      "id": 12209,
+      "resource_url": "https://api.discogs.com/artists/12209"
+    },
+    {
+      "name": "Paul Barker",
+      "anv": "Barker",
+      "join": "",
+      "role": "Songwriter",
+      "tracks": "1, 4 to 6",
+      "id": 100041,
+      "resource_url": "https://api.discogs.com/artists/100041"
+    },
+    {
+      "name": "William Rieflin",
+      "anv": "Reiflin",
+      "join": "",
+      "role": "Songwriter",
+      "tracks": "1, 4, 5",
+      "id": 132196,
+      "resource_url": "https://api.discogs.com/artists/132196"
+    }
+  ],
+  "images": [
+    {
+      "type": "primary",
+      "uri": "https://i.discogs.com/W809NQZLXxJMdjIxif8AZbY_rub5VIYCmLIgEROvj1Y/rs:fit/g:sm/q:90/h:600/w:594/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTc2NTI5MDIx/My0xMTM2LmpwZWc.jpeg",
+      "resource_url": "https://i.discogs.com/W809NQZLXxJMdjIxif8AZbY_rub5VIYCmLIgEROvj1Y/rs:fit/g:sm/q:90/h:600/w:594/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTc2NTI5MDIx/My0xMTM2LmpwZWc.jpeg",
+      "uri150": "https://i.discogs.com/M_iEyNJP_nfgWXgW8fDx40tJ8P3uehPxY0msr-yn2E8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTc2NTI5MDIx/My0xMTM2LmpwZWc.jpeg",
+      "width": 594,
+      "height": 600
+    },
+    {
+      "type": "secondary",
+      "uri": "https://i.discogs.com/ipWq2d4WZqybI3BNAfkbUtWKtL792CMMcKys8Prw7gE/rs:fit/g:sm/q:90/h:582/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTIxNDk1NjA1/MC5qcGVn.jpeg",
+      "resource_url": "https://i.discogs.com/ipWq2d4WZqybI3BNAfkbUtWKtL792CMMcKys8Prw7gE/rs:fit/g:sm/q:90/h:582/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTIxNDk1NjA1/MC5qcGVn.jpeg",
+      "uri150": "https://i.discogs.com/-VIn4zMqSugmBAJ0vfzD7G_2iOgnZVZmMHcHSBhgsuc/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTIxNDk1NjA1/MC5qcGVn.jpeg",
+      "width": 600,
+      "height": 582
+    },
+    {
+      "type": "secondary",
+      "uri": "https://i.discogs.com/DEthhiARzXQSzslcn8Z15nT3YeCTWA5yAXzzGZEAOZA/rs:fit/g:sm/q:90/h:592/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTIxNDk1NjA1/OC5qcGVn.jpeg",
+      "resource_url": "https://i.discogs.com/DEthhiARzXQSzslcn8Z15nT3YeCTWA5yAXzzGZEAOZA/rs:fit/g:sm/q:90/h:592/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTIxNDk1NjA1/OC5qcGVn.jpeg",
+      "uri150": "https://i.discogs.com/WygZ55UylVJPTDG4H1T7NXb-Rw9g8RSp1O49rKu64js/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTIxNDk1NjA1/OC5qcGVn.jpeg",
+      "width": 600,
+      "height": 592
+    },
+    {
+      "type": "secondary",
+      "uri": "https://i.discogs.com/RkzCTahV1nP6chBwckogrQLTknW1OAeJ3GxQUJwwb0Q/rs:fit/g:sm/q:90/h:600/w:589/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTU3NTQ4NzIy/Ny00MDU0LmpwZWc.jpeg",
+      "resource_url": "https://i.discogs.com/RkzCTahV1nP6chBwckogrQLTknW1OAeJ3GxQUJwwb0Q/rs:fit/g:sm/q:90/h:600/w:589/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTU3NTQ4NzIy/Ny00MDU0LmpwZWc.jpeg",
+      "uri150": "https://i.discogs.com/CM5vV7hc7VfWRLk3Q8Cm98VmGxSRnaDmq1bikJJmkMc/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTU3NTQ4NzIy/Ny00MDU0LmpwZWc.jpeg",
+      "width": 589,
+      "height": 600
+    }
+  ],
+  "thumb": "https://i.discogs.com/M_iEyNJP_nfgWXgW8fDx40tJ8P3uehPxY0msr-yn2E8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTc2NTI5MDIx/My0xMTM2LmpwZWc.jpeg",
+  "estimated_weight": 230,
+  "blocked_from_sale": false,
+  "is_offensive": false
+}

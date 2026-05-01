@@ -1,0 +1,297 @@
+{
+  "pagination": {
+    "page": 1,
+    "pages": 1,
+    "per_page": 10,
+    "items": 5,
+    "urls": {}
+  },
+  "filters": {
+    "applied": {},
+    "available": {
+      "format": {
+        "VHS": 4,
+        "NTSC": 3,
+        "PAL": 2,
+        "12\"": 1,
+        "Laserdisc": 1,
+        "Single Sided": 1,
+        "Stereo": 1
+      },
+      "label": {
+        "Warner Reprise Video": 4,
+        "Sire": 2,
+        "Sire Records Company": 2,
+        "Warner Music Vision": 2,
+        "Lumivision": 1,
+        "Warner Bros.": 1,
+        "Warner Bros. Records": 1,
+        "Warner Bros. Records Inc.": 1,
+        "Warner Communications": 1,
+        "Warner Music Australia": 1
+      },
+      "country": {
+        "US": 2,
+        "Australia": 1,
+        "Germany": 1,
+        "Japan": 1
+      },
+      "released": {
+        "1990": 4,
+        "1991": 1
+      }
+    }
+  },
+  "filter_facets": [
+    {
+      "title": "Format",
+      "id": "format",
+      "values": [
+        {
+          "title": "VHS",
+          "value": "VHS",
+          "count": 4
+        },
+        {
+          "title": "NTSC",
+          "value": "NTSC",
+          "count": 3
+        },
+        {
+          "title": "PAL",
+          "value": "PAL",
+          "count": 2
+        },
+        {
+          "title": "12\"",
+          "value": "12%22",
+          "count": 1
+        },
+        {
+          "title": "Laserdisc",
+          "value": "Laserdisc",
+          "count": 1
+        },
+        {
+          "title": "Single Sided",
+          "value": "Single+Sided",
+          "count": 1
+        },
+        {
+          "title": "Stereo",
+          "value": "Stereo",
+          "count": 1
+        }
+      ],
+      "allows_multiple_values": true
+    },
+    {
+      "title": "Label",
+      "id": "label",
+      "values": [
+        {
+          "title": "Warner Reprise Video",
+          "value": "Warner+Reprise+Video",
+          "count": 4
+        },
+        {
+          "title": "Sire",
+          "value": "Sire",
+          "count": 2
+        },
+        {
+          "title": "Sire Records Company",
+          "value": "Sire+Records+Company",
+          "count": 2
+        },
+        {
+          "title": "Warner Music Vision",
+          "value": "Warner+Music+Vision",
+          "count": 2
+        },
+        {
+          "title": "Lumivision",
+          "value": "Lumivision",
+          "count": 1
+        },
+        {
+          "title": "Warner Bros.",
+          "value": "Warner+Bros.",
+          "count": 1
+        },
+        {
+          "title": "Warner Bros. Records",
+          "value": "Warner+Bros.+Records",
+          "count": 1
+        },
+        {
+          "title": "Warner Bros. Records Inc.",
+          "value": "Warner+Bros.+Records+Inc.",
+          "count": 1
+        },
+        {
+          "title": "Warner Communications",
+          "value": "Warner+Communications",
+          "count": 1
+        },
+        {
+          "title": "Warner Music Australia",
+          "value": "Warner+Music+Australia",
+          "count": 1
+        }
+      ],
+      "allows_multiple_values": true
+    },
+    {
+      "title": "Country",
+      "id": "country",
+      "values": [
+        {
+          "title": "US",
+          "value": "US",
+          "count": 2
+        },
+        {
+          "title": "Australia",
+          "value": "Australia",
+          "count": 1
+        },
+        {
+          "title": "Germany",
+          "value": "Germany",
+          "count": 1
+        },
+        {
+          "title": "Japan",
+          "value": "Japan",
+          "count": 1
+        }
+      ],
+      "allows_multiple_values": true
+    },
+    {
+      "title": "Released",
+      "id": "released",
+      "values": [
+        {
+          "title": "1990",
+          "value": "1990",
+          "count": 4
+        },
+        {
+          "title": "1991",
+          "value": "1991",
+          "count": 1
+        }
+      ],
+      "allows_multiple_values": false
+    }
+  ],
+  "versions": [
+    {
+      "id": 217034,
+      "label": "Warner Reprise Video",
+      "country": "Germany",
+      "title": "In Case You Didn't Feel Like Showing Up (Live)",
+      "major_formats": [
+        "VHS"
+      ],
+      "format": "PAL",
+      "catno": "7599 38176-3",
+      "released": "1990",
+      "status": "Accepted",
+      "resource_url": "https://api.discogs.com/releases/217034",
+      "thumb": "https://i.discogs.com/MyhjPkVuZ3YCV4c5WHwkiYQYTYdTQ9gt7Es-or8sMe0/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTIxNzAz/NC0xMTU2Njc4NjI2/LmpwZWc.jpeg",
+      "stats": {
+        "community": {
+          "in_wantlist": 48,
+          "in_collection": 186
+        }
+      }
+    },
+    {
+      "id": 825476,
+      "label": "Warner Reprise Video",
+      "country": "US",
+      "title": "In Case You Didn't Feel Like Showing Up (Live)",
+      "major_formats": [
+        "VHS"
+      ],
+      "format": "NTSC",
+      "catno": "38176-3",
+      "released": "1990",
+      "status": "Accepted",
+      "resource_url": "https://api.discogs.com/releases/825476",
+      "thumb": "https://i.discogs.com/jIB84eND04p9dqeDLYmbi9_PPxWHSywyNjkXKiFn4RY/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODA1/LmpwZWc.jpeg",
+      "stats": {
+        "community": {
+          "in_wantlist": 99,
+          "in_collection": 216
+        }
+      }
+    },
+    {
+      "id": 1542916,
+      "label": "Warner Reprise Video",
+      "country": "Australia",
+      "title": "In Case You Didn't Feel Like Showing Up (Live)",
+      "major_formats": [
+        "VHS"
+      ],
+      "format": "PAL",
+      "catno": "7599 38176-3",
+      "released": "1990",
+      "status": "Accepted",
+      "resource_url": "https://api.discogs.com/releases/1542916",
+      "thumb": "https://i.discogs.com/RHHOdpck3bYEkigMB-gM3h3djssZE6IsUV4dikkuDtc/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE1NDI5/MTYtMTU4ODY1Mzc2/My04MDAyLmpwZWc.jpeg",
+      "stats": {
+        "community": {
+          "in_wantlist": 25,
+          "in_collection": 36
+        }
+      }
+    },
+    {
+      "id": 4780611,
+      "label": "Warner Music Vision",
+      "country": "Japan",
+      "title": " In Case You Didn't Feel Like Showing Up (Live) ",
+      "major_formats": [
+        "VHS"
+      ],
+      "format": "NTSC",
+      "catno": "WPVP-9090",
+      "released": "1990",
+      "status": "Accepted",
+      "resource_url": "https://api.discogs.com/releases/4780611",
+      "thumb": "https://i.discogs.com/4rN1R8SoDllSuFmZ98V2LOQdXO93hHXeQQkmKZosJVo/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTQ3ODA2/MTEtMTM3NTI5NTM0/MC04MTAxLmpwZWc.jpeg",
+      "stats": {
+        "community": {
+          "in_wantlist": 28,
+          "in_collection": 6
+        }
+      }
+    },
+    {
+      "id": 1383918,
+      "label": "Lumivision",
+      "country": "US",
+      "title": "In Case You Didn't Feel Like Showing Up (Live)",
+      "major_formats": [
+        "Laserdisc"
+      ],
+      "format": "12\", Single Sided, Stereo, NTSC",
+      "catno": "LVD9104",
+      "released": "1991",
+      "status": "Accepted",
+      "resource_url": "https://api.discogs.com/releases/1383918",
+      "thumb": "https://i.discogs.com/M_iEyNJP_nfgWXgW8fDx40tJ8P3uehPxY0msr-yn2E8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEzODM5/MTgtMTc2NTI5MDIx/My0xMTM2LmpwZWc.jpeg",
+      "stats": {
+        "community": {
+          "in_wantlist": 139,
+          "in_collection": 73
+        }
+      }
+    }
+  ]
+}

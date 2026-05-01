@@ -1,0 +1,83 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "metadatarr"
+dynamic = ["version"]
+description = "Pydantic-powered Python clients and cross-source resolver for media metadata (Servarr proxies, OpenLibrary, MusicBrainz, TMDB, TVmaze, AudioDB, Anna's Archive, Wikidata, Bandcamp, SoundCloud, YouTube, Metal Archives)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "JarbasAi", email = "jarbasai@mailfence.com" }]
+keywords = ["metadata", "servarr", "sonarr", "radarr", "lidarr", "musicbrainz", "openlibrary", "tmdb", "tvmaze", "pydantic"]
+dependencies = [
+    "requests>=2.25.0",
+    "pydantic>=2.0.0",
+    "beautifulsoup4>=4.10.0",
+    "tomli>=1.1.0; python_version < '3.11'",
+    "pyfanedit",
+    "tutubo>=0.1.0",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Multimedia",
+]
+
+[project.urls]
+Homepage = "https://github.com/TigreGotico/metadatarr"
+Repository = "https://github.com/TigreGotico/metadatarr"
+Issues = "https://github.com/TigreGotico/metadatarr/issues"
+
+[project.optional-dependencies]
+metal_archives = ["pymetal>=1.0.0a1"]
+bandcamp = ["py_bandcamp"]
+soundcloud = ["nuvem_de_som"]
+test = ["pytest>=7"]
+all = [
+    "pymetal>=1.0.0a1",
+    "py_bandcamp",
+    "nuvem_de_som",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "metadatarr.version.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+"metadatarr.data" = ["*.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.coverage.run]
+source = ["metadatarr"]
+omit = [
+    # Resolve provider shims wrap external services / optional deps; their
+    # behaviour is integration-tested via the live `examples/` scripts. We
+    # measure coverage against the library core (clients + resolve framework).
+    "*/resolve/providers/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

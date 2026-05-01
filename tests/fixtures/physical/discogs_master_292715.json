@@ -1,0 +1,154 @@
+{
+  "id": 292715,
+  "main_release": 825476,
+  "most_recent_release": 1383918,
+  "resource_url": "https://api.discogs.com/masters/292715",
+  "uri": "https://www.discogs.com/master/292715-Ministry-In-Case-You-Didnt-Feel-Like-Showing-Up-Live",
+  "versions_url": "https://api.discogs.com/masters/292715/versions",
+  "main_release_url": "https://api.discogs.com/releases/825476",
+  "most_recent_release_url": "https://api.discogs.com/releases/1383918",
+  "num_for_sale": 20,
+  "lowest_price": 5.76,
+  "images": [
+    {
+      "type": "primary",
+      "uri": "https://i.discogs.com/j3xw5d5IJwSjC3Fqai3Sp1x4P9EnDABQrnmy29x6sCo/rs:fit/g:sm/q:90/h:589/w:329/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODA1/LmpwZWc.jpeg",
+      "resource_url": "https://i.discogs.com/j3xw5d5IJwSjC3Fqai3Sp1x4P9EnDABQrnmy29x6sCo/rs:fit/g:sm/q:90/h:589/w:329/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODA1/LmpwZWc.jpeg",
+      "uri150": "https://i.discogs.com/jIB84eND04p9dqeDLYmbi9_PPxWHSywyNjkXKiFn4RY/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODA1/LmpwZWc.jpeg",
+      "width": 329,
+      "height": 589
+    },
+    {
+      "type": "secondary",
+      "uri": "https://i.discogs.com/KppJq6QNbfWhvZzVUltfWR9eMSPB3fAjEPbCtpEJHcA/rs:fit/g:sm/q:90/h:587/w:330/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODE5/LmpwZWc.jpeg",
+      "resource_url": "https://i.discogs.com/KppJq6QNbfWhvZzVUltfWR9eMSPB3fAjEPbCtpEJHcA/rs:fit/g:sm/q:90/h:587/w:330/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODE5/LmpwZWc.jpeg",
+      "uri150": "https://i.discogs.com/6wTGFDp-5qEODzAnrigBGL21fiukDCKxtzcxwnIwSKY/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODE5/LmpwZWc.jpeg",
+      "width": 330,
+      "height": 587
+    },
+    {
+      "type": "secondary",
+      "uri": "https://i.discogs.com/uJbi_1Q_IE36uXHxjE4vTXnC4LB7Z1xcTAMbWILzBD0/rs:fit/g:sm/q:90/h:492/w:314/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODMy/LmpwZWc.jpeg",
+      "resource_url": "https://i.discogs.com/uJbi_1Q_IE36uXHxjE4vTXnC4LB7Z1xcTAMbWILzBD0/rs:fit/g:sm/q:90/h:492/w:314/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODMy/LmpwZWc.jpeg",
+      "uri150": "https://i.discogs.com/vCoPUjI2O2Ugl4DICU3AKyy0-cYtEkxB0u-ks8yDtIE/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODMy/LmpwZWc.jpeg",
+      "width": 314,
+      "height": 492
+    },
+    {
+      "type": "secondary",
+      "uri": "https://i.discogs.com/YR3rKtbk3RELbJLP0nHgzsiQSfzGGFhAurAzbqBDM9w/rs:fit/g:sm/q:90/h:374/w:251/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODY2/LmpwZWc.jpeg",
+      "resource_url": "https://i.discogs.com/YR3rKtbk3RELbJLP0nHgzsiQSfzGGFhAurAzbqBDM9w/rs:fit/g:sm/q:90/h:374/w:251/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODY2/LmpwZWc.jpeg",
+      "uri150": "https://i.discogs.com/mcbDP80PWlm9YVz3gsGqkx40nwR-AvJtYhx-3tzo-R8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODY2/LmpwZWc.jpeg",
+      "width": 251,
+      "height": 374
+    },
+    {
+      "type": "secondary",
+      "uri": "https://i.discogs.com/Aqk8HDKVrSe9r5QwjjQmh_ZTvWPht8QzACYFjxftkBg/rs:fit/g:sm/q:90/h:159/w:595/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODgw/LmpwZWc.jpeg",
+      "resource_url": "https://i.discogs.com/Aqk8HDKVrSe9r5QwjjQmh_ZTvWPht8QzACYFjxftkBg/rs:fit/g:sm/q:90/h:159/w:595/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODgw/LmpwZWc.jpeg",
+      "uri150": "https://i.discogs.com/e0lQyUmVgtQLqU45M8qgALilVfhFFTVlXodpl5tAcVw/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTgyNTQ3/Ni0xMTYyNjczODgw/LmpwZWc.jpeg",
+      "width": 595,
+      "height": 159
+    }
+  ],
+  "genres": [
+    "Electronic",
+    "Rock",
+    "Stage & Screen"
+  ],
+  "styles": [
+    "Industrial",
+    "Concert Film"
+  ],
+  "year": 1990,
+  "tracklist": [
+    {
+      "position": "1",
+      "type_": "track",
+      "title": "Breathe",
+      "duration": ""
+    },
+    {
+      "position": "2",
+      "type_": "track",
+      "title": "The Missing",
+      "duration": ""
+    },
+    {
+      "position": "3",
+      "type_": "track",
+      "title": "Deity",
+      "duration": ""
+    },
+    {
+      "position": "4",
+      "type_": "track",
+      "title": "So What",
+      "duration": ""
+    },
+    {
+      "position": "5",
+      "type_": "track",
+      "title": "Burning Inside",
+      "duration": ""
+    },
+    {
+      "position": "6",
+      "type_": "track",
+      "title": "Thieves",
+      "duration": ""
+    },
+    {
+      "position": "7",
+      "type_": "track",
+      "title": "Stigmata",
+      "duration": ""
+    },
+    {
+      "position": "8",
+      "type_": "track",
+      "title": "Spoken Word Speech",
+      "extraartists": [
+        {
+          "name": "Jello Biafra",
+          "anv": "",
+          "join": "",
+          "role": "Voice [The Pledge Of Allegiance]",
+          "tracks": "",
+          "id": 37752,
+          "resource_url": "https://api.discogs.com/artists/37752"
+        }
+      ],
+      "duration": ""
+    },
+    {
+      "position": "9",
+      "type_": "track",
+      "title": "The Land Of Rape And Honey",
+      "duration": ""
+    }
+  ],
+  "artists": [
+    {
+      "name": "Ministry",
+      "anv": "",
+      "join": "",
+      "role": "",
+      "tracks": "",
+      "id": 12209,
+      "resource_url": "https://api.discogs.com/artists/12209",
+      "thumbnail_url": "https://i.discogs.com/CGbmf3I_mYqzbU311t3wcMpob2XGqFARpsvVlgmhXA4/rs:fit/g:sm/q:90/h:183/w:275/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9BLTEyMjA5/LTE3Mzk1MTk1NDUt/MTYwOC5qcGVn.jpeg"
+    }
+  ],
+  "title": "In Case You Didn't Feel Like Showing Up (Live)",
+  "data_quality": "Correct",
+  "videos": [
+    {
+      "uri": "https://www.youtube.com/watch?v=gP0q901YHbg",
+      "title": "Ministry - In Case You Didn't Feel Like Showing Up. 480p. FULL CONCERT",
+      "description": "Live, Merrillville, 1990. \"WMG\", \"The Orchard Music\", \"Cleopatra Records\", \"Warner Rhino Off Roster-Audio\"",
+      "duration": 0,
+      "embed": true
+    }
+  ]
+}

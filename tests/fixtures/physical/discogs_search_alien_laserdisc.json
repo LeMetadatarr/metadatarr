@@ -1,0 +1,77 @@
+{
+  "pagination": {
+    "page": 1,
+    "pages": 1,
+    "per_page": 5,
+    "items": 1,
+    "urls": {}
+  },
+  "results": [
+    {
+      "country": "US",
+      "year": "1991",
+      "format": [
+        "Laserdisc",
+        "12\"",
+        "Single Sided",
+        "Stereo",
+        "NTSC"
+      ],
+      "label": [
+        "Lumivision",
+        "Sire",
+        "Warner Reprise Video",
+        "Warner Bros.",
+        "Warner Bros. Records Inc.",
+        "Warner Communications",
+        "Sire Records Company"
+      ],
+      "type": "release",
+      "genre": [
+        "Electronic",
+        "Rock",
+        "Non-Music",
+        "Stage & Screen"
+      ],
+      "style": [
+        "Industrial",
+        "Spoken Word",
+        "Hard Rock",
+        "Concert Film"
+      ],
+      "id": 1383918,
+      "barcode": [
+        "7 24117-9104-6 4",
+        "724117910464",
+        "07-400B5-43 14A67310",
+        "51-878A1-07 22A60706"
+      ],
+      "master_id": 292715,
+      "master_url": "https://api.discogs.com/masters/292715",
+      "uri": "/release/1383918-Ministry-In-Case-You-Didnt-Feel-Like-Showing-Up-Live",
+      "catno": "LVD9104",
+      "title": "Ministry - In Case You Didn't Feel Like Showing Up (Live)",
+      "thumb": "",
+      "cover_image": "",
+      "resource_url": "https://api.discogs.com/releases/1383918",
+      "community": {
+        "want": 139,
+        "have": 73
+      },
+      "format_quantity": 1,
+      "formats": [
+        {
+          "name": "Laserdisc",
+          "qty": "1",
+          "text": "CLV",
+          "descriptions": [
+            "12\"",
+            "Single Sided",
+            "Stereo",
+            "NTSC"
+          ]
+        }
+      ]
+    }
+  ]
+}

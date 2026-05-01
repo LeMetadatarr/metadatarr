@@ -1,0 +1,26 @@
+# metadatarr package-level identity mappings
+#
+# Each section declares that a set of platform identifiers all refer to the
+# same entity.  Users can add their own entries in:
+#
+#   $XDG_CONFIG_HOME/metadatarr/mappings.toml   (default: ~/.config/metadatarr/mappings.toml)
+#
+# Supported section types: [[artist]], [[album]], [[track]], [[label]], [[channel]]
+# Curated entries are typically [[artist]] — track-level cross-references are
+# usually derived at search time by re-querying the linked platform with the
+# artist mapping, not asserted statically.
+#
+# Within a section any ExternalIds field name is valid (musicbrainz_artist,
+# bandcamp_band_id, soundcloud_user_id, youtube_music_artist_browse_id, …),
+# plus URL keys for linking back to a page:
+#   bandcamp_artist_url, soundcloud_artist_url, youtube_channel_url, …
+#
+# The special key `name` is a human-readable label — it is NOT used for
+# matching, only for display / debugging.
+#
+# Curated entries follow.
+
+[[artist]]
+name = "Acidkid / Piratech"
+soundcloud_artist_url = "https://soundcloud.com/acidkid"
+bandcamp_artist_url   = "https://piratech.bandcamp.com/"
