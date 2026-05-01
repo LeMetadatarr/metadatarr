@@ -1,118 +1,355 @@
 # metadatarr
 
-Pydantic-powered Python clients and a cross-source **entity resolver** for
-media metadata. One library to talk to the public catalogues that the *arr
-ecosystem (Sonarr / Radarr / Lidarr) and most media tools rely on, plus a
-light framework for fusing answers from many of them into a single,
-de-duplicated record.
+> **One library. Every catalogue. Zero API keys.**
 
-## Highlights
+[![PyPI](https://img.shields.io/pypi/v/metadatarr)](https://pypi.org/project/metadatarr/)
+[![Python](https://img.shields.io/pypi/pyversions/metadatarr)](https://pypi.org/project/metadatarr/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Build](https://github.com/TigreGotico/metadatarr/actions/workflows/build-tests.yml/badge.svg)](https://github.com/TigreGotico/metadatarr/actions/workflows/build-tests.yml)
 
-- **Typed direct clients** for the most useful free media databases — every
-  response parsed into Pydantic V2 models.
-- **Robust mapping** — handles inconsistent API shapes (casing, nesting)
-  via `AliasChoices` / `AliasPath` so caller code stays clean.
-- **Cross-source resolver** (`metadatarr.resolve`) — pluggable providers
-  share a `Signals` bag, return `ProviderMatch` records, and the registry
-  consolidates them into a merged `ResolveResult` with `ExternalIds`.
-- **Variant fan-out** — set `signals.include_variants=True` and the
-  resolver calls every provider's `list_variants()`, collecting
-  `ProviderEntity(kind=RELEASE)` records in `result.relations[Role.RELEASE]`.
-  The `pyfanedit` provider searches fanedit.org (IFDB) for movie fanedits;
-  `musicbrainz` expands a release-group MBID to its individual releases.
-- **Zero config, zero API keys** — every built-in provider is keyless.
-  Providers that need extra packages (`pymetal`, `py_bandcamp`,
-  `nuvem_de_som`, `tutubo`) silently disable themselves when the optional
-  dep isn't installed.
+Pydantic-powered Python clients and a cross-source **entity resolver** for media metadata.
+Talk to the public catalogues that the *arr ecosystem, media managers, and libraries rely on —
+then fuse the answers into a single, de-duplicated record with a canonical set of external IDs.
+
+```python
+from metadatarr.resolve import resolve, Signals, Medium
+
+result = resolve(Signals(title="Inception", year=2010, medium=Medium.MOVIE))
+
+print(result.external_ids.tmdb_movie)   # 27205
+print(result.external_ids.imdb)         # tt1375666
+print(result.external_ids.wikidata)     # Q25188
+```
+
+---
+
+## Why metadatarr?
+
+Most media tools need to cross-reference the same work across Sonarr, MusicBrainz, Discogs,
+and Wikidata — but every API has a different shape, auth model, and concept of "the same thing."
+`metadatarr` handles all of that:
+
+- **Typed clients** — every response parsed into Pydantic V2 models; no dict spelunking.
+- **Keyless by default** — every built-in provider works without registration or tokens.
+- **Cross-source resolver** — fans out to every relevant provider in parallel, conflict-checks
+  the results, and merges winners into one `ResolveResult` with `ExternalIds`.
+- **Variant fan-out** — one flag (`include_variants=True`) and the resolver collects every
+  known cut, edition, or fanedit of a work.
+- **Self-disabling optional deps** — providers for Bandcamp, SoundCloud, YouTube Music, and
+  Metal Archives silently skip themselves when their optional package isn't installed.
+
+---
 
 ## Installation
 
 ```bash
-pip install metadatarr            # core (includes pyfanedit)
-pip install metadatarr[all]       # + bandcamp, soundcloud, youtube, metal_archives
+pip install metadatarr              # core — includes pyfanedit (fanedit.org)
+pip install "metadatarr[all]"       # + Bandcamp, SoundCloud, YouTube Music, Metal Archives
 ```
 
-Optional extras: `metal_archives`, `bandcamp`, `soundcloud`, `youtube`, `test`.
+Individual extras: `bandcamp`, `soundcloud`, `metal_archives` (youtube is bundled in `all` via `tutubo`).
+
+---
 
 ## Direct clients
 
-| Client                 | Source                                        | What it does                          |
-| ---------------------- | --------------------------------------------- | ------------------------------------- |
-| `ArrMetadataClient`    | Skyhook / Radarr / Lidarr Servarr proxies     | TV / movie / artist search & lookup   |
-| `OpenLibraryClient`    | openlibrary.org                               | works, editions, authors, ISBN, covers |
-| `BookInfoClient`       | rreading-glasses (Goodreads / Hardcover)      | book metadata via Goodreads/Hardcover |
-| `AnnasArchiveClient`   | annas-archive mirrors                         | book search (HTML scrape)             |
-| `AudioDBClient`        | theaudiodb.com                                | artist / album / track lookup         |
-| `TVmazeClient`         | tvmaze.com                                    | show / season / cast / people lookup  |
-| `BlurayComClient`      | blu-ray.com (HTML scraper)                    | physical Blu-ray edition specs, audio tracks, region, extras |
-| `DVDCompareClient`     | dvdcompare.net (HTML scraper)                 | regional release comparison, cut runtimes, version notes |
-| `DiscogsClient`        | api.discogs.com                               | music releases (vinyl/CD/cassette), concert film LaserDiscs/VHS, soundtrack albums; `search_video()` for video formats, `search()` for audio; `search_film()` is a deprecated alias for `search_video()` |
+Each client is a thin, typed wrapper around one data source.
+
+| Client | Source | What you get |
+|---|---|---|
+| `ArrMetadataClient` | Servarr proxies (Skyhook / Radarr / Lidarr) | TV shows, movies, artists — same data that powers Sonarr/Radarr/Lidarr |
+| `OpenLibraryClient` | openlibrary.org | Works, editions, authors, ISBN lookup, covers |
+| `BookInfoClient` | rreading-glasses (Goodreads / Hardcover) | Book metadata via Goodreads / Hardcover |
+| `AnnasArchiveClient` | Anna's Archive mirrors | Book search (HTML scrape) |
+| `AudioDBClient` | theaudiodb.com | Artists, albums, tracks |
+| `TVmazeClient` | tvmaze.com | Shows, seasons, episodes, cast, people |
+| `BlurayComClient` | blu-ray.com | Physical Blu-ray specs — audio tracks, region codes, extras |
+| `DVDCompareClient` | dvdcompare.net | Regional release comparison, cut runtimes, version notes |
+| `DiscogsClient` | discogs.com | Vinyl, CD, cassette releases; `search_video()` for LaserDiscs / concert VHS / music DVDs |
 
 ```python
-from metadatarr import ArrMetadataClient, OpenLibraryClient, TVmazeClient
+from metadatarr import ArrMetadataClient, OpenLibraryClient, AudioDBClient, TVmazeClient
 
+# Movies & TV via Servarr proxies
 arr = ArrMetadataClient()
-movie = arr.search_movie("Inception")[0]
-print(movie.title, movie.tmdb_id)
+movie  = arr.search_movie("Alien")[0]
+series = arr.search_series("The Boys")[0]
+artist = arr.search_artist("Moonsorrow")[0]
+print(movie.tmdb_id, series.tvdb_id, artist.mb_id)
 
-ol = OpenLibraryClient()
+# Books
+ol  = OpenLibraryClient()
 hit = ol.search("The Hobbit", limit=1)[0]
+print(hit.key, hit.first_publish_year)
 
-tv = TVmazeClient()
-show = tv.singlesearch("The Boys")
+# Music
+db  = AudioDBClient()
+alb = db.search_album("Voimasta ja Kunniasta")[0]
+print(alb.id_album, alb.str_genre)
+
+# TV
+tv   = TVmazeClient()
+show = tv.singlesearch("Severance")
+print(show.id, show.network.name)
 ```
+
+---
 
 ## Cross-source resolver
 
-When you have a noisy row (a filename, a tag, a search result) and want
-a canonical identity across sources:
+When you have a title, a year, or a noisy filename and need a canonical identity across every
+platform, the resolver fans out, conflict-checks, and merges:
 
 ```python
-from metadatarr.resolve import Signals, Medium, active_providers, consolidate
+from metadatarr.resolve import resolve, Signals, Medium
 
-signals = Signals(title="Inception", year=2010, medium=Medium.MOVIE)
+# A basic lookup — metadatarr queries all active providers concurrently
+result = resolve(Signals(title="OK Computer", artist="Radiohead", medium=Medium.MUSIC))
 
-matches = []
-for provider in active_providers(medium=Medium.MOVIE):
-    match = provider.lookup(signals)
-    if match:
-        matches.append(match)
+print(result.external_ids.musicbrainz_release_group)  # MusicBrainz MBID
+print(result.external_ids.wikidata)                   # Wikidata Q-id
+print(result.external_ids.extra.get("bandcamp_album_id"))
 
-result = consolidate(matches, local=signals)
-print(result.external_ids.tmdb_movie)   # → 27205
-print(result.signals.title)             # → "Inception"
+# Inspect what was accepted and what was rejected
+for m in result.accepted:
+    print(f"  ✓ {m.provider:<20} confidence={m.confidence:.2f}")
+for d in result.conflicts:
+    fields = ", ".join(f"{c.signal}({c.ours}≠{c.theirs})" for c in d.fields)
+    print(f"  ✗ {d.provider:<20} clashed on {fields}")
 ```
 
-Built-in providers: `metadatarr` (Servarr metadata-server proxy),
-`musicbrainz`, `audiodb`, `tvmaze`, `wikidata`, `youtube`,
-`youtube_music`, `bandcamp`, `soundcloud`, `metal_archives`, `discogs`
-(music / music\_video / other), `bluray_com`, `dvdcompare`, `pyfanedit`
-(variant-only; fanedit.org / IFDB). Every provider is keyless; the
-optional-dep ones self-disable when the package isn't installed.
+### Signals — tell the resolver what you know
+
+```python
+from metadatarr.resolve import Signals, Medium
+
+signals = Signals(
+    title    = "Alien",
+    year     = 1979,
+    medium   = Medium.MOVIE,
+    runtime  = 6900,          # seconds — used for cut-disambiguation
+    language = "en",
+    country  = "US",
+)
+```
+
+Pass as much or as little as you have. Every field is optional. The more context you
+provide, the better providers can filter and the more aggressively conflicts are detected.
+
+**Medium values:** `MUSIC`, `MUSIC_VIDEO`, `MOVIE`, `TV`, `PODCAST`, `BOOK`, `OTHER`.
+
+### Variant fan-out — editions, cuts, fanedits
+
+```python
+from metadatarr.resolve import resolve, Signals, Medium
+from metadatarr.resolve.entities import Role
+
+result = resolve(Signals(
+    title           = "Alien",
+    year            = 1979,
+    medium          = Medium.MOVIE,
+    include_variants= True,       # ← triggers second pass
+))
+
+for entity in result.relations.get(Role.RELEASE, []):
+    print(entity.name, entity.external_ids.fanedit_id)
+    # Alien: Covenant Cut, Alien: The Director's Cut, ...
+```
+
+With `include_variants=True` the resolver runs a second pass calling `list_variants()` on
+every active provider:
+- **pyfanedit** — queries fanedit.org (IFDB) for fan-edited cuts of the movie
+- **musicbrainz** — expands a release-group MBID to its individual releases (editions, remasters, regional pressings)
+
+### ExternalIds — every platform in one object
+
+```python
+from metadatarr.resolve.external_ids import ExternalIds
+
+ids = result.external_ids
+print(ids.tmdb_movie)                          # int
+print(ids.imdb)                                # "tt0078748"
+print(ids.musicbrainz_release_group)           # UUID str
+print(ids.wikidata)                            # "Q103569"
+print(ids.extra.get("bandcamp_album_id"))      # platform extras
+```
+
+First-class typed fields: `musicbrainz_*`, `imdb`, `tmdb_movie`, `tmdb_tv`, `tvdb`,
+`isbn_10`, `isbn_13`, `olid`, `goodreads`, `wikidata`, `metal_archives_*`,
+`fanedit_id`, `derived_from_imdb`, `discogs_release`, `bluray_com_id`, `dvdcompare_id`, …
+plus an `extra` dict for platform-specific IDs (Bandcamp, SoundCloud, YouTube Music, …).
+
+---
+
+## Built-in providers
+
+All providers are keyless. Optional-dep providers silently disable if the package isn't installed.
+
+| Provider | Source | Medium | Dep |
+|---|---|---|---|
+| `metadatarr` | Servarr proxies + OpenLibrary | Movies, TV, Music, Books | — |
+| `musicbrainz` | MusicBrainz API | Music | — |
+| `audiodb` | TheAudioDB | Music | — |
+| `tvmaze` | TVmaze public API | TV | — |
+| `wikidata` | Wikidata API | All | — |
+| `discogs` | Discogs API | Music, Music Video | — |
+| `bluray_com` | blu-ray.com scraper | Movies | — |
+| `dvdcompare` | dvdcompare.net scraper | Movies | — |
+| `pyfanedit` | fanedit.org / IFDB | Movies (variants) | — |
+| `bandcamp` | Bandcamp | Music | `py_bandcamp` |
+| `soundcloud` | SoundCloud | Music | `nuvem_de_som` |
+| `youtube_music` | YouTube Music | Music | `tutubo` |
+| `youtube` | YouTube | Videos, Podcasts | `tutubo` |
+| `metal_archives` | Encyclopaedia Metallum | Music | `pymetal` |
+
+**YouTube vs YouTube Music** — these are intentionally separate providers.
+`youtube` only emits channel IDs and refuses `Medium.MUSIC` lookups (video IDs aren't
+canonical music identities). `youtube_music` has proper entity records — stable `browseId`
+values for artists and albums that are safe to treat as cross-references.
+
+---
+
+## Identity mappings
+
+Some artists and labels are the same entity across platforms but no database records the link.
+Declare it once in a TOML file and every resolver run picks it up automatically:
+
+```toml
+# ~/.config/metadatarr/mappings.toml
+
+[[artist]]
+name                = "Acidkid / Piratech"
+soundcloud_artist_url = "https://soundcloud.com/acidkid"
+bandcamp_artist_url   = "https://piratech.bandcamp.com/"
+
+[[artist]]
+name               = "Moonsorrow"
+musicbrainz_artist = "6a0a7b9b-9e12-4e1c-b91d-67cedf98a6c3"
+bandcamp_band_id   = "3498887240"
+metal_archives_band= 27
+```
+
+The package ships a curated `metadatarr/data/mappings.toml`. Your user file at
+`~/.config/metadatarr/mappings.toml` extends it — entries that share any identifier are merged,
+new entries are appended. Send a PR to add publicly-verifiable cross-platform links to the
+package file.
+
+---
+
+## Writing a custom provider
+
+```python
+from typing import Optional
+from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
+from metadatarr.resolve.external_ids import ExternalIds
+from metadatarr.resolve.signals import Medium, Signals
+
+
+class MyProvider(MetadataProvider):
+    name  = "my_provider"
+    media = {Medium.MUSIC}
+
+    def is_available(self) -> bool:
+        return True
+
+    def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
+        if not signals.title:
+            return None
+        result = my_api.search(signals.title)
+        if not result:
+            return None
+        return ProviderMatch(
+            provider   = self.name,
+            confidence = 0.7,
+            signals    = Signals(title=result["title"], medium=Medium.MUSIC),
+            external_ids = ExternalIds(
+                musicbrainz_artist = result.get("mbid"),
+                extra = {"my_platform_id": str(result["id"])},
+            ),
+        )
+
+
+register(MyProvider())
+```
+
+Provider guidelines:
+- **Guard optional imports** — wrap `import my_lib` in `try/except ImportError`, set `self._available = False` on failure.
+- **Canonical IDs only** — numeric platform IDs are stable; URL slugs are not. Store URLs as `*_url` extra keys.
+- **Refuse wrong mediums** — return `None` if `signals.medium` isn't in your `media` set.
+- **Confidence guide** — 0.9 for exact-ID lookups, 0.7 for strong-signal search, 0.5–0.6 for fuzzy/unreliable sources.
+
+---
+
+## Physical media
+
+`BlurayComClient` and `DVDCompareClient` expose Blu-ray and DVD edition data that no
+structured API covers — region codes, audio track specs, cut runtimes, regional extras:
+
+```python
+from metadatarr.resolve.providers.bluray_com import BlurayComProvider
+from metadatarr.resolve.providers.dvdcompare import DVDCompareProvider
+from metadatarr.resolve.signals import Signals, Medium
+
+signals = Signals(title="Moon", year=2009, medium=Medium.MOVIE)
+
+bluray = BlurayComProvider()
+match  = bluray.lookup(signals)
+if match:
+    print(match.external_ids.bluray_com_id)
+
+dvd    = DVDCompareProvider()
+match  = dvd.lookup(signals)
+if match:
+    print(match.external_ids.dvdcompare_id)
+```
+
+See [`docs/physical-disc.md`](docs/physical-disc.md) for a full walkthrough.
+
+---
+
+## Caching and concurrency
+
+`resolve()` is concurrent (default 8 workers via `ThreadPoolExecutor`) and process-level cached:
+
+```python
+from metadatarr.resolve._cache import cache
+
+cache().hits    # int — cached lookups served
+cache().misses  # int — network hits
+cache().clear() # force re-fetch (e.g. after adding a new provider)
+```
+
+Both hits and misses are cached, so failed lookups don't re-hit the network on retry.
+Pass `resolve(signals, max_workers=N)` to tune parallelism.
+
+---
 
 ## Documentation
 
-- [`docs/getting-started.md`](docs/getting-started.md) — install + first calls
-- [`docs/models.md`](docs/models.md) — Pydantic model reference
-- [`docs/resolve.md`](docs/resolve.md) — `Signals`, providers, `ResolveResult`
-- [`docs/providers.md`](docs/providers.md) — provider catalogue (config, deps)
-- [`docs/recipes.md`](docs/recipes.md) — common end-to-end snippets
-- [`docs/troubleshooting.md`](docs/troubleshooting.md) — gotchas
-- [`docs/clients/`](docs/clients/) — per-client deep dives
+| Doc | Contents |
+|---|---|
+| [`docs/getting-started.md`](docs/getting-started.md) | Install, first calls, common patterns |
+| [`docs/models.md`](docs/models.md) | Full Pydantic model reference |
+| [`docs/resolve.md`](docs/resolve.md) | Signals, providers, ResolveResult, conflict detection |
+| [`docs/providers.md`](docs/providers.md) | Provider catalogue — config, optional deps, caveats |
+| [`docs/recipes.md`](docs/recipes.md) | End-to-end snippets for common tasks |
+| [`docs/physical-disc.md`](docs/physical-disc.md) | Blu-ray / DVD edition data |
+| [`docs/troubleshooting.md`](docs/troubleshooting.md) | Gotchas and FAQ |
+| [`docs/clients/`](docs/clients/) | Per-client deep dives |
+| [`examples/`](examples/) | One focused script per use case |
 
-## Examples
-
-See [`examples/`](examples/) — one focused script per client family plus a
-resolve walkthrough.
+---
 
 ## Testing
 
 ```bash
-pip install -e .[test]
+pip install -e ".[test]"
 pytest
 ```
 
-Tests are fully offline (no network) — HTTP calls are stubbed.
+Tests are fully offline — all HTTP calls are stubbed with fixture files.
+
+---
 
 ## License
 
