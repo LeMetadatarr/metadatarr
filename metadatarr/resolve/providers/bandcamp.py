@@ -192,11 +192,9 @@ class BandcampProvider(MetadataProvider):
                 album_extra["bandcamp_album_id"] = str(album_id_num)
             if album_url:
                 album_extra["bandcamp_album_url"] = str(album_url)
-            relations[EntityRole.ALBUM] = [ProviderEntity(
-        role=EntityRole.ALBUM,
-                name=album_title,
-                external_ids=ExternalIds(extra=album_extra),
-            )]
+            # Album linkage is captured via external_ids; no separate
+            # entity emission needed.
+            external_extra.update(album_extra)
 
         return ProviderMatch(
             provider=self.name,

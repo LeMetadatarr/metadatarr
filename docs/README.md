@@ -27,7 +27,7 @@ It is deliberately tiny: a single `requests`-based HTTP layer, a single
 Plus a cross-source **resolver** (`metadatarr.resolve`) — pluggable
 providers + a `Signals` / `ExternalIds` framework for fusing matches into
 one canonical record. Includes a variant fan-out system: set
-`signals.include_variants=True` to populate `result.relations[EntityRole.RELEASE]`
+`signals.include_variants=True` to populate `result.variants`
 with cuts / editions from `musicbrainz` (release-group → releases) and
 `pyfanedit` (fanedit.org / IFDB). See [resolve.md](resolve.md) and
 [providers.md](providers.md).

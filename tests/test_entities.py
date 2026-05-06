@@ -56,12 +56,6 @@ def test_allocate_falls_back_to_name():
     assert a == b  # normalisation collapses casing/punctuation
 
 
-def test_allocate_album_uses_mb_release_group():
-    eid = allocate_entity_id(EntityRole.ALBUM,
-                             external_ids=ExternalIds(musicbrainz_release_group="rg"))
-    assert isinstance(eid, str) and len(eid) == 40
-
-
 def test_allocate_author_uses_olid():
     a = allocate_entity_id(EntityRole.AUTHOR, external_ids=ExternalIds(olid="OL1A"))
     b = allocate_entity_id(EntityRole.AUTHOR, name="other",
@@ -116,7 +110,7 @@ def test_attach_work_and_entities_by_role():
     from metadatarr.resolve import entities_by_role
     side = EntitySidecar()
     eid = upsert_entity(side, ProviderEntity(
-        role=EntityRole.ALBUM, name="A"))
+        role=EntityRole.LABEL, name="A"))
     attach_work(side, eid, "w1")
     attach_work(side, eid, "w1")    # dup ignored
     attach_work(side, eid, "")      # empty ignored
@@ -124,7 +118,7 @@ def test_attach_work_and_entities_by_role():
 
     upsert_entity(side, ProviderEntity(
         role=EntityRole.ARTIST, name="B"))
-    assert len(entities_by_role(side, EntityRole.ALBUM)) == 1
+    assert len(entities_by_role(side, EntityRole.LABEL)) == 1
     assert len(entities_by_role(side, EntityRole.ARTIST)) == 1
 
 
@@ -159,7 +153,7 @@ def test_mapping_store_merges_overlapping_entries():
 def test_mapping_store_lookup_kind_filtered():
     store = MappingStore()
     store.add(MappingEntry(EntityRole.ARTIST, "X", {"wikidata": "Q1"}))
-    assert store.lookup(EntityRole.ALBUM, {"wikidata": "Q1"}) is None
+    assert store.lookup(EntityRole.LABEL, {"wikidata": "Q1"}) is None
 
 
 def test_mapping_apply_noop_when_no_match():
@@ -250,11 +244,6 @@ from metadatarr.resolve.entities import EntityRole
         (EntityRole.VOICE_ACTOR, MvEntityKind.PERSON),
         (EntityRole.DIRECTOR,    MvEntityKind.PERSON),
         (EntityRole.AUTHOR,      MvEntityKind.PERSON),
-        (EntityRole.CHARACTER,   MvEntityKind.PERSON),
-        # Work-shaped values map to OTHER as a signal to use Work, not Entity.
-        (EntityRole.ALBUM,       MvEntityKind.OTHER),
-        (EntityRole.RELEASE,     MvEntityKind.OTHER),
-        (EntityRole.TRACK,       MvEntityKind.OTHER),
         (EntityRole.OTHER,       MvEntityKind.OTHER),
     ],
 )
@@ -285,9 +274,5 @@ def test_to_mediavocab_role(ek, expected_role):
 
 
 def test_to_mediavocab_role_none_for_non_role_kinds():
-    # ALBUM / RELEASE / TRACK are Works, CHARACTER is fictional, OTHER is unknown.
-    assert EntityRole.ALBUM.to_mediavocab_role() is None
-    assert EntityRole.RELEASE.to_mediavocab_role() is None
-    assert EntityRole.TRACK.to_mediavocab_role() is None
-    assert EntityRole.CHARACTER.to_mediavocab_role() is None
+    # OTHER is unknown — no relation role mapping.
     assert EntityRole.OTHER.to_mediavocab_role() is None

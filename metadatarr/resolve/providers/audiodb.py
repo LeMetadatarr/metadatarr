@@ -83,20 +83,6 @@ class AudioDBProvider(MetadataProvider):
                     extra=artist_extra,
                 ),
             )]
-        if top.album:
-            album_extra: dict = {}
-            if top.album_id:
-                album_extra["audiodb_album_id"] = top.album_id
-            # musicbrainz_release is already in the first-class ExternalIds field below
-            relations[EntityRole.ALBUM] = [ProviderEntity(
-        role=EntityRole.ALBUM,
-                name=top.album,
-                external_ids=ExternalIds(
-                    musicbrainz_release=top.musicbrainz_album_id,
-                    extra=album_extra,
-                ),
-            )]
-
         cand_signals = Signals(
             title=top.title,
             artist=top.artist,

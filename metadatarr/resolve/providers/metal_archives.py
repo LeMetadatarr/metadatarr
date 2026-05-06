@@ -84,13 +84,6 @@ class MetalArchivesProvider(MetadataProvider):
                 name=hit.band_name,
                 external_ids=ExternalIds(metal_archives_band=hit.band_id),
             )]
-        if getattr(hit, "release_title", None):
-            relations[EntityRole.ALBUM] = [ProviderEntity(
-        role=EntityRole.ALBUM,
-                name=hit.release_title,
-                external_ids=ExternalIds(metal_archives_release=hit.release_id),
-            )]
-
         return ProviderMatch(
             provider=self.name,
             confidence=0.9 * match_quality(signals, match_signals),

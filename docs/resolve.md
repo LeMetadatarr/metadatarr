@@ -45,7 +45,7 @@ more aggressively `consolidate()` can reject mismatches.
 | `edition` | `str` | Free-text edition name (e.g. `"25th Anniversary"`) |
 | `region` | `str` | ISO 3166-1 alpha-2; release territory (distinct from work-origin `country`) |
 | `source_format` | `str` | Physical / digital format (e.g. `"4K"`, `"Blu-ray"`, `"Vinyl"`) |
-| `include_variants` | `bool` | When `True`, `resolve()` fans out to variant-aware providers and populates `result.relations[EntityRole.RELEASE]` |
+| `include_variants` | `bool` | When `True`, `resolve()` fans out to variant-aware providers and populates `result.variants` |
 
 `Signals` — `mediavocab/models/signals.py`
 
@@ -219,7 +219,8 @@ The entity layer uses two separate enums with distinct concerns:
 - `EntityRole` — relational role in the context of a specific work; the key type for
   `ProviderMatch.relations` and `ResolveResult.relations`. Values: `ACTOR`, `VOICE_ACTOR`,
   `DIRECTOR`, `PRODUCER`, `COMPOSER`, `WRITER`, `NARRATOR`, `HOST`, `AUTHOR`, `ARTIST`,
-  `LABEL`, `CHANNEL`, `STUDIO`, `ALBUM`, `RELEASE`, `TRACK`, `CHARACTER`, `OTHER`.
+  `LABEL`, `CHANNEL`, `STUDIO`, `OTHER`. Work-shaped emissions (release variants)
+  live on `ProviderMatch.variants` rather than as relation roles.
 
 `EntityKind` is re-exported from `mediavocab`. `EntityRole` — `metadatarr/resolve/entities.py:40`
 
@@ -234,8 +235,10 @@ match.relations = {
         name="Moonsorrow",
         external_ids=ExternalIds(extra={"bandcamp_band_id": "12345678"}),
     )],
-    EntityRole.ALBUM: [...],
 }
+
+# Release variants live on ProviderMatch.variants:
+match.variants = [ProviderEntity(role=EntityRole.OTHER, name="...", ...)]
 ```
 
 `ProviderEntity.kind` is auto-derived from `role.to_mediavocab_kind()` when omitted —
@@ -243,9 +246,10 @@ match.relations = {
 `LABEL` → `EntityKind.ORGANISATION`, etc. Pass `kind` explicitly to override.
 `ProviderEntity` — `metadatarr/resolve/entities.py:235`
 
-`EntityRole.RELEASE` is used for specific releases / cuts of a work (individual MusicBrainz
-releases within a release-group, or fanedit.org entries). It is the key stored
-in `result.relations[EntityRole.RELEASE]` when `include_variants=True`.
+Release variants (specific releases / cuts of a work — individual MusicBrainz
+releases within a release-group, or fanedit.org entries) are emitted on
+`ProviderMatch.variants` and surfaced on `result.variants` when
+`include_variants=True`.
 
 Entities get their own stable IDs via `allocate_entity_id()`, which derives a
 deterministic SHA1 from the strongest known external ID (MusicBrainz > Metal
@@ -382,7 +386,8 @@ print(result.external_ids.tmdb_movie)
 | `accepted` | `List[ProviderMatch]` | Matches that agreed with local signals and each other (sorted by confidence desc) |
 | `dropped` | `List[ProviderMatch]` | Matches dropped for conflicting with local signals or the running consolidation |
 | `conflicts` | `List[ResolutionConflict]` | Per-drop diagnostic — which provider clashed, with what, on which fields |
-| `relations` | `Dict[EntityRole, List[ProviderEntity]]` | Variant entities; populated only when `signals.include_variants=True`; key is `EntityRole.RELEASE` |
+| `relations` | `Dict[EntityRole, List[ProviderEntity]]` | Contribution entities collected from accepted matches |
+| `variants` | `List[ProviderEntity]` | Release-variant entities; populated only when `signals.include_variants=True` |
 
 `ResolveResult` — `metadatarr/resolve/base.py:56`
 
@@ -392,7 +397,7 @@ When `signals.include_variants=True`, `resolve()` runs a second pass after
 consolidation. It calls `list_variants(result.external_ids, signals)` on
 every active provider whose `media` set includes the requested medium.
 Results are de-duplicated by `fanedit_id` > `musicbrainz_release` > `name`
-(first seen wins) and stored in `result.relations[EntityRole.RELEASE]`.
+(first seen wins) and stored in `result.variants`.
 
 ```python
 from metadatarr.resolve.base import resolve
@@ -404,7 +409,7 @@ result = resolve(Signals(
     medium=MediaType.MOVIE,
     include_variants=True,
 ))
-for entity in result.relations.get(EntityRole.RELEASE, []):
+for entity in result.variants:
     print(entity.name, entity.external_ids.fanedit_id)
 ```
 

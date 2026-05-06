@@ -9,10 +9,9 @@ Two enums, separate concerns:
 - :class:`EntityRole` — relational role, the resolver-internal
   taxonomy used to key :attr:`ProviderMatch.relations`. Tells you
   what role the entity plays in a particular work
-  (director / actor / composer / label / studio / …) and includes
-  resolver-internal categories that are not contribution roles
-  (ALBUM / RELEASE / TRACK / CHARACTER) for provider-output
-  ergonomics.
+  (director / actor / composer / label / studio / …). Carries only
+  contribution roles — work-shaped emissions (release variants) live
+  on :attr:`ProviderMatch.variants` instead.
 
 A :class:`ProviderEntity` carries both: ``role`` is required (it is
 how the provider classifies the contribution), ``kind`` is optional
@@ -41,14 +40,12 @@ class EntityRole(str, Enum):
     """Resolver-internal role taxonomy used to key
     :attr:`ProviderMatch.relations`.
 
-    Includes contribution roles (``DIRECTOR``, ``ACTOR``, ``COMPOSER``,
-    …) and resolver-internal categories that are not strictly
-    contribution roles (``ALBUM``, ``RELEASE``, ``TRACK``, ``CHARACTER``)
-    — the latter exist because providers commonly emit "the album of
-    this work is X" as a relation entry. Callers building canonical
-    :class:`mediavocab.Entity` / :class:`mediavocab.Credit` records
-    should map through :meth:`to_mediavocab_kind` and
-    :meth:`to_mediavocab_role`.
+    Carries only contribution roles (``DIRECTOR``, ``ACTOR``,
+    ``COMPOSER``, …). Work-shaped emissions (release variants) live
+    on :attr:`ProviderMatch.variants` rather than as a relation role.
+    Callers building canonical :class:`mediavocab.Entity` /
+    :class:`mediavocab.Credit` records should map through
+    :meth:`to_mediavocab_kind` and :meth:`to_mediavocab_role`.
     """
 
     # People / contributors
@@ -70,24 +67,10 @@ class EntityRole(str, Enum):
     CHANNEL = "channel"
     STUDIO = "studio"
 
-    # Resolver-internal categories — not contribution roles, but
-    # commonly emitted as relations entries (the album of this song,
-    # the release of this track, the character played in this film).
-    ALBUM = "album"
-    RELEASE = "release"
-    TRACK = "track"
-    CHARACTER = "character"
-
     OTHER = "other"
 
     def to_mediavocab_kind(self) -> EntityKind:
-        """Return the structural ``mediavocab.EntityKind``.
-
-        ``ALBUM`` / ``RELEASE`` / ``TRACK`` are Works (not Entities)
-        per the mediavocab spec; they map to ``EntityKind.OTHER`` here
-        as a signal to the caller that the right model is ``Work``,
-        not ``Entity``.
-        """
+        """Return the structural ``mediavocab.EntityKind``."""
         return _STRUCTURAL_KIND.get(self, EntityKind.OTHER)
 
     def to_mediavocab_role(self) -> Optional[RelationRole]:
@@ -98,9 +81,6 @@ class EntityRole(str, Enum):
 
 _STRUCTURAL_KIND: Dict[EntityRole, EntityKind] = {
     EntityRole.ARTIST:      EntityKind.GROUP,        # band / solo project — group default
-    EntityRole.ALBUM:       EntityKind.OTHER,        # Work, not Entity
-    EntityRole.RELEASE:     EntityKind.OTHER,        # Work, not Entity
-    EntityRole.TRACK:       EntityKind.OTHER,        # Work, not Entity
     EntityRole.LABEL:       EntityKind.ORGANISATION,
     EntityRole.CHANNEL:     EntityKind.ORGANISATION,
     EntityRole.STUDIO:      EntityKind.ORGANISATION,
@@ -113,7 +93,6 @@ _STRUCTURAL_KIND: Dict[EntityRole, EntityKind] = {
     EntityRole.NARRATOR:    EntityKind.PERSON,
     EntityRole.HOST:        EntityKind.PERSON,
     EntityRole.AUTHOR:      EntityKind.PERSON,
-    EntityRole.CHARACTER:   EntityKind.PERSON,       # fictional person
     EntityRole.OTHER:       EntityKind.OTHER,
 }
 
@@ -131,8 +110,6 @@ _RELATION_ROLE: Dict[EntityRole, RelationRole] = {
     EntityRole.STUDIO:      RelationRole.PUBLISHER,
     EntityRole.CHANNEL:     RelationRole.DISTRIBUTOR,
     EntityRole.ARTIST:      RelationRole.PERFORMER,
-    # ALBUM / RELEASE / TRACK / CHARACTER deliberately absent — they
-    # are not contribution roles in the foundation.
 }
 
 
@@ -158,24 +135,6 @@ def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
                 or ext.extra.get("soundcloud_user_id")
                 or ext.extra.get("audiodb_artist_id")
                 or ext.extra.get("youtube_music_artist_browse_id"))
-    if role == EntityRole.TRACK:
-        return (ext.musicbrainz_recording
-                or (str(ext.metal_archives_song) if ext.metal_archives_song else None)
-                or ext.extra.get("bandcamp_track_id")
-                or ext.extra.get("soundcloud_track_id")
-                or ext.extra.get("youtube_music_video_id")
-                or ext.extra.get("youtube_video_id")
-                or ext.extra.get("audiodb_track_id"))
-    if role == EntityRole.RELEASE:
-        return (ext.musicbrainz_release
-                or (str(ext.fanedit_id) if ext.fanedit_id else None))
-    if role == EntityRole.ALBUM:
-        return (ext.musicbrainz_release_group
-                or ext.musicbrainz_release
-                or (str(ext.metal_archives_release) if ext.metal_archives_release else None)
-                or ext.extra.get("bandcamp_album_id")
-                or ext.extra.get("audiodb_album_id")
-                or ext.extra.get("youtube_music_album_browse_id"))
     if role in {EntityRole.ACTOR, EntityRole.DIRECTOR, EntityRole.PRODUCER,
                 EntityRole.COMPOSER, EntityRole.WRITER, EntityRole.NARRATOR,
                 EntityRole.HOST}:
@@ -205,9 +164,6 @@ def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
         return ((str(ext.anilist_studio_id) if ext.anilist_studio_id else None)
                 or (str(ext.mal_studio_id) if ext.mal_studio_id else None)
                 or ext.wikidata)
-    if role == EntityRole.CHARACTER:
-        return ((str(ext.anilist_character_id) if ext.anilist_character_id else None)
-                or (str(ext.mal_character_id) if ext.mal_character_id else None))
     return None
 
 
@@ -249,9 +205,15 @@ class ProviderEntity(BaseModel):
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
 
     @model_validator(mode="after")
-    def _fill_kind_from_role(self) -> "ProviderEntity":
+    def _validate_kind_matches_role(self) -> "ProviderEntity":
+        expected = self.role.to_mediavocab_kind()
         if self.kind is None:
-            self.kind = self.role.to_mediavocab_kind()
+            self.kind = expected
+        elif self.kind != expected:
+            raise ValueError(
+                f"ProviderEntity kind={self.kind} disagrees with role={self.role} "
+                f"(expected kind={expected}). Pass only one or make them agree."
+            )
         return self
 
 
@@ -272,9 +234,15 @@ class EntityRecord(BaseModel):
     last_updated: str = Field(default_factory=_utcnow)
 
     @model_validator(mode="after")
-    def _fill_kind_from_role(self) -> "EntityRecord":
+    def _validate_kind_matches_role(self) -> "EntityRecord":
+        expected = self.role.to_mediavocab_kind()
         if self.kind is None:
-            self.kind = self.role.to_mediavocab_kind()
+            self.kind = expected
+        elif self.kind != expected:
+            raise ValueError(
+                f"EntityRecord kind={self.kind} disagrees with role={self.role} "
+                f"(expected kind={expected}). Pass only one or make them agree."
+            )
         return self
 
     def touch(self) -> None:

@@ -70,7 +70,7 @@ def test_list_variants_returns_provider_entities():
     entities = provider.list_variants(ids, signals)
 
     assert len(entities) == 2
-    assert all(e.role == EntityRole.RELEASE for e in entities)
+    assert all(e.role == EntityRole.OTHER for e in entities)
     assert entities[0].external_ids.fanedit_id == 1001
     assert entities[1].external_ids.fanedit_id == 1002
 
@@ -140,11 +140,8 @@ def test_list_variants_empty_on_client_error():
 # include_variants integration — resolve() fan-out
 # ---------------------------------------------------------------------------
 
-def test_resolve_include_variants_populates_relations():
-    """include_variants=True should trigger list_variants() and populate relations."""
-    from metadatarr.resolve.base import consolidate
-    from metadatarr.resolve.entities import EntityRole
-
+def test_resolve_include_variants_populates_variants():
+    """include_variants=True should trigger list_variants() and populate result.variants."""
     summaries = [
         _make_summary("Alien: FanFix v1",  9901, "fanfix"),
         _make_summary("Alien: TV Cut",     9902, "tv_to_movie"),
@@ -152,9 +149,6 @@ def test_resolve_include_variants_populates_relations():
 
     signals = Signals(title="Alien", medium=MediaType.MOVIE, include_variants=True)
 
-    # Build a minimal result via consolidate, then manually call list_variants
-    # to test the fan-out logic without a full network resolve().
-    from metadatarr.resolve.base import ResolveResult
     ids = ExternalIds(imdb="tt0078748")
     mock_provider = _provider_with_mock(summaries)
 
@@ -162,9 +156,4 @@ def test_resolve_include_variants_populates_relations():
     fanedit_ids = {e.external_ids.fanedit_id for e in variants}
     assert 9901 in fanedit_ids
     assert 9902 in fanedit_ids
-
-    # Verify relations dict key is EntityRole.RELEASE
-    from collections import defaultdict
-    relations = defaultdict(list)
-    relations[EntityRole.RELEASE].extend(variants)
-    assert len(relations[EntityRole.RELEASE]) == 2
+    assert len(variants) == 2

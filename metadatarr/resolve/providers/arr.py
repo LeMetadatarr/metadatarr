@@ -206,14 +206,6 @@ class LidarrProvider(_ArrBase):
                     musicbrainz_artist=artist.get("foreignArtistId"),
                 ),
             )]
-        if top.get("title"):
-            relations[EntityRole.ALBUM] = [ProviderEntity(
-        role=EntityRole.ALBUM,
-                name=top["title"],
-                external_ids=ExternalIds(
-                    musicbrainz_release_group=top.get("foreignAlbumId"),
-                ),
-            )]
         return ProviderMatch(
             provider=self.name,
             confidence=0.85,

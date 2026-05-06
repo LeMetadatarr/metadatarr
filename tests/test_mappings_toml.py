@@ -113,7 +113,7 @@ def test_url_normalisation_lowercases_host():
 # ---------------------------------------------------------------------------
 
 def test_kind_filtering_is_strict():
-    """A URL that's filed under [[artist]] must not surface for [[album]]."""
+    """A URL that's filed under [[artist]] must not surface for [[label]]."""
     store = _store_from_package()
-    assert store.lookup(EntityRole.ALBUM,
+    assert store.lookup(EntityRole.LABEL,
                         {"bandcamp_artist_url": PIRATECH_BC_URL}) is None

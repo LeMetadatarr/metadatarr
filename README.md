@@ -154,7 +154,7 @@ result = resolve(Signals(
     include_variants= True,       # ← triggers second pass
 ))
 
-for entity in result.relations.get(EntityRole.RELEASE, []):
+for entity in result.variants:
     print(entity.name, entity.external_ids.fanedit_id)
     # Alien: Covenant Cut, Alien: The Director's Cut, ...
 ```

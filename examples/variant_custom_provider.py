@@ -81,7 +81,7 @@ class LocalCatalogueProvider(MetadataProvider):
         for entry in self._by_imdb[imdb]:
             vk = _KIND_MAP.get(entry.get("variant_kind", ""), VariantKind.OTHER)
             out.append(ProviderEntity(
-        role=EntityRole.RELEASE,
+                role=EntityRole.OTHER,
                 name=entry["title"],
                 external_ids=ExternalIds(
                     derived_from_imdb=imdb,
@@ -98,7 +98,6 @@ def main() -> None:
     register(provider)
 
     print("=== resolve The Matrix with include_variants=True ===")
-    from metadatarr.resolve.entities import 
 
     result = resolve(Signals(
         title="The Matrix",
@@ -110,7 +109,7 @@ def main() -> None:
     print(f"  accepted providers : {[m.provider for m in result.accepted]}")
     print(f"  imdb               : {result.external_ids.imdb}")
 
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     local_releases = [
         r for r in releases
         if r.external_ids.fanedit_id and r.external_ids.fanedit_id >= 1000
@@ -127,7 +126,7 @@ def main() -> None:
         medium=MediaType.MOVIE,
         include_variants=True,
     ))
-    releases2 = result2.relations.get(Role.RELEASE, [])
+    releases2 = result2.variants
     print(f"  variants: {len(releases2)}")
     for r in releases2:
         print(f"    {r.name!r}  fanedit_id={r.external_ids.fanedit_id}")

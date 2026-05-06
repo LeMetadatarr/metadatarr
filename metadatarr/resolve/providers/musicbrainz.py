@@ -76,14 +76,6 @@ class MusicBrainzProvider(MetadataProvider):
         relations: dict = {}
         if artists:
             relations[EntityRole.ARTIST] = artists
-        if release.get("title"):
-            relations[EntityRole.ALBUM] = [ProviderEntity(
-        role=EntityRole.ALBUM,
-                name=release["title"],
-                external_ids=ExternalIds(
-                    musicbrainz_release=release.get("id"),
-                ),
-            )]
 
         cand = Signals(
             title=rec.get("title"),
@@ -239,7 +231,7 @@ class MusicBrainzProvider(MetadataProvider):
             if not mbid:
                 continue
             out.append(ProviderEntity(
-        role=EntityRole.RELEASE,
+                role=EntityRole.OTHER,
                 name=rel.get("title") or mbid,
                 external_ids=ExternalIds(musicbrainz_release=mbid),
             ))

@@ -38,6 +38,7 @@ class ProviderMatch(BaseModel):
     signals: Signals = Field(default_factory=Signals)
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
     relations: Dict[EntityRole, List[ProviderEntity]] = Field(default_factory=dict)
+    variants: List[ProviderEntity] = Field(default_factory=list)
 
 
 class ResolutionConflict(BaseModel):
@@ -73,6 +74,8 @@ class ResolveResult(BaseModel):
     """Per-drop diagnostic — which provider clashed, with what, on which fields.
     Useful for surfacing disagreements to callers without re-running compare()."""
     relations: Dict[EntityRole, List[ProviderEntity]] = Field(default_factory=dict)
+    """Contribution entities collected from accepted matches."""
+    variants: List[ProviderEntity] = Field(default_factory=list)
     """Release-variant entities collected when ``signals.include_variants=True``."""
 
 
@@ -315,7 +318,7 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
     When ``signals.include_variants`` is True, every active provider's
     :meth:`MetadataProvider.list_variants` is called after consolidation and
     the collected :class:`ProviderEntity` records are stored in
-    ``result.relations[EntityRole.RELEASE]``.
+    ``result.variants``.
 
     Returns a :class:`ResolveResult` regardless of how many providers matched.
     """
@@ -338,15 +341,15 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
             return ("name", ent.name)
 
         seen: dict = {}
-        # Seed from any RELEASE relations already present in accepted matches.
+        # Seed from any variants already present in accepted matches.
         for m in result.accepted:
-            for ent in m.relations.get(EntityRole.RELEASE, []):
+            for ent in m.variants:
                 seen.setdefault(_variant_key(ent), ent)
         for batch in _run_pool(providers, _get_variants, max_workers):
             for ent in batch:
                 seen.setdefault(_variant_key(ent), ent)
         if seen:
-            result.relations[EntityRole.RELEASE] = list(seen.values())
+            result.variants = list(seen.values())
     return result
 
 

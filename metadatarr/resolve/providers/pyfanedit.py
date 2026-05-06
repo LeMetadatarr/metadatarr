@@ -85,7 +85,7 @@ class PyfaneditProvider(MetadataProvider):
             if summary.fanedit_type:
                 extra["fanedit_type"] = summary.fanedit_type
             out.append(ProviderEntity(
-        role=EntityRole.RELEASE,
+                role=EntityRole.OTHER,
                 name=summary.title,
                 external_ids=ExternalIds(
                     fanedit_id=summary.fanedit_id,

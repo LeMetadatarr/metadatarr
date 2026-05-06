@@ -134,16 +134,10 @@ class YouTubeMusicProvider(MetadataProvider):
                 external_ids=ExternalIds(extra=artist_extra),
             )]
         if album_name:
-            album_extra: dict = {}
             if album_browse:
-                album_extra["youtube_music_album_browse_id"] = str(album_browse)
+                extra["youtube_music_album_browse_id"] = str(album_browse)
             if album_playlist:
-                album_extra["youtube_music_playlist_id"] = str(album_playlist)
-            relations[EntityRole.ALBUM] = [ProviderEntity(
-        role=EntityRole.ALBUM,
-                name=album_name,
-                external_ids=ExternalIds(extra=album_extra),
-            )]
+                extra["youtube_music_playlist_id"] = str(album_playlist)
 
         return ProviderMatch(
             provider=self.name,
