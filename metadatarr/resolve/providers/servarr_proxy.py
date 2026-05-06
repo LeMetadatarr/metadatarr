@@ -30,7 +30,7 @@ LOG = logging.getLogger("metadatarr.resolve.providers.servarr_proxy")
 class ServarrProxyProvider(MetadataProvider):
     """Single provider that dispatches to skyhook / radarr / lidarr / OpenLibrary by medium."""
 
-    name = "metadatarr"
+    name = "skyhook"
     media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.MUSIC, MediaType.BOOK}
 
     def __init__(self) -> None:

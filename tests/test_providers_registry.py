@@ -3,7 +3,7 @@ from metadatarr.resolve import all_providers
 
 
 EXPECTED = {
-    "metadatarr",
+    "skyhook",
     "musicbrainz",
     "audiodb",
     "tvmaze",

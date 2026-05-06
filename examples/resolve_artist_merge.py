@@ -44,7 +44,7 @@ from metadatarr.resolve import (
 
 # Providers we want to spotlight. Order is presentation-only — confidence
 # (set inside each lookup) determines who anchors the merged record.
-TARGET = ("musicbrainz", "metal_archives", "metadatarr", "wikidata")
+TARGET = ("musicbrainz", "metal_archives", "skyhook", "wikidata")
 
 
 # (artist, song-or-album title) — pick a mix of metal / electronic / rock so
