@@ -19,11 +19,9 @@ All dependencies listed below are core (bundled) — no optional extras required
 | `musicbrainz`     | music                            | Public API — polite rate-limit                         |
 | `audiodb`         | music                            | Free public key, no auth                               |
 | `tvmaze`          | episodic_series                  | `MediaType.EPISODIC_SERIES` — on-demand series only; not live TV |
-| `tmdb`            | movie / episodic_series          | TMDB API; core dep                                     |
 | `anilist`         | movie / episodic_series / comic  | AniList GraphQL API; core dep                          |
 | `jikan_anime`     | movie / episodic_series          | Jikan (MyAnimeList); core dep                          |
 | `jikan_manga`     | comic                            | Jikan (MyAnimeList); core dep                          |
-| `google_books`    | book / audiobook                 | Google Books REST API; core dep                        |
 | `librivox`        | audiobook                        | LibriVox API; core dep                                 |
 | `apple_podcasts`  | podcast / audio_drama            | Apple Podcasts search API; core dep                    |
 | `wikidata`        | movie / episodic_series / music / book / podcast | none                              |

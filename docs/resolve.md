@@ -268,11 +268,9 @@ extra is `[test]`.
 | `musicbrainz` | MusicBrainz API | music | artist, release, recording IDs |
 | `audiodb` | TheAudioDB | music | free public key |
 | `tvmaze` | TVmaze public API | episodic_series | no auth; `MediaType.EPISODIC_SERIES` only |
-| `tmdb` | TMDB API | movie / episodic_series | |
 | `anilist` | AniList GraphQL | movie / episodic_series / comic | |
 | `jikan_anime` | Jikan (MyAnimeList) | movie / episodic_series | |
 | `jikan_manga` | Jikan (MyAnimeList) | comic | |
-| `google_books` | Google Books API | book / audiobook | |
 | `librivox` | LibriVox API | audiobook | |
 | `apple_podcasts` | Apple Podcasts search | podcast / audio_drama | |
 | `wikidata` | Wikidata API | all | Q-id + cross-references |

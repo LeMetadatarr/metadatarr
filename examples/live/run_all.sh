@@ -17,7 +17,6 @@ CHECKS=(
     # Live providers (no auth)
     "anilist"
     "jikan"
-    "google_books"
     "openlibrary"
     "librivox"
     "apple_podcasts"

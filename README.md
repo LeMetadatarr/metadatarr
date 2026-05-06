@@ -194,11 +194,9 @@ All providers are keyless. All dependencies are bundled in the core install.
 | `musicbrainz` | MusicBrainz API | Music |
 | `audiodb` | TheAudioDB | Music |
 | `tvmaze` | TVmaze public API | EpisodicSeries |
-| `tmdb` | TMDB API | Movie, EpisodicSeries |
 | `anilist` | AniList GraphQL API | Movie, EpisodicSeries, Comic |
 | `jikan_anime` | Jikan (MyAnimeList) | Movie, EpisodicSeries |
 | `jikan_manga` | Jikan (MyAnimeList) | Comic |
-| `google_books` | Google Books API | Book, Audiobook |
 | `librivox` | LibriVox API | Audiobook |
 | `apple_podcasts` | Apple Podcasts search | Podcast, AudioDrama |
 | `wikidata` | Wikidata API | All |
