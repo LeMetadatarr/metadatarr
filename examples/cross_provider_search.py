@@ -33,7 +33,7 @@ from metadatarr.resolve import (
 
 DEFAULT_QUERIES = [
     ("Inception",  MediaType.MOVIE),
-    ("The Boys",   MediaType.TV),
+    ("The Boys",   MediaType.EPISODIC_SERIES),
     ("Daft Punk",  MediaType.MUSIC),
 ]
 

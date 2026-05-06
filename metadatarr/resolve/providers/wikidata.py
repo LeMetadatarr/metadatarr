@@ -42,7 +42,7 @@ _PROP_MAP = {
 
 class WikidataProvider(MetadataProvider):
     name = "wikidata"
-    media = {MediaType.MOVIE, MediaType.TV, MediaType.MUSIC, MediaType.BOOK, MediaType.PODCAST}
+    media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.MUSIC, MediaType.BOOK, MediaType.PODCAST}
 
     def is_available(self) -> bool:
         return True

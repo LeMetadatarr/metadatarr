@@ -24,7 +24,7 @@ LOG = logging.getLogger("metadatarr.resolve.providers.tvmaze")
 
 class TVmazeProvider(MetadataProvider):
     name = "tvmaze"
-    media = {MediaType.TV}
+    media = {MediaType.EPISODIC_SERIES}
 
     def __init__(self) -> None:
         from metadatarr.client import TVmazeClient
@@ -36,7 +36,7 @@ class TVmazeProvider(MetadataProvider):
     def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
         if not signals.title:
             return None
-        if signals.medium and signals.medium != MediaType.TV:
+        if signals.medium and signals.medium != MediaType.EPISODIC_SERIES:
             return None
 
         try:
@@ -74,7 +74,7 @@ class TVmazeProvider(MetadataProvider):
             title=top.name,
             year=year,
             runtime=runtime,
-            medium=MediaType.TV,
+            medium=MediaType.EPISODIC_SERIES,
             language=top.language,
         )
         return ProviderMatch(

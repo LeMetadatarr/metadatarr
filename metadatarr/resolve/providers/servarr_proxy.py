@@ -31,7 +31,7 @@ class ServarrProxyProvider(MetadataProvider):
     """Single provider that dispatches to skyhook / radarr / lidarr / OpenLibrary by medium."""
 
     name = "metadatarr"
-    media = {MediaType.MOVIE, MediaType.TV, MediaType.MUSIC, MediaType.BOOK}
+    media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.MUSIC, MediaType.BOOK}
 
     def __init__(self) -> None:
         self._client = ArrMetadataClient()
@@ -46,7 +46,7 @@ class ServarrProxyProvider(MetadataProvider):
         try:
             if signals.medium == MediaType.MOVIE:
                 return self._lookup_movie(signals)
-            if signals.medium == MediaType.TV:
+            if signals.medium == MediaType.EPISODIC_SERIES:
                 return self._lookup_tv(signals)
             if signals.medium == MediaType.MUSIC and signals.artist:
                 return self._lookup_artist(signals)
@@ -83,7 +83,7 @@ class ServarrProxyProvider(MetadataProvider):
         if not results:
             return None
         top = results[0]
-        cand = Signals(title=top.title, year=top.year, medium=MediaType.TV)
+        cand = Signals(title=top.title, year=top.year, medium=MediaType.EPISODIC_SERIES)
         return ProviderMatch(
             provider=self.name,
             confidence=0.85 * match_quality(signals, cand),

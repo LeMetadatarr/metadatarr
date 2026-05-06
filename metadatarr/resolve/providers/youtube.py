@@ -46,7 +46,7 @@ class YouTubeProvider(MetadataProvider):
     """
 
     name = "youtube"
-    media = {MediaType.MOVIE, MediaType.TV, MediaType.PODCAST, MediaType.GENERIC}
+    media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.PODCAST, MediaType.GENERIC}
 
     def is_available(self) -> bool:
         return True

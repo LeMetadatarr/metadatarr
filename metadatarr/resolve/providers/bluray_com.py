@@ -23,7 +23,7 @@ LOG = logging.getLogger("metadatarr.resolve.providers.bluray_com")
 
 class BlurayComProvider(MetadataProvider):
     name = "bluray_com"
-    media = {MediaType.MOVIE, MediaType.TV}
+    media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES}
 
     def __init__(self) -> None:
         from metadatarr.client import BlurayComClient

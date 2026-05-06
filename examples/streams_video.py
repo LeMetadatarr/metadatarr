@@ -3,7 +3,7 @@
 User story: I want a YouTube URL I can pass directly to yt-dlp, mpv, or
 any other player for a movie or podcast episode.
 
-The YouTube provider runs on ``MediaType.MOVIE``, ``MediaType.TV``,
+The YouTube provider runs on ``MediaType.MOVIE``, ``MediaType.EPISODIC_SERIES``,
 ``MediaType.PODCAST``, and ``MediaType.OTHER`` (it deliberately skips
 ``MediaType.MUSIC`` to avoid polluting music resolves with video noise).
 It emits ``youtube_video_id`` (the upload ID) and ``youtube_channel_id``
@@ -28,7 +28,7 @@ from metadatarr.resolve import MediaType, Signals, active_providers, consolidate
 
 _MEDIUM_MAP = {
     "movie":   MediaType.MOVIE,
-    "tv":      MediaType.TV,
+    "tv":      MediaType.EPISODIC_SERIES,
     "podcast": MediaType.PODCAST,
     "other":   MediaType.OTHER,
 }

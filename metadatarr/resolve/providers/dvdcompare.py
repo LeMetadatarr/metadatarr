@@ -89,7 +89,7 @@ def _match_to_provider(signals: Signals, top) -> ProviderMatch:
 
 class DVDCompareProvider(MetadataProvider):
     name = "dvdcompare"
-    media = {MediaType.MOVIE, MediaType.TV}
+    media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES}
 
     def __init__(self) -> None:
         from metadatarr.client import DVDCompareClient
