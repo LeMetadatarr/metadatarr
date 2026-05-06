@@ -15,15 +15,16 @@ from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.tvmaze")
 
 
 class TVmazeProvider(MetadataProvider):
     name = "tvmaze"
-    media = {Medium.TV}
+    media = {MediaType.TV}
 
     def __init__(self) -> None:
         from metadatarr.client import TVmazeClient
@@ -35,7 +36,7 @@ class TVmazeProvider(MetadataProvider):
     def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
         if not signals.title:
             return None
-        if signals.medium and signals.medium != Medium.TV:
+        if signals.medium and signals.medium != MediaType.TV:
             return None
 
         try:
@@ -73,7 +74,7 @@ class TVmazeProvider(MetadataProvider):
             title=top.name,
             year=year,
             runtime=runtime,
-            medium=Medium.TV,
+            medium=MediaType.TV,
             language=top.language,
         )
         return ProviderMatch(

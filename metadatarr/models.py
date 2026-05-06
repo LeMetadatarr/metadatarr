@@ -569,18 +569,6 @@ class CutRuntime(BaseModel):
         return self.runtime_seconds / 60
 
 
-class Stream(BaseModel):
-    """A playable media stream from a known platform.
-
-    Constructed from ``ExternalIds.streams`` — aggregates playable URLs and IDs
-    stored in ``ExternalIds.extra`` into a typed, uniform list.
-    """
-    platform: str       # "bandcamp", "soundcloud", "youtube", "youtube_music", "radio"
-    url: str            # fully-formed playable URL
-    media_type: str     # "track", "album", "video", "playlist", "stream"
-    id: Optional[str] = None   # raw ID when the URL was constructed from one
-
-
 class DVDCompareRelease(BaseModel):
     """One regional release entry from a dvdcompare.net film page.
 

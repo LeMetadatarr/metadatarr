@@ -1,9 +1,9 @@
-"""Demonstrate tutubo's title parser + metadatarr's signals_from_title adapter.
+"""Demonstrate the mediavocab title parser + metadatarr's signals_from_title adapter.
 
 Run:  python examples/title_parser_demo.py
 """
-from tutubo import parse_title
-from metadatarr import signals_from_title
+from mediavocab.text import parse_title
+from metadatarr.resolve.title_parser import signals_from_title
 
 TITLES = [
     # Year + cut
@@ -34,11 +34,11 @@ for raw in TITLES:
     r = parse_title(raw)
     sig = signals_from_title(raw)
     year = str(r.year) if r.year else "-"
-    cut  = r.cut_kind.value if r.cut_kind else "-"
+    cut  = r.variant_kind.value if r.variant_kind else "-"
     fmt  = r.source_format or "-"
     se   = f"S{r.season}E{r.episode}" if r.season and r.episode else (
            f"S{r.season}" if r.season else "-")
-    aka  = ", ".join(sig.aka) if sig.aka else ""
+    aka  = ", ".join(r.aka) if r.aka else ""
     lang = r.language_hint or ""
     extras = " | ".join(filter(None, [se if se != "-" else "", aka, lang]))
     print(f"{raw:<55} {year:>5}  {cut:<14}  {fmt:<12}  {extras}")

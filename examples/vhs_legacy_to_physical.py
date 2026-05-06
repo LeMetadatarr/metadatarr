@@ -20,7 +20,8 @@ from typing import List, Dict, Any, Optional
 from tutubo import search_yt, classify_video_dict, parse_title
 from tutubo.content_type import ContentType
 from metadatarr.client import DVDCompareClient
-from metadatarr.resolve.signals import Signals, Medium
+from mediavocab.models.signals import Signals
+from mediavocab import MediaType
 
 # ---------------------------------------------------------------------------
 # Fixtures — captured from a live VHS-legacy search run

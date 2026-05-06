@@ -14,7 +14,8 @@ No extra installs required — MusicBrainz is always available.
 import metadatarr.resolve.providers  # trigger provider self-registration
 from metadatarr.resolve import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 
 def main() -> None:
@@ -22,7 +23,7 @@ def main() -> None:
         title="OK Computer",
         artist="Radiohead",
         year=1997,
-        medium=Medium.MUSIC,
+        medium=MediaType.MUSIC,
         include_variants=True,   # <-- expand release-group → releases
     )
 

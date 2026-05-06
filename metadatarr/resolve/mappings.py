@@ -25,7 +25,7 @@ File format — TOML, one section per entity::
     musicbrainz_artist      = "some-mbid-uuid"
 
 Every key except ``name`` is treated as an identifier.  Keys must match
-field names in :class:`~metadatarr.resolve.external_ids.ExternalIds` or any
+field names in :class:`~mediavocab.models.ExternalIds` or any
 ``extra.*`` key a provider emits.
 
 ``apply_mappings(kind, external_ids)`` enriches an :class:`ExternalIds`
@@ -44,7 +44,7 @@ from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlsplit
 
 from metadatarr.resolve.entities import EntityKind
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab.models import ExternalIds
 
 # ---------------------------------------------------------------------------
 # TOML loading — stdlib tomllib (3.11+) or tomli shim
@@ -336,7 +336,7 @@ def add_mapping(kind: EntityKind, identifiers: Dict[str, str],
     """Register a cross-platform identity assertion at runtime.
 
     ``identifiers`` is a ``{key: value}`` dict using the same key names as
-    :class:`~metadatarr.resolve.external_ids.ExternalIds` fields or any
+    :class:`~mediavocab.models.ExternalIds` fields or any
     ``extra.*`` key a provider emits::
 
         add_mapping(

@@ -49,7 +49,8 @@ from metadatarr.client import DVDCompareClient
 from metadatarr.models import DVDCompareEdition
 from metadatarr.resolve import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Medium, Signals, VariantKind, compare, signal_hash
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, compare_signals as compare, signal_hash
 
 # ---------------------------------------------------------------------------
 # Film metadata — known cuts and dvdcompare fids
@@ -148,7 +149,7 @@ def section_cuts(film: dict) -> None:
         s = Signals(
             title=film["title"],
             year=film["year"],
-            medium=Medium.MOVIE,
+            medium=MediaType.MOVIE,
             variant_kind=variant,
             runtime=float(runtime_min * 60),
         )
@@ -253,7 +254,7 @@ def section_fanedits(film: dict) -> None:
         result = resolve(Signals(
             title=film["title"],
             year=film["year"],
-            medium=Medium.MOVIE,
+            medium=MediaType.MOVIE,
             include_variants=True,
         ), max_workers=4)
     except Exception as exc:
@@ -325,7 +326,7 @@ def main() -> None:
             s = Signals(
                 title=film["title"],
                 year=film["year"],
-                medium=Medium.MOVIE,
+                medium=MediaType.MOVIE,
                 variant_kind=variant,
                 runtime=float(runtime_min * 60),
             )

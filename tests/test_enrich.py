@@ -6,7 +6,7 @@ import pytest
 from metadatarr.resolve import (
     ExternalIds,
     EntityKind,
-    Medium,
+    MediaType,
     MetadataProvider,
     enrich,
 )
@@ -28,7 +28,7 @@ def _clear_cache():
 
 class _Stub(MetadataProvider):
     name = "stub"
-    media = {Medium.MUSIC}
+    media = {MediaType.MUSIC}
 
     def __init__(self, enrichment: Optional[ExternalIds]):
         self._enrichment = enrichment
@@ -78,7 +78,7 @@ def test_enrich_handles_provider_returning_none(monkeypatch):
 def test_enrich_swallows_provider_exception(monkeypatch):
     class Boom(MetadataProvider):
         name = "boom"
-        media = {Medium.MUSIC}
+        media = {MediaType.MUSIC}
         def is_available(self): return True
         def lookup(self, s): return None
         def enrich(self, ids):
@@ -122,7 +122,7 @@ def test_enrich_skips_mappings_when_apply_maps_false(monkeypatch):
 
 class _Counted(MetadataProvider):
     name = "counted"
-    media = {Medium.MOVIE}
+    media = {MediaType.MOVIE}
 
     def __init__(self, return_value):
         self._return = return_value

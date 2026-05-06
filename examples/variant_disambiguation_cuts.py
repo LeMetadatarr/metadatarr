@@ -11,20 +11,15 @@ Demonstrates:
 - compare() flags the conflict if a provider returns the wrong cut
 - No network required.
 """
-from metadatarr.resolve.signals import (
-    Medium,
-    Signals,
-    VariantKind,
-    compare,
-    signal_hash,
-)
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, compare_signals as compare, signal_hash
 
 
 def main() -> None:
     theatrical = Signals(
         title="The Lord of the Rings: The Two Towers",
         year=2002,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=VariantKind.THEATRICAL,
         runtime=10920.0,   # 182 min
     )
@@ -32,7 +27,7 @@ def main() -> None:
     extended = Signals(
         title="The Lord of the Rings: The Two Towers",
         year=2002,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=VariantKind.EXTENDED,
         runtime=13800.0,   # 223 min
     )
@@ -53,7 +48,7 @@ def main() -> None:
     no_variant = Signals(
         title="The Lord of the Rings: The Two Towers",
         year=2002,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
     )
     conflicts_none = compare(theatrical, no_variant)
     print(f"  conflicts when provider doesn't set variant_kind: {conflicts_none}")

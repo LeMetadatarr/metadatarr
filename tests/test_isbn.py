@@ -1,10 +1,6 @@
 """ISBN normalisation + ExternalIds back-fill."""
 from metadatarr.resolve import ExternalIds
-from metadatarr.resolve.external_ids import (
-    isbn10_to_13,
-    isbn13_to_10,
-    normalize_isbn,
-)
+from mediavocab.text import isbn10_to_13, isbn13_to_10, normalize_isbn
 
 
 def test_isbn10_to_13_known_pair():

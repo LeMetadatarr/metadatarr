@@ -14,15 +14,16 @@ import logging
 from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.openlibrary")
 
 
 class OpenLibraryProvider(MetadataProvider):
     name = "openlibrary"
-    media = {Medium.BOOK}
+    media = {MediaType.BOOK}
     # Books are not classified by tutubo ContentType values; leave empty so
     # content_type filtering never excludes book results.
     content_types: set = set()
@@ -37,7 +38,7 @@ class OpenLibraryProvider(MetadataProvider):
     def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
         if not signals.title:
             return None
-        if signals.medium and signals.medium != Medium.BOOK:
+        if signals.medium and signals.medium != MediaType.BOOK:
             return None
 
         try:
@@ -77,7 +78,7 @@ class OpenLibraryProvider(MetadataProvider):
             title=top.title,
             artist=author,
             year=top.first_publish_year,
-            medium=Medium.BOOK,
+            medium=MediaType.BOOK,
             language=language,
             content_type="book",
         )

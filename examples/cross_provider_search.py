@@ -24,7 +24,7 @@ from __future__ import annotations
 import sys
 
 from metadatarr.resolve import (
-    Medium,
+    MediaType,
     Signals,
     active_providers,
     search,
@@ -32,13 +32,13 @@ from metadatarr.resolve import (
 
 
 DEFAULT_QUERIES = [
-    ("Inception",  Medium.MOVIE),
-    ("The Boys",   Medium.TV),
-    ("Daft Punk",  Medium.MUSIC),
+    ("Inception",  MediaType.MOVIE),
+    ("The Boys",   MediaType.TV),
+    ("Daft Punk",  MediaType.MUSIC),
 ]
 
 
-def _print_candidates(query: str, medium: Medium, candidates) -> None:
+def _print_candidates(query: str, medium: MediaType, candidates) -> None:
     print(f"\n{'=' * 78}")
     print(f"  {query}  ({medium.value})")
     print('=' * 78)
@@ -56,7 +56,7 @@ def main() -> None:
     queries = []
     if len(sys.argv) > 1:
         # Explicit query — assume movie unless caller cares to extend the script
-        queries.append((" ".join(sys.argv[1:]), Medium.MOVIE))
+        queries.append((" ".join(sys.argv[1:]), MediaType.MOVIE))
     else:
         queries = DEFAULT_QUERIES
 

@@ -16,13 +16,13 @@ A `Signals` object is the input to every lookup.  It carries what you already
 know about the work:
 
 ```python
-from metadatarr.resolve.signals import Signals, Medium
+from metadatarr.resolve.signals import Signals, MediaType
 
 signals = Signals(
     title="Sankarihauta",
     artist="Moonsorrow",
     year=2003,
-    medium=Medium.MUSIC,
+    medium=MediaType.MUSIC,
 )
 ```
 
@@ -77,8 +77,8 @@ sides set it and the values differ; an absent value is never a conflict.
 | `REGIONAL` | Film or album — territory-specific release |
 | `REMASTERED` | Film or album — remastered |
 | `OTHER` | Anything else |
-Setting `medium` controls which providers are even asked: a `Medium.MUSIC`
-lookup never touches the TVmaze TV provider; a `Medium.MOVIE` lookup
+Setting `medium` controls which providers are even asked: a `MediaType.MUSIC`
+lookup never touches the TVmaze TV provider; a `MediaType.MOVIE` lookup
 never touches Bandcamp.
 
 #### Title comparison
@@ -314,7 +314,7 @@ from metadatarr.resolve.signals import Medium
 
 all_providers()                         # {name: provider} — every registered provider
 active_providers()                      # those whose is_available() is True
-active_providers(medium=Medium.MUSIC)   # further filtered to music-capable providers
+active_providers(medium=MediaType.MUSIC)   # further filtered to music-capable providers
 ```
 
 ---
@@ -326,9 +326,9 @@ active_providers(medium=Medium.MUSIC)   # further filtered to music-capable prov
 ```python
 import metadatarr.resolve.providers          # triggers provider self-registration
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, Medium
+from metadatarr.resolve.signals import Signals, MediaType
 
-result = resolve(Signals(title="Inception", medium=Medium.MOVIE))
+result = resolve(Signals(title="Inception", medium=MediaType.MOVIE))
 print(result.external_ids.tmdb_movie)   # → 27205
 print([m.provider for m in result.accepted])
 print([m.provider for m in result.dropped])
@@ -361,9 +361,9 @@ matches:
 
 ```python
 from metadatarr.resolve.base import active_providers, consolidate, ProviderMatch
-from metadatarr.resolve.signals import Signals, Medium
+from metadatarr.resolve.signals import Signals, MediaType
 
-signals = Signals(title="Inception", medium=Medium.MOVIE)
+signals = Signals(title="Inception", medium=MediaType.MOVIE)
 matches = []
 for provider in active_providers(medium=signals.medium):
     match = provider.lookup(signals)
@@ -398,11 +398,11 @@ Results are de-duplicated by `fanedit_id` > `musicbrainz_release` > `name`
 ```python
 from metadatarr.resolve.base import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Signals, Medium
+from metadatarr.resolve.signals import Signals, MediaType
 
 result = resolve(Signals(
     title="Inception",
-    medium=Medium.MOVIE,
+    medium=MediaType.MOVIE,
     include_variants=True,
 ))
 for entity in result.relations.get(Role.RELEASE, []):
@@ -439,9 +439,9 @@ each other.
 dropped without re-running `compare()`:
 
 ```python
-from metadatarr.resolve import resolve, Medium, Signals
+from metadatarr.resolve import resolve, MediaType, Signals
 
-result = resolve(Signals(title="Inception", year=2010, medium=Medium.MOVIE))
+result = resolve(Signals(title="Inception", year=2010, medium=MediaType.MOVIE))
 for diag in result.conflicts:
     fields = ", ".join(f"{c.signal}({c.ours}≠{c.theirs})" for c in diag.fields)
     print(f"{diag.provider:<20} clashed with {diag.against}: {fields}")
@@ -647,7 +647,7 @@ These are two separate providers with completely different semantics.
 **`youtube`** — regular YouTube.  A video ID identifies a single upload, not
 a song.  The same song has thousands of uploads; none is authoritative.  This
 provider only emits `EntityKind.CHANNEL` relations (never `ARTIST` or
-`ALBUM`), and refuses `Medium.MUSIC` lookups entirely.  Use it for content
+`ALBUM`), and refuses `MediaType.MUSIC` lookups entirely.  Use it for content
 that is *original to YouTube* — vlogs, essays, original podcasts, etc.
 
 **`youtube_music`** — YouTube Music.  This catalog has proper *entity*
@@ -670,7 +670,7 @@ from metadatarr.resolve.signals import Medium, Signals
 
 class MyProvider(MetadataProvider):
     name = "my_provider"
-    media = {Medium.MUSIC}
+    media = {MediaType.MUSIC}
 
     def is_available(self) -> bool:
         return True  # or check for env vars / optional deps
@@ -691,7 +691,7 @@ class MyProvider(MetadataProvider):
                 title=result["title"],
                 artist=result["artist"],
                 year=result.get("year"),
-                medium=Medium.MUSIC,
+                medium=MediaType.MUSIC,
             ),
             external_ids=ExternalIds(
                 musicbrainz_artist=result.get("mbid"),

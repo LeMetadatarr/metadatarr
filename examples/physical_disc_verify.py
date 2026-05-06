@@ -26,7 +26,8 @@ from typing import Optional
 
 from metadatarr.client import DVDCompareClient
 from metadatarr.models import DVDCompareRelease
-from metadatarr.resolve.signals import Medium, Signals, VariantKind, signal_hash
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, signal_hash
 
 # ---------------------------------------------------------------------------
 # Known dvdcompare fids for Blade Runner Blu-ray releases
@@ -120,7 +121,7 @@ def build_signals(film: dict, cut_label: str, runtime_secs: Optional[int],
     return Signals(
         title=film["title"],
         year=film["year"],
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=variant,
         runtime=float(runtime_secs) if runtime_secs else None,
         source_format="Blu-ray",

@@ -14,15 +14,16 @@ import logging
 from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.bluray_com")
 
 
 class BlurayComProvider(MetadataProvider):
     name = "bluray_com"
-    media = {Medium.MOVIE, Medium.TV}
+    media = {MediaType.MOVIE, MediaType.TV}
 
     def __init__(self) -> None:
         from metadatarr.client import BlurayComClient
@@ -54,7 +55,7 @@ class BlurayComProvider(MetadataProvider):
         cand_signals = Signals(
             title=top.title,
             year=top.year,
-            medium=signals.medium or Medium.MOVIE,
+            medium=signals.medium or MediaType.MOVIE,
             source_format="Blu-ray",
         )
         quality = match_quality(signals, cand_signals)

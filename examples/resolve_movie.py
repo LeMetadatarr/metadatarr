@@ -4,7 +4,7 @@ Shows how to fan a noisy local row out to every active movie provider and
 consolidate their answers into a single canonical record.
 """
 from metadatarr.resolve import (
-    Medium,
+    MediaType,
     Signals,
     active_providers,
     consolidate,
@@ -13,10 +13,10 @@ from metadatarr.resolve import (
 
 
 def main() -> None:
-    local = Signals(title="Inception", year=2010, medium=Medium.MOVIE)
+    local = Signals(title="Inception", year=2010, medium=MediaType.MOVIE)
 
     print("--- active movie providers ---")
-    providers = active_providers(medium=Medium.MOVIE)
+    providers = active_providers(medium=MediaType.MOVIE)
     for p in providers:
         print(f"  {p.name}  media={sorted(m.value for m in p.media) or '*'}")
 

@@ -21,7 +21,7 @@ What this script demonstrates:
      identifiers (barcode, matrix), community stats (have/want/rating)
   3. search() for soundtrack vinyl — plain audio format search, no filter needed
   4. get_master() + get_master_versions() — all regional pressings of a title
-  5. Medium.MUSIC_VIDEO in Signals — how to model music videos for the resolver
+  5. MediaType.MUSIC_VIDEO in Signals — how to model music videos for the resolver
 
 No authentication required.  Discogs enforces 60 req/min with a token,
 25 req/min without.  The client adds a 2.5-second sleep automatically.
@@ -38,7 +38,8 @@ from typing import List, Optional
 
 from metadatarr.client import DiscogsClient
 from metadatarr.models import DiscogsRelease, DiscogsSearchHit
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 
 # ---------------------------------------------------------------------------
@@ -231,25 +232,25 @@ def section_soundtrack_vinyl(title: str, client: DiscogsClient) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 5. Medium.MUSIC_VIDEO in Signals
+# 5. MediaType.MUSIC_VIDEO in Signals
 # ---------------------------------------------------------------------------
 
 def section_signals() -> None:
-    _section("Medium.MUSIC_VIDEO in Signals (offline)")
+    _section("MediaType.MUSIC_VIDEO in Signals (offline)")
     print("  Music videos are a distinct medium from audio tracks.")
-    print("  Use Medium.MUSIC_VIDEO when resolving concert films or official MVs.\n")
+    print("  Use MediaType.MUSIC_VIDEO when resolving concert films or official MVs.\n")
 
     s = Signals(
         title="In Case You Didn't Feel Like Showing Up",
         artist="Ministry",
         year=1991,
-        medium=Medium.MUSIC_VIDEO,
+        medium=MediaType.MUSIC_VIDEO,
         source_format="Laserdisc",
         country="US",
     )
     print(f"  title         : {s.title}")
     print(f"  artist        : {s.artist}")
-    print(f"  medium        : {s.medium.value!r}  ← Medium.MUSIC_VIDEO")
+    print(f"  medium        : {s.medium.value!r}  ← MediaType.MUSIC_VIDEO")
     print(f"  source_format : {s.source_format}")
     print(f"  country       : {s.country}")
     print(f"\n  The Discogs provider handles MUSIC_VIDEO (and MUSIC, OTHER).")
@@ -296,8 +297,8 @@ def main() -> None:
     section_soundtrack_vinyl("Blade Runner", client)
     time.sleep(2.5)
 
-    # 6. Medium.MUSIC_VIDEO — offline, no HTTP
-    _banner("Signals: Medium.MUSIC_VIDEO")
+    # 6. MediaType.MUSIC_VIDEO — offline, no HTTP
+    _banner("Signals: MediaType.MUSIC_VIDEO")
     section_signals()
 
     print()

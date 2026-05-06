@@ -14,7 +14,7 @@ cross-platform identity assertions. These tests load that file directly
 from __future__ import annotations
 
 from metadatarr.resolve.entities import EntityKind
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab.models import ExternalIds
 from metadatarr.resolve.mappings import (
     MappingStore,
     _load_file,

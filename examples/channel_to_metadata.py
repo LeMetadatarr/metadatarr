@@ -33,7 +33,7 @@ from typing import Optional
 
 from tutubo import Channel, classify_video_dict
 
-from metadatarr.resolve import Medium, Signals, consolidate, search
+from metadatarr.resolve import MediaType, Signals, consolidate, search
 from metadatarr.resolve.base import ProviderMatch
 
 CHANNEL_URL = "https://www.youtube.com/@Mosfilm_eng"
@@ -137,8 +137,8 @@ def _fetch_videos(channel_url: str, max_videos: int) -> list:
     return videos
 
 
-def _infer_medium(video) -> Medium:
-    """Use tutubo's classifier to derive a metadatarr Medium from a Video object."""
+def _infer_medium(video) -> MediaType:
+    """Use tutubo's classifier to derive a metadatarr MediaType from a Video object."""
     ctype = classify_video_dict({
         "title":       video.title or "",
         "description": getattr(video, "description", "") or "",
@@ -147,14 +147,14 @@ def _infer_medium(video) -> Medium:
     })
     medium_str = ctype.to_medium()
     try:
-        return Medium(medium_str)
+        return MediaType(medium_str)
     except ValueError:
-        return Medium.OTHER
+        return MediaType.OTHER
 
 
 def _resolve_title(clean_title: str,
                    year: Optional[int],
-                   medium: Medium = Medium.OTHER) -> tuple[list, list[tuple[float, ProviderMatch]]]:
+                   medium: MediaType = MediaType.OTHER) -> tuple[list, list[tuple[float, ProviderMatch]]]:
     """Search all active providers and return (raw_candidates, ranked_scored)."""
     sig        = Signals(title=clean_title, year=year, medium=medium)
     candidates = search(sig)
@@ -189,7 +189,7 @@ def _process(channel_url: str, max_videos: int) -> list[ChannelFilmRecord]:
         accepted_candidates = [m for score, m in ranked if score >= SCORE_THRESHOLD]
 
         if accepted_candidates:
-            sig    = Signals(title=clean, year=year, medium=Medium.MOVIE)
+            sig    = Signals(title=clean, year=year, medium=MediaType.MOVIE)
             result = consolidate(accepted_candidates, local=sig)
             ids    = result.external_ids
             best_score = ranked[0][0] if ranked else 0.0

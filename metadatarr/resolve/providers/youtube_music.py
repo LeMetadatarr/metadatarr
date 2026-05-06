@@ -32,8 +32,9 @@ from tutubo import search_yt_music
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.youtube_music")
 
@@ -79,7 +80,7 @@ def _album_ids(top: dict) -> tuple[Optional[str], Optional[str], Optional[str]]:
 
 class YouTubeMusicProvider(MetadataProvider):
     name = "youtube_music"
-    media = {Medium.MUSIC}
+    media = {MediaType.MUSIC}
 
     def is_available(self) -> bool:
         return True
@@ -87,7 +88,7 @@ class YouTubeMusicProvider(MetadataProvider):
     def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
         if not signals.title:
             return None
-        if signals.medium and signals.medium != Medium.MUSIC:
+        if signals.medium and signals.medium != MediaType.MUSIC:
             return None
 
         try:
@@ -152,7 +153,7 @@ class YouTubeMusicProvider(MetadataProvider):
                 artist=artist_name,
                 year=_safe_year(top.get("year")),
                 runtime=runtime,
-                medium=Medium.MUSIC,
+                medium=MediaType.MUSIC,
             ),
             external_ids=ExternalIds(extra=extra),
             relations=relations,

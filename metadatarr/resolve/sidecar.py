@@ -27,7 +27,7 @@ from metadatarr.resolve.entities import (
     EntityRecord,
     EntitySidecar,
 )
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab.models import ExternalIds
 
 
 # ---------------------------------------------------------------------------

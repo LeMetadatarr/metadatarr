@@ -12,32 +12,27 @@ Demonstrates:
 - merged() picks up edition alongside variant_kind
 - No network required.
 """
-from metadatarr.resolve.signals import (
-    Medium,
-    Signals,
-    VariantKind,
-    compare,
-    merged,
-    signal_hash,
-)
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, compare_signals as compare, merge_signals as merged, signal_hash
 
 
 def story_a_standard_vs_deluxe() -> None:
     print("=== A: standard vs deluxe ===")
 
+    # Canonical edition: variant_kind=None per axiom 3 (absence is not a value).
     standard = Signals(
         title="Midnights",
         artist="Taylor Swift",
         year=2022,
-        medium=Medium.MUSIC,
-        variant_kind=VariantKind.STANDARD,
+        medium=MediaType.MUSIC,
+        variant_kind=None,
     )
 
     deluxe = Signals(
         title="Midnights",
         artist="Taylor Swift",
         year=2022,
-        medium=Medium.MUSIC,
+        medium=MediaType.MUSIC,
         variant_kind=VariantKind.DELUXE,
         edition="3am Edition",
     )
@@ -56,7 +51,7 @@ def story_b_free_text_edition() -> None:
         title="Kid A",
         artist="Radiohead",
         year=2000,
-        medium=Medium.MUSIC,
+        medium=MediaType.MUSIC,
     )
 
     # A promotional double-LP pressing — no specific enum value fits
@@ -64,7 +59,7 @@ def story_b_free_text_edition() -> None:
         title="Kid A",
         artist="Radiohead",
         year=2000,
-        medium=Medium.MUSIC,
+        medium=MediaType.MUSIC,
         variant_kind=VariantKind.OTHER,
         edition="UK Promo Double LP",
         source_format="Vinyl",

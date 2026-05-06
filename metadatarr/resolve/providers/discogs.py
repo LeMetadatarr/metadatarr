@@ -32,8 +32,9 @@ import os
 from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.discogs")
 
@@ -43,7 +44,7 @@ _VIDEO_FORMATS = ("Blu-ray", "DVD", "VHS", "Laserdisc", "HD DVD", "UHD Blu-ray")
 
 class DiscogsProvider(MetadataProvider):
     name = "discogs"
-    media = {Medium.MUSIC_VIDEO, Medium.MUSIC, Medium.OTHER}
+    media = {MediaType.MUSIC_VIDEO, MediaType.MUSIC, MediaType.GENERIC}
 
     def __init__(self, token: Optional[str] = None) -> None:
         from metadatarr.client import DiscogsClient
@@ -58,7 +59,7 @@ class DiscogsProvider(MetadataProvider):
 
         hits = []
         try:
-            if signals.medium == Medium.MUSIC_VIDEO or signals.source_format in _VIDEO_FORMATS:
+            if signals.medium == MediaType.MUSIC_VIDEO or signals.source_format in _VIDEO_FORMATS:
                 # Concert film / music video: search video formats
                 fmt = signals.source_format if signals.source_format in _VIDEO_FORMATS else "Laserdisc"
                 hits = self._client.search_video(signals.title, fmt=fmt)
@@ -84,7 +85,7 @@ class DiscogsProvider(MetadataProvider):
             title=top.title,
             year=top.year,
             country=top.country,
-            medium=signals.medium or Medium.MUSIC,
+            medium=signals.medium or MediaType.MUSIC,
             source_format=resolved_fmt,
         )
         quality = match_quality(signals, cand_signals)

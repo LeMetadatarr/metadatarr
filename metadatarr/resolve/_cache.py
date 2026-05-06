@@ -17,11 +17,11 @@ from typing import TYPE_CHECKING, Optional, Tuple
 
 import hashlib
 
-from metadatarr.resolve.signals import Signals, signal_hash
+from mediavocab.models.signals import Signals, signal_hash
 
 if TYPE_CHECKING:
     from metadatarr.resolve.base import MetadataProvider, ProviderMatch
-    from metadatarr.resolve.external_ids import ExternalIds
+    from mediavocab.models import ExternalIds
 
 
 # A small sentinel that indicates "we asked, and the provider returned None".

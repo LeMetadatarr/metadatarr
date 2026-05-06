@@ -42,7 +42,7 @@ from typing import Optional
 
 from metadatarr.resolve import (
     ExternalIds,
-    Medium,
+    MediaType,
     Signals,
     active_providers,
     consolidate,
@@ -63,7 +63,7 @@ ARTIST = "Piratech"
 def _resolve_one(track_title: str, soundcloud_provider) -> dict:
     """Run the three-step resolution for a single track. Returns the
     final ``extra`` dict so the caller can pretty-print + diff."""
-    sig = Signals(title=track_title, artist=ARTIST, medium=Medium.MUSIC)
+    sig = Signals(title=track_title, artist=ARTIST, medium=MediaType.MUSIC)
 
     # Step 1: search SoundCloud.
     sc_match = soundcloud_provider.lookup(sig)
@@ -110,7 +110,7 @@ def main() -> None:
     print("  Cross-platform track resolution — derive at search time")
     print("=" * 78)
 
-    available = {p.name: p for p in active_providers(medium=Medium.MUSIC)}
+    available = {p.name: p for p in active_providers(medium=MediaType.MUSIC)}
     soundcloud = available.get("soundcloud")
     if soundcloud is None:
         print("\nThe SoundCloud provider is not active. Install it with:")

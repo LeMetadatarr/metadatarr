@@ -3,9 +3,9 @@
 User story: I want a YouTube URL I can pass directly to yt-dlp, mpv, or
 any other player for a movie or podcast episode.
 
-The YouTube provider runs on ``Medium.MOVIE``, ``Medium.TV``,
-``Medium.PODCAST``, and ``Medium.OTHER`` (it deliberately skips
-``Medium.MUSIC`` to avoid polluting music resolves with video noise).
+The YouTube provider runs on ``MediaType.MOVIE``, ``MediaType.TV``,
+``MediaType.PODCAST``, and ``MediaType.OTHER`` (it deliberately skips
+``MediaType.MUSIC`` to avoid polluting music resolves with video noise).
 It emits ``youtube_video_id`` (the upload ID) and ``youtube_channel_id``
 into ``ExternalIds.extra``.  ``ExternalIds.streams`` constructs the full
 ``https://www.youtube.com/watch?v=<id>`` URL for you.
@@ -24,22 +24,22 @@ from __future__ import annotations
 
 import sys
 
-from metadatarr.resolve import Medium, Signals, active_providers, consolidate, search
+from metadatarr.resolve import MediaType, Signals, active_providers, consolidate, search
 
 _MEDIUM_MAP = {
-    "movie":   Medium.MOVIE,
-    "tv":      Medium.TV,
-    "podcast": Medium.PODCAST,
-    "other":   Medium.OTHER,
+    "movie":   MediaType.MOVIE,
+    "tv":      MediaType.TV,
+    "podcast": MediaType.PODCAST,
+    "other":   MediaType.OTHER,
 }
 
 DEMOS = [
-    ("Alien",              Medium.MOVIE),
-    ("Hardcore History",   Medium.PODCAST),
+    ("Alien",              MediaType.MOVIE),
+    ("Hardcore History",   MediaType.PODCAST),
 ]
 
 
-def _resolve_youtube_url(title: str, medium: Medium) -> list:
+def _resolve_youtube_url(title: str, medium: MediaType) -> list:
     sig = Signals(title=title, medium=medium)
     candidates = search(sig)
     if not candidates:
@@ -49,7 +49,7 @@ def _resolve_youtube_url(title: str, medium: Medium) -> list:
             if s.platform in ("youtube", "youtube_music")]
 
 
-def _run(title: str, medium: Medium) -> None:
+def _run(title: str, medium: MediaType) -> None:
     print(f"\n  [{medium.value}]  {title}")
     streams = _resolve_youtube_url(title, medium)
     if not streams:
@@ -75,7 +75,7 @@ def main() -> None:
     if len(sys.argv) >= 2:
         title  = sys.argv[1]
         medium = _MEDIUM_MAP.get((sys.argv[2] if len(sys.argv) > 2 else "movie").lower(),
-                                 Medium.MOVIE)
+                                 MediaType.MOVIE)
         _run(title, medium)
     else:
         for title, medium in DEMOS:

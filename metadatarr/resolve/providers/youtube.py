@@ -7,9 +7,9 @@ Treating ``video_id`` as a music-track id would be a category error.
 
 This provider is therefore intentionally narrow:
 
-- It only emits :class:`Medium`-aware matches for content that's
+- It only emits :class:`MediaType`-aware matches for content that's
   **original to YouTube** — channels, vlogs, video essays, original-to-YT
-  podcasts, etc. — and even then it never claims ``Medium.MUSIC``.
+  podcasts, etc. — and even then it never claims ``MediaType.MUSIC``.
 - It surfaces ``youtube_video_id`` (the upload) and
   ``youtube_channel_id`` (the channel that uploaded it).
 - It emits :class:`EntityKind.CHANNEL` relations, never ``ARTIST`` or
@@ -29,8 +29,9 @@ from tutubo.content_type import ContentType
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.youtube")
 
@@ -40,12 +41,12 @@ _MUSIC_CONTENT_TYPES = {ContentType.MUSIC_AUDIO, ContentType.MUSIC_VIDEO, Conten
 class YouTubeProvider(MetadataProvider):
     """Regular YouTube — channel + upload identifiers only.
 
-    Skips ``Medium.MUSIC`` lookups entirely; those go through the
+    Skips ``MediaType.MUSIC`` lookups entirely; those go through the
     ``youtube_music`` provider.
     """
 
     name = "youtube"
-    media = {Medium.MOVIE, Medium.TV, Medium.PODCAST, Medium.OTHER}
+    media = {MediaType.MOVIE, MediaType.TV, MediaType.PODCAST, MediaType.GENERIC}
 
     def is_available(self) -> bool:
         return True
@@ -53,7 +54,7 @@ class YouTubeProvider(MetadataProvider):
     def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
         if not signals.title:
             return None
-        if signals.medium == Medium.MUSIC:
+        if signals.medium == MediaType.MUSIC:
             return None
 
         try:
@@ -80,7 +81,7 @@ class YouTubeProvider(MetadataProvider):
         ctype = classify_video_dict(top)
 
         # Skip music content — let youtube_music provider handle it.
-        if ctype in _MUSIC_CONTENT_TYPES and signals.medium != Medium.MUSIC_VIDEO:
+        if ctype in _MUSIC_CONTENT_TYPES and signals.medium != MediaType.MUSIC_VIDEO:
             return None
 
         extra = {}
@@ -101,12 +102,12 @@ class YouTubeProvider(MetadataProvider):
                 external_ids=ExternalIds(extra=channel_extra),
             )]
 
-        # Derive Medium from ContentType so the signal is populated rather than absent.
+        # Derive MediaType from ContentType so the signal is populated rather than absent.
         inferred_medium_str = ctype.to_medium()
         try:
-            inferred_medium = Medium(inferred_medium_str)
+            inferred_medium = MediaType(inferred_medium_str)
         except ValueError:
-            inferred_medium = Medium.OTHER
+            inferred_medium = MediaType.GENERIC
 
         return ProviderMatch(
             provider=self.name,

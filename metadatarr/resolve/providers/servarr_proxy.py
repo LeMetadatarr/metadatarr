@@ -20,8 +20,9 @@ from typing import Optional
 from metadatarr.client import ArrMetadataClient, OpenLibraryClient
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.servarr_proxy")
 
@@ -30,7 +31,7 @@ class ServarrProxyProvider(MetadataProvider):
     """Single provider that dispatches to skyhook / radarr / lidarr / OpenLibrary by medium."""
 
     name = "metadatarr"
-    media = {Medium.MOVIE, Medium.TV, Medium.MUSIC, Medium.BOOK}
+    media = {MediaType.MOVIE, MediaType.TV, MediaType.MUSIC, MediaType.BOOK}
 
     def __init__(self) -> None:
         self._client = ArrMetadataClient()
@@ -43,13 +44,13 @@ class ServarrProxyProvider(MetadataProvider):
         if not signals.title:
             return None
         try:
-            if signals.medium == Medium.MOVIE:
+            if signals.medium == MediaType.MOVIE:
                 return self._lookup_movie(signals)
-            if signals.medium == Medium.TV:
+            if signals.medium == MediaType.TV:
                 return self._lookup_tv(signals)
-            if signals.medium == Medium.MUSIC and signals.artist:
+            if signals.medium == MediaType.MUSIC and signals.artist:
                 return self._lookup_artist(signals)
-            if signals.medium == Medium.BOOK:
+            if signals.medium == MediaType.BOOK:
                 return self._lookup_book(signals)
             if signals.medium is not None:
                 return None
@@ -67,7 +68,7 @@ class ServarrProxyProvider(MetadataProvider):
         if not results:
             return None
         top = results[0]
-        cand = Signals(title=top.title, year=top.year, medium=Medium.MOVIE)
+        cand = Signals(title=top.title, year=top.year, medium=MediaType.MOVIE)
         return ProviderMatch(
             provider=self.name,
             confidence=0.85 * match_quality(signals, cand),
@@ -82,7 +83,7 @@ class ServarrProxyProvider(MetadataProvider):
         if not results:
             return None
         top = results[0]
-        cand = Signals(title=top.title, year=top.year, medium=Medium.TV)
+        cand = Signals(title=top.title, year=top.year, medium=MediaType.TV)
         return ProviderMatch(
             provider=self.name,
             confidence=0.85 * match_quality(signals, cand),
@@ -130,7 +131,7 @@ class ServarrProxyProvider(MetadataProvider):
             title=top.title,
             year=top.first_publish_year,
             language=language,
-            medium=Medium.BOOK,
+            medium=MediaType.BOOK,
         )
         return ProviderMatch(
             provider=self.name,
@@ -150,7 +151,7 @@ class ServarrProxyProvider(MetadataProvider):
             name=top.name,
             external_ids=ExternalIds(musicbrainz_artist=top.id),
         )]}
-        cand = Signals(title=top.name, artist=top.name, medium=Medium.MUSIC)
+        cand = Signals(title=top.name, artist=top.name, medium=MediaType.MUSIC)
         return ProviderMatch(
             provider=self.name,
             confidence=0.75 * match_quality(signals, cand),

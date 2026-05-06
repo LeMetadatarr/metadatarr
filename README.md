@@ -14,7 +14,7 @@ then fuse the answers into a single, de-duplicated record with a canonical set o
 ```python
 from metadatarr.resolve import resolve, Signals, Medium
 
-result = resolve(Signals(title="Inception", year=2010, medium=Medium.MOVIE))
+result = resolve(Signals(title="Inception", year=2010, medium=MediaType.MOVIE))
 
 print(result.external_ids.tmdb_movie)   # 27205
 print(result.external_ids.imdb)         # tt1375666
@@ -104,7 +104,7 @@ platform, the resolver fans out, conflict-checks, and merges:
 from metadatarr.resolve import resolve, Signals, Medium
 
 # A basic lookup — metadatarr queries all active providers concurrently
-result = resolve(Signals(title="OK Computer", artist="Radiohead", medium=Medium.MUSIC))
+result = resolve(Signals(title="OK Computer", artist="Radiohead", medium=MediaType.MUSIC))
 
 print(result.external_ids.musicbrainz_release_group)  # MusicBrainz MBID
 print(result.external_ids.wikidata)                   # Wikidata Q-id
@@ -126,7 +126,7 @@ from metadatarr.resolve import Signals, Medium
 signals = Signals(
     title    = "Alien",
     year     = 1979,
-    medium   = Medium.MOVIE,
+    medium   = MediaType.MOVIE,
     runtime  = 6900,          # seconds — used for cut-disambiguation
     language = "en",
     country  = "US",
@@ -147,7 +147,7 @@ from metadatarr.resolve.entities import Role
 result = resolve(Signals(
     title           = "Alien",
     year            = 1979,
-    medium          = Medium.MOVIE,
+    medium          = MediaType.MOVIE,
     include_variants= True,       # ← triggers second pass
 ))
 
@@ -203,7 +203,7 @@ All providers are keyless. Optional-dep providers silently disable if the packag
 | `metal_archives` | Encyclopaedia Metallum | Music | `pymetal` |
 
 **YouTube vs YouTube Music** — these are intentionally separate providers.
-`youtube` only emits channel IDs and refuses `Medium.MUSIC` lookups (video IDs aren't
+`youtube` only emits channel IDs and refuses `MediaType.MUSIC` lookups (video IDs aren't
 canonical music identities). `youtube_music` has proper entity records — stable `browseId`
 values for artists and albums that are safe to treat as cross-references.
 
@@ -247,7 +247,7 @@ from metadatarr.resolve.signals import Medium, Signals
 
 class MyProvider(MetadataProvider):
     name  = "my_provider"
-    media = {Medium.MUSIC}
+    media = {MediaType.MUSIC}
 
     def is_available(self) -> bool:
         return True
@@ -261,7 +261,7 @@ class MyProvider(MetadataProvider):
         return ProviderMatch(
             provider   = self.name,
             confidence = 0.7,
-            signals    = Signals(title=result["title"], medium=Medium.MUSIC),
+            signals    = Signals(title=result["title"], medium=MediaType.MUSIC),
             external_ids = ExternalIds(
                 musicbrainz_artist = result.get("mbid"),
                 extra = {"my_platform_id": str(result["id"])},
@@ -290,7 +290,7 @@ from metadatarr.resolve.providers.bluray_com import BlurayComProvider
 from metadatarr.resolve.providers.dvdcompare import DVDCompareProvider
 from metadatarr.resolve.signals import Signals, Medium
 
-signals = Signals(title="Moon", year=2009, medium=Medium.MOVIE)
+signals = Signals(title="Moon", year=2009, medium=MediaType.MOVIE)
 
 bluray = BlurayComProvider()
 match  = bluray.lookup(signals)

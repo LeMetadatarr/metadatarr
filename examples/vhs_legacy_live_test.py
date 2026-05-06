@@ -84,7 +84,7 @@ def run(items: List[Dict[str, Any]]) -> None:
         sigs    = signals_from_title(title)
 
         year_s  = str(parsed.year) if parsed.year else "-"
-        cut_s   = parsed.cut_kind.value if parsed.cut_kind else ""
+        cut_s   = parsed.variant_kind.value if parsed.variant_kind else ""
         fmt_s   = parsed.source_format or ""
         cutfmt  = "/".join(filter(None, [cut_s, fmt_s])) or "-"
 

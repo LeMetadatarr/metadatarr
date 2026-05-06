@@ -54,6 +54,14 @@ from metadatarr.resolve.providers import servarr_proxy     # noqa: F401, E402
 from metadatarr.resolve.providers import audiodb           # noqa: F401, E402
 from metadatarr.resolve.providers import tvmaze            # noqa: F401, E402
 from metadatarr.resolve.providers import pyfanedit         # noqa: F401, E402
+# Generic external-API providers (lifted from media-archivist)
+from metadatarr.resolve.providers import anilist           # noqa: F401, E402
+from metadatarr.resolve.providers import jikan             # noqa: F401, E402
+from metadatarr.resolve.providers import google_books      # noqa: F401, E402
+from metadatarr.resolve.providers import librivox          # noqa: F401, E402
+from metadatarr.resolve.providers import podcast_index     # noqa: F401, E402
+from metadatarr.resolve.providers import tmdb              # noqa: F401, E402
+from metadatarr.resolve.providers import arr               # noqa: F401, E402
 
 
 def _try_register(module_name: str) -> None:

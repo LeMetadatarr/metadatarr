@@ -37,21 +37,10 @@ from metadatarr.resolve.entities import (
     entities_by_kind,
     upsert_entity,
 )
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import (
-    ARTIST_FUZZY_MIN,
-    Medium,
-    RUNTIME_TOLERANCE_S,
-    SignalConflict,
-    Signals,
-    TITLE_FUZZY_MIN,
-    YEAR_TOLERANCE,
-    compare,
-    fuzzy_ratio,
-    match_quality,
-    merged,
-    signal_hash,
-)
+from mediavocab.models import ExternalIds
+from mediavocab.text import ARTIST_MIN as ARTIST_FUZZY_MIN, TITLE_MIN as TITLE_FUZZY_MIN, YEAR_WINDOW as YEAR_TOLERANCE, fuzzy_ratio
+from mediavocab import MediaType
+from mediavocab.models.signals import RUNTIME_TOLERANCE_S, SignalConflict, Signals, compare_signals as compare, match_quality, merge_signals as merged, signal_hash
 
 # Activate disk-backed HTTP cache if METADATARR_HTTP_CACHE is set.
 from metadatarr.resolve import _http_cache as _http_cache  # noqa: F401
@@ -63,7 +52,7 @@ from metadatarr.resolve import providers as _providers  # noqa: F401
 
 __all__ = [
     # signals
-    "Medium",
+    "MediaType",
     "Signals",
     "SignalConflict",
     "compare",

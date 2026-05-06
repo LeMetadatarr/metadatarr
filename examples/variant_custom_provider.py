@@ -21,8 +21,9 @@ from typing import List, Optional
 import metadatarr.resolve.providers  # trigger built-in self-registration
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register, resolve
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, VariantKind
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals
 
 # ---------------------------------------------------------------------------
 # Sample local catalogue (normally you'd load this from a real file)
@@ -58,7 +59,7 @@ class LocalCatalogueProvider(MetadataProvider):
     """Variant-only provider backed by a local JSON file."""
 
     name = "local_catalogue"
-    media = {Medium.MOVIE}
+    media = {MediaType.MOVIE}
 
     def __init__(self, catalogue: list) -> None:
         self._by_imdb: dict[str, list[dict]] = {}
@@ -102,7 +103,7 @@ def main() -> None:
     result = resolve(Signals(
         title="The Matrix",
         year=1999,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         include_variants=True,
     ))
 
@@ -123,7 +124,7 @@ def main() -> None:
     result2 = resolve(Signals(
         title="Back to the Future",
         year=1985,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         include_variants=True,
     ))
     releases2 = result2.relations.get(Role.RELEASE, [])

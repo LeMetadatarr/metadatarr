@@ -31,7 +31,7 @@ from typing import Iterable, List
 
 from metadatarr.resolve import (
     ExternalIds,
-    Medium,
+    MediaType,
     ProviderMatch,
     ResolveResult,
     Signals,
@@ -116,7 +116,7 @@ def _print_merge_attribution(matches: List[ProviderMatch],
 # ---------------------------------------------------------------------------
 
 def _spotlit_providers() -> List:
-    available = {p.name: p for p in active_providers(medium=Medium.MUSIC)}
+    available = {p.name: p for p in active_providers(medium=MediaType.MUSIC)}
     chosen = [available[name] for name in TARGET if name in available]
     missing = [name for name in TARGET if name not in available]
     if missing:
@@ -138,7 +138,7 @@ def main() -> None:
         print("\n" + "=" * 78)
         print(f"  {artist} — {title}")
         print("=" * 78)
-        signals = Signals(title=title, artist=artist, medium=Medium.MUSIC)
+        signals = Signals(title=title, artist=artist, medium=MediaType.MUSIC)
 
         matches: List[ProviderMatch] = []
         for provider in providers:
@@ -163,7 +163,7 @@ def main() -> None:
         # search-by-title path missed (e.g. Wikidata's claim map for an
         # MBID we just learned).
         before = result.external_ids.model_dump(exclude_none=True)
-        enriched = enrich(result.external_ids, medium=Medium.MUSIC)
+        enriched = enrich(result.external_ids, medium=MediaType.MUSIC)
         after = enriched.model_dump(exclude_none=True)
         gained = {
             k: v for k, v in after.items()

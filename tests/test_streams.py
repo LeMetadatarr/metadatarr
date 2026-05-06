@@ -1,7 +1,7 @@
 """Tests for ExternalIds.streams and the Stream model."""
 import pytest
-from metadatarr.models import Stream
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab.models import Stream
+from mediavocab.models import ExternalIds
 
 
 # ---------------------------------------------------------------------------

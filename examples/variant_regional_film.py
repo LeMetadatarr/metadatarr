@@ -11,20 +11,15 @@ Also covers:
   set by the caller.
 - No network required.
 """
-from metadatarr.resolve.signals import (
-    Medium,
-    Signals,
-    VariantKind,
-    compare,
-    signal_hash,
-)
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, compare_signals as compare, signal_hash
 
 
 def main() -> None:
     us_theatrical = Signals(
         title="Alien",
         year=1979,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         country="US",          # production origin — set by providers
         variant_kind=VariantKind.THEATRICAL,
         region="US",           # where this copy was released
@@ -33,7 +28,7 @@ def main() -> None:
     jp_theatrical = Signals(
         title="Alien",
         year=1979,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         country="US",          # same production country
         variant_kind=VariantKind.THEATRICAL,
         region="JP",           # Japanese regional release
@@ -57,7 +52,7 @@ def main() -> None:
     no_region = Signals(
         title="Alien",
         year=1979,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         country="US",
         variant_kind=VariantKind.THEATRICAL,
     )
@@ -69,7 +64,7 @@ def main() -> None:
     jp_directors = Signals(
         title="Blade Runner",
         year=1982,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=VariantKind.DIRECTORS,
         region="JP",
         source_format="Blu-ray",

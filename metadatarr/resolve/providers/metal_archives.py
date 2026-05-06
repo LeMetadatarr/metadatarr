@@ -19,15 +19,16 @@ from typing import List, Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.metal_archives")
 
 
 class MetalArchivesProvider(MetadataProvider):
     name = "metal_archives"
-    media = {Medium.MUSIC}
+    media = {MediaType.MUSIC}
 
     def __init__(self) -> None:
         try:
@@ -52,7 +53,7 @@ class MetalArchivesProvider(MetadataProvider):
     def _search(self, signals: Signals) -> List:
         if not (self._available and signals.title and signals.artist):
             return []
-        if signals.medium and signals.medium != Medium.MUSIC:
+        if signals.medium and signals.medium != MediaType.MUSIC:
             return []
         try:
             return list(self._client.search_songs(
@@ -67,7 +68,7 @@ class MetalArchivesProvider(MetadataProvider):
         match_signals = Signals(
             title=getattr(hit, "title", None) or signals.title,
             artist=getattr(hit, "band_name", None),
-            medium=Medium.MUSIC,
+            medium=MediaType.MUSIC,
         )
 
         external = ExternalIds(

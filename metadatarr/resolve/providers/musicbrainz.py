@@ -8,8 +8,9 @@ import requests
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.musicbrainz")
 _BASE = "https://musicbrainz.org/ws/2"
@@ -18,7 +19,7 @@ _UA = "metadatarr/0.1 (+https://github.com/TigreGotico/metadatarr)"
 
 class MusicBrainzProvider(MetadataProvider):
     name = "musicbrainz"
-    media = {Medium.MUSIC}
+    media = {MediaType.MUSIC}
 
     def is_available(self) -> bool:
         return True
@@ -26,7 +27,7 @@ class MusicBrainzProvider(MetadataProvider):
     def _search(self, signals: Signals) -> List[dict]:
         if not (signals.title and signals.artist):
             return []
-        if signals.medium and signals.medium != Medium.MUSIC:
+        if signals.medium and signals.medium != MediaType.MUSIC:
             return []
         params = {
             "query": f'recording:"{signals.title}" AND artist:"{signals.artist}"',
@@ -90,7 +91,7 @@ class MusicBrainzProvider(MetadataProvider):
             year=year,
             country=country,
             runtime=runtime_s,
-            medium=Medium.MUSIC,
+            medium=MediaType.MUSIC,
         )
         return ProviderMatch(
             provider=self.name,

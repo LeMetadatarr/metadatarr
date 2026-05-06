@@ -9,14 +9,8 @@ User stories:
 
 No network requests are made — this is a pure signal-layer demo.
 """
-from metadatarr.resolve.signals import (
-    Medium,
-    Signals,
-    VariantKind,
-    compare,
-    merged,
-    signal_hash,
-)
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, compare_signals as compare, merge_signals as merged, signal_hash
 
 
 def story_a_directors_cut() -> None:
@@ -25,25 +19,25 @@ def story_a_directors_cut() -> None:
     local = Signals(
         title="Blade Runner",
         year=1982,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=VariantKind.DIRECTORS,
     )
 
     theatrical = Signals(
         title="Blade Runner",
         year=1982,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=VariantKind.THEATRICAL,
     )
 
     directors = Signals(
         title="Blade Runner",
         year=1982,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=VariantKind.DIRECTORS,
     )
 
-    no_variant = Signals(title="Blade Runner", year=1982, medium=Medium.MOVIE)
+    no_variant = Signals(title="Blade Runner", year=1982, medium=MediaType.MOVIE)
 
     conflicts_theatrical = compare(local, theatrical)
     conflicts_directors  = compare(local, directors)
@@ -57,21 +51,25 @@ def story_a_directors_cut() -> None:
 def story_b_regional_pressing() -> None:
     print("\n=== B: Japanese bonus-tracks edition vs US standard ===")
 
+    # The Japanese edition adds bonus tracks; mediavocab spec §4.2 excludes
+    # BONUS_TRACKS from VariantKind, so we use DELUXE (the closest first-class
+    # value) plus an `edition` note describing the specifics.
     jp_edition = Signals(
         title="OK Computer",
         artist="Radiohead",
-        medium=Medium.MUSIC,
-        variant_kind=VariantKind.BONUS_TRACKS,
+        medium=MediaType.MUSIC,
+        variant_kind=VariantKind.DELUXE,
         region="JP",
-        edition="Japanese edition",
+        edition="Japanese edition (bonus tracks)",
         source_format="CD",
     )
 
+    # Canonical edition: variant_kind=None per axiom 3.
     us_standard = Signals(
         title="OK Computer",
         artist="Radiohead",
-        medium=Medium.MUSIC,
-        variant_kind=VariantKind.STANDARD,
+        medium=MediaType.MUSIC,
+        variant_kind=None,
         region="US",
         source_format="CD",
     )
@@ -89,7 +87,7 @@ def story_b_regional_pressing() -> None:
 def story_c_merge() -> None:
     print("\n=== C: merged() preserves variant signals ===")
 
-    base = Signals(title="The Thing", year=1982, medium=Medium.MOVIE)
+    base = Signals(title="The Thing", year=1982, medium=MediaType.MOVIE)
     detail = Signals(
         variant_kind=VariantKind.REMASTERED,
         source_format="4K",

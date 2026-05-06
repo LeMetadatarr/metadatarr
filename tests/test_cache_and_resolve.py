@@ -7,7 +7,7 @@ import pytest
 
 from metadatarr.resolve import (
     ExternalIds,
-    Medium,
+    MediaType,
     MetadataProvider,
     ProviderMatch,
     Signals,
@@ -30,7 +30,7 @@ class _Counted(MetadataProvider):
     def __init__(self, name: str, match: Optional[ProviderMatch] = None,
                  boom: bool = False, sleep: float = 0.0):
         self.name = name
-        self.media = {Medium.MOVIE}
+        self.media = {MediaType.MOVIE}
         self._match = match
         self._boom = boom
         self._sleep = sleep
@@ -53,14 +53,14 @@ class _Counted(MetadataProvider):
 def _match(name: str, conf: float = 0.8, **ext) -> ProviderMatch:
     return ProviderMatch(
         provider=name, confidence=conf,
-        signals=Signals(title="X", medium=Medium.MOVIE),
+        signals=Signals(title="X", medium=MediaType.MOVIE),
         external_ids=ExternalIds(**ext),
     )
 
 
 def test_cached_lookup_memoises_hit():
     p = _Counted("c1", match=_match("c1", tmdb_movie=1))
-    s = Signals(title="X", medium=Medium.MOVIE)
+    s = Signals(title="X", medium=MediaType.MOVIE)
     a = cached_lookup(p, s)
     b = cached_lookup(p, s)
     assert a is b is not None
@@ -69,7 +69,7 @@ def test_cached_lookup_memoises_hit():
 
 def test_cached_lookup_memoises_miss():
     p = _Counted("c2", match=None)
-    s = Signals(title="X", medium=Medium.MOVIE)
+    s = Signals(title="X", medium=MediaType.MOVIE)
     assert cached_lookup(p, s) is None
     assert cached_lookup(p, s) is None
     assert p.calls == 1
@@ -77,7 +77,7 @@ def test_cached_lookup_memoises_miss():
 
 def test_cached_lookup_swallows_provider_exception():
     p = _Counted("c3", boom=True)
-    s = Signals(title="X", medium=Medium.MOVIE)
+    s = Signals(title="X", medium=MediaType.MOVIE)
     assert cached_lookup(p, s) is None
     # Transient errors are NOT cached — the provider is retried on each call.
     assert cached_lookup(p, s) is None
@@ -94,7 +94,7 @@ def test_resolve_runs_providers_concurrently(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [slow_a, slow_b],
     )
-    s = Signals(title="X", medium=Medium.MOVIE)
+    s = Signals(title="X", medium=MediaType.MOVIE)
     t0 = time.perf_counter()
     result = resolve(s)
     elapsed = time.perf_counter() - t0
@@ -109,7 +109,7 @@ def test_resolve_uses_cache_on_repeat(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [p],
     )
-    s = Signals(title="X", medium=Medium.MOVIE)
+    s = Signals(title="X", medium=MediaType.MOVIE)
     resolve(s)
     resolve(s)
     assert p.calls == 1
@@ -120,7 +120,7 @@ def test_resolve_consumes_lookup_candidates(monkeypatch):
 
     class MultiProvider(MetadataProvider):
         name = "multi"
-        media = {Medium.MOVIE}
+        media = {MediaType.MOVIE}
 
         def is_available(self) -> bool:
             return True
@@ -132,12 +132,12 @@ def test_resolve_consumes_lookup_candidates(monkeypatch):
             return [
                 ProviderMatch(
                     provider=self.name, confidence=0.9,
-                    signals=Signals(title="X", year=2010, medium=Medium.MOVIE),
+                    signals=Signals(title="X", year=2010, medium=MediaType.MOVIE),
                     external_ids=ExternalIds(tmdb_movie=1),
                 ),
                 ProviderMatch(
                     provider=self.name, confidence=0.4,
-                    signals=Signals(title="X", year=2099, medium=Medium.MOVIE),
+                    signals=Signals(title="X", year=2099, medium=MediaType.MOVIE),
                     external_ids=ExternalIds(tmdb_movie=2),
                 ),
             ]
@@ -147,7 +147,7 @@ def test_resolve_consumes_lookup_candidates(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [p],
     )
-    result = resolve(Signals(title="X", year=2010, medium=Medium.MOVIE))
+    result = resolve(Signals(title="X", year=2010, medium=MediaType.MOVIE))
     accepted = [m.external_ids.tmdb_movie for m in result.accepted]
     assert 1 in accepted
     # Year 2099 conflicts with local 2010 → low-confidence candidate dropped.
@@ -159,5 +159,5 @@ def test_resolve_handles_no_providers(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [],
     )
-    result = resolve(Signals(title="X", medium=Medium.MOVIE))
+    result = resolve(Signals(title="X", medium=MediaType.MOVIE))
     assert result.accepted == []

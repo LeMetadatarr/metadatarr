@@ -16,8 +16,9 @@ Requires:
 import metadatarr.resolve.providers  # trigger provider self-registration
 from metadatarr.resolve.base import all_providers, enrich
 from metadatarr.resolve.entities import EntityKind, Role
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 # --- Star Wars: A New Hope ---
 KNOWN_IMDB = "tt0076759"
@@ -32,7 +33,7 @@ def path_1_via_resolve() -> None:
     result = resolve(Signals(
         title="Star Wars",
         year=1977,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         include_variants=True,
     ))
     print(f"  accepted : {[m.provider for m in result.accepted]}")
@@ -63,7 +64,7 @@ def path_2_manual_list_variants() -> None:
 
     variants = pyfanedit_provider.list_variants(
         known_ids,
-        signals=Signals(medium=Medium.MOVIE),
+        signals=Signals(medium=MediaType.MOVIE),
     )
     print(f"  {len(variants)} variant(s) for IMDb {KNOWN_IMDB}")
     for v in variants[:10]:

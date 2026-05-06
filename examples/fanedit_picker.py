@@ -24,7 +24,8 @@ from typing import List, Optional, Tuple
 import metadatarr.resolve.providers  # noqa: F401
 from metadatarr.resolve import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 FILM_TITLE = "Blade Runner"
 FILM_YEAR = 1982
@@ -63,7 +64,7 @@ def main() -> None:
     result = resolve(Signals(
         title=FILM_TITLE,
         year=FILM_YEAR,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         include_variants=True,
     ), max_workers=4)
 

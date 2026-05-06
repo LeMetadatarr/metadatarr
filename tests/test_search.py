@@ -5,7 +5,7 @@ import pytest
 
 from metadatarr.resolve import (
     ExternalIds,
-    Medium,
+    MediaType,
     MetadataProvider,
     ProviderMatch,
     Signals,
@@ -24,7 +24,7 @@ def _clear_cache():
 def _match(provider: str, conf: float, year: int = 2010, **ids) -> ProviderMatch:
     return ProviderMatch(
         provider=provider, confidence=conf,
-        signals=Signals(title="X", year=year, medium=Medium.MOVIE),
+        signals=Signals(title="X", year=year, medium=MediaType.MOVIE),
         external_ids=ExternalIds(**ids),
     )
 
@@ -32,7 +32,7 @@ def _match(provider: str, conf: float, year: int = 2010, **ids) -> ProviderMatch
 class _Stub(MetadataProvider):
     def __init__(self, name: str, candidates: List[ProviderMatch]):
         self.name = name
-        self.media = {Medium.MOVIE}
+        self.media = {MediaType.MOVIE}
         self._cands = candidates
 
     def is_available(self) -> bool:
@@ -52,7 +52,7 @@ def test_search_returns_ranked_union(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [a, b],
     )
-    out = search(Signals(title="X", medium=Medium.MOVIE))
+    out = search(Signals(title="X", medium=MediaType.MOVIE))
     assert [m.confidence for m in out] == sorted(
         [m.confidence for m in out], reverse=True,
     )
@@ -65,33 +65,33 @@ def test_search_empty_when_no_providers(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [],
     )
-    assert search(Signals(title="X", medium=Medium.MOVIE)) == []
+    assert search(Signals(title="X", medium=MediaType.MOVIE)) == []
 
 
 def test_search_filters_by_medium(monkeypatch):
     movie_only = _Stub("movie", [_match("movie", 0.9, tmdb_movie=1)])
-    movie_only.media = {Medium.MOVIE}
+    movie_only.media = {MediaType.MOVIE}
     music_only = _Stub("music", [_match("music", 0.9, tmdb_movie=99)])
-    music_only.media = {Medium.MUSIC}
+    music_only.media = {MediaType.MUSIC}
 
     def fake_active(medium=None):
-        if medium == Medium.MOVIE:
+        if medium == MediaType.MOVIE:
             return [movie_only]
-        if medium == Medium.MUSIC:
+        if medium == MediaType.MUSIC:
             return [music_only]
         return [movie_only, music_only]
 
     monkeypatch.setattr(
         "metadatarr.resolve.base.active_providers", fake_active,
     )
-    out = search(Signals(title="X", medium=Medium.MOVIE))
+    out = search(Signals(title="X", medium=MediaType.MOVIE))
     assert {m.provider for m in out} == {"movie"}
 
 
 def test_search_swallows_provider_exceptions(monkeypatch):
     class Boom(MetadataProvider):
         name = "boom"
-        media = {Medium.MOVIE}
+        media = {MediaType.MOVIE}
         def is_available(self): return True
         def lookup(self, s): return None
         def lookup_candidates(self, s):
@@ -102,7 +102,7 @@ def test_search_swallows_provider_exceptions(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [Boom(), good],
     )
-    out = search(Signals(title="X", medium=Medium.MOVIE))
+    out = search(Signals(title="X", medium=MediaType.MOVIE))
     # Boom contributed nothing; good still surfaces.
     assert [m.provider for m in out] == ["good"]
 
@@ -116,7 +116,7 @@ def test_search_compose_with_consolidate(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [a],
     )
-    sig = Signals(title="X", year=2010, medium=Medium.MOVIE)
+    sig = Signals(title="X", year=2010, medium=MediaType.MOVIE)
     cand = search(sig)
     result = consolidate(cand, sig)
     assert result.external_ids.tmdb_movie == 1

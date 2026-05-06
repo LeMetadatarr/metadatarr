@@ -20,7 +20,7 @@ class _Resp:
 # -----------------------------------------------------------------------------
 
 def test_musicbrainz_lookup_candidates(monkeypatch):
-    from metadatarr.resolve import Medium, Signals
+    from metadatarr.resolve import MediaType, Signals
     from metadatarr.resolve.providers.musicbrainz import MusicBrainzProvider
 
     payload = {"recordings": [
@@ -39,14 +39,14 @@ def test_musicbrainz_lookup_candidates(monkeypatch):
     p = MusicBrainzProvider()
     cands = p.lookup_candidates(Signals(title="Around the World",
                                         artist="Daft Punk",
-                                        medium=Medium.MUSIC))
+                                        medium=MediaType.MUSIC))
     assert len(cands) == 2
     assert cands[0].external_ids.musicbrainz_recording == "r1"
     assert cands[0].confidence >= cands[1].confidence
 
 
 def test_musicbrainz_lookup_candidates_handles_no_results(monkeypatch):
-    from metadatarr.resolve import Medium, Signals
+    from metadatarr.resolve import MediaType, Signals
     from metadatarr.resolve.providers.musicbrainz import MusicBrainzProvider
 
     monkeypatch.setattr(
@@ -55,7 +55,7 @@ def test_musicbrainz_lookup_candidates_handles_no_results(monkeypatch):
     )
     p = MusicBrainzProvider()
     assert p.lookup_candidates(Signals(title="x", artist="y",
-                                       medium=Medium.MUSIC)) == []
+                                       medium=MediaType.MUSIC)) == []
 
 
 # -----------------------------------------------------------------------------

@@ -12,8 +12,10 @@ from typing import List, Optional
 import requests
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.external_ids import ExternalIds, normalize_isbn
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab.text import normalize_isbn
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.wikidata")
 _API = "https://www.wikidata.org/w/api.php"
@@ -40,7 +42,7 @@ _PROP_MAP = {
 
 class WikidataProvider(MetadataProvider):
     name = "wikidata"
-    media = {Medium.MOVIE, Medium.TV, Medium.MUSIC, Medium.BOOK, Medium.PODCAST}
+    media = {MediaType.MOVIE, MediaType.TV, MediaType.MUSIC, MediaType.BOOK, MediaType.PODCAST}
 
     def is_available(self) -> bool:
         return True

@@ -15,7 +15,8 @@ import time
 import metadatarr.resolve.providers  # trigger self-registration
 from metadatarr.resolve import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 
 def _summarise(label: str, result, elapsed: float) -> None:
@@ -36,7 +37,7 @@ def main() -> None:
     base_signals = Signals(
         title="The Thing",
         year=1982,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
     )
 
     print("=== Without include_variants ===")

@@ -211,3 +211,67 @@ def test_runtime_add_mapping_then_reload_clears_it():
     assert apply_mappings(EntityKind.ARTIST,
                           ExternalIds(wikidata="Q-runtime")).wikidata == "Q-runtime"
     reload()  # discards runtime entries
+
+
+# ---------------------------------------------------------------------------
+# Mediavocab bridge — to_mediavocab_kind / to_mediavocab_role
+# ---------------------------------------------------------------------------
+
+import pytest
+from mediavocab import EntityKind as MvEntityKind, RelationRole as MvRelationRole
+
+from metadatarr.resolve.entities import EntityKind
+
+
+@pytest.mark.parametrize(
+    "ek, expected_kind",
+    [
+        (EntityKind.ARTIST,      MvEntityKind.GROUP),
+        (EntityKind.LABEL,       MvEntityKind.ORGANISATION),
+        (EntityKind.STUDIO,      MvEntityKind.ORGANISATION),
+        (EntityKind.CHANNEL,     MvEntityKind.ORGANISATION),
+        (EntityKind.ACTOR,       MvEntityKind.PERSON),
+        (EntityKind.VOICE_ACTOR, MvEntityKind.PERSON),
+        (EntityKind.DIRECTOR,    MvEntityKind.PERSON),
+        (EntityKind.AUTHOR,      MvEntityKind.PERSON),
+        (EntityKind.CHARACTER,   MvEntityKind.PERSON),
+        # Work-shaped values map to OTHER as a signal to use Work, not Entity.
+        (EntityKind.ALBUM,       MvEntityKind.OTHER),
+        (EntityKind.RELEASE,     MvEntityKind.OTHER),
+        (EntityKind.TRACK,       MvEntityKind.OTHER),
+        (EntityKind.OTHER,       MvEntityKind.OTHER),
+    ],
+)
+def test_to_mediavocab_kind(ek, expected_kind):
+    assert ek.to_mediavocab_kind() == expected_kind
+
+
+@pytest.mark.parametrize(
+    "ek, expected_role",
+    [
+        (EntityKind.DIRECTOR,    MvRelationRole.DIRECTOR),
+        (EntityKind.ACTOR,       MvRelationRole.ACTOR),
+        (EntityKind.VOICE_ACTOR, MvRelationRole.ACTOR),
+        (EntityKind.NARRATOR,    MvRelationRole.NARRATOR),
+        (EntityKind.HOST,        MvRelationRole.HOST),
+        (EntityKind.AUTHOR,      MvRelationRole.AUTHOR),
+        (EntityKind.COMPOSER,    MvRelationRole.COMPOSER),
+        (EntityKind.WRITER,      MvRelationRole.SCREENWRITER),
+        (EntityKind.PRODUCER,    MvRelationRole.PRODUCER),
+        (EntityKind.LABEL,       MvRelationRole.LABEL),
+        (EntityKind.STUDIO,      MvRelationRole.PUBLISHER),
+        (EntityKind.CHANNEL,     MvRelationRole.DISTRIBUTOR),
+        (EntityKind.ARTIST,      MvRelationRole.PERFORMER),
+    ],
+)
+def test_to_mediavocab_role(ek, expected_role):
+    assert ek.to_mediavocab_role() == expected_role
+
+
+def test_to_mediavocab_role_none_for_non_role_kinds():
+    # ALBUM / RELEASE / TRACK are Works, CHARACTER is fictional, OTHER is unknown.
+    assert EntityKind.ALBUM.to_mediavocab_role() is None
+    assert EntityKind.RELEASE.to_mediavocab_role() is None
+    assert EntityKind.TRACK.to_mediavocab_role() is None
+    assert EntityKind.CHARACTER.to_mediavocab_role() is None
+    assert EntityKind.OTHER.to_mediavocab_role() is None

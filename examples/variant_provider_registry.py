@@ -15,8 +15,9 @@ import inspect
 
 import metadatarr.resolve.providers  # trigger self-registration
 from metadatarr.resolve.base import MetadataProvider, active_providers
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 
 def _has_variant_support(provider: MetadataProvider) -> bool:
@@ -27,8 +28,8 @@ def _has_variant_support(provider: MetadataProvider) -> bool:
 def main() -> None:
     print("=== All registered providers and variant support ===")
     for medium_filter, label in [
-        (Medium.MOVIE, "movie"),
-        (Medium.MUSIC, "music"),
+        (MediaType.MOVIE, "movie"),
+        (MediaType.MUSIC, "music"),
         (None,         "unrestricted"),
     ]:
         providers = active_providers(medium=medium_filter)
@@ -41,7 +42,7 @@ def main() -> None:
 
     print("\n=== Dry-run: which variant providers would fire for a movie? ===")
     movie_providers = [
-        p for p in active_providers(medium=Medium.MOVIE)
+        p for p in active_providers(medium=MediaType.MOVIE)
         if _has_variant_support(p)
     ]
     if not movie_providers:
@@ -50,7 +51,7 @@ def main() -> None:
 
     # Use a known IMDb id so pyfanedit can search precisely
     known_ids = ExternalIds(imdb="tt0119217")  # Good Will Hunting
-    signals = Signals(title="Good Will Hunting", medium=Medium.MOVIE)
+    signals = Signals(title="Good Will Hunting", medium=MediaType.MOVIE)
 
     for p in movie_providers:
         print(f"\n  {p.name}.list_variants():")

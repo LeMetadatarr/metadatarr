@@ -11,6 +11,45 @@ Resolver-layer overhaul, ahead of the first public release. No deletions
 from the published API surface — every change is additive — but the
 out-of-scope `arr_*` provider family was removed before it ever shipped.
 
+### Workspace consolidation
+
+- **First-party scrapers are now hard runtime deps**, not optional
+  extras. Installing metadatarr pulls in `pyfanedit`, `pymetal`,
+  `tutubo`, `py_bandcamp`, and `nuvem_de_som` so every provider works
+  out of the box. The `metal_archives` / `bandcamp` / `soundcloud`
+  extras were dropped — only `test` remains.
+- **Generic resolver providers lifted from media-archivist**: `anilist`,
+  `jikan_anime`, `jikan_manga`, `google_books`, `librivox`,
+  `apple_podcasts`, `tmdb`, `arr_sonarr` / `arr_radarr` / `arr_lidarr` /
+  `arr_readarr` now live under `metadatarr.resolve.providers`. Each
+  registers automatically on import; routing uses the new two-axis
+  `(media, genre_filter)` gate so anime/manga providers select on
+  `content_genres=["anime"]`/`["manga"]` rather than a fake
+  `MediaType.ANIME` (anime is genre, not type — mediavocab spec
+  axiom 2).
+- `MetadataProvider.matches(signals)` helper centralises the routing
+  test. `genre_filter: Set[str]` joins `media: Set[MediaType]` as a
+  ClassVar.
+- `Signals.content_genres: List[str]` — mirrors mediavocab's genre
+  list convention; merged as a union by `merged()`.
+- `EntityKind` extended with `VOICE_ACTOR`, `STUDIO`, `CHARACTER` for
+  anime / film provider output. Each value gains
+  `to_mediavocab_kind()` and `to_mediavocab_role()` bridges so callers
+  building canonical `mediavocab.Entity` / `Credit` records have a
+  one-line conversion. The bridges document the dual-purpose nature
+  of the resolver-internal enum (mixes structural kinds, relational
+  roles, and Work-shaped sub-types).
+- `ExternalIds` extended with anime/manga/games/podcast/trakt/google_books
+  fields previously private to media-archivist.
+
+### Removed (duplication collapse)
+
+- The pre-release `MetadatarrXxxxProvider` wrapper family in
+  media-archivist's `providers/metadatarr.py` is unnecessary now that
+  metadatarr's own registry covers Skyhook / OpenLibrary / Discogs /
+  Blu-ray / DVDCompare directly. Consumers should depend on metadatarr
+  and import from `metadatarr.resolve.providers`.
+
 ### Added
 
 - **`signals.match_quality(local, candidate)`** — `[0.0, 1.0]` heuristic

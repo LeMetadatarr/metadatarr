@@ -24,12 +24,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from metadatarr.resolve.signals import (
-    Medium,
-    Signals,
-    VariantKind,
-    signal_hash,
-)
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, signal_hash
 
 # ---------------------------------------------------------------------------
 # Simulated library — paths you'd normally get from os.walk or a Plex API
@@ -101,7 +97,7 @@ def _parse(path: str) -> Signals:
     return Signals(
         title=title,
         year=year,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=variant,
         runtime=float(runtime) if runtime else None,
     )

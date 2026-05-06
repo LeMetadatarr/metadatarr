@@ -16,21 +16,31 @@ from pyfanedit import FaneditClient
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, VariantKind
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.pyfanedit")
 
-_FANEDIT_TYPE_MAP = {
-    "fanfix":    VariantKind.FANEDIT,
-    "fanmix":    VariantKind.FANEDIT,
-    "extended":  VariantKind.EXTENDED,
+# Map upstream pyfanedit kinds to (mediavocab VariantKind, fanedit_subtype).
+# Sub-types intentionally absent from the foundation VariantKind enum
+# (fanfix, fanmix, fanedit_short) live in the free-text subtype slot.
+_FANEDIT_TYPE_MAP: dict = {
+    "fanfix":        (VariantKind.FANEDIT,     "fanfix"),
+    "fanmix":        (VariantKind.FANEDIT,     "fanmix"),
+    "extended":      (VariantKind.EXTENDED,    None),
+    "tv_to_movie":   (VariantKind.TV_TO_MOVIE, None),
+    "movie_to_tv":   (VariantKind.MOVIE_TO_TV, None),
+    "shorts":        (VariantKind.FANEDIT,     "fanedit_short"),
+    "special":       (VariantKind.FANEDIT,     None),
+    "preservation":  (VariantKind.PRESERVATION, None),
+    "documentary":   (VariantKind.OTHER,       None),
 }
 
 
 class PyfaneditProvider(MetadataProvider):
     name = "pyfanedit"
-    media = {Medium.MOVIE}
+    media = {MediaType.MOVIE}
 
     def __init__(self) -> None:
         try:
@@ -64,10 +74,12 @@ class PyfaneditProvider(MetadataProvider):
 
         out = []
         for summary in summaries:
-            vk = _FANEDIT_TYPE_MAP.get(
-                (summary.fanedit_type or "").lower(), VariantKind.OTHER
+            vk, subtype = _FANEDIT_TYPE_MAP.get(
+                (summary.fanedit_type or "").lower(), (VariantKind.OTHER, None)
             )
             extra: dict = {"fanedit_variant_kind": vk.value}
+            if subtype:
+                extra["fanedit_subtype"] = subtype
             if summary.url:
                 extra["fanedit_url"] = summary.url
             if summary.fanedit_type:

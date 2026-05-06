@@ -16,8 +16,14 @@ dependencies = [
     "pydantic>=2.0.0",
     "beautifulsoup4>=4.10.0",
     "tomli>=1.1.0; python_version < '3.11'",
+    "mediavocab>=0.1.0",
+    # First-party scrapers — bundled by default so users get a working
+    # resolver out of the box without optional-extra juggling.
     "pyfanedit",
+    "pymetal>=1.0.0a1",
     "tutubo>=0.1.0",
+    "py_bandcamp",
+    "nuvem_de_som",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -40,15 +46,7 @@ Repository = "https://github.com/TigreGotico/metadatarr"
 Issues = "https://github.com/TigreGotico/metadatarr/issues"
 
 [project.optional-dependencies]
-metal_archives = ["pymetal>=1.0.0a1"]
-bandcamp = ["py_bandcamp"]
-soundcloud = ["nuvem_de_som"]
 test = ["pytest>=7"]
-all = [
-    "pymetal>=1.0.0a1",
-    "py_bandcamp",
-    "nuvem_de_som",
-]
 
 [tool.setuptools.dynamic]
 version = { attr = "metadatarr.version.__version__" }

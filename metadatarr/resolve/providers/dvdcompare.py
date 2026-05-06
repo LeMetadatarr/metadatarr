@@ -18,8 +18,9 @@ from difflib import SequenceMatcher
 from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, VariantKind, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.dvdcompare")
 
@@ -58,7 +59,7 @@ def _match_to_provider(signals: Signals, top) -> ProviderMatch:
     cand_signals = Signals(
         title=top.title,
         year=cand_year,
-        medium=signals.medium or Medium.MOVIE,
+        medium=signals.medium or MediaType.MOVIE,
         source_format=top.disc_format or "Blu-ray",
         region=top.region,
         variant_kind=variant_kind,
@@ -88,7 +89,7 @@ def _match_to_provider(signals: Signals, top) -> ProviderMatch:
 
 class DVDCompareProvider(MetadataProvider):
     name = "dvdcompare"
-    media = {Medium.MOVIE, Medium.TV}
+    media = {MediaType.MOVIE, MediaType.TV}
 
     def __init__(self) -> None:
         from metadatarr.client import DVDCompareClient
@@ -142,7 +143,7 @@ class DVDCompareProvider(MetadataProvider):
         variant_kind = _infer_variant(top.version)
         cand_signals = Signals(
             title=top.title,
-            medium=(signals.medium if signals else None) or Medium.MOVIE,
+            medium=(signals.medium if signals else None) or MediaType.MOVIE,
             variant_kind=variant_kind,
             edition=top.version,
         )

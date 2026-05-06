@@ -10,20 +10,15 @@ Demonstrates:
 - Combining source_format with variant_kind for precise tagging
 - No network required.
 """
-from metadatarr.resolve.signals import (
-    Medium,
-    Signals,
-    VariantKind,
-    compare,
-    signal_hash,
-)
+from mediavocab import MediaType, VariantKind
+from mediavocab.models.signals import Signals, compare_signals as compare, signal_hash
 
 
 def main() -> None:
     uhd = Signals(
         title="Dune",
         year=2021,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=VariantKind.THEATRICAL,
         source_format="4K",
         region="US",
@@ -32,7 +27,7 @@ def main() -> None:
     hd = Signals(
         title="Dune",
         year=2021,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         variant_kind=VariantKind.THEATRICAL,
         source_format="Blu-ray",
         region="US",
@@ -57,7 +52,7 @@ def main() -> None:
     vinyl = Signals(
         title="Dark Side of the Moon",
         artist="Pink Floyd",
-        medium=Medium.MUSIC,
+        medium=MediaType.MUSIC,
         source_format="Vinyl",
         variant_kind=VariantKind.REMASTERED,
         year=1973,

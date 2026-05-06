@@ -17,7 +17,8 @@ from tutubo.content_type import ContentType
 
 from metadatarr import signals_from_title
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Medium, signal_hash
+from mediavocab import MediaType
+from mediavocab.models.signals import signal_hash
 
 FIXTURE_VIDEOS = [
     {"title": "Commando (1985) Full Movie VHS Legacy", "length": 6120},
@@ -60,7 +61,7 @@ def build_signals(video: dict):
     title_raw = video.get("title", "")
     parsed = parse_title(title_raw)
     sig = signals_from_title(title_raw)
-    sig.medium = Medium.MOVIE
+    sig.medium = MediaType.MOVIE
     if parsed.year:
         sig.year = parsed.year
     return sig

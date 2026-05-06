@@ -46,7 +46,7 @@ python examples/fanedit_discovery.py   # needs metadatarr[fanedit]
 | ------------------------------- | :-----: | ---------- |
 | `physical_disc_verify.py`       | Yes | "I have a Blu-ray — which cut is it and which regional edition?" Uses DVDCompare cut runtimes and per-release data to identify a disc and build its canonical Signals hash |
 | `alien_trilogy_physical_and_fanedits.py` | Yes | Full walkthrough of the Alien trilogy: cut comparison, dvdcompare regional releases, IFDB fanedit enumeration |
-| `discogs_music_video.py`        | Yes | "I collect music video LaserDiscs and soundtrack vinyl." Discogs for its correct domain: concert film search with `search_video()`, NTSC/PAL format details, identifiers, community stats, master pressings, `Medium.MUSIC_VIDEO` in Signals |
+| `discogs_music_video.py`        | Yes | "I collect music video LaserDiscs and soundtrack vinyl." Discogs for its correct domain: concert film search with `search_video()`, NTSC/PAL format details, identifiers, community stats, master pressings, `MediaType.MUSIC_VIDEO` in Signals |
 
 ---
 

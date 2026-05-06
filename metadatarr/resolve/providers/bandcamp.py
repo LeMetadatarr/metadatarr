@@ -29,8 +29,9 @@ import requests
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.bandcamp")
 
@@ -101,7 +102,7 @@ def confirm_track_url(url: str, *, timeout: float = 10.0) -> bool:
 
 class BandcampProvider(MetadataProvider):
     name = "bandcamp"
-    media = {Medium.MUSIC}
+    media = {MediaType.MUSIC}
 
     def __init__(self) -> None:
         try:
@@ -122,7 +123,7 @@ class BandcampProvider(MetadataProvider):
     def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
         if not (self._available and signals.title):
             return None
-        if signals.medium and signals.medium != Medium.MUSIC:
+        if signals.medium and signals.medium != MediaType.MUSIC:
             return None
 
         query = f"{signals.artist} {signals.title}" if signals.artist else signals.title
@@ -205,7 +206,7 @@ class BandcampProvider(MetadataProvider):
                 artist=artist_name,
                 runtime=runtime,
                 year=_safe_int_year(getattr(top, "year", None)),
-                medium=Medium.MUSIC,
+                medium=MediaType.MUSIC,
             ),
             external_ids=ExternalIds(extra=external_extra),
             relations=relations,

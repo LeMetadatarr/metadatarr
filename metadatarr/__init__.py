@@ -26,7 +26,6 @@ from .models import (
     CutRuntime,
     DVDCompareRelease,
     DVDCompareEdition,
-    Stream,
 )
 from . import resolve  # noqa: F401  — populates the provider registry
 
@@ -54,5 +53,4 @@ __all__ = [
     "CutRuntime",
     "DVDCompareRelease",
     "DVDCompareEdition",
-    "Stream",
 ]

@@ -1,6 +1,6 @@
 """Signal comparison and merging."""
 from metadatarr.resolve import (
-    Medium,
+    MediaType,
     Signals,
     compare,
     match_quality,
@@ -26,7 +26,7 @@ def test_compare_year_outside_tolerance_conflicts():
 
 
 def test_compare_medium_mismatch():
-    out = compare(Signals(medium=Medium.MOVIE), Signals(medium=Medium.TV))
+    out = compare(Signals(medium=MediaType.MOVIE), Signals(medium=MediaType.TV))
     assert any(c.signal == "medium" for c in out)
 
 
@@ -39,14 +39,15 @@ def test_compare_season_and_episode_mismatch():
 
 
 def test_compare_runtime_uses_medium_tolerance():
-    # Two TV runtimes 25s apart — inside the 30s TV window, outside the
-    # 5s default — must NOT register a conflict when medium is TV.
-    a = Signals(runtime=2400.0, medium=Medium.TV)
-    b = Signals(runtime=2425.0, medium=Medium.TV)
+    # Two episode runtimes 25s apart — inside the 30s EPISODIC_SERIES window,
+    # outside the 5s default — must NOT register a conflict. (TV is now
+    # reserved for live-broadcast channels with 0s tolerance.)
+    a = Signals(runtime=2400.0, medium=MediaType.EPISODIC_SERIES)
+    b = Signals(runtime=2425.0, medium=MediaType.EPISODIC_SERIES)
     assert compare(a, b) == []
     # Same gap between music tracks → conflict.
-    a = Signals(runtime=200.0, medium=Medium.MUSIC)
-    b = Signals(runtime=225.0, medium=Medium.MUSIC)
+    a = Signals(runtime=200.0, medium=MediaType.MUSIC)
+    b = Signals(runtime=225.0, medium=MediaType.MUSIC)
     assert any(c.signal == "runtime" for c in compare(a, b))
 
 
@@ -71,21 +72,21 @@ def test_merged_first_non_none_wins():
 
 
 def test_match_quality_perfect_when_signals_align():
-    a = Signals(title="Inception", year=2010, medium=Medium.MOVIE)
-    b = Signals(title="Inception", year=2010, medium=Medium.MOVIE)
+    a = Signals(title="Inception", year=2010, medium=MediaType.MOVIE)
+    b = Signals(title="Inception", year=2010, medium=MediaType.MOVIE)
     assert match_quality(a, b) == 1.0
 
 
 def test_match_quality_drops_on_year_mismatch():
-    a = Signals(title="Inception", year=2010, medium=Medium.MOVIE)
-    b = Signals(title="Inception", year=2020, medium=Medium.MOVIE)
+    a = Signals(title="Inception", year=2010, medium=MediaType.MOVIE)
+    b = Signals(title="Inception", year=2020, medium=MediaType.MOVIE)
     score = match_quality(a, b)
     assert score < 0.6  # halved by year mismatch
 
 
 def test_match_quality_drops_on_medium_mismatch():
-    a = Signals(title="X", medium=Medium.MOVIE)
-    b = Signals(title="X", medium=Medium.TV)
+    a = Signals(title="X", medium=MediaType.MOVIE)
+    b = Signals(title="X", medium=MediaType.TV)
     assert match_quality(a, b) == 0.5
 
 

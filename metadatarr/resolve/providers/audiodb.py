@@ -21,15 +21,16 @@ from typing import List, Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals, match_quality
+from mediavocab.models import ExternalIds
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.audiodb")
 
 
 class AudioDBProvider(MetadataProvider):
     name = "audiodb"
-    media = {Medium.MUSIC}
+    media = {MediaType.MUSIC}
 
     def __init__(self) -> None:
         from metadatarr.client import AudioDBClient
@@ -41,7 +42,7 @@ class AudioDBProvider(MetadataProvider):
     def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
         if not signals.title:
             return None
-        if signals.medium and signals.medium != Medium.MUSIC:
+        if signals.medium and signals.medium != MediaType.MUSIC:
             return None
 
         artist_query = signals.artist or ""
@@ -100,7 +101,7 @@ class AudioDBProvider(MetadataProvider):
             title=top.title,
             artist=top.artist,
             runtime=top.duration_seconds,
-            medium=Medium.MUSIC,
+            medium=MediaType.MUSIC,
         )
         return ProviderMatch(
             provider=self.name,

@@ -123,19 +123,19 @@ information. It maps to `VariantKind` in the resolve system as follows:
 ```python
 import metadatarr.resolve.providers  # registers all providers
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, Medium, VariantKind
+from metadatarr.resolve.signals import Signals, MediaType, VariantKind
 
 # Resolve the Director's Cut specifically
 dc_result = resolve(Signals(
     title="Apocalypse Now",
-    medium=Medium.MOVIE,
+    medium=MediaType.MOVIE,
     variant_kind=VariantKind.DIRECTORS,
 ))
 
 # Resolve the Theatrical cut
 theatrical_result = resolve(Signals(
     title="Apocalypse Now",
-    medium=Medium.MOVIE,
+    medium=MediaType.MOVIE,
     variant_kind=VariantKind.THEATRICAL,
 ))
 
@@ -224,10 +224,10 @@ and image data without re-running a search:
 ```python
 import metadatarr.resolve.providers
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, Medium
+from metadatarr.resolve.signals import Signals, MediaType
 from metadatarr.resolve.providers.discogs import DiscogsProvider
 
-result = resolve(Signals(title="Andrei Rublev", medium=Medium.MOVIE))
+result = resolve(Signals(title="Andrei Rublev", medium=MediaType.MOVIE))
 
 discogs_id = result.external_ids.discogs_release
 if discogs_id:
@@ -275,11 +275,11 @@ imported. `resolve()` fans them out automatically:
 ```python
 import metadatarr.resolve.providers
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, Medium
+from metadatarr.resolve.signals import Signals, MediaType
 
 result = resolve(Signals(
     title="Blade Runner 2049",
-    medium=Medium.MOVIE,
+    medium=MediaType.MOVIE,
     source_format="Blu-ray",
 ))
 

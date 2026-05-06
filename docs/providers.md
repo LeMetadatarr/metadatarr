@@ -31,13 +31,13 @@ Use `metadatarr.resolve.all_providers()` to inspect what's registered, and
 ## Inspecting at runtime
 
 ```python
-from metadatarr.resolve import all_providers, active_providers, Medium
+from metadatarr.resolve import all_providers, active_providers, MediaType
 
 for name, provider in all_providers().items():
     flag = "ON " if provider.is_available() else "off"
     print(f"  [{flag}] {name}")
 
-for p in active_providers(medium=Medium.MUSIC):
+for p in active_providers(medium=MediaType.MUSIC):
     print(p.name)
 ```
 
@@ -46,13 +46,13 @@ for p in active_providers(medium=Medium.MUSIC):
 ```python
 from typing import Optional
 from metadatarr.resolve import (
-    ExternalIds, Medium, MetadataProvider,
+    ExternalIds, MediaType, MetadataProvider,
     ProviderMatch, Signals, register,
 )
 
 class MyProvider(MetadataProvider):
     name = "my_provider"
-    media = {Medium.MOVIE}
+    media = {MediaType.MOVIE}
 
     def is_available(self) -> bool:
         return True

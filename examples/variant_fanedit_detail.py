@@ -13,7 +13,8 @@ import metadatarr.resolve.providers  # trigger self-registration
 from pyfanedit import FaneditClient
 from metadatarr.resolve import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 
 def main() -> None:
@@ -23,7 +24,7 @@ def main() -> None:
     result = resolve(Signals(
         title="The Phantom Menace",
         year=1999,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         include_variants=True,
     ))
 

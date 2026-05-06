@@ -11,14 +11,15 @@ resolution, so it never pollutes the consolidated record.
 import metadatarr.resolve.providers  # trigger provider self-registration
 from metadatarr.resolve import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 
 def main() -> None:
     signals = Signals(
         title="Apocalypse Now",
         year=1979,
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         include_variants=True,   # <-- enable variant fan-out
     )
 

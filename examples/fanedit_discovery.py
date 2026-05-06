@@ -23,7 +23,8 @@ from typing import List
 import metadatarr.resolve.providers  # noqa: F401 — trigger provider self-registration
 from metadatarr.resolve import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
 
 # ---------------------------------------------------------------------------
 # Filmography — Ridley Scott films with well-known alternate cuts
@@ -50,7 +51,7 @@ def discover(film: dict) -> FilmSummary:
     result = resolve(Signals(
         title=film["title"],
         year=film["year"],
-        medium=Medium.MOVIE,
+        medium=MediaType.MOVIE,
         include_variants=True,
     ), max_workers=4)
 

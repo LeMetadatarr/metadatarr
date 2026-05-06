@@ -5,7 +5,7 @@ care which platform — give me every URL I can hand to a player.
 
 The resolver fans out to all active music providers.  Any that find the
 track emit a playable URL into ``external_ids.extra``.  ``ExternalIds.streams``
-aggregates those into a typed list of :class:`~metadatarr.models.Stream`
+aggregates those into a typed list of :class:`~mediavocab.models.Stream`
 objects, one per platform.  The caller can then pick by ``platform`` or
 ``media_type``, or just take the first result.
 
@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import sys
 
-from metadatarr.resolve import Medium, Signals, active_providers, consolidate, search
+from metadatarr.resolve import MediaType, Signals, active_providers, consolidate, search
 
 
 TITLE  = "Get Lucky"
@@ -39,12 +39,12 @@ def _banner(title: str, artist: str) -> None:
 
 
 def _print_providers() -> None:
-    music_providers = [p.name for p in active_providers(medium=Medium.MUSIC)]
+    music_providers = [p.name for p in active_providers(medium=MediaType.MUSIC)]
     print(f"  active music providers: {', '.join(music_providers) or '(none)'}")
 
 
 def _resolve_streams(title: str, artist: str):
-    sig = Signals(title=title, artist=artist, medium=Medium.MUSIC)
+    sig = Signals(title=title, artist=artist, medium=MediaType.MUSIC)
     candidates = search(sig)
     if not candidates:
         return None

@@ -8,9 +8,10 @@ Typical usage::
 
     import metadatarr.resolve.providers          # triggers self-registration
     from metadatarr.resolve.base import resolve
-    from metadatarr.resolve.signals import Signals, Medium
+    from mediavocab.models.signals import Signals
+from mediavocab import MediaType
 
-    result = resolve(Signals(title="Inception", medium=Medium.MOVIE))
+    result = resolve(Signals(title="Inception", medium=MediaType.MOVIE))
     print(result.external_ids.tmdb_movie)
 """
 from __future__ import annotations
@@ -21,9 +22,10 @@ from typing import ClassVar, Dict, List, Optional, Set
 from pydantic import BaseModel, ConfigDict, Field
 
 from metadatarr.resolve.entities import EntityKind, ProviderEntity, Role
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab.models import ExternalIds
 from metadatarr.resolve.mappings import apply_mappings
-from metadatarr.resolve.signals import Medium, Signals, SignalConflict, compare, merged
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals, SignalConflict, compare_signals as compare, merge_signals as merged
 
 
 class ProviderMatch(BaseModel):
@@ -75,10 +77,27 @@ class ResolveResult(BaseModel):
 
 
 class MetadataProvider(ABC):
-    """Look a work up against an external authoritative DB."""
+    """Look a work up against an external authoritative DB.
+
+    Routing is two-axis. ``media`` (a set of mediavocab ``MediaType``
+    values) is the primary gate; ``genre_filter`` (a set of genre
+    strings — typically constants from ``mediavocab.taxonomy.genre``)
+    is an optional secondary gate. A provider matches when:
+
+        (no `media` declared OR signals.medium is None OR signals.medium in self.media)
+        AND
+        (no `genre_filter` declared OR self.genre_filter ∩ signals.content_genres)
+
+    Anime / manga-only providers therefore declare e.g.
+    ``media = {EPISODIC_SERIES, MOVIE}`` plus
+    ``genre_filter = {"anime"}`` rather than a fake
+    ``MediaType.ANIME`` value (anime is a *genre*, per mediavocab spec
+    axiom 2).
+    """
 
     name: ClassVar[str] = ""
-    media: ClassVar[Set[Medium]] = set()
+    media: ClassVar[Set[MediaType]] = set()
+    genre_filter: ClassVar[Set[str]] = set()
 
     @abstractmethod
     def is_available(self) -> bool:
@@ -87,6 +106,16 @@ class MetadataProvider(ABC):
     @abstractmethod
     def lookup(self, signals: Signals) -> Optional[ProviderMatch]:
         """Return the single best match for ``signals``, or ``None``."""
+
+    def matches(self, signals: Signals) -> bool:
+        """Default routing test — used by ``resolve`` to gate dispatch."""
+        if self.media and signals.medium and signals.medium not in self.media:
+            return False
+        if self.genre_filter:
+            tags = set(signals.content_genres or [])
+            if not (tags & self.genre_filter):
+                return False
+        return True
 
     def lookup_candidates(self, signals: Signals) -> List[ProviderMatch]:
         """Return up to N plausible matches, highest confidence first.
@@ -138,7 +167,7 @@ def all_providers() -> Dict[str, MetadataProvider]:
     return dict(_REGISTRY)
 
 
-def active_providers(medium: Optional[Medium] = None) -> List[MetadataProvider]:
+def active_providers(medium: Optional[MediaType] = None) -> List[MetadataProvider]:
     """Return providers whose ``is_available()`` is True.
 
     If ``medium`` is given, only providers whose ``media`` set includes that
@@ -322,7 +351,7 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
 
 
 def enrich(external_ids: ExternalIds, *,
-           medium: Optional[Medium] = None,
+           medium: Optional[MediaType] = None,
            apply_maps: bool = True,
            max_workers: int = 8) -> ExternalIds:
     """Given some IDs, derive more IDs by consulting every active provider.
