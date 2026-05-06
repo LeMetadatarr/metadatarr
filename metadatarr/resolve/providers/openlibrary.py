@@ -80,7 +80,6 @@ class OpenLibraryProvider(MetadataProvider):
             year=top.first_publish_year,
             medium=MediaType.BOOK,
             language=language,
-            content_type="book",
         )
 
         return ProviderMatch(

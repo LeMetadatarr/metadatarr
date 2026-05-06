@@ -68,7 +68,6 @@ class AnnasArchiveProvider(MetadataProvider):
             artist=top.author,
             medium=MediaType.BOOK,
             language=top.language,
-            content_type="book",
         )
 
         return ProviderMatch(

@@ -60,7 +60,8 @@ from metadatarr.resolve.providers import jikan             # noqa: F401, E402
 from metadatarr.resolve.providers import google_books      # noqa: F401, E402
 from metadatarr.resolve.providers import librivox          # noqa: F401, E402
 from metadatarr.resolve.providers import podcast_index     # noqa: F401, E402
-from metadatarr.resolve.providers import tmdb              # noqa: F401, E402
+from metadatarr.resolve.providers import openlibrary       # noqa: F401, E402
+from metadatarr.resolve.providers import annas_archive     # noqa: F401, E402
 from metadatarr.resolve.providers import arr               # noqa: F401, E402
 
 
