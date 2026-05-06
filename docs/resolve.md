@@ -45,17 +45,19 @@ more aggressively `consolidate()` can reject mismatches.
 | `edition` | `str` | Free-text edition name (e.g. `"25th Anniversary"`) |
 | `region` | `str` | ISO 3166-1 alpha-2; release territory (distinct from work-origin `country`) |
 | `source_format` | `str` | Physical / digital format (e.g. `"4K"`, `"Blu-ray"`, `"Vinyl"`) |
-| `include_variants` | `bool` | When `True`, `resolve()` fans out to variant-aware providers and populates `result.relations[Role.RELEASE]` |
+| `include_variants` | `bool` | When `True`, `resolve()` fans out to variant-aware providers and populates `result.relations[EntityRole.RELEASE]` |
 
-`Signals` — `metadatarr/resolve/signals.py:74`
+`Signals` — `mediavocab/models/signals.py`
 
-**`Medium` values** — `MUSIC`, `MUSIC_VIDEO`, `MOVIE`, `TV`, `PODCAST`, `BOOK`, `OTHER`.
+**`MediaType` values** — `MUSIC`, `MUSIC_VIDEO`, `MOVIE`, `EPISODIC_SERIES`, `TV`, `PODCAST`, `BOOK`, `COMIC`, `AUDIOBOOK`, `AUDIO_DRAMA`, `RADIO`, `GAME`, `INTERACTIVE_FICTION`, `SOUND_EFFECT`, `AMBIENT_SOUNDS`, `PLAYLIST`, `GENERIC`, `NOT_MEDIA`.
 
-`MUSIC_VIDEO` covers concert films, official music videos, and live performances on physical video media (LaserDisc, VHS, DVD).  It is the medium for Discogs music-video searches.  `Medium` — `metadatarr/resolve/signals.py:46`
+`EPISODIC_SERIES` is used for on-demand series (Sonarr/TVmaze/streaming shows/Blu-ray box sets).
+`TV` is reserved for live linear / IPTV broadcast, analogous to `RADIO`.
+`MUSIC_VIDEO` covers concert films, official music videos, and live performances on physical video media (LaserDisc, VHS, DVD). It is the medium for Discogs music-video searches.  `MediaType` — `mediavocab`
 
 #### VariantKind
 
-`VariantKind` — `metadatarr/resolve/signals.py:54`
+`VariantKind` — `mediavocab`
 
 A string enum that classifies cuts and editions for conflict detection.
 `compare()` treats two bags as conflicting on `variant_kind` only when both
@@ -99,7 +101,7 @@ least `TITLE_FUZZY_MIN` (default `0.92`).
 `compare()` uses `RUNTIME_TOLERANCE_BY_MEDIUM_S` (movies ±120 s, TV ±30 s,
 music ±3 s, music\_video ±30 s, books `0`, podcast ±30 s, other ±5 s) when
 both sides declare a `medium`. Falls back to `RUNTIME_TOLERANCE_S` (5 s)
-when neither side does.  `RUNTIME_TOLERANCE_BY_MEDIUM_S` — `metadatarr/resolve/signals.py:35`
+when neither side does.  `RUNTIME_TOLERANCE_BY_MEDIUM_S` — `mediavocab`
 
 #### `match_quality()`
 
@@ -158,7 +160,7 @@ First-class fields (all optional, typed):
 | `bluray_com_id` | `int` | blu-ray.com movie page ID |
 | `dvdcompare_id` | `str` | dvdcompare.net edition slug |
 
-`ExternalIds` — `metadatarr/resolve/external_ids.py:56`
+`ExternalIds` — `mediavocab/models/__init__.py`
 
 Everything a provider emits that doesn't have a first-class slot lands in
 `extra` as `str → str`.  Common extra keys:
@@ -210,80 +212,79 @@ Providers don't just return IDs for the work itself — they also return
 **relations**: typed pointers to related entities (the artist, the album the
 track is on, the director, the publisher, …).
 
+The entity layer uses two separate enums with distinct concerns:
+
+- `EntityKind` — structural shape of the underlying entity record, re-exported from
+  `mediavocab.EntityKind`: `PERSON`, `GROUP`, `ORGANISATION`, `SERIES`, `DEVICE`, `OTHER`.
+- `EntityRole` — relational role in the context of a specific work; the key type for
+  `ProviderMatch.relations` and `ResolveResult.relations`. Values: `ACTOR`, `VOICE_ACTOR`,
+  `DIRECTOR`, `PRODUCER`, `COMPOSER`, `WRITER`, `NARRATOR`, `HOST`, `AUTHOR`, `ARTIST`,
+  `LABEL`, `CHANNEL`, `STUDIO`, `ALBUM`, `RELEASE`, `TRACK`, `CHARACTER`, `OTHER`.
+
+`EntityKind` is re-exported from `mediavocab`. `EntityRole` — `metadatarr/resolve/entities.py:40`
+
 ```python
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
+from mediavocab.models import ExternalIds
 
 # A provider match may include:
 match.relations = {
-    EntityKind.ARTIST: [ProviderEntity(
-        kind=EntityKind.ARTIST,
+    EntityRole.ARTIST: [ProviderEntity(
+        role=EntityRole.ARTIST,
         name="Moonsorrow",
         external_ids=ExternalIds(extra={"bandcamp_band_id": "12345678"}),
     )],
-    EntityKind.ALBUM: [...],
+    EntityRole.ALBUM: [...],
 }
 ```
 
-Entity kinds: `ARTIST`, `ALBUM`, `RELEASE`, `TRACK`, `LABEL`, `CHANNEL`,
-`ACTOR`, `DIRECTOR`, `PRODUCER`, `COMPOSER`, `WRITER`, `NARRATOR`, `HOST`,
-`AUTHOR`, `OTHER`.
+`ProviderEntity.kind` is auto-derived from `role.to_mediavocab_kind()` when omitted —
+`ARTIST` → `EntityKind.GROUP`, `DIRECTOR` → `EntityKind.PERSON`,
+`LABEL` → `EntityKind.ORGANISATION`, etc. Pass `kind` explicitly to override.
+`ProviderEntity` — `metadatarr/resolve/entities.py:235`
 
-`EntityKind` — `metadatarr/resolve/entities.py:30`
-
-`RELEASE` is used for specific releases / cuts of a work (individual MusicBrainz
-releases within a release-group, or fanedit.org entries). It is the kind stored
-in `result.relations[Role.RELEASE]` when `include_variants=True`.
+`EntityRole.RELEASE` is used for specific releases / cuts of a work (individual MusicBrainz
+releases within a release-group, or fanedit.org entries). It is the key stored
+in `result.relations[EntityRole.RELEASE]` when `include_variants=True`.
 
 Entities get their own stable IDs via `allocate_entity_id()`, which derives a
 deterministic SHA1 from the strongest known external ID (MusicBrainz > Metal
 Archives > Wikidata > platform numeric id > …).  Two providers referencing
 the same MusicBrainz artist will always produce the same entity ID.
+`allocate_entity_id()` — `metadatarr/resolve/entities.py:214`
 
 ---
 
 ## Providers
 
-Each provider is an optional-dependency plugin that self-registers on import.
-If the required library is not installed, `is_available()` returns `False`
-and the provider is silently skipped.
+Providers self-register on import. All providers listed below are bundled in
+the core install — every first-party scraper (pyfanedit, pymetal, tutubo,
+py_bandcamp, nuvem_de_som) is a core dependency. The only optional install
+extra is `[test]`.
 
-### Built-in (always active)
-
-| Name | Source | Notes |
-|---|---|---|
-| `musicbrainz` | MusicBrainz API | Music — artist, release, recording IDs |
-| `wikidata` | Wikidata API | Cross-domain — Wikidata Q-id + cross-references |
-| `tvmaze` | TVmaze public API | TV — no auth required |
-| `audiodb` | TheAudioDB | Music — free public key, no auth |
-| `metadatarr` | Servarr metadata-server proxies (skyhook, radarrapi, api.lidarr.audio) + OpenLibrary | Proxy — no env vars needed |
-
-### Optional — music
-
-| Name | Dep | Notes |
-|---|---|---|
-| `bandcamp` | `py_bandcamp` | Numeric `band_id`/`track_id`/`album_id` from data-tralbum |
-| `soundcloud` | `nuvem_de_som` | Numeric `user_id`/`track_id` |
-| `youtube_music` | `tutubo` | Artist + album browseIds; refuses non-music lookups |
-| `metal_archives` | `pymetal` | Encyclopaedia Metallum numeric IDs |
-
-### Optional — video / other
-
-| Name | Dep | Notes |
-|---|---|---|
-| `youtube` | `tutubo` | Regular YouTube — channel + upload IDs only; refuses `MUSIC` |
-| `pyfanedit` | none — hard dep | Variant-only (movie); `lookup()` returns `None`; `list_variants()` queries fanedit.org (IFDB) via `search_by_original_title()` — `metadatarr/resolve/providers/pyfanedit.py:61` |
-
-### Installing optional providers
-
-```bash
-pip install "metadatarr[bandcamp]"          # py_bandcamp
-pip install "metadatarr[soundcloud]"        # nuvem_de_som
-pip install "metadatarr[youtube]"           # tutubo (covers both YT providers)
-pip install "metadatarr[metal_archives]"    # pymetal
-pip install "metadatarr[all]"              # everything above
-```
-
-`pyfanedit` (fanedit.org / IFDB) is a **core dependency** — no extra install required.
+| Name | Source | Media | Notes |
+|---|---|---|---|
+| `metadatarr` | Servarr proxies + OpenLibrary | movie / episodic_series / music / book | no env vars needed |
+| `musicbrainz` | MusicBrainz API | music | artist, release, recording IDs |
+| `audiodb` | TheAudioDB | music | free public key |
+| `tvmaze` | TVmaze public API | episodic_series | no auth; `MediaType.EPISODIC_SERIES` only |
+| `tmdb` | TMDB API | movie / episodic_series | |
+| `anilist` | AniList GraphQL | movie / episodic_series / comic | |
+| `jikan_anime` | Jikan (MyAnimeList) | movie / episodic_series | |
+| `jikan_manga` | Jikan (MyAnimeList) | comic | |
+| `google_books` | Google Books API | book / audiobook | |
+| `librivox` | LibriVox API | audiobook | |
+| `apple_podcasts` | Apple Podcasts search | podcast / audio_drama | |
+| `wikidata` | Wikidata API | all | Q-id + cross-references |
+| `bandcamp` | Bandcamp | music | `py_bandcamp` core dep |
+| `soundcloud` | SoundCloud | music | `nuvem_de_som` core dep |
+| `youtube_music` | YouTube Music | music | `tutubo` core dep; browseId entity records |
+| `youtube` | YouTube | movie / episodic_series / podcast / other | `tutubo` core dep; channel IDs only; refuses `MUSIC` |
+| `metal_archives` | Encyclopaedia Metallum | music | `pymetal` core dep |
+| `pyfanedit` | fanedit.org / IFDB | movie | variant-only — `lookup()` returns `None`; `list_variants()` calls `FaneditClient.search_by_original_title()` — `metadatarr/resolve/providers/pyfanedit.py:61` |
+| `bluray_com` | blu-ray.com | movie | HTML scraper |
+| `dvdcompare` | dvdcompare.net | movie | HTML scraper |
+| `discogs` | Discogs REST API | music / music_video / other | 25 req/min unauthenticated; set `DISCOGS_TOKEN` for 60 req/min |
 
 ### Multiple candidates per provider
 
@@ -383,7 +384,7 @@ print(result.external_ids.tmdb_movie)
 | `accepted` | `List[ProviderMatch]` | Matches that agreed with local signals and each other (sorted by confidence desc) |
 | `dropped` | `List[ProviderMatch]` | Matches dropped for conflicting with local signals or the running consolidation |
 | `conflicts` | `List[ResolutionConflict]` | Per-drop diagnostic — which provider clashed, with what, on which fields |
-| `relations` | `Dict[Role, List[ProviderEntity]]` | Variant entities; populated only when `signals.include_variants=True`; key is `Role.RELEASE` |
+| `relations` | `Dict[EntityRole, List[ProviderEntity]]` | Variant entities; populated only when `signals.include_variants=True`; key is `EntityRole.RELEASE` |
 
 `ResolveResult` — `metadatarr/resolve/base.py:56`
 
@@ -393,11 +394,11 @@ When `signals.include_variants=True`, `resolve()` runs a second pass after
 consolidation. It calls `list_variants(result.external_ids, signals)` on
 every active provider whose `media` set includes the requested medium.
 Results are de-duplicated by `fanedit_id` > `musicbrainz_release` > `name`
-(first seen wins) and stored in `result.relations[Role.RELEASE]`.
+(first seen wins) and stored in `result.relations[EntityRole.RELEASE]`.
 
 ```python
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.entities import Role
+from metadatarr.resolve.entities import EntityRole
 from mediavocab import Signals, MediaType
 
 result = resolve(Signals(
@@ -405,7 +406,7 @@ result = resolve(Signals(
     medium=MediaType.MOVIE,
     include_variants=True,
 ))
-for entity in result.relations.get(Role.RELEASE, []):
+for entity in result.relations.get(EntityRole.RELEASE, []):
     print(entity.name, entity.external_ids.fanedit_id)
 ```
 
@@ -492,9 +493,10 @@ musicbrainz_release_group = "some-mbid"
 bandcamp_album_id         = "99999999"
 ```
 
-Supported section types mirror `EntityKind`:
-`artist`, `album`, `label`, `channel`, `actor`, `director`, `producer`,
-`composer`, `writer`, `narrator`, `host`, `author`, `other`.
+Supported section types correspond to `EntityRole` values:
+`artist`, `album`, `release`, `track`, `label`, `channel`, `studio`,
+`actor`, `voice_actor`, `director`, `producer`, `composer`, `writer`,
+`narrator`, `host`, `author`, `character`, `other`.
 
 Keys inside a section can be:
 - Any first-class `ExternalIds` field name (`musicbrainz_artist`,
@@ -510,7 +512,7 @@ treated identically.
 ### How matching works
 
 When `consolidate()` accepts a provider match it calls
-`apply_mappings(kind, external_ids)` for every `EntityKind`.  The store
+`apply_mappings(role, external_ids)` for every `EntityRole`.  The store
 checks every `(key, value)` pair in the incoming `ExternalIds` against its
 reverse index.  On a hit the mapping entry's identifiers are merged into the
 result (the live result takes precedence over mapping values, so a freshly
@@ -529,15 +531,15 @@ don't want to apply unconditionally:
 
 ```python
 from metadatarr.resolve.mappings import add_mapping, get_store
-from metadatarr.resolve.entities import EntityKind
-from mediavocab import ExternalIds
+from metadatarr.resolve.entities import EntityRole
+from mediavocab.models import ExternalIds
 
-add_mapping(EntityKind.ARTIST,
+add_mapping(EntityRole.ARTIST,
             {"musicbrainz_artist": "abc-mbid", "wikidata": "Q12345"},
             name="Auto-linked", score=0.6)
 
 # Apply only high-confidence mappings:
-out = get_store().apply(EntityKind.ARTIST,
+out = get_store().apply(EntityRole.ARTIST,
                         ExternalIds(musicbrainz_artist="abc-mbid"),
                         min_score=0.8)
 # `out` is unchanged — the score=0.6 entry was below the gate.
@@ -547,17 +549,17 @@ out = get_store().apply(EntityKind.ARTIST,
 
 ```python
 from metadatarr.resolve.mappings import get_store, reload, apply_mappings, add_mapping
-from metadatarr.resolve.entities import EntityKind
-from mediavocab import ExternalIds
+from metadatarr.resolve.entities import EntityRole
+from mediavocab.models import ExternalIds
 
 # Enrich a known set of ids
 ids = ExternalIds(extra={"bandcamp_artist_url": "https://piratech.bandcamp.com/"})
-enriched = apply_mappings(EntityKind.ARTIST, ids)
+enriched = apply_mappings(EntityRole.ARTIST, ids)
 print(enriched.extra.get("soundcloud_user_id"))  # → "987654" if declared
 
 # Register a mapping at runtime (process-lifetime only; not persisted to file)
 add_mapping(
-    EntityKind.ARTIST,
+    EntityRole.ARTIST,
     {
         "soundcloud_artist_url": "https://soundcloud.com/acidkid",
         "bandcamp_artist_url":   "https://piratech.bandcamp.com/",
@@ -590,20 +592,20 @@ mutation helpers instead of (or alongside) raw `ExternalIds` dicts:
 
 ```python
 from metadatarr.resolve.entities import (
-    EntitySidecar, EntityKind, ProviderEntity,
-    upsert_entity, attach_work, entities_by_kind,
+    EntitySidecar, EntityRole, ProviderEntity,
+    upsert_entity, attach_work, entities_by_role,
 )
-from mediavocab import ExternalIds
+from mediavocab.models import ExternalIds
 
 sidecar = EntitySidecar()
 
 # After resolving a match that returned artist relations:
-for entity in match.relations.get(EntityKind.ARTIST, []):
+for entity in match.relations.get(EntityRole.ARTIST, []):
     eid = upsert_entity(sidecar, entity)
     attach_work(sidecar, eid, work_id="my-work-123")
 
 # Query
-artists = entities_by_kind(sidecar, EntityKind.ARTIST)
+artists = entities_by_role(sidecar, EntityRole.ARTIST)
 ```
 
 `upsert_entity()` is idempotent: two providers referencing the same external
@@ -622,7 +624,7 @@ reverse-lookup index over the entities dict:
 
 ```python
 from metadatarr.resolve.sidecar import save, load, build_index
-from metadatarr.resolve.entities import EntityKind
+from metadatarr.resolve.entities import EntityRole
 
 save(sidecar, "entities.json")           # tempfile + os.replace; safe on crash
 sidecar = load("entities.json")          # missing path → empty EntitySidecar
@@ -630,10 +632,10 @@ sidecar = load("entities.json")          # missing path → empty EntitySidecar
 idx = build_index(sidecar)
 
 # Lookup by any external id (first-class field name OR `extra` key):
-eid = idx.find_by_external_id(EntityKind.ARTIST, "musicbrainz_artist", "mbid")
+eid = idx.find_by_external_id(EntityRole.ARTIST, "musicbrainz_artist", "mbid")
 
 # Lookup by name OR alias (normalised — case / punctuation collapsed):
-candidates = idx.find_by_name(EntityKind.ARTIST, "daft  punk!")
+candidates = idx.find_by_name(EntityRole.ARTIST, "daft  punk!")
 ```
 
 Rebuild the index after batch updates; it's a snapshot, not a live view.
@@ -646,7 +648,7 @@ These are two separate providers with completely different semantics.
 
 **`youtube`** — regular YouTube.  A video ID identifies a single upload, not
 a song.  The same song has thousands of uploads; none is authoritative.  This
-provider only emits `EntityKind.CHANNEL` relations (never `ARTIST` or
+provider only emits `EntityRole.CHANNEL` relations (never `ARTIST` or
 `ALBUM`), and refuses `MediaType.MUSIC` lookups entirely.  Use it for content
 that is *original to YouTube* — vlogs, essays, original podcasts, etc.
 
@@ -663,8 +665,8 @@ cross-references.  Track-level results carry `youtube_music_video_id`
 ```python
 from typing import Optional
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from mediavocab import ExternalIds
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
+from mediavocab.models import ExternalIds
 from mediavocab import Signals, MediaType
 
 
@@ -698,8 +700,8 @@ class MyProvider(MetadataProvider):
                 extra={"my_platform_id": str(result["id"])},
             ),
             relations={
-                EntityKind.ARTIST: [ProviderEntity(
-                    kind=EntityKind.ARTIST,
+                EntityRole.ARTIST: [ProviderEntity(
+                    role=EntityRole.ARTIST,
                     name=result["artist"],
                     external_ids=ExternalIds(extra={"my_platform_id": str(result["id"])}),
                 )],

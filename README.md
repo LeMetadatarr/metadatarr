@@ -36,19 +36,19 @@ and Wikidata — but every API has a different shape, auth model, and concept of
   the results, and merges winners into one `ResolveResult` with `ExternalIds`.
 - **Variant fan-out** — one flag (`include_variants=True`) and the resolver collects every
   known cut, edition, or fanedit of a work.
-- **Self-disabling optional deps** — providers for Bandcamp, SoundCloud, YouTube Music, and
-  Metal Archives silently skip themselves when their optional package isn't installed.
+- **Batteries-included** — pyfanedit, pymetal, tutubo, py_bandcamp, and nuvem_de_som are all
+  core dependencies; no optional-extra juggling required.
 
 ---
 
 ## Installation
 
 ```bash
-pip install metadatarr              # core — includes pyfanedit (fanedit.org)
-pip install "metadatarr[all]"       # + Bandcamp, SoundCloud, YouTube Music, Metal Archives
+pip install metadatarr
 ```
 
-Individual extras: `bandcamp`, `soundcloud`, `metal_archives` (youtube is bundled in `all` via `tutubo`).
+All first-party scrapers (pyfanedit, pymetal, tutubo, py_bandcamp, nuvem_de_som) are core
+dependencies — no extras required. The only optional extra is `[test]` for running the test suite.
 
 ---
 
@@ -145,7 +145,7 @@ provide, the better providers can filter and the more aggressively conflicts are
 ```python
 from metadatarr.resolve import resolve
 from mediavocab import Signals, MediaType
-from metadatarr.resolve.entities import Role
+from metadatarr.resolve.entities import EntityRole
 
 result = resolve(Signals(
     title           = "Alien",
@@ -154,7 +154,7 @@ result = resolve(Signals(
     include_variants= True,       # ← triggers second pass
 ))
 
-for entity in result.relations.get(Role.RELEASE, []):
+for entity in result.relations.get(EntityRole.RELEASE, []):
     print(entity.name, entity.external_ids.fanedit_id)
     # Alien: Covenant Cut, Alien: The Director's Cut, ...
 ```
@@ -186,24 +186,31 @@ plus an `extra` dict for platform-specific IDs (Bandcamp, SoundCloud, YouTube Mu
 
 ## Built-in providers
 
-All providers are keyless. Optional-dep providers silently disable if the package isn't installed.
+All providers are keyless. All dependencies are bundled in the core install.
 
-| Provider | Source | MediaType | Dep |
-|---|---|---|---|
-| `metadatarr` | Servarr proxies + OpenLibrary | Movies, TV, Music, Books | — |
-| `musicbrainz` | MusicBrainz API | Music | — |
-| `audiodb` | TheAudioDB | Music | — |
-| `tvmaze` | TVmaze public API | TV | — |
-| `wikidata` | Wikidata API | All | — |
-| `discogs` | Discogs API | Music, Music Video | — |
-| `bluray_com` | blu-ray.com scraper | Movies | — |
-| `dvdcompare` | dvdcompare.net scraper | Movies | — |
-| `pyfanedit` | fanedit.org / IFDB | Movies (variants) | — |
-| `bandcamp` | Bandcamp | Music | `py_bandcamp` |
-| `soundcloud` | SoundCloud | Music | `nuvem_de_som` |
-| `youtube_music` | YouTube Music | Music | `tutubo` |
-| `youtube` | YouTube | Videos, Podcasts | `tutubo` |
-| `metal_archives` | Encyclopaedia Metallum | Music | `pymetal` |
+| Provider | Source | MediaType |
+|---|---|---|
+| `metadatarr` | Servarr proxies + OpenLibrary | Movie, EpisodicSeries, Music, Book |
+| `musicbrainz` | MusicBrainz API | Music |
+| `audiodb` | TheAudioDB | Music |
+| `tvmaze` | TVmaze public API | EpisodicSeries |
+| `tmdb` | TMDB API | Movie, EpisodicSeries |
+| `anilist` | AniList GraphQL API | Movie, EpisodicSeries, Comic |
+| `jikan_anime` | Jikan (MyAnimeList) | Movie, EpisodicSeries |
+| `jikan_manga` | Jikan (MyAnimeList) | Comic |
+| `google_books` | Google Books API | Book, Audiobook |
+| `librivox` | LibriVox API | Audiobook |
+| `apple_podcasts` | Apple Podcasts search | Podcast, AudioDrama |
+| `wikidata` | Wikidata API | All |
+| `discogs` | Discogs API | Music, MusicVideo |
+| `bluray_com` | blu-ray.com scraper | Movie |
+| `dvdcompare` | dvdcompare.net scraper | Movie |
+| `pyfanedit` | fanedit.org / IFDB | Movie (variants) |
+| `bandcamp` | Bandcamp | Music |
+| `soundcloud` | SoundCloud | Music |
+| `youtube_music` | YouTube Music | Music |
+| `youtube` | YouTube | Video, Podcast |
+| `metal_archives` | Encyclopaedia Metallum | Music |
 
 **YouTube vs YouTube Music** — these are intentionally separate providers.
 `youtube` only emits channel IDs and refuses `MediaType.MUSIC` lookups (video IDs aren't
