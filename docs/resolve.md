@@ -16,7 +16,7 @@ A `Signals` object is the input to every lookup.  It carries what you already
 know about the work:
 
 ```python
-from metadatarr.resolve.signals import Signals, MediaType
+from mediavocab import Signals, MediaType
 
 signals = Signals(
     title="Sankarihauta",
@@ -116,7 +116,7 @@ first-class typed fields for every well-known platform ID, plus an `extra`
 dict for everything else:
 
 ```python
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab import ExternalIds
 
 ids = ExternalIds(
     musicbrainz_artist="some-uuid",
@@ -194,7 +194,7 @@ So `ExternalIds(isbn_10="0-261-10328-8")` ends up with both
 disagree on representation merge cleanly.
 
 The conversion helpers are public:
-`metadatarr.resolve.external_ids.isbn10_to_13`,
+`mediavocab.text.isbn10_to_13`,
 `isbn13_to_10`, and `normalize_isbn`.
 
 #### Merge semantics
@@ -310,7 +310,7 @@ Providers without an override still emit a single candidate (their
 
 ```python
 from metadatarr.resolve.base import all_providers, active_providers
-from metadatarr.resolve.signals import Medium
+from mediavocab import MediaType
 
 all_providers()                         # {name: provider} — every registered provider
 active_providers()                      # those whose is_available() is True
@@ -326,7 +326,7 @@ active_providers(medium=MediaType.MUSIC)   # further filtered to music-capable p
 ```python
 import metadatarr.resolve.providers          # triggers provider self-registration
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, MediaType
+from mediavocab import Signals, MediaType
 
 result = resolve(Signals(title="Inception", medium=MediaType.MOVIE))
 print(result.external_ids.tmdb_movie)   # → 27205
@@ -361,7 +361,7 @@ matches:
 
 ```python
 from metadatarr.resolve.base import active_providers, consolidate, ProviderMatch
-from metadatarr.resolve.signals import Signals, MediaType
+from mediavocab import Signals, MediaType
 
 signals = Signals(title="Inception", medium=MediaType.MOVIE)
 matches = []
@@ -398,7 +398,7 @@ Results are de-duplicated by `fanedit_id` > `musicbrainz_release` > `name`
 ```python
 from metadatarr.resolve.base import resolve
 from metadatarr.resolve.entities import Role
-from metadatarr.resolve.signals import Signals, MediaType
+from mediavocab import Signals, MediaType
 
 result = resolve(Signals(
     title="Inception",
@@ -530,7 +530,7 @@ don't want to apply unconditionally:
 ```python
 from metadatarr.resolve.mappings import add_mapping, get_store
 from metadatarr.resolve.entities import EntityKind
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab import ExternalIds
 
 add_mapping(EntityKind.ARTIST,
             {"musicbrainz_artist": "abc-mbid", "wikidata": "Q12345"},
@@ -548,7 +548,7 @@ out = get_store().apply(EntityKind.ARTIST,
 ```python
 from metadatarr.resolve.mappings import get_store, reload, apply_mappings, add_mapping
 from metadatarr.resolve.entities import EntityKind
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab import ExternalIds
 
 # Enrich a known set of ids
 ids = ExternalIds(extra={"bandcamp_artist_url": "https://piratech.bandcamp.com/"})
@@ -593,7 +593,7 @@ from metadatarr.resolve.entities import (
     EntitySidecar, EntityKind, ProviderEntity,
     upsert_entity, attach_work, entities_by_kind,
 )
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab import ExternalIds
 
 sidecar = EntitySidecar()
 
@@ -664,8 +664,8 @@ cross-references.  Track-level results carry `youtube_music_video_id`
 from typing import Optional
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityKind, ProviderEntity
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import ExternalIds
+from mediavocab import Signals, MediaType
 
 
 class MyProvider(MetadataProvider):

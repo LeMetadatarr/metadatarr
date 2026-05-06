@@ -12,7 +12,8 @@ Talk to the public catalogues that the *arr ecosystem, media managers, and libra
 then fuse the answers into a single, de-duplicated record with a canonical set of external IDs.
 
 ```python
-from metadatarr.resolve import resolve, Signals, Medium
+from metadatarr.resolve import resolve
+from mediavocab import Signals, MediaType
 
 result = resolve(Signals(title="Inception", year=2010, medium=MediaType.MOVIE))
 
@@ -101,7 +102,8 @@ When you have a title, a year, or a noisy filename and need a canonical identity
 platform, the resolver fans out, conflict-checks, and merges:
 
 ```python
-from metadatarr.resolve import resolve, Signals, Medium
+from metadatarr.resolve import resolve
+from mediavocab import Signals, MediaType
 
 # A basic lookup — metadatarr queries all active providers concurrently
 result = resolve(Signals(title="OK Computer", artist="Radiohead", medium=MediaType.MUSIC))
@@ -121,7 +123,7 @@ for d in result.conflicts:
 ### Signals — tell the resolver what you know
 
 ```python
-from metadatarr.resolve import Signals, Medium
+from mediavocab import Signals, MediaType
 
 signals = Signals(
     title    = "Alien",
@@ -136,12 +138,13 @@ signals = Signals(
 Pass as much or as little as you have. Every field is optional. The more context you
 provide, the better providers can filter and the more aggressively conflicts are detected.
 
-**Medium values:** `MUSIC`, `MUSIC_VIDEO`, `MOVIE`, `TV`, `PODCAST`, `BOOK`, `OTHER`.
+**MediaType values:** Comes from mediavocab — 18 canonical values (`MOVIE`, `EPISODIC_SERIES`, `TV`, `MUSIC`, `MUSIC_VIDEO`, `PODCAST`, `BOOK`, `COMIC`, `GAME`, `AUDIOBOOK`, `AUDIO_DRAMA`, `RADIO`, `INTERACTIVE_FICTION`, `SOUND_EFFECT`, `AMBIENT_SOUNDS`, `PLAYLIST`, `GENERIC`, `NOT_MEDIA`). See the [mediavocab spec §4.1](https://github.com/TigreGotico/mediavocab/blob/dev/docs/mediavocab_spec.md).
 
 ### Variant fan-out — editions, cuts, fanedits
 
 ```python
-from metadatarr.resolve import resolve, Signals, Medium
+from metadatarr.resolve import resolve
+from mediavocab import Signals, MediaType
 from metadatarr.resolve.entities import Role
 
 result = resolve(Signals(
@@ -164,7 +167,7 @@ every active provider:
 ### ExternalIds — every platform in one object
 
 ```python
-from metadatarr.resolve.external_ids import ExternalIds
+from mediavocab import ExternalIds
 
 ids = result.external_ids
 print(ids.tmdb_movie)                          # int
@@ -185,7 +188,7 @@ plus an `extra` dict for platform-specific IDs (Bandcamp, SoundCloud, YouTube Mu
 
 All providers are keyless. Optional-dep providers silently disable if the package isn't installed.
 
-| Provider | Source | Medium | Dep |
+| Provider | Source | MediaType | Dep |
 |---|---|---|---|
 | `metadatarr` | Servarr proxies + OpenLibrary | Movies, TV, Music, Books | — |
 | `musicbrainz` | MusicBrainz API | Music | — |
@@ -241,8 +244,8 @@ package file.
 ```python
 from typing import Optional
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.external_ids import ExternalIds
-from metadatarr.resolve.signals import Medium, Signals
+from mediavocab import ExternalIds
+from mediavocab import Signals, MediaType
 
 
 class MyProvider(MetadataProvider):
@@ -288,7 +291,7 @@ structured API covers — region codes, audio track specs, cut runtimes, regiona
 ```python
 from metadatarr.resolve.providers.bluray_com import BlurayComProvider
 from metadatarr.resolve.providers.dvdcompare import DVDCompareProvider
-from metadatarr.resolve.signals import Signals, Medium
+from mediavocab import Signals, MediaType
 
 signals = Signals(title="Moon", year=2009, medium=MediaType.MOVIE)
 

@@ -255,7 +255,7 @@ result where the dvdcompare provider has confirmed the version:
 ```python
 import metadatarr.resolve.providers
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, MediaType, VariantKind
+from mediavocab import Signals, MediaType, VariantKind
 
 def resolve_cut(title: str, cut: VariantKind):
     result = resolve(Signals(

@@ -123,7 +123,7 @@ information. It maps to `VariantKind` in the resolve system as follows:
 ```python
 import metadatarr.resolve.providers  # registers all providers
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, MediaType, VariantKind
+from mediavocab import Signals, MediaType, VariantKind
 
 # Resolve the Director's Cut specifically
 dc_result = resolve(Signals(
@@ -224,7 +224,7 @@ and image data without re-running a search:
 ```python
 import metadatarr.resolve.providers
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, MediaType
+from mediavocab import Signals, MediaType
 from metadatarr.resolve.providers.discogs import DiscogsProvider
 
 result = resolve(Signals(title="Andrei Rublev", medium=MediaType.MOVIE))
@@ -275,7 +275,7 @@ imported. `resolve()` fans them out automatically:
 ```python
 import metadatarr.resolve.providers
 from metadatarr.resolve.base import resolve
-from metadatarr.resolve.signals import Signals, MediaType
+from mediavocab import Signals, MediaType
 
 result = resolve(Signals(
     title="Blade Runner 2049",
