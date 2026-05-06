@@ -20,7 +20,7 @@ import logging
 from typing import List, Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals, match_quality
@@ -75,8 +75,8 @@ class AudioDBProvider(MetadataProvider):
             if top.artist_id:
                 artist_extra["audiodb_artist_id"] = top.artist_id
             # musicbrainz_artist is already in the first-class ExternalIds field below
-            relations[EntityKind.ARTIST] = [ProviderEntity(
-                kind=EntityKind.ARTIST,
+            relations[EntityRole.ARTIST] = [ProviderEntity(
+        role=EntityRole.ARTIST,
                 name=top.artist,
                 external_ids=ExternalIds(
                     musicbrainz_artist=top.musicbrainz_artist_id,
@@ -88,8 +88,8 @@ class AudioDBProvider(MetadataProvider):
             if top.album_id:
                 album_extra["audiodb_album_id"] = top.album_id
             # musicbrainz_release is already in the first-class ExternalIds field below
-            relations[EntityKind.ALBUM] = [ProviderEntity(
-                kind=EntityKind.ALBUM,
+            relations[EntityRole.ALBUM] = [ProviderEntity(
+        role=EntityRole.ALBUM,
                 name=top.album,
                 external_ids=ExternalIds(
                     musicbrainz_release=top.musicbrainz_album_id,

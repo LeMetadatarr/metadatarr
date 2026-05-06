@@ -19,7 +19,7 @@ from typing import Optional
 
 from metadatarr.client import ArrMetadataClient, OpenLibraryClient
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals, match_quality
@@ -121,9 +121,9 @@ class ServarrProxyProvider(MetadataProvider):
                 if key:
                     ext.extra["openlibrary_author"] = key
                 entries.append(ProviderEntity(
-                    kind=EntityKind.AUTHOR, name=name, external_ids=ext,
+        role=EntityRole.AUTHOR, name=name, external_ids=ext,
                 ))
-            relations[EntityKind.AUTHOR] = entries
+            relations[EntityRole.AUTHOR] = entries
 
         language = (top.language[0] if top.language else None) or signals.language
 
@@ -146,8 +146,8 @@ class ServarrProxyProvider(MetadataProvider):
         if not results:
             return None
         top = results[0]
-        relations: dict = {EntityKind.ARTIST: [ProviderEntity(
-            kind=EntityKind.ARTIST,
+        relations: dict = {EntityRole.ARTIST: [ProviderEntity(
+        role=EntityRole.ARTIST,
             name=top.name,
             external_ids=ExternalIds(musicbrainz_artist=top.id),
         )]}

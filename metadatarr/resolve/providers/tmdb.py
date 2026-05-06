@@ -12,7 +12,7 @@ from typing import Any, Dict, Optional
 import requests
 
 from mediavocab import MediaType
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import (
@@ -113,9 +113,9 @@ class TmdbProvider(MetadataProvider):
         # Created-by → director-equivalent for series.
         creators = details.get("created_by") or []
         if creators:
-            relations.setdefault(EntityKind.DIRECTOR, []).extend(
+            relations.setdefault(EntityRole.DIRECTOR, []).extend(
                 ProviderEntity(
-                    kind=EntityKind.DIRECTOR,
+        role=EntityRole.DIRECTOR,
                     name=c.get("name") or "",
                     external_ids=ExternalIds(tmdb_person=c.get("id")),
                 )
@@ -148,14 +148,14 @@ class TmdbProvider(MetadataProvider):
             name = member.get("name")
             if not name:
                 continue
-            out.setdefault(EntityKind.ACTOR, []).append(ProviderEntity(
-                kind=EntityKind.ACTOR,
+            out.setdefault(EntityRole.ACTOR, []).append(ProviderEntity(
+        role=EntityRole.ACTOR,
                 name=name,
                 external_ids=ExternalIds(tmdb_person=member.get("id")),
             ))
         # Cap cast at 20 to keep the sidecar reasonable.
-        if EntityKind.ACTOR in out:
-            out[EntityKind.ACTOR] = out[EntityKind.ACTOR][:20]
+        if EntityRole.ACTOR in out:
+            out[EntityRole.ACTOR] = out[EntityRole.ACTOR][:20]
         for member in credits.get("crew") or []:
             job = (member.get("job") or "").lower()
             name = member.get("name")
@@ -163,17 +163,17 @@ class TmdbProvider(MetadataProvider):
                 continue
             kind: Optional[EntityKind] = None
             if job == "director":
-                kind = EntityKind.DIRECTOR
+                role = EntityRole.DIRECTOR
             elif "producer" in job and "executive" not in job:
-                kind = EntityKind.PRODUCER
+                role = EntityRole.PRODUCER
             elif job in {"writer", "screenplay", "story"}:
-                kind = EntityKind.WRITER
+                role = EntityRole.WRITER
             elif job in {"original music composer", "music"}:
-                kind = EntityKind.COMPOSER
+                role = EntityRole.COMPOSER
             if kind is None:
                 continue
             out.setdefault(kind, []).append(ProviderEntity(
-                kind=kind, name=name,
+                role=role, name=name,
                 external_ids=ExternalIds(tmdb_person=member.get("id")),
             ))
         return out

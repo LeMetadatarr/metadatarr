@@ -20,7 +20,7 @@ from typing import List, Optional
 
 import metadatarr.resolve.providers  # trigger built-in self-registration
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register, resolve
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import Entity ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, VariantKind
 from mediavocab.models.signals import Signals
@@ -81,7 +81,7 @@ class LocalCatalogueProvider(MetadataProvider):
         for entry in self._by_imdb[imdb]:
             vk = _KIND_MAP.get(entry.get("variant_kind", ""), VariantKind.OTHER)
             out.append(ProviderEntity(
-                kind=EntityKind.RELEASE,
+        role=EntityRole.RELEASE,
                 name=entry["title"],
                 external_ids=ExternalIds(
                     derived_from_imdb=imdb,
@@ -98,7 +98,7 @@ def main() -> None:
     register(provider)
 
     print("=== resolve The Matrix with include_variants=True ===")
-    from metadatarr.resolve.entities import Role
+    from metadatarr.resolve.entities import 
 
     result = resolve(Signals(
         title="The Matrix",

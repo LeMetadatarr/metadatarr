@@ -15,7 +15,7 @@ Requires:
 """
 import metadatarr.resolve.providers  # trigger provider self-registration
 from metadatarr.resolve.base import all_providers, enrich
-from metadatarr.resolve.entities import EntityKind, Role
+from metadatarr.resolve.entities import Entity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals

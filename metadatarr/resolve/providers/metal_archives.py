@@ -18,7 +18,7 @@ import logging
 from typing import List, Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals, match_quality
@@ -79,14 +79,14 @@ class MetalArchivesProvider(MetadataProvider):
 
         relations: dict = {}
         if getattr(hit, "band_name", None):
-            relations[EntityKind.ARTIST] = [ProviderEntity(
-                kind=EntityKind.ARTIST,
+            relations[EntityRole.ARTIST] = [ProviderEntity(
+        role=EntityRole.ARTIST,
                 name=hit.band_name,
                 external_ids=ExternalIds(metal_archives_band=hit.band_id),
             )]
         if getattr(hit, "release_title", None):
-            relations[EntityKind.ALBUM] = [ProviderEntity(
-                kind=EntityKind.ALBUM,
+            relations[EntityRole.ALBUM] = [ProviderEntity(
+        role=EntityRole.ALBUM,
                 name=hit.release_title,
                 external_ids=ExternalIds(metal_archives_release=hit.release_id),
             )]

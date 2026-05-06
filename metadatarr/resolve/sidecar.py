@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple
 
 from metadatarr.resolve.entities import (
-    EntityKind,
+    EntityRole,
     EntityRecord,
     EntitySidecar,
 )
@@ -87,13 +87,13 @@ class SidecarIndex:
     by_alias: Dict[Tuple[str, str], Set[str]] = field(default_factory=dict)
     """``(kind, normalised-name) -> {entity_id, ...}``"""
 
-    def find_by_external_id(self, kind: EntityKind, field_name: str,
+    def find_by_external_id(self, role: EntityRole, field_name: str,
                             value: str) -> Optional[str]:
-        return self.by_external_id.get((kind.value, field_name, str(value)))
+        return self.by_external_id.get((role.value, field_name, str(value)))
 
-    def find_by_name(self, kind: EntityKind, name: str) -> List[str]:
+    def find_by_name(self, role: EntityRole, name: str) -> List[str]:
         from metadatarr.resolve.entities import _normalize_name
-        ids = self.by_alias.get((kind.value, _normalize_name(name)), set())
+        ids = self.by_alias.get((role.value, _normalize_name(name)), set())
         return list(ids)
 
 
@@ -110,16 +110,16 @@ def build_index(sidecar: EntitySidecar) -> SidecarIndex:
             val = getattr(rec.external_ids, fname, None)
             if val in (None, ""):
                 continue
-            idx.by_external_id[(rec.kind.value, fname, str(val))] = entity_id
+            idx.by_external_id[(rec.role.value, fname, str(val))] = entity_id
         for k, v in rec.external_ids.extra.items():
             if v:
-                idx.by_external_id[(rec.kind.value, k, str(v))] = entity_id
+                idx.by_external_id[(rec.role.value, k, str(v))] = entity_id
 
         # Alias / name index
         for surface in [rec.name, *rec.aliases]:
             if not surface:
                 continue
-            key = (rec.kind.value, _normalize_name(surface))
+            key = (rec.role.value, _normalize_name(surface))
             idx.by_alias.setdefault(key, set()).add(entity_id)
     return idx
 

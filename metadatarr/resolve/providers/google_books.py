@@ -10,7 +10,7 @@ import logging
 from typing import Optional
 
 from mediavocab import MediaType
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
@@ -97,8 +97,9 @@ class GoogleBooksProvider(MetadataProvider):
         relations: dict = {}
         authors = info.get("authors") or []
         if authors:
-            relations[EntityKind.AUTHOR] = [
-                ProviderEntity(kind=EntityKind.AUTHOR, name=name)
+            relations[EntityRole.AUTHOR] = [
+                ProviderEntity(
+        role=EntityRole.AUTHOR, name=name)
                 for name in authors
             ]
 

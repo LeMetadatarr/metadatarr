@@ -28,7 +28,7 @@ from urllib.parse import urljoin
 import requests
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
@@ -181,8 +181,8 @@ class BandcampProvider(MetadataProvider):
                 artist_extra["bandcamp_band_id"] = str(band_id)
             if artist_url:
                 artist_extra["bandcamp_artist_url"] = str(artist_url)
-            relations[EntityKind.ARTIST] = [ProviderEntity(
-                kind=EntityKind.ARTIST,
+            relations[EntityRole.ARTIST] = [ProviderEntity(
+        role=EntityRole.ARTIST,
                 name=artist_name,
                 external_ids=ExternalIds(extra=artist_extra),
             )]
@@ -192,8 +192,8 @@ class BandcampProvider(MetadataProvider):
                 album_extra["bandcamp_album_id"] = str(album_id_num)
             if album_url:
                 album_extra["bandcamp_album_url"] = str(album_url)
-            relations[EntityKind.ALBUM] = [ProviderEntity(
-                kind=EntityKind.ALBUM,
+            relations[EntityRole.ALBUM] = [ProviderEntity(
+        role=EntityRole.ALBUM,
                 name=album_title,
                 external_ids=ExternalIds(extra=album_extra),
             )]

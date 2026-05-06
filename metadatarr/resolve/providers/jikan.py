@@ -10,7 +10,7 @@ import logging
 from typing import Optional
 
 from mediavocab import MediaType
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
@@ -86,8 +86,8 @@ class JikanAnimeProvider(MetadataProvider):
         studios = top.get("studios") or []
         if studios:
             s = studios[0]
-            relations[EntityKind.STUDIO] = [ProviderEntity(
-                kind=EntityKind.STUDIO,
+            relations[EntityRole.STUDIO] = [ProviderEntity(
+        role=EntityRole.STUDIO,
                 name=s.get("name", ""),
                 external_ids=ExternalIds(
                     mal_studio_id=int(s["mal_id"]) if s.get("mal_id") else None,
@@ -163,13 +163,13 @@ class JikanMangaProvider(MetadataProvider):
                     parts = [p.strip() for p in name.split(",", 1)]
                     name = f"{parts[1]} {parts[0]}"
                 entries.append(ProviderEntity(
-                    kind=EntityKind.AUTHOR,
+        role=EntityRole.AUTHOR,
                     name=name,
                     external_ids=ExternalIds(
                         mal_person_id=int(a["mal_id"]) if a.get("mal_id") else None,
                     ),
                 ))
-            relations[EntityKind.AUTHOR] = entries
+            relations[EntityRole.AUTHOR] = entries
 
         extra: dict = {}
         jp = top.get("title_japanese")

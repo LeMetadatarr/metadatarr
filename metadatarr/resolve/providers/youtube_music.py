@@ -31,7 +31,7 @@ from typing import Optional
 from tutubo import search_yt_music
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
@@ -128,8 +128,8 @@ class YouTubeMusicProvider(MetadataProvider):
             artist_extra: dict = {}
             if artist_browse:
                 artist_extra["youtube_music_artist_browse_id"] = str(artist_browse)
-            relations[EntityKind.ARTIST] = [ProviderEntity(
-                kind=EntityKind.ARTIST,
+            relations[EntityRole.ARTIST] = [ProviderEntity(
+        role=EntityRole.ARTIST,
                 name=artist_name,
                 external_ids=ExternalIds(extra=artist_extra),
             )]
@@ -139,8 +139,8 @@ class YouTubeMusicProvider(MetadataProvider):
                 album_extra["youtube_music_album_browse_id"] = str(album_browse)
             if album_playlist:
                 album_extra["youtube_music_playlist_id"] = str(album_playlist)
-            relations[EntityKind.ALBUM] = [ProviderEntity(
-                kind=EntityKind.ALBUM,
+            relations[EntityRole.ALBUM] = [ProviderEntity(
+        role=EntityRole.ALBUM,
                 name=album_name,
                 external_ids=ExternalIds(extra=album_extra),
             )]

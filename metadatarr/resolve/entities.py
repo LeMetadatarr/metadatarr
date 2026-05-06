@@ -1,14 +1,22 @@
-"""Entity layer — first-class people, albums, labels, channels.
+"""Entity layer — typed structural kind + role taxonomy.
 
-Each :class:`EntityRecord` is a peer to whatever "work" record a consumer
-maintains: it gives a stable id for an artist / actor / director / album /
-channel / label, anchored to authoritative external ids (MusicBrainz mbid,
-TMDB person id, Wikidata Q-id, …).
+Two enums, separate concerns:
 
-Consumers maintain a "work" record (canonical record, in media_archivist
-parlance) with a ``relations`` mapping ``{role: [entity_id, ...]}`` so they
-can ask "every work whose director is `e_abc`" without scanning freeform
-strings.
+- :class:`EntityKind` — structural kind, re-exported from
+  ``mediavocab.EntityKind`` (PERSON / GROUP / ORGANISATION / SERIES /
+  DEVICE / OTHER). Tells you what *shape* of entity record you are
+  looking at.
+- :class:`EntityRole` — relational role, the resolver-internal
+  taxonomy used to key :attr:`ProviderMatch.relations`. Tells you
+  what role the entity plays in a particular work
+  (director / actor / composer / label / studio / …) and includes
+  resolver-internal categories that are not contribution roles
+  (ALBUM / RELEASE / TRACK / CHARACTER) for provider-output
+  ergonomics.
+
+A :class:`ProviderEntity` carries both: ``role`` is required (it is
+how the provider classifies the contribution), ``kind`` is optional
+and auto-derived from ``role.to_mediavocab_kind()`` if omitted.
 """
 from __future__ import annotations
 
@@ -18,8 +26,10 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+# Re-export the canonical structural kind from mediavocab.
+from mediavocab import EntityKind, RelationRole
 from mediavocab.models import ExternalIds
 
 
@@ -27,34 +37,21 @@ def _utcnow() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-class EntityKind(str, Enum):
-    """Resolver-internal *role/kind* taxonomy used to key the
-    :attr:`ProviderMatch.relations` dictionary.
+class EntityRole(str, Enum):
+    """Resolver-internal role taxonomy used to key
+    :attr:`ProviderMatch.relations`.
 
-    This enum deliberately mixes structural kinds (``ARTIST``, ``LABEL``,
-    ``STUDIO``, ``CHANNEL``, ``CHARACTER``) with relational roles
-    (``ACTOR``, ``DIRECTOR``, ``COMPOSER``, …) and Work-level
-    sub-types (``ALBUM``, ``RELEASE``, ``TRACK``). Providers report
-    "this entity is the director of the work" by emitting
-    ``ProviderEntity(kind=EntityKind.DIRECTOR, ...)`` — the kind *is* the
-    role in this layer, which is convenient for the dispatcher and for
-    keying ``relations[role]``.
-
-    Callers building canonical :class:`mediavocab.Entity` /
-    :class:`mediavocab.Credit` records should round-trip through
-    :meth:`to_mediavocab_kind` (structural ``EntityKind`` —
-    ``PERSON`` / ``GROUP`` / ``ORGANISATION`` / ``OTHER``) and
-    :meth:`to_mediavocab_role` (typed ``RelationRole``). Spec axiom 1
-    keeps the foundation enums orthogonal; this enum trades that
-    orthogonality for ergonomic provider dispatch.
+    Includes contribution roles (``DIRECTOR``, ``ACTOR``, ``COMPOSER``,
+    …) and resolver-internal categories that are not strictly
+    contribution roles (``ALBUM``, ``RELEASE``, ``TRACK``, ``CHARACTER``)
+    — the latter exist because providers commonly emit "the album of
+    this work is X" as a relation entry. Callers building canonical
+    :class:`mediavocab.Entity` / :class:`mediavocab.Credit` records
+    should map through :meth:`to_mediavocab_kind` and
+    :meth:`to_mediavocab_role`.
     """
 
-    ARTIST = "artist"
-    ALBUM = "album"
-    RELEASE = "release"
-    TRACK = "track"
-    LABEL = "label"
-    CHANNEL = "channel"
+    # People / contributors
     ACTOR = "actor"
     VOICE_ACTOR = "voice_actor"
     DIRECTOR = "director"
@@ -64,80 +61,79 @@ class EntityKind(str, Enum):
     NARRATOR = "narrator"
     HOST = "host"
     AUTHOR = "author"
+
+    # Performance / recording
+    ARTIST = "artist"
+
+    # Organisations
+    LABEL = "label"
+    CHANNEL = "channel"
     STUDIO = "studio"
+
+    # Resolver-internal categories — not contribution roles, but
+    # commonly emitted as relations entries (the album of this song,
+    # the release of this track, the character played in this film).
+    ALBUM = "album"
+    RELEASE = "release"
+    TRACK = "track"
     CHARACTER = "character"
+
     OTHER = "other"
 
-    def to_mediavocab_kind(self):
-        """Return the structural ``mediavocab.EntityKind`` for this value.
+    def to_mediavocab_kind(self) -> EntityKind:
+        """Return the structural ``mediavocab.EntityKind``.
 
-        ``ALBUM`` / ``RELEASE`` / ``TRACK`` are Works (not Entities) per
-        the mediavocab spec; they map to ``EntityKind.OTHER`` here as a
-        signal to the caller that the right model is ``Work``, not
-        ``Entity``.
+        ``ALBUM`` / ``RELEASE`` / ``TRACK`` are Works (not Entities)
+        per the mediavocab spec; they map to ``EntityKind.OTHER`` here
+        as a signal to the caller that the right model is ``Work``,
+        not ``Entity``.
         """
-        from mediavocab import EntityKind as _MvEntityKind
-        return _STRUCTURAL_KIND.get(self, _MvEntityKind.OTHER)
+        return _STRUCTURAL_KIND.get(self, EntityKind.OTHER)
 
-    def to_mediavocab_role(self):
-        """Return the typed ``mediavocab.RelationRole`` for this value, or
-        ``None`` when this kind is not a contribution role (e.g. ``ALBUM``,
-        ``ARTIST``, ``CHARACTER``)."""
+    def to_mediavocab_role(self) -> Optional[RelationRole]:
+        """Return the typed ``mediavocab.RelationRole`` for this role,
+        or ``None`` when this is not a contribution role."""
         return _RELATION_ROLE.get(self)
 
 
-# Lazy maps populated below to avoid an import cycle with mediavocab.
-_STRUCTURAL_KIND: dict = {}
-_RELATION_ROLE: dict = {}
+_STRUCTURAL_KIND: Dict[EntityRole, EntityKind] = {
+    EntityRole.ARTIST:      EntityKind.GROUP,        # band / solo project — group default
+    EntityRole.ALBUM:       EntityKind.OTHER,        # Work, not Entity
+    EntityRole.RELEASE:     EntityKind.OTHER,        # Work, not Entity
+    EntityRole.TRACK:       EntityKind.OTHER,        # Work, not Entity
+    EntityRole.LABEL:       EntityKind.ORGANISATION,
+    EntityRole.CHANNEL:     EntityKind.ORGANISATION,
+    EntityRole.STUDIO:      EntityKind.ORGANISATION,
+    EntityRole.ACTOR:       EntityKind.PERSON,
+    EntityRole.VOICE_ACTOR: EntityKind.PERSON,
+    EntityRole.DIRECTOR:    EntityKind.PERSON,
+    EntityRole.PRODUCER:    EntityKind.PERSON,
+    EntityRole.COMPOSER:    EntityKind.PERSON,
+    EntityRole.WRITER:      EntityKind.PERSON,
+    EntityRole.NARRATOR:    EntityKind.PERSON,
+    EntityRole.HOST:        EntityKind.PERSON,
+    EntityRole.AUTHOR:      EntityKind.PERSON,
+    EntityRole.CHARACTER:   EntityKind.PERSON,       # fictional person
+    EntityRole.OTHER:       EntityKind.OTHER,
+}
 
-
-def _build_bridges():
-    from mediavocab import EntityKind as _MvEntityKind
-    from mediavocab import RelationRole as _MvRelationRole
-    _STRUCTURAL_KIND.update({
-        EntityKind.ARTIST:      _MvEntityKind.GROUP,         # band / solo project — group default
-        EntityKind.ALBUM:       _MvEntityKind.OTHER,         # Work, not Entity
-        EntityKind.RELEASE:     _MvEntityKind.OTHER,         # Work, not Entity
-        EntityKind.TRACK:       _MvEntityKind.OTHER,         # Work, not Entity
-        EntityKind.LABEL:       _MvEntityKind.ORGANISATION,
-        EntityKind.CHANNEL:     _MvEntityKind.ORGANISATION,
-        EntityKind.STUDIO:      _MvEntityKind.ORGANISATION,
-        EntityKind.ACTOR:       _MvEntityKind.PERSON,
-        EntityKind.VOICE_ACTOR: _MvEntityKind.PERSON,
-        EntityKind.DIRECTOR:    _MvEntityKind.PERSON,
-        EntityKind.PRODUCER:    _MvEntityKind.PERSON,
-        EntityKind.COMPOSER:    _MvEntityKind.PERSON,
-        EntityKind.WRITER:      _MvEntityKind.PERSON,
-        EntityKind.NARRATOR:    _MvEntityKind.PERSON,
-        EntityKind.HOST:        _MvEntityKind.PERSON,
-        EntityKind.AUTHOR:      _MvEntityKind.PERSON,
-        EntityKind.CHARACTER:   _MvEntityKind.PERSON,        # fictional person
-        EntityKind.OTHER:       _MvEntityKind.OTHER,
-    })
-    _RELATION_ROLE.update({
-        EntityKind.ACTOR:       _MvRelationRole.ACTOR,
-        EntityKind.VOICE_ACTOR: _MvRelationRole.ACTOR,       # no separate VOICE_ACTOR in foundation
-        EntityKind.DIRECTOR:    _MvRelationRole.DIRECTOR,
-        EntityKind.PRODUCER:    _MvRelationRole.PRODUCER,    # NB: foundation PRODUCER is *music* producer
-        EntityKind.COMPOSER:    _MvRelationRole.COMPOSER,
-        EntityKind.WRITER:      _MvRelationRole.SCREENWRITER,
-        EntityKind.NARRATOR:    _MvRelationRole.NARRATOR,
-        EntityKind.HOST:        _MvRelationRole.HOST,
-        EntityKind.AUTHOR:      _MvRelationRole.AUTHOR,
-        EntityKind.LABEL:       _MvRelationRole.LABEL,
-        EntityKind.STUDIO:      _MvRelationRole.PUBLISHER,
-        EntityKind.CHANNEL:     _MvRelationRole.DISTRIBUTOR,
-        EntityKind.ARTIST:      _MvRelationRole.PERFORMER,
-    })
-
-
-_build_bridges()
-
-
-# Role on a work's relations dict — same vocabulary as EntityKind, kept as
-# a separate name so a relation can refer to entities of a different kind
-# in unusual cases.
-Role = EntityKind
+_RELATION_ROLE: Dict[EntityRole, RelationRole] = {
+    EntityRole.ACTOR:       RelationRole.ACTOR,
+    EntityRole.VOICE_ACTOR: RelationRole.ACTOR,         # foundation has no separate VOICE_ACTOR
+    EntityRole.DIRECTOR:    RelationRole.DIRECTOR,
+    EntityRole.PRODUCER:    RelationRole.PRODUCER,      # NB: foundation PRODUCER is *music* producer
+    EntityRole.COMPOSER:    RelationRole.COMPOSER,
+    EntityRole.WRITER:      RelationRole.SCREENWRITER,
+    EntityRole.NARRATOR:    RelationRole.NARRATOR,
+    EntityRole.HOST:        RelationRole.HOST,
+    EntityRole.AUTHOR:      RelationRole.AUTHOR,
+    EntityRole.LABEL:       RelationRole.LABEL,
+    EntityRole.STUDIO:      RelationRole.PUBLISHER,
+    EntityRole.CHANNEL:     RelationRole.DISTRIBUTOR,
+    EntityRole.ARTIST:      RelationRole.PERFORMER,
+    # ALBUM / RELEASE / TRACK / CHARACTER deliberately absent — they
+    # are not contribution roles in the foundation.
+}
 
 
 def _normalize_name(name: str) -> str:
@@ -146,9 +142,9 @@ def _normalize_name(name: str) -> str:
     return " ".join(name.split())
 
 
-def _dominant_external_id(ext: ExternalIds, kind: EntityKind) -> Optional[str]:
-    """Return the most stable external id we know for ``kind``."""
-    if kind == EntityKind.ARTIST:
+def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
+    """Return the most stable external id we know for ``role``."""
+    if role == EntityRole.ARTIST:
         # Note: a regular YouTube channel id is *not* an artist id — it
         # identifies an uploader, not a music entity. Only YT Music's
         # artist browseId qualifies, and even then it's last-resort
@@ -162,7 +158,7 @@ def _dominant_external_id(ext: ExternalIds, kind: EntityKind) -> Optional[str]:
                 or ext.extra.get("soundcloud_user_id")
                 or ext.extra.get("audiodb_artist_id")
                 or ext.extra.get("youtube_music_artist_browse_id"))
-    if kind == EntityKind.TRACK:
+    if role == EntityRole.TRACK:
         return (ext.musicbrainz_recording
                 or (str(ext.metal_archives_song) if ext.metal_archives_song else None)
                 or ext.extra.get("bandcamp_track_id")
@@ -170,19 +166,19 @@ def _dominant_external_id(ext: ExternalIds, kind: EntityKind) -> Optional[str]:
                 or ext.extra.get("youtube_music_video_id")
                 or ext.extra.get("youtube_video_id")
                 or ext.extra.get("audiodb_track_id"))
-    if kind == EntityKind.RELEASE:
+    if role == EntityRole.RELEASE:
         return (ext.musicbrainz_release
                 or (str(ext.fanedit_id) if ext.fanedit_id else None))
-    if kind == EntityKind.ALBUM:
+    if role == EntityRole.ALBUM:
         return (ext.musicbrainz_release_group
                 or ext.musicbrainz_release
                 or (str(ext.metal_archives_release) if ext.metal_archives_release else None)
                 or ext.extra.get("bandcamp_album_id")
                 or ext.extra.get("audiodb_album_id")
                 or ext.extra.get("youtube_music_album_browse_id"))
-    if kind in {EntityKind.ACTOR, EntityKind.DIRECTOR, EntityKind.PRODUCER,
-                EntityKind.COMPOSER, EntityKind.WRITER, EntityKind.NARRATOR,
-                EntityKind.HOST}:
+    if role in {EntityRole.ACTOR, EntityRole.DIRECTOR, EntityRole.PRODUCER,
+                EntityRole.COMPOSER, EntityRole.WRITER, EntityRole.NARRATOR,
+                EntityRole.HOST}:
         return ((str(ext.tmdb_person) if ext.tmdb_person else None)
                 or ext.imdb_person
                 or (str(ext.anilist_staff_id) if ext.anilist_staff_id else None)
@@ -191,61 +187,72 @@ def _dominant_external_id(ext: ExternalIds, kind: EntityKind) -> Optional[str]:
                 or ext.wikidata
                 or ext.extra.get("tmdb_person")
                 or ext.extra.get("imdb_person"))
-    if kind == EntityKind.AUTHOR:
+    if role == EntityRole.AUTHOR:
         return (ext.olid or ext.goodreads or ext.extra.get("goodreads_author")
                 or ext.wikidata)
-    if kind == EntityKind.LABEL:
+    if role == EntityRole.LABEL:
         return ((str(ext.metal_archives_label) if ext.metal_archives_label else None)
                 or ext.extra.get("musicbrainz_label") or ext.wikidata)
-    if kind == EntityKind.CHANNEL:
+    if role == EntityRole.CHANNEL:
         return ext.extra.get("youtube_channel_id")
-    if kind == EntityKind.VOICE_ACTOR:
+    if role == EntityRole.VOICE_ACTOR:
         return ((str(ext.tmdb_person) if ext.tmdb_person else None)
                 or ext.imdb_person
                 or (str(ext.anilist_staff_id) if ext.anilist_staff_id else None)
                 or (str(ext.mal_person_id) if ext.mal_person_id else None)
                 or ext.wikidata)
-    if kind == EntityKind.STUDIO:
+    if role == EntityRole.STUDIO:
         return ((str(ext.anilist_studio_id) if ext.anilist_studio_id else None)
                 or (str(ext.mal_studio_id) if ext.mal_studio_id else None)
                 or ext.wikidata)
-    if kind == EntityKind.CHARACTER:
+    if role == EntityRole.CHARACTER:
         return ((str(ext.anilist_character_id) if ext.anilist_character_id else None)
                 or (str(ext.mal_character_id) if ext.mal_character_id else None))
     return None
 
 
-def allocate_entity_id(kind: EntityKind, *, name: str = "",
-                       external_ids: Optional[ExternalIds] = None,
-                       role: Optional["Role"] = None) -> str:
-    """Deterministic entity id from external ids (preferred) or normalized name.
+def allocate_entity_id(role: EntityRole, *, name: str = "",
+                       external_ids: Optional[ExternalIds] = None) -> str:
+    """Deterministic entity id from external ids (preferred) or
+    normalized name + role.
 
-    When *external_ids* identify the entity unambiguously, role is ignored —
-    the same authoritative ID always points to the same person/group, even
-    if they wear different hats on different works. When we fall back to the
-    name-based seed, *role* is mixed in: two unrelated "John Smith" entries
-    appearing in DIRECTOR vs WRITER roles must not collapse to the same
-    entity.
+    When *external_ids* identify the entity unambiguously the role is
+    not mixed into the seed — the same authoritative ID always points
+    to the same person/group, even if they wear different hats on
+    different works. When we fall back to the name-based seed, *role*
+    is mixed in: two unrelated "John Smith" entries appearing in
+    DIRECTOR vs WRITER roles must not collapse to the same entity.
     """
     ext = external_ids or ExternalIds()
-    dom = _dominant_external_id(ext, kind)
+    dom = _dominant_external_id(ext, role)
     if dom:
-        seed = f"{kind.value}|ext:{dom}"
+        seed = f"{role.value}|ext:{dom}"
     else:
-        role_value = role.value if role is not None else kind.value
-        seed = f"{kind.value}|role:{role_value}|name:{_normalize_name(name)}"
+        seed = f"{role.value}|name:{_normalize_name(name)}"
     return hashlib.sha1(seed.encode("utf-8")).hexdigest()
 
 
 class ProviderEntity(BaseModel):
-    """One entity contribution from a single provider response."""
+    """One entity contribution from a single provider response.
+
+    ``role`` is the contribution category (DIRECTOR / ACTOR / LABEL /
+    …); ``kind`` is the structural ``mediavocab.EntityKind`` of the
+    underlying entity (PERSON / GROUP / ORGANISATION / …) and
+    auto-derives from ``role.to_mediavocab_kind()`` when omitted.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
-    kind: EntityKind
+    role: EntityRole
+    kind: Optional[EntityKind] = None
     name: str
-    role: Optional[Role] = None
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
+
+    @model_validator(mode="after")
+    def _fill_kind_from_role(self) -> "ProviderEntity":
+        if self.kind is None:
+            self.kind = self.role.to_mediavocab_kind()
+        return self
 
 
 class EntityRecord(BaseModel):
@@ -254,7 +261,8 @@ class EntityRecord(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str
-    kind: EntityKind
+    role: EntityRole
+    kind: Optional[EntityKind] = None
     name: str
     aliases: List[str] = Field(default_factory=list)
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
@@ -262,6 +270,12 @@ class EntityRecord(BaseModel):
     works: List[str] = Field(default_factory=list)    # work ids this entity participates in
     first_seen: str = Field(default_factory=_utcnow)
     last_updated: str = Field(default_factory=_utcnow)
+
+    @model_validator(mode="after")
+    def _fill_kind_from_role(self) -> "EntityRecord":
+        if self.kind is None:
+            self.kind = self.role.to_mediavocab_kind()
+        return self
 
     def touch(self) -> None:
         self.last_updated = _utcnow()
@@ -292,27 +306,22 @@ class EntitySidecar(BaseModel):
 # Mutation helpers — stateless, operate on a sidecar instance
 # ---------------------------------------------------------------------------
 
-def upsert_entity(sidecar: EntitySidecar, candidate: ProviderEntity, *,
-                  role_hint: Optional[Role] = None) -> str:
-    """Insert or update a :class:`ProviderEntity`; return its ``entity_id``.
+def upsert_entity(sidecar: EntitySidecar, candidate: ProviderEntity) -> str:
+    """Insert or update a :class:`ProviderEntity`; return its
+    ``entity_id``.
 
-    Conservative merge:
-
-    - If we have any external id for the candidate, the entity_id is derived
-      from it; matching records absorb new aliases/external_ids.
-    - Else the entity_id is derived from the normalized name. Same name across
-      providers collapses to one entity; the resulting record's
-      ``external_ids`` accumulate.
+    Conservative merge: external-id-anchored records absorb new
+    aliases / external_ids; otherwise the entity_id is derived from
+    the normalized name + role.
     """
-    kind = candidate.kind
-    eid = allocate_entity_id(kind, name=candidate.name,
-                             external_ids=candidate.external_ids,
-                             role=candidate.role or role_hint)
+    eid = allocate_entity_id(candidate.role, name=candidate.name,
+                             external_ids=candidate.external_ids)
     rec = sidecar.entities.get(eid)
     if rec is None:
         rec = EntityRecord(
             id=eid,
-            kind=kind,
+            role=candidate.role,
+            kind=candidate.kind,
             name=candidate.name,
             external_ids=candidate.external_ids,
         )
@@ -331,6 +340,10 @@ def attach_work(sidecar: EntitySidecar, entity_id: str, work_id: str) -> None:
     if work_id and work_id not in rec.works:
         rec.works.append(work_id)
         rec.touch()
+
+
+def entities_by_role(sidecar: EntitySidecar, role: EntityRole) -> List[EntityRecord]:
+    return [r for r in sidecar.entities.values() if r.role == role]
 
 
 def entities_by_kind(sidecar: EntitySidecar, kind: EntityKind) -> List[EntityRecord]:

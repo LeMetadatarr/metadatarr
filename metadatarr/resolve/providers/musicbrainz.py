@@ -7,7 +7,7 @@ from typing import List, Optional
 import requests
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals, match_quality
@@ -67,7 +67,7 @@ class MusicBrainzProvider(MetadataProvider):
             if not cand_name:
                 continue
             artists.append(ProviderEntity(
-                kind=EntityKind.ARTIST,
+        role=EntityRole.ARTIST,
                 name=cand_name,
                 external_ids=ExternalIds(
                     musicbrainz_artist=artist_obj.get("id"),
@@ -75,10 +75,10 @@ class MusicBrainzProvider(MetadataProvider):
             ))
         relations: dict = {}
         if artists:
-            relations[EntityKind.ARTIST] = artists
+            relations[EntityRole.ARTIST] = artists
         if release.get("title"):
-            relations[EntityKind.ALBUM] = [ProviderEntity(
-                kind=EntityKind.ALBUM,
+            relations[EntityRole.ALBUM] = [ProviderEntity(
+        role=EntityRole.ALBUM,
                 name=release["title"],
                 external_ids=ExternalIds(
                     musicbrainz_release=release.get("id"),
@@ -239,7 +239,7 @@ class MusicBrainzProvider(MetadataProvider):
             if not mbid:
                 continue
             out.append(ProviderEntity(
-                kind=EntityKind.RELEASE,
+        role=EntityRole.RELEASE,
                 name=rel.get("title") or mbid,
                 external_ids=ExternalIds(musicbrainz_release=mbid),
             ))

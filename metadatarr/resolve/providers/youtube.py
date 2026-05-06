@@ -12,7 +12,7 @@ This provider is therefore intentionally narrow:
   podcasts, etc. — and even then it never claims ``MediaType.MUSIC``.
 - It surfaces ``youtube_video_id`` (the upload) and
   ``youtube_channel_id`` (the channel that uploaded it).
-- It emits :class:`EntityKind.CHANNEL` relations, never ``ARTIST`` or
+- It emits :class:`EntityRole.CHANNEL` relations, never ``ARTIST`` or
   ``ALBUM``. A channel is not an artist.
 
 For music — including matches that *happen* to live on YouTube — use the
@@ -28,7 +28,7 @@ from tutubo import classify_video_dict, search_yt
 from tutubo.content_type import ContentType
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
@@ -96,8 +96,8 @@ class YouTubeProvider(MetadataProvider):
             channel_extra: dict = {}
             if channel_id:
                 channel_extra["youtube_channel_id"] = str(channel_id)
-            relations[EntityKind.CHANNEL] = [ProviderEntity(
-                kind=EntityKind.CHANNEL,
+            relations[EntityRole.CHANNEL] = [ProviderEntity(
+        role=EntityRole.CHANNEL,
                 name=str(channel_name),
                 external_ids=ExternalIds(extra=channel_extra),
             )]

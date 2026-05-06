@@ -176,9 +176,9 @@ class TestMappingsStreamUrl:
 
     def test_stream_url_stored_in_extra(self):
         from metadatarr.resolve.mappings import MappingEntry
-        from metadatarr.resolve.entities import EntityKind
+        from metadatarr.resolve.entities import EntityRole
         entry = MappingEntry(
-            kind=EntityKind.CHANNEL,
+            role=EntityRole.CHANNEL,
             name="Test Radio",
             identifiers={"stream_url": "https://radio.example.com/live.aac"},
         )
@@ -187,9 +187,9 @@ class TestMappingsStreamUrl:
 
     def test_stream_url_surfaces_in_streams(self):
         from metadatarr.resolve.mappings import MappingEntry
-        from metadatarr.resolve.entities import EntityKind
+        from metadatarr.resolve.entities import EntityRole
         entry = MappingEntry(
-            kind=EntityKind.CHANNEL,
+            role=EntityRole.CHANNEL,
             name="Test Radio",
             identifiers={"stream_url": "https://radio.example.com/live.aac"},
         )

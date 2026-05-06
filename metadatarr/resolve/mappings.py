@@ -28,7 +28,7 @@ Every key except ``name`` is treated as an identifier.  Keys must match
 field names in :class:`~mediavocab.models.ExternalIds` or any
 ``extra.*`` key a provider emits.
 
-``apply_mappings(kind, external_ids)`` enriches an :class:`ExternalIds`
+``apply_mappings(role, external_ids)`` enriches an :class:`ExternalIds`
 instance with any mapping entries that share at least one identifier with it.
 Call this after consolidating provider matches to merge cross-platform IDs
 the providers themselves could never link.
@@ -43,7 +43,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import urlsplit
 
-from metadatarr.resolve.entities import EntityKind
+from metadatarr.resolve.entities import EntityRole
 from mediavocab.models import ExternalIds
 
 # ---------------------------------------------------------------------------
@@ -103,12 +103,12 @@ class MappingEntry:
     Consumers can filter on ``score`` before applying.
     """
 
-    __slots__ = ("kind", "name", "identifiers", "score")
+    __slots__ = ("role", "name", "identifiers", "score")
 
-    def __init__(self, kind: EntityKind, name: Optional[str],
+    def __init__(self, role: EntityRole, name: Optional[str],
                  identifiers: Dict[str, str],
                  score: float = 1.0) -> None:
-        self.kind = kind
+        self.role = role
         self.name = name
         # Normalise all values at load time so comparisons are cheap.
         self.identifiers: Dict[str, str] = {
@@ -140,7 +140,7 @@ class MappingEntry:
         return list(self.identifiers.items())
 
     def __repr__(self) -> str:
-        return f"MappingEntry(kind={self.kind.value!r}, name={self.name!r})"
+        return f"MappingEntry(role={self.role.value!r}, name={self.name!r})"
 
 
 # ---------------------------------------------------------------------------
@@ -158,13 +158,13 @@ class MappingStore:
     def add(self, entry: MappingEntry) -> None:
         """Add an entry and index all its identifiers."""
         # Check for overlap with existing entries — if any identifier already
-        # points to an entry of the same kind, merge rather than duplicate.
+        # points to an entry of the same role, merge rather than duplicate.
         existing: Optional[MappingEntry] = None
         for k, v in entry.index_pairs():
             existing = self._index.get((k, v))
-            if existing and existing.kind == entry.kind:
+            if existing and existing.role == entry.role:
                 break
-        if existing and existing.kind == entry.kind:
+        if existing and existing.role == entry.role:
             # Merge new identifiers into the existing entry.
             existing.identifiers.update(entry.identifiers)
             if entry.name and not existing.name:
@@ -177,18 +177,18 @@ class MappingStore:
             for k, v in entry.index_pairs():
                 self._index[(k, v)] = entry
 
-    def lookup(self, kind: EntityKind,
+    def lookup(self, role: EntityRole,
                ids: Dict[str, str]) -> Optional[MappingEntry]:
         """Return the first mapping entry that shares any identifier with
-        ``ids`` and has the right ``kind``.  ``ids`` values are raw strings
+        ``ids`` and has the right ``role``.  ``ids`` values are raw strings
         (not yet normalised)."""
         for k, v in ids.items():
             entry = self._index.get((k, _norm(v)))
-            if entry and entry.kind == kind:
+            if entry and entry.role == role:
                 return entry
         return None
 
-    def apply(self, kind: EntityKind,
+    def apply(self, role: EntityRole,
               external_ids: ExternalIds,
               min_score: float = 0.0) -> ExternalIds:
         """Enrich ``external_ids`` with any matching mapping entry.
@@ -206,7 +206,7 @@ class MappingStore:
                 probe[fname] = str(val)
         probe.update(external_ids.extra)
 
-        entry = self.lookup(kind, probe)
+        entry = self.lookup(role, probe)
         if entry is None or entry.score < min_score:
             return external_ids
         # Merge: mapping provides the base, actual result takes precedence.
@@ -220,21 +220,21 @@ class MappingStore:
 # TOML parsing
 # ---------------------------------------------------------------------------
 
-_KIND_MAP: Dict[str, EntityKind] = {
-    k.value: k for k in EntityKind
+_ROLE_MAP: Dict[str, EntityRole] = {
+    k.value: k for k in EntityRole
 }
 
 
 def _parse_toml(data: dict) -> List[MappingEntry]:
     entries: List[MappingEntry] = []
-    for kind_key, kind in _KIND_MAP.items():
+    for kind_key, role in _ROLE_MAP.items():
         for raw in data.get(kind_key, []):
             if not isinstance(raw, dict):
                 continue
             name = raw.get("name")
             ids = {k: str(v) for k, v in raw.items() if k not in _SKIP_KEYS and v}
             if ids:
-                entries.append(MappingEntry(kind=kind, name=name,
+                entries.append(MappingEntry(role=role, name=name,
                                             identifiers=ids))
     return entries
 
@@ -322,15 +322,15 @@ def reload() -> MappingStore:
 # Convenience wrapper
 # ---------------------------------------------------------------------------
 
-def apply_mappings(kind: EntityKind, external_ids: ExternalIds) -> ExternalIds:
+def apply_mappings(role: EntityRole, external_ids: ExternalIds) -> ExternalIds:
     """Enrich ``external_ids`` from the global mapping store.
 
-    Shorthand for ``get_store().apply(kind, external_ids)``.
+    Shorthand for ``get_store().apply(role, external_ids)``.
     """
-    return get_store().apply(kind, external_ids)
+    return get_store().apply(role, external_ids)
 
 
-def add_mapping(kind: EntityKind, identifiers: Dict[str, str],
+def add_mapping(role: EntityRole, identifiers: Dict[str, str],
                 name: Optional[str] = None,
                 score: float = 1.0) -> MappingEntry:
     """Register a cross-platform identity assertion at runtime.
@@ -340,7 +340,7 @@ def add_mapping(kind: EntityKind, identifiers: Dict[str, str],
     ``extra.*`` key a provider emits::
 
         add_mapping(
-            EntityKind.ARTIST,
+            EntityRole.ARTIST,
             {
                 "soundcloud_artist_url": "https://soundcloud.com/acidkid",
                 "bandcamp_artist_url": "https://piratech.bandcamp.com/",
@@ -352,7 +352,7 @@ def add_mapping(kind: EntityKind, identifiers: Dict[str, str],
     lifetime of the process.  It is NOT written back to any TOML file.  Call
     :func:`reload` to discard runtime additions and revert to file state.
     """
-    entry = MappingEntry(kind=kind, name=name, identifiers=identifiers,
+    entry = MappingEntry(role=role, name=name, identifiers=identifiers,
                          score=score)
     get_store().add(entry)
     return entry

@@ -1,6 +1,7 @@
 """EntitySidecar persistence + reverse index."""
 from metadatarr.resolve import (
     EntityKind,
+    EntityRole,
     EntitySidecar,
     ExternalIds,
     ProviderEntity,
@@ -16,12 +17,12 @@ from metadatarr.resolve.sidecar import (
 
 def _populate(sidecar):
     upsert_entity(sidecar, ProviderEntity(
-        kind=EntityKind.ARTIST,
+        role=EntityRole.ARTIST,
         name="Daft Punk",
         external_ids=ExternalIds(musicbrainz_artist="mbid-dp"),
     ))
     upsert_entity(sidecar, ProviderEntity(
-        kind=EntityKind.AUTHOR,
+        role=EntityRole.AUTHOR,
         name="J. R. R. Tolkien",
         external_ids=ExternalIds(olid="OL26320A",
                                  extra={"goodreads_author": "656983"}),
@@ -57,7 +58,7 @@ def test_index_finds_entity_by_external_id():
     s = EntitySidecar()
     _populate(s)
     idx = build_index(s)
-    eid = idx.find_by_external_id(EntityKind.ARTIST, "musicbrainz_artist",
+    eid = idx.find_by_external_id(EntityRole.ARTIST, "musicbrainz_artist",
                                   "mbid-dp")
     assert eid is not None
     assert s.entities[eid].name == "Daft Punk"
@@ -67,7 +68,7 @@ def test_index_finds_entity_by_extra_external_id():
     s = EntitySidecar()
     _populate(s)
     idx = build_index(s)
-    eid = idx.find_by_external_id(EntityKind.AUTHOR, "goodreads_author",
+    eid = idx.find_by_external_id(EntityRole.AUTHOR, "goodreads_author",
                                   "656983")
     assert eid is not None
     assert s.entities[eid].name.startswith("J.")
@@ -77,11 +78,11 @@ def test_index_find_by_name_normalises():
     s = EntitySidecar()
     _populate(s)
     idx = build_index(s)
-    matches = idx.find_by_name(EntityKind.ARTIST, "daft  punk!")
+    matches = idx.find_by_name(EntityRole.ARTIST, "daft  punk!")
     assert len(matches) == 1
 
 
 def test_index_returns_empty_for_unknown():
     idx = SidecarIndex()
-    assert idx.find_by_external_id(EntityKind.ARTIST, "musicbrainz_artist", "x") is None
-    assert idx.find_by_name(EntityKind.ARTIST, "nobody") == []
+    assert idx.find_by_external_id(EntityRole.ARTIST, "musicbrainz_artist", "x") is None
+    assert idx.find_by_name(EntityRole.ARTIST, "nobody") == []

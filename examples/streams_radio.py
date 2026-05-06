@@ -43,7 +43,7 @@ Run it::
 """
 from __future__ import annotations
 
-from metadatarr.resolve.entities import EntityKind
+from metadatarr.resolve.entities import Entity
 from metadatarr.resolve.mappings import MappingEntry
 
 # ---------------------------------------------------------------------------
@@ -51,7 +51,7 @@ from metadatarr.resolve.mappings import MappingEntry
 # ---------------------------------------------------------------------------
 STATIONS = [
     MappingEntry(
-        kind=EntityKind.CHANNEL,
+        role=EntityRole.CHANNEL,
         name="WNYC FM 93.9",
         identifiers={
             "wikidata":   "Q1123265",
@@ -59,21 +59,21 @@ STATIONS = [
         },
     ),
     MappingEntry(
-        kind=EntityKind.CHANNEL,
+        role=EntityRole.CHANNEL,
         name="NTS Radio 1",
         identifiers={
             "stream_url": "https://stream-relay-geo.ntslive.net/stream",
         },
     ),
     MappingEntry(
-        kind=EntityKind.CHANNEL,
+        role=EntityRole.CHANNEL,
         name="SomaFM Groove Salad",
         identifiers={
             "stream_url": "https://ice2.somafm.com/groovesalad-128-mp3",
         },
     ),
     MappingEntry(
-        kind=EntityKind.CHANNEL,
+        role=EntityRole.CHANNEL,
         name="BBC Radio 6 Music",
         identifiers={
             "wikidata":   "Q1072120",

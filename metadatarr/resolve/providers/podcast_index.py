@@ -9,7 +9,7 @@ import logging
 from typing import Optional
 
 from mediavocab import MediaType
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
@@ -70,8 +70,8 @@ class ApplePodcastsProvider(MetadataProvider):
         relations: dict = {}
         artist_name = top.get("artistName")
         if artist_name:
-            kind = EntityKind.HOST if signals.medium != MediaType.AUDIO_DRAMA else EntityKind.VOICE_ACTOR
-            relations[kind] = [ProviderEntity(kind=kind, name=artist_name)]
+            role = EntityRole.HOST if signals.medium != MediaType.AUDIO_DRAMA else EntityRole.VOICE_ACTOR
+            relations[role] = [ProviderEntity(role=role, name=artist_name)]
 
         medium = signals.medium or MediaType.PODCAST
 

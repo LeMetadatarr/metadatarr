@@ -9,7 +9,7 @@ import logging
 from typing import Optional
 
 from mediavocab import MediaType
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
@@ -42,19 +42,19 @@ query($search: String, $type: MediaType) {
 
 # AniList staff roles → EntityKind
 _ROLE_MAP = {
-    "director": EntityKind.DIRECTOR,
-    "original creator": EntityKind.AUTHOR,
-    "original story": EntityKind.AUTHOR,
-    "story": EntityKind.AUTHOR,
-    "art": EntityKind.OTHER,
-    "character design": EntityKind.OTHER,
-    "music": EntityKind.COMPOSER,
-    "series composition": EntityKind.WRITER,
-    "script": EntityKind.WRITER,
+    "director": EntityRole.DIRECTOR,
+    "original creator": EntityRole.AUTHOR,
+    "original story": EntityRole.AUTHOR,
+    "story": EntityRole.AUTHOR,
+    "art": EntityRole.OTHER,
+    "character design": EntityRole.OTHER,
+    "music": EntityRole.COMPOSER,
+    "series composition": EntityRole.WRITER,
+    "script": EntityRole.WRITER,
 }
 
 
-def _map_role(role_str: str) -> Optional[EntityKind]:
+def _map_role(role_str: str) -> Optional[EntityRole]:
     return _ROLE_MAP.get(role_str.lower().strip())
 
 
@@ -119,8 +119,8 @@ class AniListProvider(MetadataProvider):
         # Staff → entity relations
         for edge in (media.get("staff") or {}).get("edges") or []:
             role_str = edge.get("role", "")
-            kind = _map_role(role_str)
-            if kind is None:
+            role = _map_role(role_str)
+            if role is None:
                 continue
             node = edge.get("node") or {}
             name = (node.get("name") or {}).get("full")
@@ -128,26 +128,26 @@ class AniListProvider(MetadataProvider):
                 continue
             staff_id = node.get("id")
             entity = ProviderEntity(
-                kind=kind,
+                role=role,
                 name=name,
                 external_ids=ExternalIds(
                     anilist_staff_id=int(staff_id) if staff_id else None,
                 ),
             )
-            relations.setdefault(kind, []).append(entity)
+            relations.setdefault(role, []).append(entity)
 
         # Main studio → STUDIO entity
         studios = (media.get("studios") or {}).get("nodes") or []
         if studios:
             s = studios[0]
             studio_entity = ProviderEntity(
-                kind=EntityKind.STUDIO,
+        role=EntityRole.STUDIO,
                 name=s["name"],
                 external_ids=ExternalIds(
                     anilist_studio_id=int(s["id"]) if s.get("id") else None,
                 ),
             )
-            relations[EntityKind.STUDIO] = [studio_entity]
+            relations[EntityRole.STUDIO] = [studio_entity]
 
         extra: dict = {}
         romaji = title_obj.get("romaji")

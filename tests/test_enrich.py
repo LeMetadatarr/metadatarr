@@ -4,6 +4,7 @@ from typing import Optional
 import pytest
 
 from metadatarr.resolve import (
+    EntityRole,
     ExternalIds,
     EntityKind,
     MediaType,
@@ -97,7 +98,7 @@ def test_enrich_applies_mappings_when_requested(monkeypatch):
         lambda medium=None: [],   # no providers — only the mapping should fire
     )
     # Add a runtime mapping: musicbrainz_artist=m → wikidata=Q-mapped.
-    get_store().add(MappingEntry(EntityKind.ARTIST, None,
+    get_store().add(MappingEntry(EntityRole.ARTIST, None,
                                  {"musicbrainz_artist": "m",
                                   "wikidata": "Q-mapped"}))
     out = enrich(ExternalIds(musicbrainz_artist="m"))
@@ -109,7 +110,7 @@ def test_enrich_skips_mappings_when_apply_maps_false(monkeypatch):
         "metadatarr.resolve.base.active_providers",
         lambda medium=None: [],
     )
-    get_store().add(MappingEntry(EntityKind.ARTIST, None,
+    get_store().add(MappingEntry(EntityRole.ARTIST, None,
                                  {"musicbrainz_artist": "m",
                                   "wikidata": "Q-mapped"}))
     out = enrich(ExternalIds(musicbrainz_artist="m"), apply_maps=False)

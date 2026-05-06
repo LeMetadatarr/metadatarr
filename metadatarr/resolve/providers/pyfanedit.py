@@ -15,7 +15,7 @@ from typing import List, Optional
 from pyfanedit import FaneditClient
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, VariantKind
 from mediavocab.models.signals import Signals
@@ -85,7 +85,7 @@ class PyfaneditProvider(MetadataProvider):
             if summary.fanedit_type:
                 extra["fanedit_type"] = summary.fanedit_type
             out.append(ProviderEntity(
-                kind=EntityKind.RELEASE,
+        role=EntityRole.RELEASE,
                 name=summary.title,
                 external_ids=ExternalIds(
                     fanedit_id=summary.fanedit_id,

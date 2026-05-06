@@ -21,7 +21,7 @@ from typing import ClassVar, Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from metadatarr.resolve.entities import EntityKind, ProviderEntity, Role
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from metadatarr.resolve.mappings import apply_mappings
 from mediavocab import MediaType
@@ -37,7 +37,7 @@ class ProviderMatch(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
     signals: Signals = Field(default_factory=Signals)
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
-    relations: Dict[Role, List[ProviderEntity]] = Field(default_factory=dict)
+    relations: Dict[EntityRole, List[ProviderEntity]] = Field(default_factory=dict)
 
 
 class ResolutionConflict(BaseModel):
@@ -72,7 +72,7 @@ class ResolveResult(BaseModel):
     conflicts: List[ResolutionConflict] = Field(default_factory=list)
     """Per-drop diagnostic — which provider clashed, with what, on which fields.
     Useful for surfacing disagreements to callers without re-running compare()."""
-    relations: Dict[Role, List[ProviderEntity]] = Field(default_factory=dict)
+    relations: Dict[EntityRole, List[ProviderEntity]] = Field(default_factory=dict)
     """Release-variant entities collected when ``signals.include_variants=True``."""
 
 
@@ -225,8 +225,8 @@ def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
             continue
         consolidated = merged(consolidated, m.signals)
         enriched = m.external_ids
-        for kind in EntityKind:
-            enriched = apply_mappings(kind, enriched)
+        for role in EntityRole:
+            enriched = apply_mappings(role, enriched)
         external = external.merge(enriched)
         accepted.append(m)
         if anchor_provider is None:
@@ -315,7 +315,7 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
     When ``signals.include_variants`` is True, every active provider's
     :meth:`MetadataProvider.list_variants` is called after consolidation and
     the collected :class:`ProviderEntity` records are stored in
-    ``result.relations[Role.RELEASE]``.
+    ``result.relations[EntityRole.RELEASE]``.
 
     Returns a :class:`ResolveResult` regardless of how many providers matched.
     """
@@ -340,13 +340,13 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
         seen: dict = {}
         # Seed from any RELEASE relations already present in accepted matches.
         for m in result.accepted:
-            for ent in m.relations.get(Role.RELEASE, []):
+            for ent in m.relations.get(EntityRole.RELEASE, []):
                 seen.setdefault(_variant_key(ent), ent)
         for batch in _run_pool(providers, _get_variants, max_workers):
             for ent in batch:
                 seen.setdefault(_variant_key(ent), ent)
         if seen:
-            result.relations[Role.RELEASE] = list(seen.values())
+            result.relations[EntityRole.RELEASE] = list(seen.values())
     return result
 
 
@@ -388,6 +388,6 @@ def enrich(external_ids: ExternalIds, *,
             out = out.merge(enrichment)
 
     if apply_maps:
-        for kind in EntityKind:
-            out = apply_mappings(kind, out)
+        for role in EntityRole:
+            out = apply_mappings(role, out)
     return out

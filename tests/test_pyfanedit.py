@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from metadatarr.resolve.entities import EntityKind, Role
+from metadatarr.resolve.entities import EntityRole
 from mediavocab.models import ExternalIds
 from metadatarr.resolve.providers.pyfanedit import PyfaneditProvider, _FANEDIT_TYPE_MAP
 from mediavocab import MediaType, VariantKind
@@ -70,7 +70,7 @@ def test_list_variants_returns_provider_entities():
     entities = provider.list_variants(ids, signals)
 
     assert len(entities) == 2
-    assert all(e.kind == EntityKind.RELEASE for e in entities)
+    assert all(e.role == EntityRole.RELEASE for e in entities)
     assert entities[0].external_ids.fanedit_id == 1001
     assert entities[1].external_ids.fanedit_id == 1002
 
@@ -143,7 +143,7 @@ def test_list_variants_empty_on_client_error():
 def test_resolve_include_variants_populates_relations():
     """include_variants=True should trigger list_variants() and populate relations."""
     from metadatarr.resolve.base import consolidate
-    from metadatarr.resolve.entities import Role
+    from metadatarr.resolve.entities import EntityRole
 
     summaries = [
         _make_summary("Alien: FanFix v1",  9901, "fanfix"),
@@ -163,8 +163,8 @@ def test_resolve_include_variants_populates_relations():
     assert 9901 in fanedit_ids
     assert 9902 in fanedit_ids
 
-    # Verify relations dict key is Role.RELEASE
+    # Verify relations dict key is EntityRole.RELEASE
     from collections import defaultdict
     relations = defaultdict(list)
-    relations[Role.RELEASE].extend(variants)
-    assert len(relations[Role.RELEASE]) == 2
+    relations[EntityRole.RELEASE].extend(variants)
+    assert len(relations[EntityRole.RELEASE]) == 2

@@ -21,7 +21,7 @@ import logging
 from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
@@ -132,8 +132,8 @@ class SoundCloudProvider(MetadataProvider):
                 artist_extra["soundcloud_user_id"] = str(user_id_num)
             if artist_url:
                 artist_extra["soundcloud_artist_url"] = str(artist_url)
-            relations[EntityKind.ARTIST] = [ProviderEntity(
-                kind=EntityKind.ARTIST,
+            relations[EntityRole.ARTIST] = [ProviderEntity(
+        role=EntityRole.ARTIST,
                 name=str(artist_name),
                 external_ids=ExternalIds(extra=artist_extra),
             )]

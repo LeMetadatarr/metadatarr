@@ -29,12 +29,13 @@ from metadatarr.resolve.base import (
 from metadatarr.resolve.entities import (
     EntityKind,
     EntityRecord,
+    EntityRole,
     EntitySidecar,
     ProviderEntity,
-    Role,
     allocate_entity_id,
     attach_work,
     entities_by_kind,
+    entities_by_role,
     upsert_entity,
 )
 from mediavocab.models import ExternalIds
@@ -68,7 +69,7 @@ __all__ = [
     "ExternalIds",
     # entities
     "EntityKind",
-    "Role",
+    "EntityRole",
     "ProviderEntity",
     "EntityRecord",
     "EntitySidecar",
@@ -76,6 +77,7 @@ __all__ = [
     "upsert_entity",
     "attach_work",
     "entities_by_kind",
+    "entities_by_role",
     # providers / resolver
     "MetadataProvider",
     "ProviderMatch",

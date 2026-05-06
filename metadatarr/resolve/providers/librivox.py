@@ -10,7 +10,7 @@ from typing import Optional
 from urllib.parse import quote_plus
 
 from mediavocab import MediaType
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
@@ -75,14 +75,14 @@ class LibriVoxProvider(MetadataProvider):
                 name = f"{a.get('first_name', '')} {a.get('last_name', '')}".strip()
                 if name:
                     entities.append(ProviderEntity(
-                        kind=EntityKind.AUTHOR,
+        role=EntityRole.AUTHOR,
                         name=name,
                         external_ids=ExternalIds(
                             extra={"librivox_author_id": str(a["id"])} if a.get("id") else {},
                         ),
                     ))
             if entities:
-                relations[EntityKind.AUTHOR] = entities
+                relations[EntityRole.AUTHOR] = entities
 
         year: Optional[int] = None
         pub = top.get("copyright_year") or top.get("catalog_date") or ""

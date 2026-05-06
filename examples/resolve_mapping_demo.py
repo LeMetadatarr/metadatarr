@@ -15,7 +15,7 @@ time using a three-step pattern:
    a ``Signals(title=…, artist=…)`` and let the SoundCloud provider
    surface ``soundcloud_track_url`` + ``soundcloud_artist_url``.
 2. **Apply the artist mapping** — ``consolidate()`` runs
-   ``apply_mappings(EntityKind.ARTIST, …)`` for every accepted match,
+   ``apply_mappings(EntityRole.ARTIST, …)`` for every accepted match,
    which fills in ``bandcamp_artist_url`` from the curated TOML row.
 3. **Slug the title against the linked artist's domain** — Bandcamp's
    track URLs follow ``<artist_url>/track/<slug>``; we synthesise the

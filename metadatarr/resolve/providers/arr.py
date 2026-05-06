@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional
 import requests
 
 from mediavocab import MediaType
-from metadatarr.resolve.entities import EntityKind, ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import (
@@ -157,8 +157,8 @@ class ReadarrProvider(_ArrBase):
         author = top.get("author") or {}
         relations: dict = {}
         if author.get("authorName"):
-            relations[EntityKind.AUTHOR] = [ProviderEntity(
-                kind=EntityKind.AUTHOR,
+            relations[EntityRole.AUTHOR] = [ProviderEntity(
+        role=EntityRole.AUTHOR,
                 name=author["authorName"],
                 external_ids=ExternalIds(
                     extra={"goodreads_author": str(author.get("foreignAuthorId") or "")},
@@ -199,16 +199,16 @@ class LidarrProvider(_ArrBase):
         artist = top.get("artist") or {}
         relations: dict = {}
         if artist.get("artistName"):
-            relations[EntityKind.ARTIST] = [ProviderEntity(
-                kind=EntityKind.ARTIST,
+            relations[EntityRole.ARTIST] = [ProviderEntity(
+        role=EntityRole.ARTIST,
                 name=artist["artistName"],
                 external_ids=ExternalIds(
                     musicbrainz_artist=artist.get("foreignArtistId"),
                 ),
             )]
         if top.get("title"):
-            relations[EntityKind.ALBUM] = [ProviderEntity(
-                kind=EntityKind.ALBUM,
+            relations[EntityRole.ALBUM] = [ProviderEntity(
+        role=EntityRole.ALBUM,
                 name=top["title"],
                 external_ids=ExternalIds(
                     musicbrainz_release_group=top.get("foreignAlbumId"),
