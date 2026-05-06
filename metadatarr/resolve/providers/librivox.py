@@ -22,7 +22,7 @@ except ImportError:  # pragma: no cover
 
 LOG = logging.getLogger("metadatarr.resolve.providers.librivox")
 
-_API = "https://librivox.org/api/feed/audiobooks"
+_API = "https://librivox.org/api/feed/audiobooks/"  # trailing slash required by LibriVox
 
 
 class LibriVoxProvider(MetadataProvider):
@@ -43,22 +43,29 @@ class LibriVoxProvider(MetadataProvider):
             LOG.warning("httpx not installed — librivox provider unavailable")
             return None
 
-        params = {
+        # The LibriVox API returns HTTP 500 when ``title=^X`` and
+        # ``author=Y`` are passed together. Try title-only first; only
+        # fall back to author-only if title alone yields nothing.
+        base_params = {
             "title": f"^{signals.title}",
             "format": "json",
             "extended": "1",
             "limit": "5",
         }
-        if signals.artist:
-            params["author"] = signals.artist
 
-        try:
-            resp = httpx.get(_API, params=params, timeout=10)
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as exc:
-            LOG.warning("librivox lookup failed: %s", exc)
-            return None
+        def _query(params):
+            try:
+                resp = httpx.get(_API, params=params, timeout=10)
+                resp.raise_for_status()
+                return resp.json()
+            except Exception as exc:
+                LOG.warning("librivox lookup failed: %s", exc)
+                return {}
+
+        data = _query(base_params)
+        if not data.get("books") and signals.artist:
+            data = _query({**{k: v for k, v in base_params.items() if k != "title"},
+                            "author": signals.artist})
 
         books = data.get("books") or []
         if not books:
