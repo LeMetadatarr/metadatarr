@@ -32,3 +32,5 @@ htmlcov/
 *.swp
 *.swo
 .DS_Store
+*.jsonl
+watchlist_state.json
