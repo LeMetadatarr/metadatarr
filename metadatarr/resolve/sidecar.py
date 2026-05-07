@@ -15,7 +15,6 @@ long as the sidecar contents are stable.
 """
 from __future__ import annotations
 
-import json
 import os
 import tempfile
 from dataclasses import dataclass, field
@@ -24,7 +23,6 @@ from typing import Dict, List, Optional, Set, Tuple
 
 from metadatarr.resolve.entities import (
     EntityRole,
-    EntityRecord,
     EntitySidecar,
 )
 from mediavocab.models import ExternalIds

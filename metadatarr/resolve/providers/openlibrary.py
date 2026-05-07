@@ -60,13 +60,9 @@ class OpenLibraryProvider(MetadataProvider):
         if top.language:
             language = top.language[0].lower()
 
-        # Extract OLID from work_key — strip "/works/" prefix.
+        # Extract OLID from work_key: "/works/OL27482W" → "OL27482W".
         olid: Optional[str] = None
         if top.work_key:
-            olid = top.work_key.lstrip("/works/")
-            if olid.startswith("OL") or olid != top.work_key:
-                pass  # already stripped correctly
-            # Normalise: "/works/OL27482W" → "OL27482W"
             olid = top.work_key.replace("/works/", "")
 
         extra: dict = {}

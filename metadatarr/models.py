@@ -1,6 +1,5 @@
 from typing import List, Optional
 from pydantic import BaseModel, Field, AliasChoices, AliasPath, ConfigDict, field_validator, model_validator
-from enum import Enum
 
 
 class BaseMetadata(BaseModel):

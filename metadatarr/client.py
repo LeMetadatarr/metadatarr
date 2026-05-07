@@ -4,7 +4,14 @@ import re
 import requests
 from typing import Dict, List, Optional, Union
 
+from .version import __version__
+
 LOG = logging.getLogger("metadatarr.client")
+
+# Canonical user-agent string for every client in this module. Keeping
+# this in one place means a version bump doesn't need to touch every
+# client constructor.
+_USER_AGENT = f"metadatarr/{__version__}"
 from .models import (
     SonarrSeries,
     RadarrMovie,
@@ -32,9 +39,6 @@ from .models import (
     DVDCompareRelease,
     DiscogsSearchHit,
     DiscogsRelease,
-    DiscogsIdentifier,
-    DiscogsFormatDetail,
-    DiscogsCommunity,
 )
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
@@ -45,7 +49,7 @@ class ArrMetadataClient:
     A client to query the Servarr metadata proxy servers (Skyhook/MusicInfo).
     """
 
-    def __init__(self, user_agent: str = "ArrMetadataClient/1.0"):
+    def __init__(self, user_agent: str = _USER_AGENT):
         self.headers = {
             "User-Agent": user_agent,
             "Accept": "application/json"
@@ -122,7 +126,7 @@ class BookInfoClient:
     GOODREADS = "https://api.bookinfo.pro"
     HARDCOVER = "https://hardcover.bookinfo.pro"
 
-    def __init__(self, base_url: str = GOODREADS, user_agent: str = "metadatarr/0.1.0", timeout: int = 15):
+    def __init__(self, base_url: str = GOODREADS, user_agent: str = _USER_AGENT, timeout: int = 15):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.headers = {"User-Agent": user_agent, "Accept": "application/json"}
@@ -182,7 +186,7 @@ class OpenLibraryClient:
     BASE_URL = "https://openlibrary.org"
     COVERS_URL = "https://covers.openlibrary.org"
 
-    def __init__(self, base_url: str = BASE_URL, user_agent: str = "metadatarr/0.1.0", timeout: int = 15):
+    def __init__(self, base_url: str = BASE_URL, user_agent: str = _USER_AGENT, timeout: int = 15):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.headers = {"User-Agent": user_agent, "Accept": "application/json"}
@@ -242,7 +246,7 @@ class AnnasArchiveClient:
         'https://annas-archive.gd'
     ]
 
-    def __init__(self, mirrors: Optional[List[str]] = None, user_agent: str = "metadatarr/0.1.0"):
+    def __init__(self, mirrors: Optional[List[str]] = None, user_agent: str = _USER_AGENT):
         self.mirrors = mirrors or self.DEFAULT_MIRRORS
         self.working_mirror = None
         self.headers = {
@@ -320,7 +324,7 @@ class AudioDBClient:
 
     BASE = "https://www.theaudiodb.com/api/v1/json/123"
 
-    def __init__(self, user_agent: str = "metadatarr/1.0"):
+    def __init__(self, user_agent: str = _USER_AGENT):
         self._session = requests.Session()
         self._session.headers["User-Agent"] = user_agent
         self._session.headers["Accept"] = "application/json"
@@ -411,7 +415,7 @@ class TVmazeClient:
 
     BASE = "https://api.tvmaze.com"
 
-    def __init__(self, user_agent: str = "metadatarr/1.0"):
+    def __init__(self, user_agent: str = _USER_AGENT):
         self._session = requests.Session()
         self._session.headers["User-Agent"] = user_agent
         self._session.headers["Accept"] = "application/json"
@@ -818,7 +822,6 @@ class BlurayComClient:
 
         # Movie rating (community star rating, 1-10)
         rating: Optional[float] = None
-        m_rat = re.search(r"(\d+)\s*ratings?\.", full_text)
         m_score = re.search(r"(\d+\.\d+)\s*\n\s*\d+\s*ratings", full_text)
         if m_score:
             try:

@@ -28,7 +28,6 @@ Keys written to :attr:`ExternalIds.extra`:
 from __future__ import annotations
 
 import logging
-import os
 from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register

@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import logging
 from typing import Optional
-from urllib.parse import quote_plus
 
 from mediavocab import MediaType, PlaybackModality
 from metadatarr.resolve.entities import EntityRole, ProviderEntity

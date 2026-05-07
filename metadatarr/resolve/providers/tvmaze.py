@@ -14,7 +14,6 @@ import logging
 from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, PlaybackModality
 from mediavocab.models.signals import Signals, match_quality
