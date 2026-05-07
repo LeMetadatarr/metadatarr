@@ -11,6 +11,66 @@ Resolver-layer overhaul, ahead of the first public release. No deletions
 from the published API surface — every change is additive — but the
 out-of-scope `arr_*` provider family was removed before it ever shipped.
 
+### Routing
+
+- **Three-axis provider gate** `(media, modality, genre_filter)`. Every
+  provider now declares `modality: Set[PlaybackModality]` as a ClassVar
+  (mediavocab spec axiom 13) alongside the existing `media` and
+  `genre_filter` axes. `MetadataProvider.matches(signals)` evaluates all
+  three so an audio-modality query never reaches a video-only provider
+  and vice versa.
+- **Provider auto-discovery.** `metadatarr.resolve.providers.__init__`
+  walks its own directory and imports every submodule on first access,
+  so registration is a side effect of dropping a file in. Adding a new
+  provider is now a single-file change — no registry edits, no manual
+  imports.
+- **EntityRole split.** `EntityRole.{ALBUM, RELEASE, TRACK, CHARACTER}`
+  were removed — those values described *what a thing is*, not *how it
+  relates*, and belonged to `EntityKind` all along. Variant-emitting
+  providers (a release with multiple editions, an album with multiple
+  pressings) now return `ProviderMatch.variants: List[ProviderEntity]`,
+  and `consolidate()` promotes them onto `ResolveResult.variants`.
+  `ProviderEntity`'s validator now fails loud on `kind`/`role` mismatch
+  rather than silently coercing.
+
+### Providers
+
+- **Renamed: `metadatarr` → `skyhook`.** The `ServarrProxyProvider`
+  was registered under the name `metadatarr`, which collided with the
+  package itself and made consumer code ambiguous. It is now registered
+  as `skyhook`, matching the upstream service name (`skyhook.sonarr.tv`).
+- **Lifted from media-archivist** (now first-class metadatarr
+  providers): `anilist`, `jikan_anime`, `jikan_manga`, `librivox`,
+  `apple_podcasts`, and the `arr_sonarr` / `arr_radarr` / `arr_lidarr` /
+  `arr_readarr` metadata-proxy clients.
+- **Re-registered**: `openlibrary` and `annas_archive`. Both providers
+  had been *defined* for weeks but were never imported by the registry,
+  so they silently never ran. Auto-discovery now picks them up.
+- **Removed: `tmdb`.** Required a user-supplied API key, which violates
+  metadatarr's zero-setup contract (every shipped provider must work
+  out of the box without configuration).
+- **Removed: `google_books`.** Anonymous quota proved too unreliable in
+  practice; failures were the common case rather than the exception.
+
+### Bug fixes
+
+- **`librivox`** was always failing on real queries: the base URL was
+  missing its trailing slash, and combined `author + title` searches
+  hit an upstream quirk. Both fixed; the provider now returns matches
+  for the queries the rest of the resolver actually issues.
+- **`openlibrary` / `annas_archive`** were constructing
+  `Signals(content_type="book")`, which `Signals` (with
+  `extra="forbid"`) rejected at validation time. Removed — these
+  providers are book-scoped by their `media` declaration already.
+
+### Examples
+
+- **`examples/learn/`** — a 9-step zero-to-hero curriculum walking new
+  users from a single client call through `Signals`, registry
+  discovery, `resolve()`, multi-provider consolidation, variants,
+  sidecar persistence, mappings, and end-to-end enrichment. Each step
+  is runnable standalone.
+
 ### Workspace consolidation
 
 - **First-party scrapers are now hard runtime deps**, not optional
