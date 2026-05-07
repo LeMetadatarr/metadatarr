@@ -41,8 +41,11 @@ out-of-scope `arr_*` provider family was removed before it ever shipped.
   as `skyhook`, matching the upstream service name (`skyhook.sonarr.tv`).
 - **Lifted from media-archivist** (now first-class metadatarr
   providers): `anilist`, `jikan_anime`, `jikan_manga`, `librivox`,
-  `apple_podcasts`, and the `arr_sonarr` / `arr_radarr` / `arr_lidarr` /
-  `arr_readarr` metadata-proxy clients.
+  `apple_podcasts`.
+- **Dropped self-hosted Arr providers** (`arr_sonarr` / `arr_radarr` /
+  `arr_lidarr` / `arr_readarr`); the keyless `skyhook` provider covers
+  the same data without setup, so the self-hosted middle man and its
+  required env vars added clutter for no gain.
 - **Re-registered**: `openlibrary` and `annas_archive`. Both providers
   had been *defined* for weeks but were never imported by the registry,
   so they silently never ran. Auto-discovery now picks them up.
@@ -80,9 +83,8 @@ out-of-scope `arr_*` provider family was removed before it ever shipped.
   extras were dropped — only `test` remains.
 - **Generic resolver providers lifted from media-archivist**: `anilist`,
   `jikan_anime`, `jikan_manga`, `google_books`, `librivox`,
-  `apple_podcasts`, `tmdb`, `arr_sonarr` / `arr_radarr` / `arr_lidarr` /
-  `arr_readarr` now live under `metadatarr.resolve.providers`. Each
-  registers automatically on import; routing uses the new two-axis
+  `apple_podcasts`, `tmdb` now live under `metadatarr.resolve.providers`.
+  Each registers automatically on import; routing uses the new two-axis
   `(media, genre_filter)` gate so anime/manga providers select on
   `content_genres=["anime"]`/`["manga"]` rather than a fake
   `MediaType.ANIME` (anime is genre, not type — mediavocab spec
@@ -192,12 +194,11 @@ out-of-scope `arr_*` provider family was removed before it ever shipped.
 
 ### Removed
 
-- **`metadatarr.resolve.providers.arr`** — the four `arr_sonarr` /
-  `arr_radarr` / `arr_readarr` / `arr_lidarr` providers that hit
-  user-hosted *arr **app** APIs. metadatarr's scope is metadata-server
-  proxies (`skyhook.sonarr.tv`, `radarrapi.servarr.com`,
-  `api.lidarr.audio`); those are wrapped by the `metadatarr` provider
-  via `ArrMetadataClient`. Pre-release deletion — never shipped.
+- **`metadatarr.resolve.providers.arr`** — the four self-hosted Arr
+  providers that hit user-hosted *arr **app** APIs. metadatarr's scope is
+  metadata-server proxies (`skyhook.sonarr.tv`, `radarrapi.servarr.com`,
+  `api.lidarr.audio`); those are wrapped by the `skyhook` provider via
+  `ArrMetadataClient`. Pre-release deletion — never shipped.
 
 ### Tests
 

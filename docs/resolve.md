@@ -135,7 +135,7 @@ result = resolve(Signals(
     modality=PlaybackModality.AUDIO,
 ))
 # → routes to musicbrainz, audiodb, bandcamp, soundcloud, metal_archives,
-#   youtube_music, librivox, arr_lidarr, discogs — NOT to tvmaze, bluray_com, etc.
+#   youtube_music, librivox, discogs — NOT to tvmaze, bluray_com, etc.
 
 # "watch Attack on Titan" — VIDEO providers for an episodic series
 result = resolve(Signals(
@@ -143,7 +143,7 @@ result = resolve(Signals(
     medium=MediaType.EPISODIC_SERIES,
     modality=PlaybackModality.VIDEO,
 ))
-# → routes to tvmaze, anilist, jikan_anime, arr_sonarr, skyhook, wikidata
+# → routes to tvmaze, anilist, jikan_anime, skyhook, wikidata
 ```
 
 `Signals.modality` — `mediavocab/models/signals.py`

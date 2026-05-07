@@ -343,10 +343,10 @@ def resolve_intent(title: str, verb: str, medium: MediaType = MediaType.GENERIC)
 
     AUDIO routes to: musicbrainz, audiodb, bandcamp, soundcloud,
                      metal_archives, youtube_music, librivox, apple_podcasts,
-                     arr_lidarr, discogs.
+                     discogs.
     VIDEO routes to: tvmaze, anilist, jikan_anime, pyfanedit,
-                     bluray_com, dvdcompare, arr_sonarr, arr_radarr, discogs.
-    TEXT routes to:  openlibrary, annas_archive, jikan_manga, arr_readarr, anilist.
+                     bluray_com, dvdcompare, skyhook, discogs.
+    TEXT routes to:  openlibrary, annas_archive, jikan_manga, anilist.
     """
     modality = _VERB_TO_MODALITY.get(verb.lower())
     return resolve(Signals(title=title, medium=medium, modality=modality))
