@@ -24,7 +24,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from metadatarr.resolve.mappings import apply_mappings
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from mediavocab.models.signals import Signals, SignalConflict, compare_signals as compare, merge_signals as merged
 
 
@@ -82,24 +82,29 @@ class ResolveResult(BaseModel):
 class MetadataProvider(ABC):
     """Look a work up against an external authoritative DB.
 
-    Routing is two-axis. ``media`` (a set of mediavocab ``MediaType``
-    values) is the primary gate; ``genre_filter`` (a set of genre
-    strings — typically constants from ``mediavocab.taxonomy.genre``)
-    is an optional secondary gate. A provider matches when:
+    Routing is **three-axis** (mediavocab spec axiom 13). Each axis is
+    an independent ``ClassVar[Set[X]]`` declaration; a provider
+    matches when *all three* gates pass:
 
-        (no `media` declared OR signals.medium is None OR signals.medium in self.media)
+        (no ``media``    declared OR signals.medium   in self.media)
         AND
-        (no `genre_filter` declared OR self.genre_filter ∩ signals.content_genres)
+        (no ``modality`` declared OR signals.modality in self.modality)
+        AND
+        (no ``genre_filter`` declared OR self.genre_filter ∩ signals.content_genres)
 
-    Anime / manga-only providers therefore declare e.g.
-    ``media = {EPISODIC_SERIES, MOVIE}`` plus
-    ``genre_filter = {"anime"}`` rather than a fake
-    ``MediaType.ANIME`` value (anime is a *genre*, per mediavocab spec
-    axiom 2).
+    - ``media``: which ``MediaType`` values the provider serves.
+    - ``modality``: which ``PlaybackModality`` values (AUDIO / VIDEO /
+      INTERACTIVE / TEXT / UNKNOWN). Lets a caller route a
+      ``MediaType.GENERIC`` query to audio-only providers via
+      ``Signals(modality=AUDIO)``.
+    - ``genre_filter``: genre tags from ``mediavocab.taxonomy.genre``.
+      Anime / manga gating uses this rather than a fake
+      ``MediaType.ANIME`` (axiom 2).
     """
 
     name: ClassVar[str] = ""
     media: ClassVar[Set[MediaType]] = set()
+    modality: ClassVar[Set[PlaybackModality]] = set()
     genre_filter: ClassVar[Set[str]] = set()
 
     @abstractmethod
@@ -111,8 +116,10 @@ class MetadataProvider(ABC):
         """Return the single best match for ``signals``, or ``None``."""
 
     def matches(self, signals: Signals) -> bool:
-        """Default routing test — used by ``resolve`` to gate dispatch."""
+        """Default three-axis routing test — used by ``resolve`` to gate dispatch."""
         if self.media and signals.medium and signals.medium not in self.media:
+            return False
+        if self.modality and signals.modality and signals.modality not in self.modality:
             return False
         if self.genre_filter:
             tags = set(signals.content_genres or [])

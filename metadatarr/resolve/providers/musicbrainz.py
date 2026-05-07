@@ -9,7 +9,7 @@ import requests
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.musicbrainz")
@@ -20,6 +20,7 @@ _UA = "metadatarr/0.1 (+https://github.com/TigreGotico/metadatarr)"
 class MusicBrainzProvider(MetadataProvider):
     name = "musicbrainz"
     media = {MediaType.MUSIC}
+    modality = {PlaybackModality.AUDIO}
 
     def is_available(self) -> bool:
         return True

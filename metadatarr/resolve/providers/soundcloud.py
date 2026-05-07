@@ -23,7 +23,7 @@ from typing import Optional
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.soundcloud")
@@ -46,6 +46,7 @@ def _attr(obj, *names):
 class SoundCloudProvider(MetadataProvider):
     name = "soundcloud"
     media = {MediaType.MUSIC}
+    modality = {PlaybackModality.AUDIO}
 
     def __init__(self) -> None:
         try:

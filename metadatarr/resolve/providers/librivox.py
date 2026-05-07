@@ -9,7 +9,7 @@ import logging
 from typing import Optional
 from urllib.parse import quote_plus
 
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
@@ -30,6 +30,7 @@ class LibriVoxProvider(MetadataProvider):
 
     name = "librivox"
     media = {MediaType.AUDIOBOOK}
+    modality = {PlaybackModality.AUDIO}
 
     def is_available(self) -> bool:
         return True

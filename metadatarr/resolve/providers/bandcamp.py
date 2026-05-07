@@ -30,7 +30,7 @@ import requests
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.bandcamp")
@@ -103,6 +103,7 @@ def confirm_track_url(url: str, *, timeout: float = 10.0) -> bool:
 class BandcampProvider(MetadataProvider):
     name = "bandcamp"
     media = {MediaType.MUSIC}
+    modality = {PlaybackModality.AUDIO}
 
     def __init__(self) -> None:
         try:

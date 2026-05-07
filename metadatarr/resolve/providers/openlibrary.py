@@ -15,7 +15,7 @@ from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.openlibrary")
@@ -24,6 +24,7 @@ LOG = logging.getLogger("metadatarr.resolve.providers.openlibrary")
 class OpenLibraryProvider(MetadataProvider):
     name = "openlibrary"
     media = {MediaType.BOOK}
+    modality = {PlaybackModality.TEXT}
     # Books are not classified by tutubo ContentType values; leave empty so
     # content_type filtering never excludes book results.
     content_types: set = set()

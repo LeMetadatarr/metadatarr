@@ -33,7 +33,7 @@ from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.discogs")
@@ -45,6 +45,8 @@ _VIDEO_FORMATS = ("Blu-ray", "DVD", "VHS", "Laserdisc", "HD DVD", "UHD Blu-ray")
 class DiscogsProvider(MetadataProvider):
     name = "discogs"
     media = {MediaType.MUSIC_VIDEO, MediaType.MUSIC, MediaType.GENERIC}
+    # Music releases ⇒ AUDIO; physical video media (LaserDisc / VHS) ⇒ VIDEO.
+    modality = {PlaybackModality.AUDIO, PlaybackModality.VIDEO}
 
     def __init__(self, token: Optional[str] = None) -> None:
         from metadatarr.client import DiscogsClient

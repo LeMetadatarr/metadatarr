@@ -19,7 +19,7 @@ from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, VariantKind
+from mediavocab import MediaType, VariantKind, PlaybackModality
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.dvdcompare")
@@ -90,6 +90,7 @@ def _match_to_provider(signals: Signals, top) -> ProviderMatch:
 class DVDCompareProvider(MetadataProvider):
     name = "dvdcompare"
     media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES}
+    modality = {PlaybackModality.VIDEO}
 
     def __init__(self) -> None:
         from metadatarr.client import DVDCompareClient

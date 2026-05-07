@@ -21,7 +21,7 @@ from typing import Any, Dict, List, Optional
 
 import requests
 
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
@@ -71,6 +71,7 @@ class _ArrBase(MetadataProvider):
 class SonarrProvider(_ArrBase):
     name = "arr_sonarr"
     media = {MediaType.EPISODIC_SERIES}
+    modality = {PlaybackModality.VIDEO}
     env_url = "MEDIA_ARCHIVIST_SONARR_URL"
     env_key = "MEDIA_ARCHIVIST_SONARR_KEY"
     lookup_path = "/api/v3/series/lookup"
@@ -107,6 +108,7 @@ class SonarrProvider(_ArrBase):
 class RadarrProvider(_ArrBase):
     name = "arr_radarr"
     media = {MediaType.MOVIE}
+    modality = {PlaybackModality.VIDEO}
     env_url = "MEDIA_ARCHIVIST_RADARR_URL"
     env_key = "MEDIA_ARCHIVIST_RADARR_KEY"
     lookup_path = "/api/v3/movie/lookup"
@@ -141,6 +143,7 @@ class RadarrProvider(_ArrBase):
 class ReadarrProvider(_ArrBase):
     name = "arr_readarr"
     media = {MediaType.BOOK}
+    modality = {PlaybackModality.TEXT}
     env_url = "MEDIA_ARCHIVIST_READARR_URL"
     env_key = "MEDIA_ARCHIVIST_READARR_KEY"
     lookup_path = "/api/v1/book/lookup"
@@ -183,6 +186,7 @@ class ReadarrProvider(_ArrBase):
 class LidarrProvider(_ArrBase):
     name = "arr_lidarr"
     media = {MediaType.MUSIC}
+    modality = {PlaybackModality.AUDIO}
     env_url = "MEDIA_ARCHIVIST_LIDARR_URL"
     env_key = "MEDIA_ARCHIVIST_LIDARR_KEY"
     lookup_path = "/api/v1/album/lookup"

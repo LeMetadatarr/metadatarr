@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
@@ -29,6 +29,7 @@ class ApplePodcastsProvider(MetadataProvider):
 
     name = "apple_podcasts"
     media = {MediaType.PODCAST, MediaType.AUDIO_DRAMA}
+    modality = {PlaybackModality.AUDIO}
 
     def is_available(self) -> bool:
         return True

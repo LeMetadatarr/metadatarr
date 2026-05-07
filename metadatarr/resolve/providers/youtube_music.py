@@ -33,7 +33,7 @@ from tutubo import search_yt_music
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.youtube_music")
@@ -81,6 +81,7 @@ def _album_ids(top: dict) -> tuple[Optional[str], Optional[str], Optional[str]]:
 class YouTubeMusicProvider(MetadataProvider):
     name = "youtube_music"
     media = {MediaType.MUSIC}
+    modality = {PlaybackModality.AUDIO}
 
     def is_available(self) -> bool:
         return True
