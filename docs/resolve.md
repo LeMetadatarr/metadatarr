@@ -79,9 +79,74 @@ sides set it and the values differ; an absent value is never a conflict.
 | `REGIONAL` | Film or album — territory-specific release |
 | `REMASTERED` | Film or album — remastered |
 | `OTHER` | Anything else |
-Setting `medium` controls which providers are even asked: a `MediaType.MUSIC`
-lookup never touches the TVmaze TV provider; a `MediaType.MOVIE` lookup
-never touches Bandcamp.
+### Three-axis routing gate
+
+Provider dispatch is controlled by three independent `ClassVar` sets on every
+`MetadataProvider` subclass (mediavocab spec axiom 13). A provider is asked
+only when **all three** axes pass:
+
+```
+(no media declared        OR signals.medium    in provider.media)
+AND
+(no modality declared     OR signals.modality  in provider.modality)
+AND
+(no genre_filter declared OR provider.genre_filter ∩ signals.content_genres)
+```
+
+`MetadataProvider.matches()` — `metadatarr/resolve/base.py:118`
+
+**`media`** — which `MediaType` values the provider serves. Setting `medium`
+on `Signals` routes around unrelated catalogues: a `MUSIC` lookup never
+touches TVmaze; a `MOVIE` lookup never touches Bandcamp.
+
+**`modality`** — which `PlaybackModality` values (`AUDIO`, `VIDEO`, `TEXT`,
+`INTERACTIVE`, `UNKNOWN`). This axis lets you route a `MediaType.GENERIC`
+query to audio-only or video-only providers without inventing a fake
+media type. An empty `modality` set means the provider accepts all modalities.
+
+**`genre_filter`** — genre tags from `mediavocab.taxonomy.genre`. Used for
+Anime/Manga gating (rather than a fake `MediaType.ANIME`, per axiom 2).
+
+```python
+from metadatarr.resolve.base import active_providers
+from mediavocab import MediaType, PlaybackModality
+
+# Without modality — all GENERIC-capable providers (youtube, wikidata, discogs, …)
+generic = active_providers(medium=MediaType.GENERIC)
+
+# With modality — only AUDIO providers that also accept GENERIC
+# (discogs, youtube_music would be excluded as they declare MUSIC not GENERIC)
+audio_only = [
+    p for p in generic
+    if not p.modality or PlaybackModality.AUDIO in p.modality
+]
+```
+
+For `resolve()` callers, pass `modality` directly on `Signals`:
+
+```python
+from metadatarr.resolve.base import resolve
+from mediavocab import Signals, MediaType, PlaybackModality
+
+# "play something by Moonsorrow" — route to AUDIO providers only
+result = resolve(Signals(
+    title="Moonsorrow",
+    medium=MediaType.GENERIC,
+    modality=PlaybackModality.AUDIO,
+))
+# → routes to musicbrainz, audiodb, bandcamp, soundcloud, metal_archives,
+#   youtube_music, librivox, arr_lidarr, discogs — NOT to tvmaze, bluray_com, etc.
+
+# "watch Attack on Titan" — VIDEO providers for an episodic series
+result = resolve(Signals(
+    title="Attack on Titan",
+    medium=MediaType.EPISODIC_SERIES,
+    modality=PlaybackModality.VIDEO,
+))
+# → routes to tvmaze, anilist, jikan_anime, arr_sonarr, skyhook, wikidata
+```
+
+`Signals.modality` — `mediavocab/models/signals.py`
 
 #### Title comparison
 
@@ -266,27 +331,29 @@ the core install — every first-party scraper (pyfanedit, pymetal, tutubo,
 py_bandcamp, nuvem_de_som) is a core dependency. The only optional install
 extra is `[test]`.
 
-| Name | Source | Media | Notes |
-|---|---|---|---|
-| `metadatarr` | Servarr proxies + OpenLibrary | movie / episodic_series / music / book | no env vars needed |
-| `musicbrainz` | MusicBrainz API | music | artist, release, recording IDs |
-| `audiodb` | TheAudioDB | music | free public key |
-| `tvmaze` | TVmaze public API | episodic_series | no auth; `MediaType.EPISODIC_SERIES` only |
-| `anilist` | AniList GraphQL | movie / episodic_series / comic | |
-| `jikan_anime` | Jikan (MyAnimeList) | movie / episodic_series | |
-| `jikan_manga` | Jikan (MyAnimeList) | comic | |
-| `librivox` | LibriVox API | audiobook | |
-| `apple_podcasts` | Apple Podcasts search | podcast / audio_drama | |
-| `wikidata` | Wikidata API | all | Q-id + cross-references |
-| `bandcamp` | Bandcamp | music | `py_bandcamp` core dep |
-| `soundcloud` | SoundCloud | music | `nuvem_de_som` core dep |
-| `youtube_music` | YouTube Music | music | `tutubo` core dep; browseId entity records |
-| `youtube` | YouTube | movie / episodic_series / podcast / other | `tutubo` core dep; channel IDs only; refuses `MUSIC` |
-| `metal_archives` | Encyclopaedia Metallum | music | `pymetal` core dep |
-| `pyfanedit` | fanedit.org / IFDB | movie | variant-only — `lookup()` returns `None`; `list_variants()` calls `FaneditClient.search_by_original_title()` — `metadatarr/resolve/providers/pyfanedit.py:61` |
-| `bluray_com` | blu-ray.com | movie | HTML scraper |
-| `dvdcompare` | dvdcompare.net | movie | HTML scraper |
-| `discogs` | Discogs REST API | music / music_video / other | 25 req/min unauthenticated; set `DISCOGS_TOKEN` for 60 req/min |
+| Name | Source | Media | Modality | Notes |
+|---|---|---|---|---|
+| `skyhook` | Servarr proxies | movie / episodic_series / music / book | universal | no env vars needed — `metadatarr/resolve/providers/servarr_proxy.py:33` |
+| `musicbrainz` | MusicBrainz API | music | AUDIO | artist, release, recording IDs |
+| `audiodb` | TheAudioDB | music | AUDIO | free public key |
+| `tvmaze` | TVmaze public API | episodic_series | VIDEO | no auth; `MediaType.EPISODIC_SERIES` only |
+| `anilist` | AniList GraphQL | movie / episodic_series / comic | VIDEO + TEXT | |
+| `jikan_anime` | Jikan (MyAnimeList) | movie / episodic_series | VIDEO | |
+| `jikan_manga` | Jikan (MyAnimeList) | comic | TEXT | |
+| `librivox` | LibriVox API | audiobook | AUDIO | |
+| `apple_podcasts` | Apple Podcasts search | podcast / audio_drama | AUDIO | |
+| `wikidata` | Wikidata API | all | universal | Q-id + cross-references |
+| `bandcamp` | Bandcamp | music | AUDIO | `py_bandcamp` core dep |
+| `soundcloud` | SoundCloud | music | AUDIO | `nuvem_de_som` core dep |
+| `youtube_music` | YouTube Music | music | AUDIO | `tutubo` core dep; browseId entity records |
+| `youtube` | YouTube | movie / episodic_series / podcast / generic | universal | `tutubo` core dep; channel IDs only; refuses `MUSIC` |
+| `metal_archives` | Encyclopaedia Metallum | music | AUDIO | `pymetal` core dep |
+| `pyfanedit` | fanedit.org / IFDB | movie | VIDEO | variant-only — `lookup()` returns `None`; `list_variants()` calls `FaneditClient.search_by_original_title()` — `metadatarr/resolve/providers/pyfanedit.py:42` |
+| `bluray_com` | blu-ray.com | movie | VIDEO | HTML scraper |
+| `dvdcompare` | dvdcompare.net | movie | VIDEO | HTML scraper |
+| `discogs` | Discogs REST API | music / music_video / generic | AUDIO + VIDEO | 25 req/min unauthenticated; set `DISCOGS_TOKEN` for 60 req/min |
+| `openlibrary` | OpenLibrary | book | TEXT | auto-registered |
+| `annas_archive` | Anna's Archive | book | TEXT | auto-registered |
 
 ### Multiple candidates per provider
 
@@ -313,11 +380,14 @@ Providers without an override still emit a single candidate (their
 
 ```python
 from metadatarr.resolve.base import all_providers, active_providers
-from mediavocab import MediaType
+from mediavocab import MediaType, PlaybackModality
 
-all_providers()                         # {name: provider} — every registered provider
-active_providers()                      # those whose is_available() is True
-active_providers(medium=MediaType.MUSIC)   # further filtered to music-capable providers
+all_providers()                              # {name: provider} — every registered provider
+active_providers()                           # those whose is_available() is True
+active_providers(medium=MediaType.MUSIC)     # further filtered to music-capable providers
+
+# Modality filtering is manual — active_providers() doesn't take a modality kwarg:
+audio = [p for p in active_providers() if not p.modality or PlaybackModality.AUDIO in p.modality]
 ```
 
 ---
@@ -497,9 +567,10 @@ bandcamp_album_id         = "99999999"
 ```
 
 Supported section types correspond to `EntityRole` values:
-`artist`, `album`, `release`, `track`, `label`, `channel`, `studio`,
 `actor`, `voice_actor`, `director`, `producer`, `composer`, `writer`,
-`narrator`, `host`, `author`, `character`, `other`.
+`narrator`, `host`, `author`, `artist`, `label`, `channel`, `studio`, `other`.
+
+`EntityRole` — `metadatarr/resolve/entities.py:39`
 
 Keys inside a section can be:
 - Any first-class `ExternalIds` field name (`musicbrainz_artist`,
@@ -652,7 +723,7 @@ These are two separate providers with completely different semantics.
 **`youtube`** — regular YouTube.  A video ID identifies a single upload, not
 a song.  The same song has thousands of uploads; none is authoritative.  This
 provider only emits `EntityRole.CHANNEL` relations (never `ARTIST` or
-`ALBUM`), and refuses `MediaType.MUSIC` lookups entirely.  Use it for content
+`LABEL`), and refuses `MediaType.MUSIC` lookups entirely.  Use it for content
 that is *original to YouTube* — vlogs, essays, original podcasts, etc.
 
 **`youtube_music`** — YouTube Music.  This catalog has proper *entity*
@@ -670,12 +741,13 @@ from typing import Optional
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import Signals, MediaType
+from mediavocab import Signals, MediaType, PlaybackModality
 
 
 class MyProvider(MetadataProvider):
     name = "my_provider"
     media = {MediaType.MUSIC}
+    modality = {PlaybackModality.AUDIO}   # omit or leave empty to accept all modalities
 
     def is_available(self) -> bool:
         return True  # or check for env vars / optional deps

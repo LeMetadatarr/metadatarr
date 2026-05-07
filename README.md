@@ -188,27 +188,33 @@ plus an `extra` dict for platform-specific IDs (Bandcamp, SoundCloud, YouTube Mu
 
 All providers are keyless. All dependencies are bundled in the core install.
 
-| Provider | Source | MediaType |
-|---|---|---|
-| `metadatarr` | Servarr proxies + OpenLibrary | Movie, EpisodicSeries, Music, Book |
-| `musicbrainz` | MusicBrainz API | Music |
-| `audiodb` | TheAudioDB | Music |
-| `tvmaze` | TVmaze public API | EpisodicSeries |
-| `anilist` | AniList GraphQL API | Movie, EpisodicSeries, Comic |
-| `jikan_anime` | Jikan (MyAnimeList) | Movie, EpisodicSeries |
-| `jikan_manga` | Jikan (MyAnimeList) | Comic |
-| `librivox` | LibriVox API | Audiobook |
-| `apple_podcasts` | Apple Podcasts search | Podcast, AudioDrama |
-| `wikidata` | Wikidata API | All |
-| `discogs` | Discogs API | Music, MusicVideo |
-| `bluray_com` | blu-ray.com scraper | Movie |
-| `dvdcompare` | dvdcompare.net scraper | Movie |
-| `pyfanedit` | fanedit.org / IFDB | Movie (variants) |
-| `bandcamp` | Bandcamp | Music |
-| `soundcloud` | SoundCloud | Music |
-| `youtube_music` | YouTube Music | Music |
-| `youtube` | YouTube | Video, Podcast |
-| `metal_archives` | Encyclopaedia Metallum | Music |
+Routing is **three-axis** — `media`, `modality`, and `genre_filter`. Pass `modality` on
+`Signals` to route a `MediaType.GENERIC` query to audio-only or video-only providers.
+See [`docs/resolve.md`](docs/resolve.md#three-axis-routing-gate) for details.
+
+| Provider | Source | MediaType | Modality |
+|---|---|---|---|
+| `skyhook` | Servarr proxies | Movie, EpisodicSeries, Music, Book | universal |
+| `musicbrainz` | MusicBrainz API | Music | AUDIO |
+| `audiodb` | TheAudioDB | Music | AUDIO |
+| `tvmaze` | TVmaze public API | EpisodicSeries | VIDEO |
+| `anilist` | AniList GraphQL API | Movie, EpisodicSeries, Comic | VIDEO + TEXT |
+| `jikan_anime` | Jikan (MyAnimeList) | Movie, EpisodicSeries | VIDEO |
+| `jikan_manga` | Jikan (MyAnimeList) | Comic | TEXT |
+| `librivox` | LibriVox API | Audiobook | AUDIO |
+| `apple_podcasts` | Apple Podcasts search | Podcast, AudioDrama | AUDIO |
+| `wikidata` | Wikidata API | All | universal |
+| `discogs` | Discogs API | Music, MusicVideo, Generic | AUDIO + VIDEO |
+| `bluray_com` | blu-ray.com scraper | Movie | VIDEO |
+| `dvdcompare` | dvdcompare.net scraper | Movie | VIDEO |
+| `pyfanedit` | fanedit.org / IFDB | Movie (variants) | VIDEO |
+| `bandcamp` | Bandcamp | Music | AUDIO |
+| `soundcloud` | SoundCloud | Music | AUDIO |
+| `youtube_music` | YouTube Music | Music | AUDIO |
+| `youtube` | YouTube | Video, Podcast, Generic | universal |
+| `metal_archives` | Encyclopaedia Metallum | Music | AUDIO |
+| `openlibrary` | OpenLibrary | Book | TEXT |
+| `annas_archive` | Anna's Archive | Book | TEXT |
 
 **YouTube vs YouTube Music** — these are intentionally separate providers.
 `youtube` only emits channel IDs and refuses `MediaType.MUSIC` lookups (video IDs aren't

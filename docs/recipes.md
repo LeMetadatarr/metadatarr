@@ -320,6 +320,46 @@ for release in find_physical("Blade Runner", "Laserdisc"):
 See [clients/discogs.md](clients/discogs.md) for the full field reference and
 rate-limit guidance.
 
+## Voice agent: route by request verb
+
+When a voice assistant parses user intent, the request verb tells you the
+modality the user expects. Map it to `PlaybackModality` before resolving —
+the three-axis gate does the rest without you enumerating providers manually.
+
+```python
+import metadatarr.resolve.providers  # triggers self-registration
+from metadatarr.resolve.base import resolve
+from mediavocab import Signals, MediaType, PlaybackModality
+
+_VERB_TO_MODALITY = {
+    "play":   PlaybackModality.AUDIO,   # "play X" → audio providers
+    "listen": PlaybackModality.AUDIO,
+    "watch":  PlaybackModality.VIDEO,   # "watch X" → video providers
+    "read":   PlaybackModality.TEXT,    # "read X" → text/book providers
+}
+
+def resolve_intent(title: str, verb: str, medium: MediaType = MediaType.GENERIC):
+    """Resolve *title* using the modality implied by *verb*.
+
+    AUDIO routes to: musicbrainz, audiodb, bandcamp, soundcloud,
+                     metal_archives, youtube_music, librivox, apple_podcasts,
+                     arr_lidarr, discogs.
+    VIDEO routes to: tvmaze, anilist, jikan_anime, pyfanedit,
+                     bluray_com, dvdcompare, arr_sonarr, arr_radarr, discogs.
+    TEXT routes to:  openlibrary, annas_archive, jikan_manga, arr_readarr, anilist.
+    """
+    modality = _VERB_TO_MODALITY.get(verb.lower())
+    return resolve(Signals(title=title, medium=medium, modality=modality))
+
+result = resolve_intent("Moonsorrow", "play")
+result = resolve_intent("Attack on Titan", "watch", MediaType.EPISODIC_SERIES)
+result = resolve_intent("The Hobbit", "read", MediaType.BOOK)
+```
+
+Providers with an empty `modality` set (`skyhook`, `wikidata`, `youtube`) are
+universal and participate regardless of the modality passed.
+`MetadataProvider.modality` — `metadatarr/resolve/base.py:107`
+
 ## Building your own provider class
 
 If you want metadatarr-shaped access to another book/media source, the recipe is:
