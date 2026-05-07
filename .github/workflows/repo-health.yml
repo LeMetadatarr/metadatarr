@@ -9,4 +9,4 @@ jobs:
   repo_health:
     uses: OpenVoiceOS/gh-automations/.github/workflows/repo-health.yml@dev
     with:
-      version_file: 'version.py'
+      version_file: 'metadatarr/version.py'
