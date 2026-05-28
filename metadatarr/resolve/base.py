@@ -21,7 +21,11 @@ from typing import ClassVar, Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from metadatarr.resolve.entities import EntityRole, ProviderEntity
+from metadatarr.resolve.entities import (
+    EntityRole,
+    ProviderEntity,
+    allocate_entity_id,
+)
 from mediavocab.models import ExternalIds
 from metadatarr.resolve.mappings import apply_mappings
 from mediavocab import MediaType, PlaybackType
@@ -193,6 +197,38 @@ def active_providers(medium: Optional[MediaType] = None) -> List[MetadataProvide
 # Match consolidation
 # ---------------------------------------------------------------------------
 
+def _aggregate_relations(
+    accepted: List[ProviderMatch],
+) -> Dict[EntityRole, List[ProviderEntity]]:
+    """Collect relation entities from accepted matches, deduped per role.
+
+    Two providers that point at the same entity (same canonical external id, or
+    same name when no id is known) collapse into one :class:`ProviderEntity`
+    with their ``external_ids`` and aliases merged.
+    """
+    out: Dict[EntityRole, List[ProviderEntity]] = {}
+    for match in accepted:
+        for role, entities in match.relations.items():
+            bucket = out.setdefault(role, [])
+            index: Dict[str, ProviderEntity] = {
+                allocate_entity_id(role, name=e.name, external_ids=e.external_ids): e
+                for e in bucket
+            }
+            for ent in entities:
+                eid = allocate_entity_id(
+                    role, name=ent.name, external_ids=ent.external_ids
+                )
+                existing = index.get(eid)
+                if existing is None:
+                    index[eid] = ent
+                    bucket.append(ent)
+                else:
+                    existing.external_ids = existing.external_ids.merge(ent.external_ids)
+                    if ent.name and ent.name != existing.name:
+                        existing.merge_alias(ent.name)
+    return out
+
+
 def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
     """Merge provider matches against a local signals bag.
 
@@ -248,6 +284,7 @@ def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
         accepted=accepted,
         dropped=dropped,
         conflicts=conflicts,
+        relations=_aggregate_relations(accepted),
     )
 
 
