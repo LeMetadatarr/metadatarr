@@ -138,6 +138,8 @@ def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
     if role in {EntityRole.ACTOR, EntityRole.DIRECTOR, EntityRole.PRODUCER,
                 EntityRole.COMPOSER, EntityRole.WRITER, EntityRole.NARRATOR,
                 EntityRole.HOST}:
+        # iafd_performer_uuid is authoritative for adult-industry performers
+        # (no TMDB/IMDB equivalent exists for most of them)
         return ((str(ext.tmdb_person) if ext.tmdb_person else None)
                 or ext.imdb_person
                 or (str(ext.anilist_staff_id) if ext.anilist_staff_id else None)
@@ -145,7 +147,8 @@ def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
                 or (str(ext.metal_archives_artist) if ext.metal_archives_artist else None)
                 or ext.wikidata
                 or ext.extra.get("tmdb_person")
-                or ext.extra.get("imdb_person"))
+                or ext.extra.get("imdb_person")
+                or ext.extra.get("iafd_performer_uuid"))
     if role == EntityRole.AUTHOR:
         return (ext.olid or ext.goodreads or ext.extra.get("goodreads_author")
                 or ext.wikidata)
