@@ -201,7 +201,8 @@ def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
                 or ext.extra.get("tmdb_person")
                 or ext.extra.get("imdb_person")
                 or ext.extra.get("iafd_performer_uuid")
-                or ext.extra.get("boobpedia_slug"))
+                or ext.extra.get("boobpedia_slug")
+                or ext.extra.get("theporndb_id"))
 
     if role == EntityRole.AUTHOR:
         return (ext.olid or ext.goodreads or ext.extra.get("goodreads_author")
