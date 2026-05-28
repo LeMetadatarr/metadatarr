@@ -65,6 +65,28 @@ def _best_result(query: str, results, *, name_attr: str = "name", threshold: flo
     return None
 
 
+def _actor_entities_full(performers) -> List[ProviderEntity]:
+    """Build ACTOR ProviderEntities from full Performer objects (with social links)."""
+    entities = []
+    for perf in performers:
+        name = getattr(perf, "name", "") or ""
+        if not name.strip():
+            continue
+        try:
+            from pyporndb.ids import performer_to_extra
+            extra = performer_to_extra(perf)
+        except Exception:
+            extra = {}
+            if getattr(perf, "uuid", None):
+                extra["theporndb_uuid"] = perf.uuid
+        entities.append(ProviderEntity(
+            role=EntityRole.ACTOR,
+            name=name.strip(),
+            external_ids=ExternalIds(extra=extra),
+        ))
+    return entities
+
+
 def _actor_entities(performers) -> List[ProviderEntity]:
     """Build ACTOR ProviderEntities from a list of PerformerRef objects."""
     entities = []
@@ -139,35 +161,33 @@ class ThePornDBProvider(MetadataProvider):
             return None
 
         try:
-            client = _pdb.PornDBClient()
-        except ValueError:
-            LOG.warning("theporndb: no API key configured")
-            return None
-
-        try:
-            results = client.search_scenes(signals.title)
+            results = list(_pdb.list_scenes(max_pages=1))
+            # Filter by title similarity
+            results = [s for s in results if _ratio(signals.title, s.title) >= 0.45]
         except Exception as exc:
-            LOG.warning("theporndb: search_scenes(%r) failed: %s", signals.title, exc)
+            LOG.warning("theporndb: list_scenes failed: %s", exc)
             return None
 
         if not results:
             return None
 
-        best = _best_result(signals.title, results, threshold=0.60)
+        best = _best_result(signals.title, results, name_attr="title", threshold=0.60)
         if best is None:
             return None
 
-        ratio = _ratio(signals.title, best.name or "")
-
-        # Prefer year-matching result when year provided
-        if signals.year and results:
-            pass  # SearchResult doesn't carry year; rely on full fetch
+        ratio = _ratio(signals.title, best.title or "")
 
         try:
-            scene = client.get_scene(best.uuid or str(best.id))
+            from pyporndb.scenes import get_scene_with_performers
+            scene, performers = get_scene_with_performers(best.uuid)
         except Exception as exc:
-            LOG.warning("theporndb: get_scene(%r) failed: %s", best.uuid, exc)
-            return None
+            LOG.warning("theporndb: get_scene_with_performers(%r) failed: %s", best.uuid, exc)
+            try:
+                scene = _pdb.get_scene(best.uuid)
+                performers = []
+            except Exception as exc2:
+                LOG.warning("theporndb: get_scene(%r) failed: %s", best.uuid, exc2)
+                return None
 
         # Confidence
         confidence = 0.55 + 0.28 * ratio
@@ -183,7 +203,11 @@ class ThePornDBProvider(MetadataProvider):
         external_ids = _scene_external_ids(scene)
 
         relations: Dict[EntityRole, List[ProviderEntity]] = {}
-        actors = _actor_entities(scene.performers or [])
+        # Use full Performer objects when available (carry social/cross-source links)
+        if performers:
+            actors = _actor_entities_full(performers)
+        else:
+            actors = _actor_entities(scene.performers or [])
         if actors:
             relations[EntityRole.ACTOR] = actors
 
@@ -218,8 +242,7 @@ class ThePornDBProvider(MetadataProvider):
             return None
 
         try:
-            client = _pdb.PornDBClient()
-            scene = client.get_scene(uuid)
+            scene = _pdb.get_scene(uuid)
         except Exception as exc:
             LOG.warning("theporndb: enrich scene %r: %s", uuid, exc)
             return None
@@ -234,23 +257,43 @@ class ThePornDBProvider(MetadataProvider):
 def enrich_performer_entity(entity: ProviderEntity) -> ProviderEntity:
     """Resolve a performer against ThePornDB and merge bio data.
 
+    Performer data is sourced from scenes: the function searches recent
+    scenes for the named performer, extracts their full ``Performer`` object
+    (which includes physical stats and cross-source links), and merges it
+    into the entity.
+
     Resolution order:
 
-    1. If ``extra["theporndb_uuid"]`` is set, re-fetch by UUID.
-    2. Otherwise search by name; exact match first, then best fuzzy >= 0.80.
+    1. If ``extra["theporndb_uuid"]`` is already set and bio is present,
+       short-circuit (already enriched).
+    2. Search recent scenes by performer name.  The first scene carrying
+       a matching performer is used.
+    3. Merge physical stats, social links, and cross-source URLs into the
+       entity's extra dict.
+
+    Cross-source links added when available:
+
+    - ``iafd_url`` / ``iafd_performer_uuid`` — for IAFD cross-lookup
+    - ``freeones_url`` — for FreeOnes cross-lookup
+    - ``boobpedia_url`` / ``boobpedia_slug`` — for Boobpedia cross-lookup
+    - ``stashdb_url`` — for StashDB cross-lookup
 
     The entity is returned unchanged when:
 
     - ``pyporndb`` is not installed
-    - no API key is configured
-    - no match is found
+    - no match is found in the recent scene listing
     - the network request fails
 
     Keys written: see :mod:`pyporndb.ids` for the full list.
     """
     try:
         import pyporndb as _pdb
-        from pyporndb.ids import performer_to_extra
+        from pyporndb.ids import (
+            performer_to_extra,
+            iafd_uuid_from_url,
+            freeones_slug_from_url,
+            boobpedia_slug_from_url,
+        )
     except ImportError:
         return entity
 
@@ -262,58 +305,65 @@ def enrich_performer_entity(entity: ProviderEntity) -> ProviderEntity:
     if uuid and "theporndb_birthday" in entity.external_ids.extra:
         return entity
 
-    try:
-        client = _pdb.PornDBClient()
-    except ValueError:
-        return entity
+    performer = None
 
-    # UUID present but not yet enriched
-    if uuid:
+    # Search for performer in recent scenes
+    if entity.name:
         try:
-            performer = client.get_performer(uuid)
-            extra = performer_to_extra(performer)
-            merged = entity.external_ids.merge(ExternalIds(extra=extra))
-            return entity.model_copy(update={"external_ids": merged})
+            scenes = list(_pdb.scenes_by_performer_name(entity.name, max_pages=1))
         except Exception as exc:
-            LOG.warning("theporndb: get_performer(%r): %s", uuid, exc)
-            return entity
+            LOG.warning("theporndb: scenes_by_performer_name(%r): %s", entity.name, exc)
+            scenes = []
 
-    # Name-based search
-    if not entity.name:
-        return entity
+        name_lower = entity.name.lower()
+        for scene in scenes:
+            # Try extracting full Performer objects from scene detail
+            try:
+                from pyporndb.scenes import get_scene_with_performers
+                from pyporndb.performer import extract_performers_from_scene_data
+                _, perfs = get_scene_with_performers(scene.uuid)
+            except Exception:
+                perfs = []
+            for p in perfs:
+                if p.name.lower() == name_lower or (
+                    uuid and p.uuid == uuid
+                ):
+                    performer = p
+                    break
+            if performer:
+                break
 
-    try:
-        results = client.search_performers(entity.name)
-    except Exception as exc:
-        LOG.warning("theporndb: search_performers(%r): %s", entity.name, exc)
-        return entity
+        # Fall back to matching PerformerRef from scene listing
+        if performer is None:
+            for scene in scenes:
+                for ref in (scene.performers or []):
+                    if ref.name.lower() == name_lower or (uuid and ref.uuid == uuid):
+                        performer = ref
+                        break
+                if performer:
+                    break
 
-    if not results:
-        return entity
-
-    name_lower = entity.name.lower()
-    match = next((r for r in results if r.name.lower() == name_lower), None)
-
-    if match is None:
-        scored = sorted(
-            results,
-            key=lambda r: difflib.SequenceMatcher(None, name_lower, r.name.lower()).ratio(),
-            reverse=True,
-        )
-        top_ratio = difflib.SequenceMatcher(None, name_lower, scored[0].name.lower()).ratio()
-        if scored and top_ratio >= 0.80:
-            match = scored[0]
-
-    if match is None:
-        return entity
-
-    try:
-        performer = client.get_performer(match.uuid or str(match.id))
-    except Exception as exc:
-        LOG.warning("theporndb: get_performer(%r) for %r: %s", match.uuid, match.name, exc)
+    if performer is None:
         return entity
 
     extra = performer_to_extra(performer)
+
+    # Cross-source link extraction
+    social = getattr(performer, "social", None)
+    if social:
+        if social.iafd_url:
+            iafd_uuid = iafd_uuid_from_url(social.iafd_url)
+            if iafd_uuid:
+                extra["iafd_performer_uuid"] = iafd_uuid
+        if social.freeones_url:
+            fo_slug = freeones_slug_from_url(social.freeones_url)
+            if fo_slug:
+                extra["freeones_url"] = f"https://www.freeones.com/{fo_slug}/bio"
+        if social.boobpedia_url:
+            bp_slug = boobpedia_slug_from_url(social.boobpedia_url)
+            if bp_slug:
+                extra["boobpedia_slug"] = bp_slug
+
     merged = entity.external_ids.merge(ExternalIds(extra=extra))
     return entity.model_copy(update={"external_ids": merged})
 
