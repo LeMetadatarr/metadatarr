@@ -11,7 +11,7 @@ import logging
 import os
 from typing import Optional
 
-import requests
+from unblock_requests import CloudflareSession
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
@@ -20,6 +20,16 @@ from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.tmdb")
 _BASE = "https://api.themoviedb.org/3"
+
+_session: Optional[CloudflareSession] = None
+
+
+def _http() -> CloudflareSession:
+    """Shared anti-bot HTTP transport (curl_cffi impersonation by default)."""
+    global _session
+    if _session is None:
+        _session = CloudflareSession()
+    return _session
 
 
 class TMDBProvider(MetadataProvider):
@@ -37,7 +47,7 @@ class TMDBProvider(MetadataProvider):
         if not key:
             return None
         try:
-            resp = requests.get(
+            resp = _http().get(
                 f"{_BASE}/search/movie",
                 params={"api_key": key, "query": signals.title, "page": 1},
                 timeout=20,

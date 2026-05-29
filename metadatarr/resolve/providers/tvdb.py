@@ -12,7 +12,7 @@ import logging
 import os
 from typing import Optional
 
-import requests
+from unblock_requests import CloudflareSession
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
@@ -23,6 +23,15 @@ LOG = logging.getLogger("metadatarr.resolve.providers.tvdb")
 _BASE = "https://api4.thetvdb.com/v4"
 
 _token: Optional[str] = None
+_session: Optional[CloudflareSession] = None
+
+
+def _http() -> CloudflareSession:
+    """Shared anti-bot HTTP transport (curl_cffi impersonation by default)."""
+    global _session
+    if _session is None:
+        _session = CloudflareSession()
+    return _session
 
 
 def _authenticate() -> Optional[str]:
@@ -31,7 +40,7 @@ def _authenticate() -> Optional[str]:
     if not key:
         return None
     try:
-        resp = requests.post(f"{_BASE}/login", json={"apikey": key}, timeout=20)
+        resp = _http().post(f"{_BASE}/login", json={"apikey": key}, timeout=20)
         resp.raise_for_status()
         _token = resp.json()["data"]["token"]
         return _token
@@ -60,7 +69,7 @@ class TVDBProvider(MetadataProvider):
         if not token:
             return None
         try:
-            resp = requests.get(
+            resp = _http().get(
                 f"{_BASE}/search",
                 params={"query": title, "type": "series"},
                 headers={"Authorization": f"Bearer {token}"},

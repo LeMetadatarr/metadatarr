@@ -1,4 +1,4 @@
-"""Tests for the TVDB provider (offline — requests is patched)."""
+"""Tests for the TVDB provider (offline — transport is patched)."""
 from __future__ import annotations
 
 import os
@@ -20,11 +20,20 @@ def _make_response(data, status_code=200):
     return resp
 
 
+def _session(get_return=None, get_side_effect=None):
+    sess = MagicMock()
+    if get_side_effect is not None:
+        sess.get.side_effect = get_side_effect
+    else:
+        sess.get.return_value = get_return
+    return sess
+
+
 def test_exact_match_high_confidence():
     p = TVDBProvider()
     tvdb_module._token = "fake-token"
     result = {"tvdb_id": 121361, "name": "Breaking Bad", "year": "2008", "slug": "breaking-bad"}
-    with patch("requests.get", return_value=_make_response([result])):
+    with patch.object(tvdb_module, "_http", return_value=_session(get_return=_make_response([result]))):
         m = p.lookup(Signals(title="Breaking Bad", year=2008))
     assert m is not None
     assert m.confidence >= 0.90
@@ -48,7 +57,7 @@ def test_api_key_set_available():
 def test_no_results_returns_none():
     p = TVDBProvider()
     tvdb_module._token = "fake-token"
-    with patch("requests.get", return_value=_make_response([])):
+    with patch.object(tvdb_module, "_http", return_value=_session(get_return=_make_response([]))):
         m = p.lookup(Signals(title="NonExistentShow12345"))
     assert m is None
 
@@ -56,6 +65,6 @@ def test_no_results_returns_none():
 def test_exception_returns_none():
     p = TVDBProvider()
     tvdb_module._token = "fake-token"
-    with patch("requests.get", side_effect=Exception("network error")):
+    with patch.object(tvdb_module, "_http", return_value=_session(get_side_effect=Exception("network error"))):
         m = p.lookup(Signals(title="Breaking Bad"))
     assert m is None
