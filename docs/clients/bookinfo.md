@@ -1,7 +1,7 @@
 # BookInfoClient (rreading-glasses)
 
 Wraps [`rreading-glasses`](https://github.com/blampe/rreading-glasses), an
-open-source replacement for the (now defunct) Goodreads metadata service.
+open-source replacement for the defunct Goodreads metadata service.
 Two hosted instances exist:
 
 | Backend | URL | Constructor |

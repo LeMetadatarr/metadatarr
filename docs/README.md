@@ -52,7 +52,13 @@ If you've never used metadatarr before, read in this order:
    consolidation, identity mappings, and writing custom providers.
 4. **[Models reference](models.md)** — every Pydantic model, every field, where it comes from.
 5. **[Recipes](recipes.md)** — cross-provider workflows: ISBN-to-cover, dedup, fallback chains, async wrappers, caching.
-6. **[Troubleshooting](troubleshooting.md)** — empty results, rate limiting, mirror outages, version skew.
+6. **[Troubleshooting](troubleshooting.md)** — empty results, rate limiting, mirror outages, validation errors.
+
+### Extending metadatarr (advanced)
+
+- **[Adding a provider](add-provider.md)** — the end-to-end checklist for plugging a new source into the resolver.
+- **[Testing providers](testing.md)** — the offline-fixture / mocked-HTTP pattern and the per-provider smoke contract.
+- **[Contributing](../CONTRIBUTING.md)** — branch/PR flow, conventional commits → automatic versioning, running CI locally.
 
 ## Design notes (the 30-second tour)
 
