@@ -33,7 +33,7 @@ class ServarrProxyProvider(MetadataProvider):
     name = "skyhook"
     media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.MUSIC, MediaType.BOOK}
     # Universal — dispatches internally by medium to the right Skyhook backend.
-    modality: set = set()
+    playback_type: set = set()
 
     def __init__(self) -> None:
         self._client = ArrMetadataClient()
