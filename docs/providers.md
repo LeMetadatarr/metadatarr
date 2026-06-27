@@ -41,6 +41,7 @@ An empty set on any axis means "accept all" for that axis.
 | `discogs`         | music / music\_video / generic   | AUDIO + VIDEO     | Public REST API, 25 req/min unauthenticated; set `DISCOGS_TOKEN` for 60 req/min; `lookup()` calls `search_video()` for `MUSIC_VIDEO`, `search()` for audio — `metadatarr/resolve/providers/discogs.py:46` |
 | `openlibrary`     | book                             | TEXT              | Auto-registered; OpenLibrary ISBN/work lookup — `metadatarr/resolve/providers/openlibrary.py:25` |
 | `annas_archive`   | book                             | TEXT              | Auto-registered; HTML scrape of Anna's Archive mirrors — `metadatarr/resolve/providers/annas_archive.py:29` |
+| `hanime`          | movie / episodic_series          | VIDEO             | hentai-anime; optional dep (`pyhanime`); **genre-gated** to `adult`+`anime` queries; stable numeric IDs (`hanime_video_id`, `hanime_brand_id`, `hanime_franchise_id`) in `extra`; emits `STUDIO` relation — `metadatarr/resolve/providers/hanime.py` |
 
 ## Inspecting at runtime
 
