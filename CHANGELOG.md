@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1a1](https://github.com/TigreGotico/metadatarr/tree/0.4.1a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.0a1...0.4.1a1)
+
+**Merged pull requests:**
+
+- fix: repair stale example imports + compile guard, README TL;DR [\#13](https://github.com/TigreGotico/metadatarr/pull/13) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.4.0a1](https://github.com/TigreGotico/metadatarr/tree/0.4.0a1) (2026-06-27)
 
 [Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.3.0a1...0.4.0a1)
