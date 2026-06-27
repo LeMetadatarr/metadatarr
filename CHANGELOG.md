@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1a3](https://github.com/TigreGotico/metadatarr/tree/0.4.1a3) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.1a2...0.4.1a3)
+
+**Merged pull requests:**
+
+- docs: provider-authoring, testing, and contributing guides [\#17](https://github.com/TigreGotico/metadatarr/pull/17) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.4.1a2](https://github.com/TigreGotico/metadatarr/tree/0.4.1a2) (2026-06-27)
 
 [Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.1a1...0.4.1a2)
