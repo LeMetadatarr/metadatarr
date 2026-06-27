@@ -10,6 +10,7 @@ import logging
 from typing import Optional
 
 from mediavocab import MediaType, PlaybackType
+from mediavocab.taxonomy import GENRE_ANIME, GENRE_MANGA
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
@@ -43,7 +44,7 @@ class JikanAnimeProvider(MetadataProvider):
     name = "jikan_anime"
     media = {MediaType.EPISODIC_SERIES, MediaType.MOVIE}
     playback_type = {PlaybackType.VIDEO}
-    genre_filter = {"anime"}
+    genre_filter = {GENRE_ANIME}
 
     def is_available(self) -> bool:
         return True
@@ -103,7 +104,7 @@ class JikanAnimeProvider(MetadataProvider):
         return ProviderMatch(
             provider=self.name,
             confidence=0.85,
-            signals=Signals(title=title, year=year, medium=MediaType.EPISODIC_SERIES, content_genres=["anime"]),
+            signals=Signals(title=title, year=year, medium=MediaType.EPISODIC_SERIES, content_genres=[GENRE_ANIME]),
             external_ids=ExternalIds(mal_id=mal_id, extra=extra),
             relations=relations,
         )
@@ -115,7 +116,7 @@ class JikanMangaProvider(MetadataProvider):
     name = "jikan_manga"
     media = {MediaType.COMIC}
     playback_type = {PlaybackType.PAGED}
-    genre_filter = {"manga"}
+    genre_filter = {GENRE_MANGA}
 
     def is_available(self) -> bool:
         return True
@@ -181,7 +182,7 @@ class JikanMangaProvider(MetadataProvider):
         return ProviderMatch(
             provider=self.name,
             confidence=0.85,
-            signals=Signals(title=title, year=year, medium=MediaType.COMIC, content_genres=["manga"]),
+            signals=Signals(title=title, year=year, medium=MediaType.COMIC, content_genres=[GENRE_MANGA]),
             external_ids=ExternalIds(mal_id=mal_id, extra=extra),
             relations=relations,
         )

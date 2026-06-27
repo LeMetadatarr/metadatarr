@@ -23,6 +23,7 @@ from typing import List, Optional
 from mediavocab import MediaType, PlaybackType
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
+from mediavocab.taxonomy import GENRE_ANIME, GENRE_MANGA
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 
@@ -78,7 +79,7 @@ def _anime_card_to_match(card, provider: str = "pymal_anime") -> ProviderMatch:
         signals=Signals(
             title=card.title,
             medium=MediaType.EPISODIC_SERIES,
-            content_genres=["anime"],
+            content_genres=[GENRE_ANIME],
         ),
         external_ids=ExternalIds(mal_id=card.mal_id).merge(arm_ids),
     )
@@ -92,7 +93,7 @@ def _manga_card_to_match(card, provider: str = "pymal_manga") -> ProviderMatch:
         signals=Signals(
             title=card.title,
             medium=MediaType.COMIC,
-            content_genres=["manga"],
+            content_genres=[GENRE_MANGA],
         ),
         external_ids=ExternalIds(mal_id=card.mal_id).merge(arm_ids),
     )
@@ -181,7 +182,7 @@ class PymalAnimeProvider(MetadataProvider):
     name = "pymal_anime"
     media = {MediaType.EPISODIC_SERIES, MediaType.MOVIE}
     playback_type = {PlaybackType.VIDEO}
-    genre_filter = {"anime"}
+    genre_filter = {GENRE_ANIME}
 
     def is_available(self) -> bool:
         return _check_available()
@@ -250,7 +251,7 @@ class PymalAnimeProvider(MetadataProvider):
                 title=anime.title,
                 year=anime.year,
                 medium=MediaType.EPISODIC_SERIES if anime.type != "Movie" else MediaType.MOVIE,
-                content_genres=["anime"],
+                content_genres=[GENRE_ANIME],
             ),
             external_ids=base_ids,
             relations=_relations_from_anime(anime),
@@ -265,7 +266,7 @@ class PymalMangaProvider(MetadataProvider):
     name = "pymal_manga"
     media = {MediaType.COMIC}
     playback_type = {PlaybackType.PAGED}
-    genre_filter = {"manga"}
+    genre_filter = {GENRE_MANGA}
 
     def is_available(self) -> bool:
         return _check_available()
@@ -325,7 +326,7 @@ class PymalMangaProvider(MetadataProvider):
             signals=Signals(
                 title=manga.title,
                 medium=MediaType.COMIC,
-                content_genres=["manga"],
+                content_genres=[GENRE_MANGA],
             ),
             external_ids=base_ids,
             relations=_relations_from_manga(manga),

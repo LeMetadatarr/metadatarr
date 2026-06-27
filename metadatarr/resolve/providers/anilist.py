@@ -9,6 +9,7 @@ import logging
 from typing import Optional
 
 from mediavocab import MediaType, PlaybackType
+from mediavocab.taxonomy import GENRE_ANIME, GENRE_MANGA
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
@@ -62,8 +63,8 @@ class AniListProvider(MetadataProvider):
     """AniList — anime and manga, GraphQL, no credentials.
 
     Routes on (media_type, content_genres). Anime requires
-    ``EPISODIC_SERIES`` or ``MOVIE`` plus ``"anime"`` in
-    ``content_genres``; manga requires ``COMIC`` + ``"manga"``.
+    ``EPISODIC_SERIES`` or ``MOVIE`` plus ``GENRE_ANIME`` in
+    ``content_genres``; manga requires ``COMIC`` + ``GENRE_MANGA``.
     """
 
     name = "anilist"
@@ -71,7 +72,7 @@ class AniListProvider(MetadataProvider):
     # anime ⇒ VIDEO; manga ⇒ TEXT. Declare both; the `media` gate
     # naturally restricts each side to its own MediaType.
     playback_type = {PlaybackType.VIDEO, PlaybackType.PAGED}
-    genre_filter = {"anime", "manga"}
+    genre_filter = {GENRE_ANIME, GENRE_MANGA}
 
     def is_available(self) -> bool:
         return True
@@ -87,7 +88,7 @@ class AniListProvider(MetadataProvider):
 
         is_manga = (
             signals.medium == MediaType.COMIC
-            or "manga" in (signals.content_genres or [])
+            or GENRE_MANGA in (signals.content_genres or [])
         )
         media_type = "MANGA" if is_manga else "ANIME"
 
@@ -113,9 +114,9 @@ class AniListProvider(MetadataProvider):
         year = (media.get("startDate") or {}).get("year")
         # Map back to canonical mediavocab MediaType + genre tag.
         if media_type == "MANGA":
-            medium, genres = MediaType.COMIC, ["manga"]
+            medium, genres = MediaType.COMIC, [GENRE_MANGA]
         else:
-            medium, genres = MediaType.EPISODIC_SERIES, ["anime"]
+            medium, genres = MediaType.EPISODIC_SERIES, [GENRE_ANIME]
 
         relations: dict = {}
 
