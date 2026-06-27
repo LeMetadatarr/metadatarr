@@ -6,6 +6,7 @@ from typing import List, Optional
 
 import requests
 
+from metadatarr.version import __version__
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
@@ -14,7 +15,7 @@ from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.musicbrainz")
 _BASE = "https://musicbrainz.org/ws/2"
-_UA = "metadatarr/0.1 (+https://github.com/TigreGotico/metadatarr)"
+_UA = f"metadatarr/{__version__} (+https://github.com/TigreGotico/metadatarr)"
 
 
 class MusicBrainzProvider(MetadataProvider):
