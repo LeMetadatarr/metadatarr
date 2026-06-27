@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0a2](https://github.com/TigreGotico/metadatarr/tree/0.5.0a2) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.5.0a1...0.5.0a2)
+
+**Merged pull requests:**
+
+- test: per-provider smoke contract + standardized provider error handling [\#21](https://github.com/TigreGotico/metadatarr/pull/21) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.5.0a1](https://github.com/TigreGotico/metadatarr/tree/0.5.0a1) (2026-06-27)
 
 [Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.1a3...0.5.0a1)
