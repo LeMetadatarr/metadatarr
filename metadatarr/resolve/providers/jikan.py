@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
@@ -42,7 +42,7 @@ class JikanAnimeProvider(MetadataProvider):
 
     name = "jikan_anime"
     media = {MediaType.EPISODIC_SERIES, MediaType.MOVIE}
-    modality = {PlaybackModality.VIDEO}
+    playback_type = {PlaybackType.VIDEO}
     genre_filter = {"anime"}
 
     def is_available(self) -> bool:
@@ -114,7 +114,7 @@ class JikanMangaProvider(MetadataProvider):
 
     name = "jikan_manga"
     media = {MediaType.COMIC}
-    modality = {PlaybackModality.TEXT}
+    playback_type = {PlaybackType.PAGED}
     genre_filter = {"manga"}
 
     def is_available(self) -> bool:

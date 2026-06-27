@@ -1,12 +1,12 @@
 # Changelog
 
-## [0.1.0a2](https://github.com/TigreGotico/metadatarr/tree/0.1.0a2) (2026-05-07)
+## [0.1.1a1](https://github.com/TigreGotico/metadatarr/tree/0.1.1a1) (2026-06-27)
 
-[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/45444098ff4ede04e87009ceba33ed8978ee1218...0.1.0a2)
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.1.0...0.1.1a1)
 
 **Merged pull requests:**
 
-- docs: rewrite README with full feature coverage and examples [\#1](https://github.com/TigreGotico/metadatarr/pull/1) ([JarbasAl](https://github.com/JarbasAl))
+- chore: migrate to mediavocab 1.0 [\#3](https://github.com/TigreGotico/metadatarr/pull/3) ([JarbasAl](https://github.com/JarbasAl))
 
 
 
