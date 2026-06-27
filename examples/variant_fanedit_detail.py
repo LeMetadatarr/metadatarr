@@ -5,14 +5,13 @@ want to fetch the full detail page for each — synopsis, cuts & additions,
 runtime, faneditor name, ratings — to help the user pick which edit to watch."
 
 Flow:
-  1. resolve() with include_variants=True → result.relations[Role.RELEASE]
+  1. resolve() with include_variants=True → result.variants
   2. Filter to entries that have fanedit_id set
   3. Fetch FaneditDetail for each via FaneditClient.get_detail()
 """
 import metadatarr.resolve.providers  # trigger self-registration
 from pyfanedit import FaneditClient
 from metadatarr.resolve import resolve
-from metadatarr.resolve.entities import Role
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
 
@@ -28,7 +27,7 @@ def main() -> None:
         include_variants=True,
     ))
 
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     with_ids = [r for r in releases if r.external_ids.fanedit_id]
     print(f"  total variants : {len(releases)}")
     print(f"  have fanedit_id: {len(with_ids)}")
