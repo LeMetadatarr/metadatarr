@@ -17,6 +17,8 @@ import re
 from difflib import SequenceMatcher
 from typing import Optional
 
+import requests
+
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, PictureFormat, VariantKind, PlaybackType
@@ -130,8 +132,11 @@ class DVDCompareProvider(MetadataProvider):
 
         try:
             hits = self._client.search(signals.title)
-        except Exception as exc:
-            LOG.warning("dvdcompare search failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("dvdcompare search failed query=%r: %s", signals.title, exc)
+            return None
+        except Exception:
+            LOG.exception("dvdcompare search unexpected error query=%r", signals.title)
             return None
 
         if not hits:
@@ -153,14 +158,20 @@ class DVDCompareProvider(MetadataProvider):
                 return None
             try:
                 top = self._client.get_edition(url)  # takes a URL string
-            except Exception as exc:
-                LOG.warning("dvdcompare enrich by url failed: %s", exc)
+            except requests.RequestException as exc:
+                LOG.warning("dvdcompare enrich by url failed url=%r: %s", url, exc)
+                return None
+            except Exception:
+                LOG.exception("dvdcompare enrich by url unexpected error url=%r", url)
                 return None
         else:
             try:
                 top = self._client.get_edition_by_fid(fid)
-            except Exception as exc:
-                LOG.warning("dvdcompare enrich by fid=%s failed: %s", fid, exc)
+            except requests.RequestException as exc:
+                LOG.warning("dvdcompare enrich by fid failed fid=%r: %s", fid, exc)
+                return None
+            except Exception:
+                LOG.exception("dvdcompare enrich by fid unexpected error fid=%r", fid)
                 return None
 
         if top is None:

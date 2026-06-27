@@ -64,12 +64,6 @@ addopts = "-q"
 
 [tool.coverage.run]
 source = ["metadatarr"]
-omit = [
-    # Resolve provider shims wrap external services / optional deps; their
-    # behaviour is integration-tested via the live `examples/` scripts. We
-    # measure coverage against the library core (clients + resolve framework).
-    "*/resolve/providers/*",
-]
 
 [tool.coverage.report]
 show_missing = true

@@ -20,6 +20,8 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
+import requests
+
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
@@ -73,8 +75,11 @@ class SoundCloudProvider(MetadataProvider):
         query = f"{signals.artist} {signals.title}" if signals.artist else signals.title
         try:
             hits = list(self._client.search_tracks(query))
-        except Exception as exc:
-            LOG.warning("soundcloud search failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("soundcloud search failed query=%r: %s", query, exc)
+            return None
+        except Exception:
+            LOG.exception("soundcloud search unexpected error query=%r", query)
             return None
 
         if not hits:

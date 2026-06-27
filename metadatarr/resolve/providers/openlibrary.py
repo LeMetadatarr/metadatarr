@@ -13,6 +13,8 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
+import requests
+
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, PlaybackType
@@ -44,8 +46,11 @@ class OpenLibraryProvider(MetadataProvider):
 
         try:
             results = self._client.search(signals.title)
-        except Exception as exc:
-            LOG.warning("openlibrary search failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("openlibrary search failed query=%r: %s", signals.title, exc)
+            return None
+        except Exception:
+            LOG.exception("openlibrary search unexpected error query=%r", signals.title)
             return None
 
         if not results:
@@ -102,8 +107,11 @@ class OpenLibraryProvider(MetadataProvider):
 
         try:
             edition = self._client.get_edition_by_isbn(isbn)
-        except Exception as exc:
-            LOG.warning("openlibrary get_edition_by_isbn failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("openlibrary get_edition_by_isbn failed isbn=%r: %s", isbn, exc)
+            return None
+        except Exception:
+            LOG.exception("openlibrary get_edition_by_isbn unexpected error isbn=%r", isbn)
             return None
 
         if edition is None:
