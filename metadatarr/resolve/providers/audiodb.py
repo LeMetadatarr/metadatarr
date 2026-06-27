@@ -19,6 +19,8 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
+import requests
+
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
@@ -49,8 +51,13 @@ class AudioDBProvider(MetadataProvider):
         artist_query = signals.artist or ""
         try:
             tracks = self._client.search_track(artist_query, signals.title)
-        except Exception as exc:
-            LOG.warning("audiodb search_track failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("audiodb search_track failed query=%r artist=%r: %s",
+                        signals.title, artist_query, exc)
+            return None
+        except Exception:
+            LOG.exception("audiodb search_track unexpected error query=%r artist=%r",
+                          signals.title, artist_query)
             return None
 
         if not tracks:
@@ -127,7 +134,11 @@ class AudioDBProvider(MetadataProvider):
         if mbid_artist:
             try:
                 artist = self._client.get_artist_by_mbid(mbid_artist)
+            except requests.RequestException as exc:
+                LOG.warning("audiodb get_artist_by_mbid failed mbid=%r: %s", mbid_artist, exc)
+                artist = None
             except Exception:
+                LOG.exception("audiodb get_artist_by_mbid unexpected error mbid=%r", mbid_artist)
                 artist = None
             if artist is not None and getattr(artist, "id", None):
                 out_extra["audiodb_artist_id"] = str(artist.id)
@@ -136,7 +147,11 @@ class AudioDBProvider(MetadataProvider):
         if mbid_release:
             try:
                 album = self._client.get_album_by_mbid(mbid_release)
+            except requests.RequestException as exc:
+                LOG.warning("audiodb get_album_by_mbid failed mbid=%r: %s", mbid_release, exc)
+                album = None
             except Exception:
+                LOG.exception("audiodb get_album_by_mbid unexpected error mbid=%r", mbid_release)
                 album = None
             if album is not None and getattr(album, "id", None):
                 out_extra["audiodb_album_id"] = str(album.id)
@@ -153,7 +168,11 @@ class AudioDBProvider(MetadataProvider):
         if mbid_recording:
             try:
                 track = self._client.get_track_by_mbid(mbid_recording)
+            except requests.RequestException as exc:
+                LOG.warning("audiodb get_track_by_mbid failed mbid=%r: %s", mbid_recording, exc)
+                track = None
             except Exception:
+                LOG.exception("audiodb get_track_by_mbid unexpected error mbid=%r", mbid_recording)
                 track = None
             if track is not None and getattr(track, "id", None):
                 out_extra["audiodb_track_id"] = str(track.id)
