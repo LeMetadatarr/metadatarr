@@ -126,8 +126,26 @@ There is no built-in retry, no built-in caching, no rate limiter. These belong
 in your pipeline, not in a metadata client. See [Recipes](recipes.md) for
 patterns.
 
+## Running the tests
+
+The suite is fully offline (HTTP is patched), so it runs anywhere with no keys
+and no network:
+
+```bash
+pip install .[test]
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q
+```
+
+`PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` matches CI (it stops third-party pytest
+plugins from loading). The same command runs on every PR via the shared
+`gh-automations` workflows, alongside coverage, lint, license check, and
+pip-audit. See [testing.md](testing.md) for how provider tests are written and
+[../CONTRIBUTING.md](../CONTRIBUTING.md) for the branch/commit/versioning flow.
+
 ## Where to go next
 
 - **[Models reference](models.md)** — every field on every model, with origin annotations.
 - **One of the per-client guides** linked from the [docs index](README.md).
 - **[Recipes](recipes.md)** — concrete cross-provider workflows.
+- **[Adding a provider](add-provider.md)** — extend the resolver with a new source.
+- **[Testing providers](testing.md)** — the offline-fixture / mocked-HTTP pattern.

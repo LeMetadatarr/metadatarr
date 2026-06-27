@@ -15,7 +15,7 @@ from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.tvmaze")
@@ -24,7 +24,7 @@ LOG = logging.getLogger("metadatarr.resolve.providers.tvmaze")
 class TVmazeProvider(MetadataProvider):
     name = "tvmaze"
     media = {MediaType.EPISODIC_SERIES}
-    modality = {PlaybackModality.VIDEO}
+    playback_type = {PlaybackType.VIDEO}
 
     def __init__(self) -> None:
         from metadatarr.client import TVmazeClient

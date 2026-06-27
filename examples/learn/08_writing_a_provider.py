@@ -8,7 +8,7 @@ on the next call.
 from typing import ClassVar, Optional, Set
 
 from mediavocab import (
-    MediaType, PlaybackModality, Signals, ExternalIds,
+    MediaType, PlaybackType, Signals, ExternalIds,
 )
 from metadatarr.resolve import resolve
 from metadatarr.resolve.base import (
@@ -26,7 +26,7 @@ class _LocalCatalogue(MetadataProvider):
 
     name: ClassVar[str] = "local_catalogue"
     media: ClassVar[Set[MediaType]] = {MediaType.MOVIE}
-    modality: ClassVar[Set[PlaybackModality]] = {PlaybackModality.VIDEO}
+    playback_type: ClassVar[Set[PlaybackType]] = {PlaybackType.VIDEO}
 
     _CATALOGUE = {
         "inception":    {"imdb": "tt1375666", "tmdb_movie": 27205, "year": 2010},
@@ -62,7 +62,7 @@ def main() -> None:
 
     result = resolve(Signals(title="Inception", year=2010,
                              medium=MediaType.MOVIE,
-                             modality=PlaybackModality.VIDEO))
+                             playback_type=PlaybackType.VIDEO))
 
     print("Accepted matches (highest confidence first):")
     for m in result.accepted:
