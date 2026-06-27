@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0a1](https://github.com/TigreGotico/metadatarr/tree/0.2.0a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.1.1a1...0.2.0a1)
+
+**Merged pull requests:**
+
+- feat: expand EntityRole taxonomy, entity-id anchors, relation aggregation [\#4](https://github.com/TigreGotico/metadatarr/pull/4) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.1.1a1](https://github.com/TigreGotico/metadatarr/tree/0.1.1a1) (2026-06-27)
 
 [Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.1.0...0.1.1a1)
