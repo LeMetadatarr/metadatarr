@@ -31,6 +31,24 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from mediavocab import EntityKind, RelationRole
 from mediavocab.models import ExternalIds
 
+__all__ = [
+    # enums
+    "EntityKind",       # re-exported from mediavocab
+    "RelationRole",     # re-exported from mediavocab
+    "EntityRole",
+    # models
+    "ProviderEntity",
+    "EntityRecord",
+    "EntitySidecar",
+    # id allocation
+    "allocate_entity_id",
+    # sidecar mutation helpers
+    "upsert_entity",
+    "attach_work",
+    "entities_by_role",
+    "entities_by_kind",
+]
+
 
 def _utcnow() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -52,20 +70,30 @@ class EntityRole(str, Enum):
     ACTOR = "actor"
     VOICE_ACTOR = "voice_actor"
     DIRECTOR = "director"
+    SCREENWRITER = "screenwriter"
+    CINEMATOGRAPHER = "cinematographer"
+    EDITOR = "editor"
     PRODUCER = "producer"
     COMPOSER = "composer"
+    LYRICIST = "lyricist"
     WRITER = "writer"
     NARRATOR = "narrator"
     HOST = "host"
+    GUEST = "guest"
     AUTHOR = "author"
+    ILLUSTRATOR = "illustrator"
+    TRANSLATOR = "translator"
+    CURATOR = "curator"
 
     # Performance / recording
     ARTIST = "artist"
+    FEATURING = "featuring"
 
     # Organisations
     LABEL = "label"
     CHANNEL = "channel"
     STUDIO = "studio"
+    DISTRIBUTOR = "distributor"
 
     OTHER = "other"
 
@@ -80,36 +108,65 @@ class EntityRole(str, Enum):
 
 
 _STRUCTURAL_KIND: Dict[EntityRole, EntityKind] = {
-    EntityRole.ARTIST:      EntityKind.GROUP,        # band / solo project — group default
-    EntityRole.LABEL:       EntityKind.ORGANISATION,
-    EntityRole.CHANNEL:     EntityKind.ORGANISATION,
-    EntityRole.STUDIO:      EntityKind.ORGANISATION,
-    EntityRole.ACTOR:       EntityKind.PERSON,
-    EntityRole.VOICE_ACTOR: EntityKind.PERSON,
-    EntityRole.DIRECTOR:    EntityKind.PERSON,
-    EntityRole.PRODUCER:    EntityKind.PERSON,
-    EntityRole.COMPOSER:    EntityKind.PERSON,
-    EntityRole.WRITER:      EntityKind.PERSON,
-    EntityRole.NARRATOR:    EntityKind.PERSON,
-    EntityRole.HOST:        EntityKind.PERSON,
-    EntityRole.AUTHOR:      EntityKind.PERSON,
-    EntityRole.OTHER:       EntityKind.OTHER,
+    # Music
+    EntityRole.ARTIST:          EntityKind.GROUP,        # band / solo project — group default
+    EntityRole.FEATURING:       EntityKind.GROUP,        # featured act — same default as ARTIST
+    EntityRole.LABEL:           EntityKind.ORGANISATION,
+    # Film & TV
+    EntityRole.STUDIO:          EntityKind.ORGANISATION,
+    EntityRole.DISTRIBUTOR:     EntityKind.ORGANISATION,
+    # Broadcasting / streaming
+    EntityRole.CHANNEL:         EntityKind.ORGANISATION,
+    # People (all remaining roles)
+    EntityRole.ACTOR:           EntityKind.PERSON,
+    EntityRole.VOICE_ACTOR:     EntityKind.PERSON,
+    EntityRole.DIRECTOR:        EntityKind.PERSON,
+    EntityRole.SCREENWRITER:    EntityKind.PERSON,
+    EntityRole.CINEMATOGRAPHER: EntityKind.PERSON,
+    EntityRole.EDITOR:          EntityKind.PERSON,
+    EntityRole.PRODUCER:        EntityKind.PERSON,
+    EntityRole.COMPOSER:        EntityKind.PERSON,
+    EntityRole.LYRICIST:        EntityKind.PERSON,
+    EntityRole.WRITER:          EntityKind.PERSON,
+    EntityRole.NARRATOR:        EntityKind.PERSON,
+    EntityRole.HOST:            EntityKind.PERSON,
+    EntityRole.GUEST:           EntityKind.PERSON,
+    EntityRole.AUTHOR:          EntityKind.PERSON,
+    EntityRole.ILLUSTRATOR:     EntityKind.PERSON,
+    EntityRole.TRANSLATOR:      EntityKind.PERSON,
+    EntityRole.CURATOR:         EntityKind.PERSON,
+    EntityRole.OTHER:           EntityKind.OTHER,
 }
 
 _RELATION_ROLE: Dict[EntityRole, RelationRole] = {
-    EntityRole.ACTOR:       RelationRole.ACTOR,
-    EntityRole.VOICE_ACTOR: RelationRole.ACTOR,         # foundation has no separate VOICE_ACTOR
-    EntityRole.DIRECTOR:    RelationRole.DIRECTOR,
-    EntityRole.PRODUCER:    RelationRole.PRODUCER,      # NB: foundation PRODUCER is *music* producer
-    EntityRole.COMPOSER:    RelationRole.COMPOSER,
-    EntityRole.WRITER:      RelationRole.SCREENWRITER,
-    EntityRole.NARRATOR:    RelationRole.NARRATOR,
-    EntityRole.HOST:        RelationRole.HOST,
-    EntityRole.AUTHOR:      RelationRole.AUTHOR,
-    EntityRole.LABEL:       RelationRole.LABEL,
-    EntityRole.STUDIO:      RelationRole.PUBLISHER,
-    EntityRole.CHANNEL:     RelationRole.DISTRIBUTOR,
-    EntityRole.ARTIST:      RelationRole.PERFORMER,
+    # Film & TV
+    EntityRole.ACTOR:           RelationRole.ACTOR,
+    EntityRole.VOICE_ACTOR:     RelationRole.ACTOR,         # mediavocab has no separate VOICE_ACTOR
+    EntityRole.DIRECTOR:        RelationRole.DIRECTOR,
+    EntityRole.SCREENWRITER:    RelationRole.SCREENWRITER,
+    EntityRole.CINEMATOGRAPHER: RelationRole.CINEMATOGRAPHER,
+    EntityRole.EDITOR:          RelationRole.EDITOR,
+    EntityRole.PRODUCER:        RelationRole.PRODUCER,
+    # Music
+    EntityRole.COMPOSER:        RelationRole.COMPOSER,
+    EntityRole.LYRICIST:        RelationRole.LYRICIST,
+    EntityRole.ARTIST:          RelationRole.PERFORMER,
+    EntityRole.FEATURING:       RelationRole.FEATURING,
+    # Podcast & radio
+    EntityRole.NARRATOR:        RelationRole.NARRATOR,
+    EntityRole.HOST:            RelationRole.HOST,
+    EntityRole.GUEST:           RelationRole.GUEST,
+    EntityRole.CURATOR:         RelationRole.CURATOR,
+    # Books & comics
+    EntityRole.AUTHOR:          RelationRole.AUTHOR,
+    EntityRole.ILLUSTRATOR:     RelationRole.ILLUSTRATOR,
+    EntityRole.TRANSLATOR:      RelationRole.TRANSLATOR,
+    EntityRole.WRITER:          RelationRole.SCREENWRITER,  # generic WRITER → SCREENWRITER
+    # Organisations
+    EntityRole.LABEL:           RelationRole.LABEL,
+    EntityRole.STUDIO:          RelationRole.PUBLISHER,
+    EntityRole.DISTRIBUTOR:     RelationRole.DISTRIBUTOR,
+    EntityRole.CHANNEL:         RelationRole.DISTRIBUTOR,
 }
 
 
@@ -121,49 +178,82 @@ def _normalize_name(name: str) -> str:
 
 def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
     """Return the most stable external id we know for ``role``."""
-    if role == EntityRole.ARTIST:
-        # Note: a regular YouTube channel id is *not* an artist id — it
-        # identifies an uploader, not a music entity. Only YT Music's
-        # artist browseId qualifies, and even then it's last-resort
-        # because MBIDs and Metal Archives ids are stronger anchors.
+
+    def _int(v: Optional[int]) -> Optional[str]:
+        return str(v) if v else None
+
+    if role in {EntityRole.ARTIST, EntityRole.FEATURING}:
+        # A regular YouTube channel id is *not* an artist id — it identifies an
+        # uploader, not a music entity. Only YT Music's artist browseId qualifies,
+        # and even then it's last-resort because MBIDs and Metal Archives ids are
+        # stronger anchors.
         return (ext.musicbrainz_artist
-                or (str(ext.metal_archives_band) if ext.metal_archives_band else None)
+                or _int(ext.metal_archives_band)
                 or ext.wikidata
-                or ext.extra.get("tmdb_person")
-                or ext.extra.get("imdb_person")
+                or _int(ext.tmdb_person)
+                or ext.imdb_person
+                or _int(ext.bandcamp_band_id)
+                or ext.soundcloud_user_id
+                or _int(ext.audiodb_artist_id)
+                or ext.youtube_music_artist_browse_id
+                # legacy extra fallbacks — kept for callers that pre-date the typed fields
                 or ext.extra.get("bandcamp_band_id")
                 or ext.extra.get("soundcloud_user_id")
                 or ext.extra.get("audiodb_artist_id")
                 or ext.extra.get("youtube_music_artist_browse_id"))
+
     if role in {EntityRole.ACTOR, EntityRole.DIRECTOR, EntityRole.PRODUCER,
-                EntityRole.COMPOSER, EntityRole.WRITER, EntityRole.NARRATOR,
-                EntityRole.HOST}:
-        return ((str(ext.tmdb_person) if ext.tmdb_person else None)
+                EntityRole.COMPOSER, EntityRole.LYRICIST, EntityRole.WRITER,
+                EntityRole.SCREENWRITER, EntityRole.CINEMATOGRAPHER,
+                EntityRole.EDITOR, EntityRole.NARRATOR, EntityRole.HOST,
+                EntityRole.GUEST, EntityRole.CURATOR}:
+        # iafd_performer_uuid is authoritative for adult-industry performers
+        # (no TMDB/IMDB equivalent exists for most of them)
+        return (_int(ext.tmdb_person)
                 or ext.imdb_person
-                or (str(ext.anilist_staff_id) if ext.anilist_staff_id else None)
-                or (str(ext.mal_person_id) if ext.mal_person_id else None)
-                or (str(ext.metal_archives_artist) if ext.metal_archives_artist else None)
+                or _int(ext.anilist_staff_id)
+                or _int(ext.mal_person_id)
+                or _int(ext.metal_archives_artist)
                 or ext.wikidata
+                # legacy extra fallbacks
                 or ext.extra.get("tmdb_person")
-                or ext.extra.get("imdb_person"))
+                or ext.extra.get("imdb_person")
+                or ext.extra.get("iafd_performer_uuid")
+                or ext.extra.get("boobpedia_slug")
+                or ext.extra.get("theporndb_id")
+                or ext.extra.get("stashdb_id"))
+
     if role == EntityRole.AUTHOR:
         return (ext.olid or ext.goodreads or ext.extra.get("goodreads_author")
                 or ext.wikidata)
+
+    if role in {EntityRole.ILLUSTRATOR, EntityRole.TRANSLATOR}:
+        return (_int(ext.tmdb_person) or ext.imdb_person or ext.olid
+                or ext.wikidata)
+
     if role == EntityRole.LABEL:
-        return ((str(ext.metal_archives_label) if ext.metal_archives_label else None)
-                or ext.extra.get("musicbrainz_label") or ext.wikidata)
-    if role == EntityRole.CHANNEL:
-        return ext.extra.get("youtube_channel_id")
+        return (_int(ext.metal_archives_label)
+                or ext.musicbrainz_label
+                or ext.extra.get("musicbrainz_label")  # legacy extra fallback
+                or ext.wikidata)
+
+    if role in {EntityRole.CHANNEL, EntityRole.DISTRIBUTOR}:
+        return (ext.youtube_channel_id
+                or ext.extra.get("youtube_channel_id")   # legacy extra fallback
+                or ext.wikidata)
+
     if role == EntityRole.VOICE_ACTOR:
-        return ((str(ext.tmdb_person) if ext.tmdb_person else None)
+        return (_int(ext.tmdb_person)
                 or ext.imdb_person
-                or (str(ext.anilist_staff_id) if ext.anilist_staff_id else None)
-                or (str(ext.mal_person_id) if ext.mal_person_id else None)
+                or _int(ext.anilist_staff_id)
+                or _int(ext.mal_person_id)
                 or ext.wikidata)
+
     if role == EntityRole.STUDIO:
-        return ((str(ext.anilist_studio_id) if ext.anilist_studio_id else None)
-                or (str(ext.mal_studio_id) if ext.mal_studio_id else None)
+        return (_int(ext.anilist_studio_id)
+                or _int(ext.mal_studio_id)
                 or ext.wikidata)
+
     return None
 
 
@@ -202,6 +292,7 @@ class ProviderEntity(BaseModel):
     role: EntityRole
     kind: Optional[EntityKind] = None
     name: str
+    image_url: Optional[str] = None
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
 
     @model_validator(mode="after")
@@ -227,6 +318,8 @@ class EntityRecord(BaseModel):
     kind: Optional[EntityKind] = None
     name: str
     aliases: List[str] = Field(default_factory=list)
+    description: Optional[str] = None
+    image_url: Optional[str] = None
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
     members: List[str] = Field(default_factory=list)  # sub-entity ids
     works: List[str] = Field(default_factory=list)    # work ids this entity participates in
@@ -291,12 +384,15 @@ def upsert_entity(sidecar: EntitySidecar, candidate: ProviderEntity) -> str:
             role=candidate.role,
             kind=candidate.kind,
             name=candidate.name,
+            image_url=candidate.image_url,
             external_ids=candidate.external_ids,
         )
         sidecar.entities[eid] = rec
     else:
         rec.merge_alias(candidate.name)
         rec.external_ids = rec.external_ids.merge(candidate.external_ids)
+        if not rec.image_url and candidate.image_url:
+            rec.image_url = candidate.image_url
         rec.touch()
     return eid
 

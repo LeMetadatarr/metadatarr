@@ -289,6 +289,34 @@ def test_annas_archive_non_2xx_skips(monkeypatch):
     assert AnnasArchiveClient(mirrors=["https://a"]).search("x") == []
 
 
+# Header-driven column mapping: the fixture's columns are in a different order
+# than the legacy positional defaults, so a positional parser would mis-assign
+# every field. Locating columns by header name keeps parsing correct.
+from pathlib import Path  # noqa: E402
+
+_AA_FIXTURE = (
+    Path(__file__).parent / "fixtures" / "physical" / "annas_archive_search_table.html"
+)
+
+
+def test_annas_archive_uses_header_column_map(monkeypatch):
+    html = _AA_FIXTURE.read_text(encoding="utf-8")
+    monkeypatch.setattr(
+        "metadatarr.client.requests.get",
+        lambda *a, **kw: _Resp(content=html.encode()),
+    )
+    books = AnnasArchiveClient().search("lotr")
+    assert len(books) == 1
+    b = books[0]
+    assert b.title == "The Lord of the Rings"
+    assert b.author == "J. R. R. Tolkien"
+    assert b.language == "English"
+    assert b.size == "4.2 MB"
+    assert b.formats == "EPUB"
+    assert b.md5 == "0123456789abcdef"
+    assert b.cover_url == "https://example.com/cover.jpg"
+
+
 # -----------------------------------------------------------------------------
 # AudioDBClient — search/get for artist, album, track + by-mbid
 # -----------------------------------------------------------------------------

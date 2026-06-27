@@ -30,7 +30,7 @@ import requests
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.bandcamp")
@@ -103,7 +103,7 @@ def confirm_track_url(url: str, *, timeout: float = 10.0) -> bool:
 class BandcampProvider(MetadataProvider):
     name = "bandcamp"
     media = {MediaType.MUSIC}
-    modality = {PlaybackModality.AUDIO}
+    playback_type = {PlaybackType.AUDIO}
 
     def __init__(self) -> None:
         try:
@@ -130,8 +130,11 @@ class BandcampProvider(MetadataProvider):
         query = f"{signals.artist} {signals.title}" if signals.artist else signals.title
         try:
             hits = list(self._client.search_tracks(query))
-        except Exception as exc:
-            LOG.warning("bandcamp search failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("bandcamp search failed query=%r: %s", query, exc)
+            return None
+        except Exception:
+            LOG.exception("bandcamp search unexpected error query=%r", query)
             return None
 
         if not hits:

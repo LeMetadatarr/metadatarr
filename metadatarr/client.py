@@ -268,38 +268,94 @@ class AnnasArchiveClient:
         
         return []
 
+    # Fallback column positions for the ``display=table`` view, used when the
+    # table ships no header row.  Anna's Archive periodically reshuffles its
+    # columns, so :meth:`_column_map` prefers a header-name lookup and only
+    # falls back to these positions when no ``<th>`` header is present.
+    _DEFAULT_COLUMNS = {
+        "cover": 0,
+        "title": 1,
+        "author": 2,
+        "language": 3,
+        "size": 8,
+        "formats": 9,
+    }
+
+    # Maps each logical field to the header-text substrings that identify its
+    # column.  Matching is case-insensitive on the stripped header text.
+    _HEADER_ALIASES = {
+        "title": ("title",),
+        "author": ("author",),
+        "language": ("language", "lang"),
+        "size": ("size", "filesize"),
+        "formats": ("format", "extension", "filetype", "type"),
+    }
+
+    @classmethod
+    def _column_map(cls, table) -> Dict[str, int]:
+        """Build a ``{field: column_index}`` map from the table header.
+
+        Falls back to :attr:`_DEFAULT_COLUMNS` when the table has no header
+        row, so callers always get a position for every known field.
+        """
+        headers = table.find_all("th")
+        if not headers:
+            header_row = table.find("tr")
+            if header_row is not None and header_row.find("th"):
+                headers = header_row.find_all("th")
+        col_map = dict(cls._DEFAULT_COLUMNS)
+        for idx, th in enumerate(headers):
+            text = th.get_text(strip=True).lower()
+            if not text:
+                continue
+            for field, aliases in cls._HEADER_ALIASES.items():
+                if any(alias in text for alias in aliases):
+                    col_map[field] = idx
+                    break
+        return col_map
+
     def _parse_search_results(self, html_content: str) -> List[AnnasArchiveBook]:
         soup = BeautifulSoup(html_content, "html.parser")
         books = []
-        
+
         table = soup.find('table')
         if not table:
             return []
-            
+
+        col = self._column_map(table)
+
+        def cell(columns, field: str) -> str:
+            idx = col[field]
+            if idx < len(columns):
+                return columns[idx].get_text(strip=True)
+            return ""
+
         rows = table.find_all('tr')
         for row in rows:
             columns = row.find_all("td")
             if not columns or len(columns) < 10:
                 continue
 
-            cover_link = columns[0].find('a', tabindex="-1")
+            cover_idx = col["cover"]
+            cover_cell = columns[cover_idx] if cover_idx < len(columns) else columns[0]
+            cover_link = cover_cell.find('a', tabindex="-1")
             if not cover_link:
                 continue
-            
+
             href = cover_link.get('href', '')
             md5 = href.split('/')[-1] if href else ""
             if not md5:
                 continue
 
-            title = columns[1].get_text(strip=True)
-            author = columns[2].get_text(strip=True)
-            formats = columns[9].get_text(strip=True).upper()
-            
-            img = columns[0].find('img')
+            title = cell(columns, "title")
+            author = cell(columns, "author")
+            formats = cell(columns, "formats").upper()
+
+            img = cover_cell.find('img')
             cover_url = img.get('src', '') if img else ''
-            
-            language = columns[3].get_text(strip=True)
-            size = columns[8].get_text(strip=True)
+
+            language = cell(columns, "language")
+            size = cell(columns, "size")
 
             if title and author:
                 books.append(AnnasArchiveBook(
@@ -311,7 +367,7 @@ class AnnasArchiveClient:
                     language=language,
                     size=size
                 ))
-        
+
         return books
 
 
@@ -1231,7 +1287,7 @@ class DiscogsClient:
         self._last_request: float = 0.0
         self._session = requests.Session()
         self._session.headers.update({
-            "User-Agent": "metadatarr/1.0 +https://github.com/JarbasAl/metadatarr",
+            "User-Agent": f"{_USER_AGENT} (+https://github.com/TigreGotico/metadatarr)",
             "Accept": "application/json",
         })
         if self._token:
