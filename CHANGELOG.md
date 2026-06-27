@@ -1,12 +1,68 @@
 # Changelog
 
-## [0.1.0a2](https://github.com/TigreGotico/metadatarr/tree/0.1.0a2) (2026-05-07)
+## [0.5.0a1](https://github.com/TigreGotico/metadatarr/tree/0.5.0a1) (2026-06-27)
 
-[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/45444098ff4ede04e87009ceba33ed8978ee1218...0.1.0a2)
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.1a3...0.5.0a1)
 
 **Merged pull requests:**
 
-- docs: rewrite README with full feature coverage and examples [\#1](https://github.com/TigreGotico/metadatarr/pull/1) ([JarbasAl](https://github.com/JarbasAl))
+- feat: mediavocab emission alignment \(canonical genres + new format fields\) [\#19](https://github.com/TigreGotico/metadatarr/pull/19) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.4.1a3](https://github.com/TigreGotico/metadatarr/tree/0.4.1a3) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.1a2...0.4.1a3)
+
+**Merged pull requests:**
+
+- docs: provider-authoring, testing, and contributing guides [\#17](https://github.com/TigreGotico/metadatarr/pull/17) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.4.1a2](https://github.com/TigreGotico/metadatarr/tree/0.4.1a2) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.1a1...0.4.1a2)
+
+**Merged pull requests:**
+
+- feat: candidates\(\) headline entry point + search\(\) alias [\#15](https://github.com/TigreGotico/metadatarr/pull/15) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.4.1a1](https://github.com/TigreGotico/metadatarr/tree/0.4.1a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.0a1...0.4.1a1)
+
+**Merged pull requests:**
+
+- fix: repair stale example imports + compile guard, README TL;DR [\#13](https://github.com/TigreGotico/metadatarr/pull/13) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.4.0a1](https://github.com/TigreGotico/metadatarr/tree/0.4.0a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.3.0a1...0.4.0a1)
+
+**Merged pull requests:**
+
+- feat: anime metadata providers \(pymal, hanime\) [\#6](https://github.com/TigreGotico/metadatarr/pull/6) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.3.0a1](https://github.com/TigreGotico/metadatarr/tree/0.3.0a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.2.0a1...0.3.0a1)
+
+**Merged pull requests:**
+
+- feat: TMDB + TVDB canonical-id resolvers and HTTP cassette tests [\#5](https://github.com/TigreGotico/metadatarr/pull/5) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.2.0a1](https://github.com/TigreGotico/metadatarr/tree/0.2.0a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.1.1a1...0.2.0a1)
+
+**Merged pull requests:**
+
+- feat: expand EntityRole taxonomy, entity-id anchors, relation aggregation [\#4](https://github.com/TigreGotico/metadatarr/pull/4) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.1.1a1](https://github.com/TigreGotico/metadatarr/tree/0.1.1a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.1.0...0.1.1a1)
+
+**Merged pull requests:**
+
+- chore: migrate to mediavocab 1.0 [\#3](https://github.com/TigreGotico/metadatarr/pull/3) ([JarbasAl](https://github.com/JarbasAl))
 
 
 

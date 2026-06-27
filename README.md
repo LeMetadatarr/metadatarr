@@ -11,16 +11,26 @@ Pydantic-powered Python clients and a cross-source **entity resolver** for media
 Talk to the public catalogues that the *arr ecosystem, media managers, and libraries rely on —
 then fuse the answers into a single, de-duplicated record with a canonical set of external IDs.
 
+## TL;DR (60 seconds)
+
+```bash
+pip install metadatarr
+```
+
 ```python
 from metadatarr.resolve import resolve
 from mediavocab import Signals, MediaType
 
-result = resolve(Signals(title="Inception", year=2010, medium=MediaType.MOVIE))
-
-print(result.external_ids.tmdb_movie)   # 27205
-print(result.external_ids.imdb)         # tt1375666
-print(result.external_ids.wikidata)     # Q25188
+ids = resolve(Signals(title="Inception", year=2010, medium=MediaType.MOVIE)).external_ids
+print(ids.tmdb_movie, ids.imdb, ids.wikidata)   # 27205 tt1375666 Q25188
 ```
+
+That's it — no API keys, no config. `resolve()` fans out to every relevant catalogue,
+conflict-checks the answers, and hands you one merged set of external IDs. Need a
+different medium? Change `MediaType.MOVIE` to `MUSIC`, `BOOK`, `PODCAST`, … .
+
+**Nothing came back, or got `None`?** See **[docs/troubleshooting.md](docs/troubleshooting.md)** —
+empty results are by design (silent-failure), and the troubleshooting guide explains why and how to debug it.
 
 ---
 
@@ -349,8 +359,21 @@ Pass `resolve(signals, max_workers=N)` to tune parallelism.
 | [`docs/recipes.md`](docs/recipes.md) | End-to-end snippets for common tasks |
 | [`docs/physical-disc.md`](docs/physical-disc.md) | Blu-ray / DVD edition data |
 | [`docs/troubleshooting.md`](docs/troubleshooting.md) | Gotchas and FAQ |
+| [`docs/add-provider.md`](docs/add-provider.md) | Checklist for adding a new resolver provider |
+| [`docs/testing.md`](docs/testing.md) | Offline-fixture / mocked-HTTP test pattern |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Branch/PR flow, conventional commits → versioning |
 | [`docs/clients/`](docs/clients/) | Per-client deep dives |
 | [`examples/`](examples/) | One focused script per use case |
+
+---
+
+## Contributing
+
+PRs welcome. Branch off `dev`, keep changes small, keep tests green. Commit
+messages use [conventional commits](CONTRIBUTING.md) — the version bumps
+automatically, so never edit `version.py`. To add a new source to the resolver,
+follow [`docs/add-provider.md`](docs/add-provider.md). See
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for the full flow.
 
 ---
 
@@ -358,10 +381,11 @@ Pass `resolve(signals, max_workers=N)` to tune parallelism.
 
 ```bash
 pip install -e ".[test]"
-pytest
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest -q
 ```
 
-Tests are fully offline — all HTTP calls are stubbed with fixture files.
+Tests are fully offline — all HTTP calls are stubbed with fixture files. The
+same command runs in CI. See [`docs/testing.md`](docs/testing.md).
 
 ---
 

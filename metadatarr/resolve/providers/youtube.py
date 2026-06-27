@@ -48,7 +48,7 @@ class YouTubeProvider(MetadataProvider):
     name = "youtube"
     media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.PODCAST, MediaType.GENERIC}
     # YouTube hosts both video and audio (podcast) content. Universal modality.
-    modality: set = set()
+    playback_type: set = set()
 
     def is_available(self) -> bool:
         return True

@@ -20,6 +20,7 @@ from metadatarr.resolve.base import (
     ResolveResult,
     active_providers,
     all_providers,
+    candidates,
     consolidate,
     enrich,
     register,
@@ -89,5 +90,6 @@ __all__ = [
     "consolidate",
     "enrich",
     "resolve",
+    "candidates",
     "search",
 ]

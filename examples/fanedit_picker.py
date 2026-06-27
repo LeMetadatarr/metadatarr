@@ -23,7 +23,6 @@ from typing import List, Optional, Tuple
 
 import metadatarr.resolve.providers  # noqa: F401
 from metadatarr.resolve import resolve
-from metadatarr.resolve.entities import Role
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
 
@@ -68,7 +67,7 @@ def main() -> None:
         include_variants=True,
     ), max_workers=4)
 
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     print(f"  {len(releases)} fanedit(s) found on IFDB")
 
     if not releases:

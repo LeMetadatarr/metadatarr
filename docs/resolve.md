@@ -246,6 +246,10 @@ Everything a provider emits that doesn't have a first-class slot lands in
 | `youtube_music_album_browse_id` | YouTube Music album entity id |
 | `youtube_music_playlist_id` | YouTube Music album playlist id |
 | `youtube_content_type` | Classifier hint from tutubo |
+| `hanime_video_id` | hanime.tv numeric video id (canonical) |
+| `hanime_brand_id` | hanime.tv numeric studio id (canonical; anchors the `STUDIO` entity) |
+| `hanime_franchise_id` | hanime.tv numeric series id (canonical) |
+| `hanime_slug` / `hanime_url` | hanime.tv watch slug / URL (link-back; slug is renameable) |
 
 #### ISBN normalisation
 
@@ -426,6 +430,25 @@ Two things to know about how it runs:
   cache().hits, cache().misses    # diagnostics
   cache().clear()                 # force re-fetch
   ```
+
+### Raw candidate list — `candidates()`
+
+When you want every provider's vote individually instead of one merged record —
+a disambiguation UI, a "did you mean…" list, or your own merge policy — call
+`candidates()`. It runs the same concurrent, cached fan-out as `resolve()` but
+returns the ranked `List[ProviderMatch]` without consolidating.
+
+```python
+from metadatarr.resolve import candidates
+from mediavocab import Signals, MediaType
+
+for m in candidates(Signals(title="Inception", medium=MediaType.MOVIE))[:5]:
+    print(m.provider, m.confidence, m.external_ids.tmdb_movie)
+```
+
+`resolve()` is exactly `consolidate(candidates(signals), signals)`. The older
+name `search()` is kept as a thin deprecated alias for `candidates()` — new code
+should prefer `candidates()`.
 
 ### Manual — `consolidate()`
 
