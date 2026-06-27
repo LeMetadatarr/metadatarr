@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1a1](https://github.com/TigreGotico/metadatarr/tree/0.5.1a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.5.0a2...0.5.1a1)
+
+**Merged pull requests:**
+
+- fix: header-driven AnnasArchive parsing, aligned UA URLs; drop meta files [\#23](https://github.com/TigreGotico/metadatarr/pull/23) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.5.0a2](https://github.com/TigreGotico/metadatarr/tree/0.5.0a2) (2026-06-27)
 
 [Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.5.0a1...0.5.0a2)
