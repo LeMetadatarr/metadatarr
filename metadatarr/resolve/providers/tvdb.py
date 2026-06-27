@@ -16,7 +16,7 @@ from unblock_requests import CloudflareSession
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
-from mediavocab import PlaybackType
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.tvdb")
@@ -52,8 +52,11 @@ def _authenticate() -> Optional[str]:
 
 class TVDBProvider(MetadataProvider):
     name = "tvdb"
+    # TheTVDB is the TV authority; route on the canonical TV media types
+    # (axiom 13) rather than ad-hoc "tv"/"series" genre strings, which are
+    # not genres and would never appear in a caller's content_genres.
+    media = {MediaType.TV, MediaType.EPISODIC_SERIES}
     playback_type = {PlaybackType.VIDEO}
-    genre_filter = {"tv", "television", "series", "show"}
 
     def is_available(self) -> bool:
         return bool(os.environ.get("TVDB_API_KEY", ""))

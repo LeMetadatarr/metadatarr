@@ -19,7 +19,7 @@ from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, VariantKind, PlaybackType
+from mediavocab import MediaType, PictureFormat, VariantKind, PlaybackType
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.dvdcompare")
@@ -31,6 +31,20 @@ _VARIANT_MAP = {
     "remaster": VariantKind.REMASTERED,
 }
 
+# Picture-format cues DVDCompare puts in the version/edition string. Ordered:
+# the first cue found wins, so the more specific entries come first.
+_PICTURE_FORMAT_CUES = (
+    ("colorized", PictureFormat.COLORIZED),
+    ("colourized", PictureFormat.COLORIZED),
+    ("black and white", PictureFormat.BLACK_AND_WHITE),
+    ("black & white", PictureFormat.BLACK_AND_WHITE),
+    ("b&w", PictureFormat.BLACK_AND_WHITE),
+    ("imax", PictureFormat.IMAX),
+    ("3d", PictureFormat.THREE_D),
+    ("4k", PictureFormat.FOUR_K),
+    ("uhd", PictureFormat.FOUR_K),
+)
+
 
 def _infer_variant(version: Optional[str]) -> Optional[VariantKind]:
     if not version:
@@ -39,6 +53,17 @@ def _infer_variant(version: Optional[str]) -> Optional[VariantKind]:
     for keyword, kind in _VARIANT_MAP.items():
         if keyword in v:
             return kind
+    return None
+
+
+def _infer_picture_format(*texts: Optional[str]) -> Optional[PictureFormat]:
+    """Derive a canonical :class:`PictureFormat` from version/format text."""
+    blob = " ".join(t.lower() for t in texts if t)
+    if not blob:
+        return None
+    for cue, fmt in _PICTURE_FORMAT_CUES:
+        if cue in blob:
+            return fmt
     return None
 
 
@@ -60,6 +85,7 @@ def _match_to_provider(signals: Signals, top) -> ProviderMatch:
         year=cand_year,
         medium=signals.medium or MediaType.MOVIE,
         source_format=top.disc_format or "Blu-ray",
+        picture_format=_infer_picture_format(top.version, top.disc_format),
         region=top.region,
         variant_kind=variant_kind,
         edition=top.version,
@@ -144,6 +170,7 @@ class DVDCompareProvider(MetadataProvider):
         cand_signals = Signals(
             title=top.title,
             medium=(signals.medium if signals else None) or MediaType.MOVIE,
+            picture_format=_infer_picture_format(top.version, top.disc_format),
             variant_kind=variant_kind,
             edition=top.version,
         )
