@@ -22,7 +22,7 @@ from typing import Optional
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.audiodb")
@@ -31,7 +31,7 @@ LOG = logging.getLogger("metadatarr.resolve.providers.audiodb")
 class AudioDBProvider(MetadataProvider):
     name = "audiodb"
     media = {MediaType.MUSIC}
-    modality = {PlaybackModality.AUDIO}
+    playback_type = {PlaybackType.AUDIO}
 
     def __init__(self) -> None:
         from metadatarr.client import AudioDBClient
