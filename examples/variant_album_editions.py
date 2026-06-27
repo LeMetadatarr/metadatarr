@@ -6,6 +6,10 @@ User stories:
   B. "My copy has a weird pressing label not covered by VariantKind — I want
      to preserve it in edition (free-text) alongside variant_kind=OTHER."
 
+Note: in mediavocab 1.0 DELUXE/REISSUE/etc. live on ReleasePackaging at
+the Release layer. At the Signals/Work layer a deluxe edition is carried
+as free-text `edition` (and optionally variant_kind=OTHER).
+
 Demonstrates:
 - STANDARD vs DELUXE produces a conflict → separate records
 - edition (free-text) survives unknown variant labels
@@ -33,8 +37,8 @@ def story_a_standard_vs_deluxe() -> None:
         artist="Taylor Swift",
         year=2022,
         medium=MediaType.MUSIC,
-        variant_kind=VariantKind.DELUXE,
-        edition="3am Edition",
+        variant_kind=VariantKind.OTHER,
+        edition="3am Deluxe Edition",
     )
 
     conflicts = compare(standard, deluxe)
