@@ -446,9 +446,9 @@ for m in candidates(Signals(title="Inception", medium=MediaType.MOVIE))[:5]:
     print(m.provider, m.confidence, m.external_ids.tmdb_movie)
 ```
 
-`resolve()` is exactly `consolidate(candidates(signals), signals)`. The older
-name `search()` is kept as a thin deprecated alias for `candidates()` — new code
-should prefer `candidates()`.
+`resolve()` is exactly `consolidate(candidates(signals), signals)`. `search()`
+is a thin alias for `candidates()`; prefer `candidates()`, which names its return
+value (ranked candidate matches) more clearly.
 
 ### Manual — `consolidate()`
 

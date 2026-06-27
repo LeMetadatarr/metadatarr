@@ -20,7 +20,7 @@ edit it by hand. PR labels can override the prefix.
 |---|---|---|
 | `feat:` | minor | `feat: add Deezer provider` |
 | `fix:` | patch | `fix: tvdb provider swallows timeouts` |
-| `feat!:` / `BREAKING CHANGE:` | major | `feat!: drop deprecated search()` |
+| `feat!:` / `BREAKING CHANGE:` | major | `feat!: rename ExternalIds.tvdb to tvdb_series` |
 | `docs:` / `chore:` / `test:` / `refactor:` | alpha-only | `docs: add testing guide` |
 
 ### Do not edit `version.py`
