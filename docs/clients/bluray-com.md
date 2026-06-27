@@ -119,9 +119,8 @@ edition = client.get_edition_by_url(
 
 blu-ray.com is an HTML scraper, not a documented API. The CSS selectors used
 to extract specs (`td`, `li`, `div.specrow`) and audio tracks (`table#audio`,
-`div#audio`, `div.audio-specs`) reflect the site's layout as of the time this
-code was written. If the site redesigns, fields will silently return `None`
-rather than raising an exception.
+`div#audio`, `div.audio-specs`) track the site's current layout. If the site
+redesigns, fields silently return `None` rather than raising an exception.
 
 To adapt to a layout change without forking the whole client, subclass and
 override `_parse_edition_page` (or the inner `_spec` helper by re-implementing

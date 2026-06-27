@@ -5,7 +5,7 @@ resolve framework. Scripts marked **Network** make real HTTP requests — run
 them when you want to sanity-check a live API. Scripts marked **Offline** need
 no network and no auth.
 
-Providers now support a third routing axis — `modality` (`AUDIO`, `VIDEO`, `TEXT`).
+Providers route on a third axis — `modality` (`AUDIO`, `VIDEO`, `TEXT`).
 Pass `Signals(modality=PlaybackModality.AUDIO)` to restrict dispatch to audio-only
 providers; omitting `modality` (or setting it to `None`) keeps all-provider
 fan-out. See [`docs/resolve.md`](../docs/resolve.md#three-axis-routing-gate).
