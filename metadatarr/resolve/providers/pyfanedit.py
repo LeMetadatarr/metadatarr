@@ -17,7 +17,7 @@ from pyfanedit import FaneditClient
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, VariantKind, PlaybackModality
+from mediavocab import MediaType, VariantKind, PlaybackType
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.pyfanedit")
@@ -41,7 +41,7 @@ _FANEDIT_TYPE_MAP: dict = {
 class PyfaneditProvider(MetadataProvider):
     name = "pyfanedit"
     media = {MediaType.MOVIE}
-    modality = {PlaybackModality.VIDEO}
+    playback_type = {PlaybackType.VIDEO}
 
     def __init__(self) -> None:
         try:
