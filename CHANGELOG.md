@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.0a1](https://github.com/TigreGotico/metadatarr/tree/0.5.0a1) (2026-06-27)
+
+[Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.1a3...0.5.0a1)
+
+**Merged pull requests:**
+
+- feat: mediavocab emission alignment \(canonical genres + new format fields\) [\#19](https://github.com/TigreGotico/metadatarr/pull/19) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.4.1a3](https://github.com/TigreGotico/metadatarr/tree/0.4.1a3) (2026-06-27)
 
 [Full Changelog](https://github.com/TigreGotico/metadatarr/compare/0.4.1a2...0.4.1a3)
