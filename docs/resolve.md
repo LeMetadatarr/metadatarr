@@ -431,6 +431,25 @@ Two things to know about how it runs:
   cache().clear()                 # force re-fetch
   ```
 
+### Raw candidate list — `candidates()`
+
+When you want every provider's vote individually instead of one merged record —
+a disambiguation UI, a "did you mean…" list, or your own merge policy — call
+`candidates()`. It runs the same concurrent, cached fan-out as `resolve()` but
+returns the ranked `List[ProviderMatch]` without consolidating.
+
+```python
+from metadatarr.resolve import candidates
+from mediavocab import Signals, MediaType
+
+for m in candidates(Signals(title="Inception", medium=MediaType.MOVIE))[:5]:
+    print(m.provider, m.confidence, m.external_ids.tmdb_movie)
+```
+
+`resolve()` is exactly `consolidate(candidates(signals), signals)`. The older
+name `search()` is kept as a thin deprecated alias for `candidates()` — new code
+should prefer `candidates()`.
+
 ### Manual — `consolidate()`
 
 For cases where you control which providers run or want to supply pre-fetched

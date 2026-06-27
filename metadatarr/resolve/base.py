@@ -321,23 +321,26 @@ def _run_pool(providers: List["MetadataProvider"],
         return list(pool.map(fn, providers))
 
 
-def search(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
+def candidates(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
     """Fan out to every active provider, return the ranked candidate union.
 
+    The raw, *un-consolidated* counterpart to :func:`resolve`. Use this when
+    you want to see every provider's vote individually — a disambiguation UI,
+    a "did you mean…" list, or your own custom merge policy. Use
+    :func:`resolve` instead when you just want the single merged record.
+
     Same fan-out plumbing as :func:`resolve` (concurrent, cached, filtered
-    by `signals.medium`) but emits the raw candidate list instead of
+    by ``signals.medium``) but emits the raw candidate list instead of
     consolidating into one record. Sorted by ``ProviderMatch.confidence``
     descending, ties broken by provider iteration order.
 
-    Pipeline:
-
     .. code-block:: python
 
-        # equivalent to today's resolve():
-        consolidate(search(signals), signals)
+        # equivalent to resolve():
+        consolidate(candidates(signals), signals)
 
         # top-N for a UI list:
-        search(signals)[:5]
+        candidates(signals)[:5]
     """
     providers = active_providers(medium=signals.medium)
     matches: List[ProviderMatch] = []
@@ -347,6 +350,16 @@ def search(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
         matches.extend(batch)
     matches.sort(key=lambda m: m.confidence, reverse=True)
     return matches
+
+
+def search(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
+    """Deprecated alias for :func:`candidates`.
+
+    Kept for backward compatibility; new code should call
+    :func:`candidates`, which names the return value (ranked candidate
+    matches) more clearly. Behaviour is identical.
+    """
+    return candidates(signals, max_workers=max_workers)
 
 
 def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
@@ -365,8 +378,12 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
     ``result.variants``.
 
     Returns a :class:`ResolveResult` regardless of how many providers matched.
+
+    This is the **headline entry point**: it gives you one merged answer. When
+    you need the individual provider votes instead (disambiguation UI, custom
+    merge policy), call :func:`candidates`.
     """
-    result = consolidate(search(signals, max_workers=max_workers), signals)
+    result = consolidate(candidates(signals, max_workers=max_workers), signals)
     if signals.include_variants:
         providers = active_providers(medium=signals.medium)
 
