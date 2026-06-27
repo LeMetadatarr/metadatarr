@@ -11,16 +11,26 @@ Pydantic-powered Python clients and a cross-source **entity resolver** for media
 Talk to the public catalogues that the *arr ecosystem, media managers, and libraries rely on —
 then fuse the answers into a single, de-duplicated record with a canonical set of external IDs.
 
+## TL;DR (60 seconds)
+
+```bash
+pip install metadatarr
+```
+
 ```python
 from metadatarr.resolve import resolve
 from mediavocab import Signals, MediaType
 
-result = resolve(Signals(title="Inception", year=2010, medium=MediaType.MOVIE))
-
-print(result.external_ids.tmdb_movie)   # 27205
-print(result.external_ids.imdb)         # tt1375666
-print(result.external_ids.wikidata)     # Q25188
+ids = resolve(Signals(title="Inception", year=2010, medium=MediaType.MOVIE)).external_ids
+print(ids.tmdb_movie, ids.imdb, ids.wikidata)   # 27205 tt1375666 Q25188
 ```
+
+That's it — no API keys, no config. `resolve()` fans out to every relevant catalogue,
+conflict-checks the answers, and hands you one merged set of external IDs. Need a
+different medium? Change `MediaType.MOVIE` to `MUSIC`, `BOOK`, `PODCAST`, … .
+
+**Nothing came back, or got `None`?** See **[docs/troubleshooting.md](docs/troubleshooting.md)** —
+empty results are by design (silent-failure), and the troubleshooting guide explains why and how to debug it.
 
 ---
 

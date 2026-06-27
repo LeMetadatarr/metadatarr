@@ -31,6 +31,24 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from mediavocab import EntityKind, RelationRole
 from mediavocab.models import ExternalIds
 
+__all__ = [
+    # enums
+    "EntityKind",       # re-exported from mediavocab
+    "RelationRole",     # re-exported from mediavocab
+    "EntityRole",
+    # models
+    "ProviderEntity",
+    "EntityRecord",
+    "EntitySidecar",
+    # id allocation
+    "allocate_entity_id",
+    # sidecar mutation helpers
+    "upsert_entity",
+    "attach_work",
+    "entities_by_role",
+    "entities_by_kind",
+]
+
 
 def _utcnow() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
