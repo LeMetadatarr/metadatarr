@@ -16,7 +16,8 @@ dependencies = [
     "pydantic>=2.0.0",
     "beautifulsoup4>=4.10.0",
     "tomli>=1.1.0; python_version < '3.11'",
-    "mediavocab>=0.1.0",
+    "mediavocab>=1.0.0",
+    "unblock_requests",
     # First-party scrapers — bundled by default so users get a working
     # resolver out of the box without optional-extra juggling.
     "pyfanedit",
@@ -63,12 +64,6 @@ addopts = "-q"
 
 [tool.coverage.run]
 source = ["metadatarr"]
-omit = [
-    # Resolve provider shims wrap external services / optional deps; their
-    # behaviour is integration-tested via the live `examples/` scripts. We
-    # measure coverage against the library core (clients + resolve framework).
-    "*/resolve/providers/*",
-]
 
 [tool.coverage.report]
 show_missing = true

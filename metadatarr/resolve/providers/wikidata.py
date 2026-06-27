@@ -44,7 +44,7 @@ class WikidataProvider(MetadataProvider):
     name = "wikidata"
     media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.MUSIC, MediaType.BOOK, MediaType.PODCAST}
     # Universal — Wikidata covers every modality through Q-id cross-reference.
-    modality: set = set()
+    playback_type: set = set()
 
     def is_available(self) -> bool:
         return True
