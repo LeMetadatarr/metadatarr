@@ -8,7 +8,7 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
@@ -70,7 +70,7 @@ class AniListProvider(MetadataProvider):
     media = {MediaType.EPISODIC_SERIES, MediaType.MOVIE, MediaType.COMIC}
     # anime ⇒ VIDEO; manga ⇒ TEXT. Declare both; the `media` gate
     # naturally restricts each side to its own MediaType.
-    modality = {PlaybackModality.VIDEO, PlaybackModality.TEXT}
+    playback_type = {PlaybackType.VIDEO, PlaybackType.PAGED}
     genre_filter = {"anime", "manga"}
 
     def is_available(self) -> bool:

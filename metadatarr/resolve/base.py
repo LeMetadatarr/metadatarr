@@ -21,10 +21,14 @@ from typing import ClassVar, Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from metadatarr.resolve.entities import EntityRole, ProviderEntity
+from metadatarr.resolve.entities import (
+    EntityRole,
+    ProviderEntity,
+    allocate_entity_id,
+)
 from mediavocab.models import ExternalIds
 from metadatarr.resolve.mappings import apply_mappings
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals, SignalConflict, compare_signals as compare, merge_signals as merged
 
 
@@ -88,15 +92,15 @@ class MetadataProvider(ABC):
 
         (no ``media``    declared OR signals.medium   in self.media)
         AND
-        (no ``modality`` declared OR signals.modality in self.modality)
+        (no ``modality`` declared OR signals.playback_type in self.playback_type)
         AND
         (no ``genre_filter`` declared OR self.genre_filter ∩ signals.content_genres)
 
     - ``media``: which ``MediaType`` values the provider serves.
-    - ``modality``: which ``PlaybackModality`` values (AUDIO / VIDEO /
+    - ``modality``: which ``PlaybackType`` values (AUDIO / VIDEO /
       INTERACTIVE / TEXT / UNKNOWN). Lets a caller route a
       ``MediaType.GENERIC`` query to audio-only providers via
-      ``Signals(modality=AUDIO)``.
+      ``Signals(playback_type=AUDIO)``.
     - ``genre_filter``: genre tags from ``mediavocab.taxonomy.genre``.
       Anime / manga gating uses this rather than a fake
       ``MediaType.ANIME`` (axiom 2).
@@ -104,7 +108,7 @@ class MetadataProvider(ABC):
 
     name: ClassVar[str] = ""
     media: ClassVar[Set[MediaType]] = set()
-    modality: ClassVar[Set[PlaybackModality]] = set()
+    playback_type: ClassVar[Set[PlaybackType]] = set()
     genre_filter: ClassVar[Set[str]] = set()
 
     @abstractmethod
@@ -119,7 +123,7 @@ class MetadataProvider(ABC):
         """Default three-axis routing test — used by ``resolve`` to gate dispatch."""
         if self.media and signals.medium and signals.medium not in self.media:
             return False
-        if self.modality and signals.modality and signals.modality not in self.modality:
+        if self.playback_type and signals.playback_type and signals.playback_type not in self.playback_type:
             return False
         if self.genre_filter:
             tags = set(signals.content_genres or [])
@@ -193,6 +197,38 @@ def active_providers(medium: Optional[MediaType] = None) -> List[MetadataProvide
 # Match consolidation
 # ---------------------------------------------------------------------------
 
+def _aggregate_relations(
+    accepted: List[ProviderMatch],
+) -> Dict[EntityRole, List[ProviderEntity]]:
+    """Collect relation entities from accepted matches, deduped per role.
+
+    Two providers that point at the same entity (same canonical external id, or
+    same name when no id is known) collapse into one :class:`ProviderEntity`
+    with their ``external_ids`` and aliases merged.
+    """
+    out: Dict[EntityRole, List[ProviderEntity]] = {}
+    for match in accepted:
+        for role, entities in match.relations.items():
+            bucket = out.setdefault(role, [])
+            index: Dict[str, ProviderEntity] = {
+                allocate_entity_id(role, name=e.name, external_ids=e.external_ids): e
+                for e in bucket
+            }
+            for ent in entities:
+                eid = allocate_entity_id(
+                    role, name=ent.name, external_ids=ent.external_ids
+                )
+                existing = index.get(eid)
+                if existing is None:
+                    index[eid] = ent
+                    bucket.append(ent)
+                else:
+                    existing.external_ids = existing.external_ids.merge(ent.external_ids)
+                    if ent.name and ent.name != existing.name:
+                        existing.merge_alias(ent.name)
+    return out
+
+
 def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
     """Merge provider matches against a local signals bag.
 
@@ -248,6 +284,7 @@ def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
         accepted=accepted,
         dropped=dropped,
         conflicts=conflicts,
+        relations=_aggregate_relations(accepted),
     )
 
 
