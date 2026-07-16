@@ -26,7 +26,7 @@ from metadatarr.resolve.base import (
     enrich,
     register,
     resolve,
-    search,
+    search,  # noqa: F401 — kept importable; deliberately dropped from __all__
 )
 from metadatarr.resolve.entities import (
     EntityKind,
@@ -89,5 +89,4 @@ __all__ = [
     "enrich",
     "resolve",
     "candidates",
-    "search",
 ]

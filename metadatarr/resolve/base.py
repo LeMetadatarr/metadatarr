@@ -16,6 +16,7 @@ from mediavocab import MediaType
 """
 from __future__ import annotations
 
+import warnings
 from abc import ABC, abstractmethod
 from typing import ClassVar, Dict, List, Optional, Set, Tuple
 
@@ -374,6 +375,11 @@ def search(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
     :func:`candidates`, which names the return value (ranked candidate
     matches) more clearly. Behaviour is identical.
     """
+    warnings.warn(
+        "search() is deprecated; use candidates() instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     return candidates(signals, max_workers=max_workers)
 
 
