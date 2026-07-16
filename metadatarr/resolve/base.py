@@ -17,7 +17,7 @@ from mediavocab import MediaType
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import ClassVar, Dict, List, Optional, Set
+from typing import ClassVar, Dict, List, Optional, Set, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -25,6 +25,7 @@ from metadatarr.resolve._errors import ProviderError, trap
 from metadatarr.resolve.entities import (
     EntityRole,
     ProviderEntity,
+    _normalize_name,
     allocate_entity_id,
 )
 from mediavocab.models import ExternalIds
@@ -376,6 +377,84 @@ def search(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
     return candidates(signals, max_workers=max_workers)
 
 
+# Work/release-identity ExternalIds fields, in priority order.
+#
+# Variants are work-shaped entities (``EntityRole.OTHER``): they name a cut,
+# edition, or release of a work, not a person, artist, label, or channel. The
+# per-role ladder in ``entities._dominant_external_id`` is scoped to
+# contribution roles and does not cover this shape, so variant keying gets
+# its own, local, work-level ladder here instead of reusing that function.
+_VARIANT_ID_FIELDS: Tuple[str, ...] = (
+    "fanedit_id",                 # fan-edit / alternate-cut identifier
+    "musicbrainz_release",        # a specific release: one edition of a release-group
+    "musicbrainz_release_group",  # a release-group: a work grouping across editions
+    "musicbrainz_recording",      # a specific recording: one take of a work
+    "musicbrainz_work",           # the abstract musical work
+    "imdb",                       # IMDb title id (movie / show / episode)
+    "tmdb_movie",                 # TMDB movie id
+    "tmdb_tv",                    # TMDB tv-show id
+    "tvdb",                       # TheTVDB series/episode id
+    "tvmaze",                     # TVmaze show id
+    "trakt_id",                   # Trakt title id
+    "discogs_release",            # a Discogs release: a specific pressing/edition
+    "isbn_13",                    # book edition identifier
+    "isbn_10",                    # book edition identifier (legacy format)
+    "olid",                       # Open Library edition/work id
+    "google_books_id",            # Google Books volume id
+    "bluray_com_id",              # Blu-ray.com edition id
+    "dvdcompare_id",              # DVDCompare edition id
+    "audible_asin",               # Audible edition id
+    "librivox_id",                # LibriVox recording id
+    "podcast_index_id",           # Podcast Index feed id
+    "apple_podcast_id",           # Apple Podcasts feed id
+    "listen_notes_id",            # ListenNotes feed id
+    "anilist_id",                 # AniList media id
+    "mal_id",                     # MyAnimeList media id
+    "anidb_id",                   # AniDB media id
+    "audiodb_album_id",           # TheAudioDB album id
+    "audiodb_track_id",           # TheAudioDB track id
+    "metal_archives_release",     # Metal Archives release id
+    "metal_archives_song",        # Metal Archives song id
+    "opencritic_id",              # OpenCritic game id
+    "rawg_id",                    # RAWG game id
+    "igdb_id",                    # IGDB game id
+    "iheart_podcast_id",          # iHeart podcast feed id
+    "iheart_episode_id",          # iHeart episode id
+    "iheart_track_id",            # iHeart track id
+    "iheart_playlist_id",         # iHeart playlist id
+)
+
+
+def _variant_key(ent: ProviderEntity) -> object:
+    """Identity key for deduplicating :class:`ProviderEntity` variants.
+
+    Keys by the first populated field of :data:`_VARIANT_ID_FIELDS` (the
+    work/release-identity ladder). If none of those is set but some other
+    external id is populated, keys by the first populated field in the
+    model's declared field order instead of collapsing to name. Only when
+    the entity carries no external ids at all does this fall back to the
+    normalized name, reusing the same normalization
+    :func:`metadatarr.resolve.entities.allocate_entity_id` uses for its
+    name-seeded path.
+
+    Two variants with different dominant-id fields that happen to share a
+    secondary id remain distinct here — that overlap is a mappings concern,
+    not this key's.
+    """
+    ids = ent.external_ids
+    for field_name in _VARIANT_ID_FIELDS:
+        value = getattr(ids, field_name, None)
+        if value is not None:
+            return (field_name, value)
+    for field_name in type(ids).model_fields:
+        if field_name == "extra":
+            continue
+        value = getattr(ids, field_name, None)
+        if value is not None:
+            return (field_name, value)
+    return ("name", _normalize_name(ent.name))
+
+
 def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
     """Fan out to all active providers that cover *signals.medium*, consolidate.
 
@@ -408,14 +487,6 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
             with trap(p.name, "variants", sink):
                 return p.list_variants(result.external_ids, signals) or []
             return []
-
-        def _variant_key(ent: ProviderEntity) -> object:
-            ids = ent.external_ids
-            if ids.fanedit_id is not None:
-                return ("fanedit", ids.fanedit_id)
-            if ids.musicbrainz_release:
-                return ("mbrelease", ids.musicbrainz_release)
-            return ("name", ent.name)
 
         seen: dict = {}
         # Seed from any variants already present in accepted matches.
