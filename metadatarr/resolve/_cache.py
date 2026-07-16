@@ -90,11 +90,9 @@ def cached_lookup(provider: "MetadataProvider",
         return None
     if hit is not None:
         return hit  # cached ProviderMatch
-    try:
-        result = provider.lookup(signals)
-    except Exception:
-        # Do not cache transient failures — allow retry on next call.
-        return None
+    result = provider.lookup(signals)
+    # A raising lookup unwinds before this line, so failures are never cached
+    # and the caller (the fan-out trap) sees the exception.
     _CACHE.put(key, result if result is not None else _MISS)
     return result
 
@@ -117,10 +115,8 @@ def cached_enrich(provider: "MetadataProvider",
         return None
     if hit is not None:
         return hit  # cached ExternalIds
-    try:
-        result = provider.enrich(external_ids)
-    except Exception:
-        # Do not cache transient failures — allow retry on next call.
-        return None
+    result = provider.enrich(external_ids)
+    # A raising enrich unwinds before this line, so failures are never cached
+    # and the caller (the fan-out trap) sees the exception.
     _CACHE.put(key, result if result is not None else _MISS)
     return result
