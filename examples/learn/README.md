@@ -22,6 +22,7 @@ done
 | 7 | `07_voice_agent_routing.py` | Verb → `PlaybackType` for "play"/"watch"/"read" |
 | 8 | `08_writing_a_provider.py` | Subclass `MetadataProvider`, declare three axes, `register()` |
 | 9 | `09_caching_and_performance.py` | The `signal_hash` cache and how to keep it warm |
+| 10 | `10_diagnostics.py` | `ResolveResult.provider_errors` — telling "no match" from "the lookup broke" |
 
 Most queries hit live APIs (MusicBrainz, Wikidata, OpenLibrary, …). They're
 keyless and fast; expect occasional rate-limit hiccups (treat as transient).
