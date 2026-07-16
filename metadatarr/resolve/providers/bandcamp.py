@@ -29,11 +29,13 @@ import requests
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
+from metadatarr.transport import make_session
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.bandcamp")
+_SESSION = make_session()
 
 
 def _safe_int_year(value) -> Optional[int]:
@@ -94,7 +96,7 @@ def confirm_track_url(url: str, *, timeout: float = 10.0) -> bool:
     if not url:
         return False
     try:
-        resp = requests.head(url, allow_redirects=True, timeout=timeout)
+        resp = _SESSION.head(url, allow_redirects=True, timeout=timeout)
     except requests.RequestException:
         return False
     return 200 <= resp.status_code < 400

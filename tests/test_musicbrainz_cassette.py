@@ -48,7 +48,7 @@ def _make_response(payload, status_code=200):
 def test_happy_path():
     p = MusicBrainzProvider()
     payload = {"recordings": [_MB_RECORDING]}
-    with patch("requests.get", return_value=_make_response(payload)):
+    with patch("metadatarr.resolve.providers.musicbrainz._SESSION.get", return_value=_make_response(payload)):
         m = p.lookup(Signals(title="Stairway to Heaven", artist="Led Zeppelin"))
     assert m is not None
     assert m.external_ids.musicbrainz_recording == "5b11f4ce-a62d-471e-81fc-a69a8278c7da"
@@ -58,7 +58,7 @@ def test_happy_path():
 def test_no_match():
     p = MusicBrainzProvider()
     payload = {"recordings": []}
-    with patch("requests.get", return_value=_make_response(payload)):
+    with patch("metadatarr.resolve.providers.musicbrainz._SESSION.get", return_value=_make_response(payload)):
         m = p.lookup(Signals(title="Unknown Song", artist="Nobody"))
     assert m is None
 
@@ -66,6 +66,6 @@ def test_no_match():
 def test_api_error():
     p = MusicBrainzProvider()
     from requests import RequestException
-    with patch("requests.get", side_effect=RequestException("503 Service Unavailable")):
+    with patch("metadatarr.resolve.providers.musicbrainz._SESSION.get", side_effect=RequestException("503 Service Unavailable")):
         m = p.lookup(Signals(title="Stairway to Heaven", artist="Led Zeppelin"))
     assert m is None

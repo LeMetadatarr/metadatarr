@@ -12,6 +12,7 @@ from typing import List, Optional
 import requests
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
+from metadatarr.transport import make_session
 from mediavocab.models import ExternalIds
 from mediavocab.text import normalize_isbn
 from mediavocab import MediaType
@@ -23,6 +24,7 @@ _HEADERS = {
     "User-Agent": "metadatarr/0.1 (+https://github.com/TigreGotico/metadatarr)",
     "Accept": "application/json",
 }
+_SESSION = make_session()
 
 # Wikidata property → ExternalIds field mapping.
 _PROP_MAP = {
@@ -53,7 +55,7 @@ class WikidataProvider(MetadataProvider):
         if not signals.title:
             return []
         try:
-            data = requests.get(_API, params={
+            data = _SESSION.get(_API, params={
                 "action": "wbsearchentities",
                 "search": signals.title,
                 "language": signals.language or "en",
@@ -72,7 +74,7 @@ class WikidataProvider(MetadataProvider):
         if not qid:
             return None
         try:
-            entity = requests.get(_API, params={
+            entity = _SESSION.get(_API, params={
                 "action": "wbgetentities",
                 "ids": qid,
                 "props": "claims|labels",
@@ -154,7 +156,7 @@ class WikidataProvider(MetadataProvider):
             return None
         prop, value = probe
         try:
-            data = requests.get(_API, params={
+            data = _SESSION.get(_API, params={
                 "action": "query",
                 "list": "search",
                 "srsearch": f"haswbstatement:{prop}={value}",

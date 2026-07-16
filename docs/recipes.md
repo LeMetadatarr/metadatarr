@@ -132,9 +132,20 @@ For high-throughput use, pool `requests.Session` instead: see
 
 ## Caching & sessions
 
-The default client constructs a fresh `requests` call each time. For bulk
-work, swap to a `Session` (connection pooling + `requests-cache` for free)
-by subclassing:
+Every client and in-tree provider issues HTTP through a shared session from
+`metadatarr.transport`, which provides connection pooling, per-host rate
+limiting, and an opt-in disk cache. Enable the disk cache with an environment
+variable — no code change:
+
+```bash
+METADATARR_HTTP_CACHE=1 python your_script.py
+```
+
+See [`transport.md`](transport.md) for the rate-limit table, the cache
+environment variables, and the first-party-HTTP scope note.
+
+For an independent, request-level cache you can still subclass a client and
+mount your own session:
 
 ```python
 import requests

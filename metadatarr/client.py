@@ -1,10 +1,10 @@
 import logging
 import os
 import re
-import requests
 from typing import Dict, List, Optional, Union
 
 from .version import __version__
+from .transport import make_session
 
 LOG = logging.getLogger("metadatarr.client")
 
@@ -60,11 +60,12 @@ class ArrMetadataClient:
             "radarr": "https://radarrapi.servarr.com/v1",
             "lidarr": "https://api.lidarr.audio/api/v0.4"
         }
+        self._session = make_session()
 
     def _get(self, url: str, params: Optional[Dict] = None) -> Union[Dict, List]:
         """Internal helper to execute the GET request."""
         try:
-            response = requests.get(url, headers=self.headers, params=params, timeout=10)
+            response = self._session.get(url, headers=self.headers, params=params, timeout=10)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -130,6 +131,7 @@ class BookInfoClient:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.headers = {"User-Agent": user_agent, "Accept": "application/json"}
+        self._session = make_session()
 
     @classmethod
     def goodreads(cls, **kwargs) -> "BookInfoClient":
@@ -141,7 +143,7 @@ class BookInfoClient:
 
     def _get(self, path: str, params: Optional[Dict] = None) -> Union[Dict, List, None]:
         try:
-            r = requests.get(f"{self.base_url}{path}", headers=self.headers, params=params, timeout=self.timeout)
+            r = self._session.get(f"{self.base_url}{path}", headers=self.headers, params=params, timeout=self.timeout)
             r.raise_for_status()
             if not r.content:
                 return None
@@ -190,10 +192,11 @@ class OpenLibraryClient:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.headers = {"User-Agent": user_agent, "Accept": "application/json"}
+        self._session = make_session()
 
     def _get(self, path: str, params: Optional[Dict] = None) -> Optional[Union[Dict, List]]:
         try:
-            r = requests.get(f"{self.base_url}{path}", headers=self.headers, params=params, timeout=self.timeout)
+            r = self._session.get(f"{self.base_url}{path}", headers=self.headers, params=params, timeout=self.timeout)
             r.raise_for_status()
             return r.json() if r.content else None
         except Exception:
@@ -252,6 +255,7 @@ class AnnasArchiveClient:
         self.headers = {
             "User-Agent": user_agent
         }
+        self._session = make_session()
 
     def search(self, query: str, timeout: int = 15) -> List[AnnasArchiveBook]:
         """Search for books across mirrors and parse HTML results."""
@@ -259,7 +263,7 @@ class AnnasArchiveClient:
         for mirror in mirrors:
             try:
                 search_url = f"{mirror}/search?q={quote_plus(query)}&display=table"
-                response = requests.get(search_url, headers=self.headers, timeout=timeout)
+                response = self._session.get(search_url, headers=self.headers, timeout=timeout)
                 if 200 <= response.status_code < 300:
                     self.working_mirror = mirror
                     return self._parse_search_results(response.text)
@@ -381,7 +385,7 @@ class AudioDBClient:
     BASE = "https://www.theaudiodb.com/api/v1/json/123"
 
     def __init__(self, user_agent: str = _USER_AGENT):
-        self._session = requests.Session()
+        self._session = make_session()
         self._session.headers["User-Agent"] = user_agent
         self._session.headers["Accept"] = "application/json"
 
@@ -472,7 +476,7 @@ class TVmazeClient:
     BASE = "https://api.tvmaze.com"
 
     def __init__(self, user_agent: str = _USER_AGENT):
-        self._session = requests.Session()
+        self._session = make_session()
         self._session.headers["User-Agent"] = user_agent
         self._session.headers["Accept"] = "application/json"
 
@@ -559,7 +563,7 @@ class BlurayComClient:
     }
 
     def __init__(self, timeout: int = 15) -> None:
-        self._session = requests.Session()
+        self._session = make_session()
         self._session.headers.update(self._HEADERS)
         self._timeout = timeout
 
@@ -952,7 +956,7 @@ class DVDCompareClient:
     }
 
     def __init__(self, timeout: int = 15) -> None:
-        self._session = requests.Session()
+        self._session = make_session()
         self._session.headers.update(self._HEADERS)
         self._timeout = timeout
 
@@ -1284,8 +1288,7 @@ class DiscogsClient:
         # Discogs rate limits: 25 req/min unauthenticated, 60/min with token.
         # _min_interval is the floor sleep between consecutive requests.
         self._min_interval = 2.5 if not self._token else 1.0
-        self._last_request: float = 0.0
-        self._session = requests.Session()
+        self._session = make_session(rate_limits={"api.discogs.com": self._min_interval})
         self._session.headers.update({
             "User-Agent": f"{_USER_AGENT} (+https://github.com/TigreGotico/metadatarr)",
             "Accept": "application/json",
@@ -1294,13 +1297,8 @@ class DiscogsClient:
             self._session.headers["Authorization"] = f"Discogs token={self._token}"
 
     def _get(self, path: str, params: Optional[Dict] = None) -> dict:
-        import time as _time
-        elapsed = _time.monotonic() - self._last_request
-        if elapsed < self._min_interval:
-            _time.sleep(self._min_interval - elapsed)
         resp = self._session.get(f"{_DISCOGS_BASE}{path}",
                                  params=params, timeout=self._timeout)
-        self._last_request = _time.monotonic()
         resp.raise_for_status()
         return resp.json()
 

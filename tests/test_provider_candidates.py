@@ -32,7 +32,7 @@ def test_musicbrainz_lookup_candidates(monkeypatch):
                             "artist": {"id": "a1"}}]},
     ]}
     monkeypatch.setattr(
-        "metadatarr.resolve.providers.musicbrainz.requests.get",
+        "metadatarr.resolve.providers.musicbrainz._SESSION.get",
         lambda *a, **kw: _Resp(payload),
     )
 
@@ -50,7 +50,7 @@ def test_musicbrainz_lookup_candidates_handles_no_results(monkeypatch):
     from metadatarr.resolve.providers.musicbrainz import MusicBrainzProvider
 
     monkeypatch.setattr(
-        "metadatarr.resolve.providers.musicbrainz.requests.get",
+        "metadatarr.resolve.providers.musicbrainz._SESSION.get",
         lambda *a, **kw: _Resp({"recordings": []}),
     )
     p = MusicBrainzProvider()
@@ -86,7 +86,7 @@ def test_wikidata_lookup_candidates(monkeypatch):
         return _Resp({"entities": {qid: entity_q["entities"][qid]}})
 
     monkeypatch.setattr(
-        "metadatarr.resolve.providers.wikidata.requests.get",
+        "metadatarr.resolve.providers.wikidata._SESSION.get",
         fake,
     )
 

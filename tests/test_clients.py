@@ -35,7 +35,7 @@ def _patch_get(monkeypatch, target, payload, status=200):
 
 def test_arr_search_series(monkeypatch):
     payload = [{"title": "The Boys", "tvdbId": 355567, "year": 2019}]
-    _patch_get(monkeypatch, "metadatarr.client.requests.get", payload)
+    _patch_get(monkeypatch, "requests.sessions.Session.get", payload)
 
     client = ArrMetadataClient()
     series = client.search_series("The Boys")
@@ -44,7 +44,7 @@ def test_arr_search_series(monkeypatch):
 
 
 def test_arr_search_movie_handles_non_list(monkeypatch):
-    _patch_get(monkeypatch, "metadatarr.client.requests.get", {"error": "x"})
+    _patch_get(monkeypatch, "requests.sessions.Session.get", {"error": "x"})
 
     client = ArrMetadataClient()
     assert client.search_movie("nope") == []
@@ -60,7 +60,7 @@ def test_openlibrary_search(monkeypatch):
             "cover_i": 1,
         }],
     }
-    _patch_get(monkeypatch, "metadatarr.client.requests.get", payload)
+    _patch_get(monkeypatch, "requests.sessions.Session.get", payload)
 
     client = OpenLibraryClient()
     hits = client.search("hobbit")
@@ -77,7 +77,7 @@ def test_openlibrary_cover_url():
 
 def test_bookinfo_search(monkeypatch):
     payload = [{"bookId": 1, "workId": 2, "author": {"id": 3}}]
-    _patch_get(monkeypatch, "metadatarr.client.requests.get", payload)
+    _patch_get(monkeypatch, "requests.sessions.Session.get", payload)
 
     bi = BookInfoClient.goodreads()
     hits = bi.search("hobbit")

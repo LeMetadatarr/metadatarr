@@ -8,6 +8,7 @@ import requests
 
 from metadatarr.version import __version__
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
+from metadatarr.transport import make_session
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, PlaybackType
@@ -16,6 +17,7 @@ from mediavocab.models.signals import Signals, match_quality
 LOG = logging.getLogger("metadatarr.resolve.providers.musicbrainz")
 _BASE = "https://musicbrainz.org/ws/2"
 _UA = f"metadatarr/{__version__} (+https://github.com/TigreGotico/metadatarr)"
+_SESSION = make_session()
 
 
 class MusicBrainzProvider(MetadataProvider):
@@ -37,7 +39,7 @@ class MusicBrainzProvider(MetadataProvider):
             "limit": 5,
         }
         try:
-            resp = requests.get(f"{_BASE}/recording", params=params,
+            resp = _SESSION.get(f"{_BASE}/recording", params=params,
                                 headers={"User-Agent": _UA}, timeout=20)
             resp.raise_for_status()
             return resp.json().get("recordings") or []
@@ -145,7 +147,7 @@ class MusicBrainzProvider(MetadataProvider):
         endpoint. Returns ``None`` on any error so callers can fall through
         to other enrichment paths."""
         try:
-            resp = requests.get(
+            resp = _SESSION.get(
                 f"{_BASE}/{kind}/{mbid}",
                 params={"inc": inc, "fmt": "json"},
                 headers={"User-Agent": _UA}, timeout=20,
@@ -217,7 +219,7 @@ class MusicBrainzProvider(MetadataProvider):
         if not mbrgid:
             return []
         try:
-            resp = requests.get(
+            resp = _SESSION.get(
                 f"{_BASE}/release",
                 params={"release-group": mbrgid, "fmt": "json", "limit": 100},
                 headers={"User-Agent": _UA}, timeout=20,

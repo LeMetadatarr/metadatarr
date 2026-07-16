@@ -371,6 +371,17 @@ cache().clear() # force re-fetch (e.g. after adding a new provider)
 Both hits and misses are cached, so failed lookups don't re-hit the network on retry.
 Pass `resolve(signals, max_workers=N)` to tune parallelism.
 
+HTTP itself flows through a shared session (`metadatarr.transport`) that adds
+per-host rate limiting and an opt-in disk cache for first-party requests. Enable
+the disk cache with an environment variable — no code change:
+
+```bash
+METADATARR_HTTP_CACHE=1 python your_script.py
+```
+
+See [`docs/transport.md`](docs/transport.md) for the rate-limit table and cache
+environment variables.
+
 ---
 
 ## Documentation
@@ -385,6 +396,7 @@ Pass `resolve(signals, max_workers=N)` to tune parallelism.
 | Doc | Contents |
 |---|---|
 | [`docs/recipes.md`](docs/recipes.md) | End-to-end snippets for common tasks |
+| [`docs/transport.md`](docs/transport.md) | Shared HTTP session — rate limits, disk cache, env vars |
 | [`docs/physical-disc.md`](docs/physical-disc.md) | Blu-ray / DVD edition data |
 | [`docs/troubleshooting.md`](docs/troubleshooting.md) | Gotchas and FAQ |
 | [`docs/add-provider.md`](docs/add-provider.md) | Checklist for adding a new resolver provider |
