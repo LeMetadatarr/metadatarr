@@ -1,6 +1,6 @@
 # Testing providers
 
-Provider tests must be **offline and deterministic** — no live network in the
+Provider tests must be **offline and deterministic**: no live network in the
 suite. The whole resolver is silent-failure, so a test that quietly hits the
 network would pass even when the provider is broken. Patch the transport and
 feed it a known payload.
@@ -20,7 +20,7 @@ loading, which is what CI uses.
 ### 1. Mock the HTTP session (JSON APIs)
 
 Patch the provider's HTTP entry point and return a fake response. This is the
-TMDB/TVDB cassette style — see [`tests/test_tmdb_cassette.py`](../tests/test_tmdb_cassette.py).
+TMDB/TVDB cassette style: see [`tests/test_tmdb_cassette.py`](../tests/test_tmdb_cassette.py).
 
 ```python
 import os
@@ -50,7 +50,7 @@ def test_movie_match():
 ```
 
 Always patch at the seam the provider actually calls (its `_http` factory, or
-the upstream client method) — patch what the *provider* imports, not where the
+the upstream client method): patch what the *provider* imports, not where the
 symbol is defined.
 
 ### 2. Committed response fixtures (HTML scrapers)
@@ -76,12 +76,12 @@ Every registered provider is covered by a parametrized smoke test
 network**:
 
 - `is_available()` returns a `bool` and never raises.
-- `lookup(signals)` returns `ProviderMatch | None` and never raises — even when
+- `lookup(signals)` returns `ProviderMatch | None` and never raises: even when
   the upstream transport blows up. The test injects a failing session to prove
   the swallow-log-return-None contract holds.
 
 When you add a provider it is picked up automatically (the test parametrizes
-over the live registry), so there is nothing to wire up — but a provider that
+over the live registry), so there is nothing to wire up: but a provider that
 raises on a transport error, or returns the wrong type, will fail it.
 
 ## Tips
@@ -89,8 +89,11 @@ raises on a transport error, or returns the wrong type, will fail it.
 - Test the **unavailable** path too (missing key/dep → `is_available()` is
   `False`), the **no-results** path (`lookup` → `None`), and the **error** path
   (transport raises → `lookup` → `None`, with a warning logged).
-- Use `match_quality` in assertions sparingly; prefer asserting on the emitted
+- Use `match_quality` in assertions sparingly, prefer asserting on the emitted
   `external_ids` / `signals` fields, which are the contract callers depend on.
 - Genre/field emission is guarded centrally
-  (`tests/test_provider_genre_emission.py`); if your provider emits
+  (`tests/test_provider_genre_emission.py`), if your provider emits
   `content_genres`, make sure they come from `GENRE_*` constants.
+
+---
+[← Adding a provider](add-provider.md) · [Home](README.md)

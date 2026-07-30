@@ -127,7 +127,7 @@ async def search_many(terms: list[str]):
 results = asyncio.run(search_many(["Dune", "Arrival", "Annihilation"]))
 ```
 
-For high-throughput use, pool `requests.Session` instead — see
+For high-throughput use, pool `requests.Session` instead: see
 [Caching & sessions](#caching--sessions) below.
 
 ## Caching & sessions
@@ -175,8 +175,8 @@ class RetryArr(ArrMetadataClient):
         return super()._get(url, params=params)
 ```
 
-> ⚠️ The base `_get` swallows all exceptions and returns `[]` / `{}`. To make
-> retry work, you must **raise** on failure — override `_get` from scratch
+> Warning: the base `_get` swallows all exceptions and returns `[]` / `{}`. To make
+> retry work, you must **raise** on failure: override `_get` from scratch
 > rather than wrapping the swallowing version.
 
 ## Batch enrichment with progress
@@ -200,7 +200,7 @@ for isbn, edition in enrich_many(my_isbns):
     print(isbn, "→", edition.title if edition else "MISS")
 ```
 
-`requests` is thread-safe per-call; eight workers against OpenLibrary is
+`requests` is thread-safe per-call, eight workers against OpenLibrary is
 polite. Don't go higher than ~16 without coordinating with the upstream.
 
 ## Pick the best regional Blu-ray edition
@@ -281,8 +281,8 @@ print("Differences:", dc_diff)
 
 The resolver drops any provider match whose `variant_kind` conflicts with the
 one you declared. A provider that doesn't set `variant_kind` (e.g. `bluray_com`
-for a standard retail disc) is never dropped — it simply doesn't vote on the
-cut. See [resolve.md — VariantKind](resolve.md#variantkind).
+for a standard retail disc) is never dropped: it simply doesn't vote on the
+cut. See [resolve.md: VariantKind](resolve.md#variantkind).
 
 ## Find a VHS or LaserDisc release on Discogs
 
@@ -323,8 +323,7 @@ rate-limit guidance.
 ## Voice agent: route by request verb
 
 When a voice assistant parses user intent, the request verb tells you the
-modality the user expects. Map it to `PlaybackModality` before resolving —
-the three-axis gate does the rest without you enumerating providers manually.
+modality the user expects. Map it to `PlaybackModality` before resolving: the three-axis gate does the rest without you enumerating providers manually.
 
 ```python
 import metadatarr.resolve.providers  # triggers self-registration
@@ -358,7 +357,7 @@ result = resolve_intent("The Hobbit", "read", MediaType.BOOK)
 
 Providers with an empty `modality` set (`skyhook`, `wikidata`, `youtube`) are
 universal and participate regardless of the modality passed.
-`MetadataProvider.modality` — `metadatarr/resolve/base.py:107`
+`MetadataProvider.modality`: `metadatarr/resolve/base.py:107`
 
 ## Building your own provider class
 
@@ -371,3 +370,6 @@ If you want metadatarr-shaped access to another book/media source, the recipe is
 4. Re-export from `__init__.py`.
 
 That's the entire pattern. See `OpenLibraryClient` for a clean recent example.
+
+---
+[← Models reference](models.md) · [Home](README.md) · [Troubleshooting →](troubleshooting.md)

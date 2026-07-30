@@ -18,7 +18,7 @@ from metadatarr.client import BlurayComClient
 client = BlurayComClient(timeout=15)
 ```
 
-`timeout` — seconds before the underlying `requests.Session` raises
+`timeout`: seconds before the underlying `requests.Session` raises
 `requests.exceptions.Timeout`. Defaults to `15`.
 
 ## Endpoints covered
@@ -48,10 +48,13 @@ for hit in hits:
 
 | Field | Type | Notes |
 |---|---|---|
-| `bluray_com_id` | `int` | Numeric page ID; stable identifier |
+| `bluray_com_id` | `int` | Numeric page ID, stable identifier |
 | `title` | `str` | As listed on the search results page |
 | `year` | `Optional[int]` | Release year scraped from the listing |
 | `url` | `Optional[str]` | Full URL to the detail page |
+
+| Field | Type | Notes |
+|---|---|---|
 | `cover_url` | `Optional[str]` | Thumbnail image URL |
 | `rating` | `Optional[float]` | Community rating shown in search results |
 
@@ -87,22 +90,37 @@ edition = client.get_edition_by_url(
 | `title` | `str` | Title as shown on the detail page |
 | `year` | `Optional[int]` | |
 | `url` | `Optional[str]` | Detail page URL |
+
+| Field | Type | Notes |
+|---|---|---|
 | `cover_url` | `Optional[str]` | Front cover image |
 | `disc_format` | `Optional[str]` | `"Blu-ray"`, `"4K UHD Blu-ray"`, `"DVD"` |
 | `region` | `Optional[str]` | `"A"`, `"B"`, `"C"`, `"Free"` |
 | `disc_count` | `Optional[int]` | Number of discs in the set |
+
+| Field | Type | Notes |
+|---|---|---|
 | `resolution` | `Optional[str]` | `"1080p"`, `"2160p"` |
 | `aspect_ratio` | `Optional[str]` | `"2.39:1"`, `"1.78:1"`, etc. |
 | `video_codec` | `Optional[str]` | `"HEVC"`, `"AVC"`, `"VC-1"` |
 | `video_bitrate_kbps` | `Optional[int]` | Average or max video bitrate |
+
+| Field | Type | Notes |
+|---|---|---|
 | `hdr` | `Optional[str]` | `"HDR10"`, `"Dolby Vision"`, `"HDR10+"` |
 | `audio_tracks` | `List[BlurayComAudioTrack]` | Per-track codec/channel/language data |
 | `studio` | `Optional[str]` | Production studio |
 | `label` | `Optional[str]` | Distributor label (`"Criterion"`, `"Arrow"`, …) |
+
+| Field | Type | Notes |
+|---|---|---|
 | `release_date` | `Optional[str]` | Street date, format varies |
 | `runtime_minutes` | `Optional[int]` | |
 | `has_slipcover` | `Optional[bool]` | `True` if the listing notes a slipcover |
 | `imdb_id` | `Optional[str]` | `tt`-prefixed ID scraped from page links |
+
+| Field | Type | Notes |
+|---|---|---|
 | `rating` | `Optional[float]` | Community rating |
 | `extras` | `List[str]` | Special feature titles |
 
@@ -113,7 +131,7 @@ edition = client.get_edition_by_url(
 | `codec` | `Optional[str]` | `"Dolby Atmos"`, `"DTS-HD MA 7.1"`, `"PCM"`, etc. |
 | `channels` | `Optional[str]` | `"7.1"`, `"5.1"`, `"2.0"` |
 | `language` | `Optional[str]` | Human-readable language name |
-| `bitrate_kbps` | `Optional[int]` | Track bitrate; often `None` |
+| `bitrate_kbps` | `Optional[int]` | Track bitrate, often `None` |
 
 ## Known limitations and scraper fragility
 
@@ -140,14 +158,17 @@ class PatchedBlurayClient(BlurayComClient):
         ...
 ```
 
-`BlurayComClient._parse_edition_page` — `/metadatarr/client.py:562`
+`BlurayComClient._parse_edition_page`: `/metadatarr/client.py:562`
 
 ## Notes
 
-- All methods return `[]` or `None` on network errors — the scraper never
+- All methods return `[]` or `None` on network errors: the scraper never
   raises to the caller.
 - Add `time.sleep(1)` between calls in any batch job. blu-ray.com has no
   published rate limit, but sustained scraping at high frequency risks a
   temporary block.
 - The numeric `bluray_com_id` appears in every detail page URL and is stable
   across site updates.
+
+---
+[← TVmazeClient](tvmaze.md) · [Home](../README.md) · [DVDCompareClient →](dvdcompare.md)
