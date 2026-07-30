@@ -17,6 +17,8 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
+import requests
+
 from metadatarr.client import ArrMetadataClient, OpenLibraryClient
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
@@ -33,7 +35,7 @@ class ServarrProxyProvider(MetadataProvider):
     name = "skyhook"
     media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.MUSIC, MediaType.BOOK}
     # Universal — dispatches internally by medium to the right Skyhook backend.
-    modality: set = set()
+    playback_type: set = set()
 
     def __init__(self) -> None:
         self._client = ArrMetadataClient()
@@ -61,8 +63,13 @@ class ServarrProxyProvider(MetadataProvider):
                 if got is not None:
                     return got
             return None
-        except Exception as exc:
-            LOG.warning("metadatarr-servarr-proxy lookup failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("servarr-proxy lookup failed query=%r medium=%s: %s",
+                        signals.title, signals.medium, exc)
+            return None
+        except Exception:
+            LOG.exception("servarr-proxy lookup unexpected error query=%r medium=%s",
+                          signals.title, signals.medium)
             return None
 
     def _lookup_movie(self, signals: Signals) -> Optional[ProviderMatch]:
@@ -186,7 +193,11 @@ class ServarrProxyProvider(MetadataProvider):
         if isbn:
             try:
                 edition = self._ol.get_edition_by_isbn(isbn)
+            except requests.RequestException as exc:
+                LOG.warning("servarr-proxy get_edition_by_isbn failed isbn=%r: %s", isbn, exc)
+                edition = None
             except Exception:
+                LOG.exception("servarr-proxy get_edition_by_isbn unexpected error isbn=%r", isbn)
                 edition = None
             if edition is not None:
                 # Edition.work_keys[0] is the OLID work id.
@@ -200,7 +211,11 @@ class ServarrProxyProvider(MetadataProvider):
         if external_ids.olid and out == ExternalIds():
             try:
                 work = self._ol.get_work(external_ids.olid)
+            except requests.RequestException as exc:
+                LOG.warning("servarr-proxy get_work failed olid=%r: %s", external_ids.olid, exc)
+                work = None
             except Exception:
+                LOG.exception("servarr-proxy get_work unexpected error olid=%r", external_ids.olid)
                 work = None
             if work is None:
                 return None

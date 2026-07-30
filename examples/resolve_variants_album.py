@@ -13,7 +13,6 @@ No extra installs required — MusicBrainz is always available.
 """
 import metadatarr.resolve.providers  # trigger provider self-registration
 from metadatarr.resolve import resolve
-from metadatarr.resolve.entities import Role
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
 
@@ -34,7 +33,7 @@ def main() -> None:
     print(f"  musicbrainz_release_group: {result.external_ids.musicbrainz_release_group}")
     print(f"  musicbrainz_release      : {result.external_ids.musicbrainz_release}")
 
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     print(f"\n--- regional releases ({len(releases)} found) ---")
     if not releases:
         print("  none (MusicBrainz may not have returned a release-group MBID)")
