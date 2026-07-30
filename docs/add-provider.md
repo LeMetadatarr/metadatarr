@@ -2,7 +2,7 @@
 
 A *provider* is a small adapter that, given a [`Signals`](resolve.md) bag,
 returns a `ProviderMatch` with whatever cross-references it could resolve from
-one upstream catalogue. Providers self-register on import; the resolver fans out
+one upstream catalogue. Providers self-register on import, the resolver fans out
 to every registered, available provider that matches the request's three routing
 axes.
 
@@ -80,7 +80,7 @@ no-op if its set is empty). See `MetadataProvider.matches()` in
 
 Return `False` when the provider can't run: a missing optional dependency, an
 unset API key/env var, or an unreachable required service. The resolver skips
-unavailable providers silently — never raise here.
+unavailable providers silently: never raise here.
 
 ```python
 def is_available(self) -> bool:
@@ -93,25 +93,25 @@ def is_available(self) -> bool:
 
 ### 3. `lookup(signals)` → `ProviderMatch | None`, **never raises**
 
-This is the error contract — the whole resolver is silent-failure by design:
+This is the error contract: the whole resolver is silent-failure by design:
 
 - Return `None` when you have nothing (no title, wrong medium, no match).
 - **Swallow, log, return `None`** on any error. Catch `requests.RequestException`
-  with a `LOG.warning(... query=...)`; catch unexpected `Exception` with a final
-  `LOG.exception(...)`; return `None` either way.
-- Never let an exception escape — one flaky provider must not break a fan-out
+  with a `LOG.warning(... query=...)`, catch unexpected `Exception` with a final
+  `LOG.exception(...)`, return `None` either way.
+- Never let an exception escape: one flaky provider must not break a fan-out
   that touches a dozen others.
 
-### 4. Confidence scale: 0.5 – 0.95
+### 4. Confidence scale: 0.5 to 0.95
 
 `ProviderMatch.confidence` ranks candidates and anchors consolidation
 (strongest first). Use the band consistently:
 
 | Range | When |
 |---|---|
-| **0.9 – 0.95** | Exact authoritative-ID hit, or a local/curated catalogue. |
-| **0.7 – 0.85** | Strong-signal search (title + year/artist agree). |
-| **0.5 – 0.6** | Fuzzy search, or an inherently noisy/unreliable source. |
+| **0.9 to 0.95** | Exact authoritative-ID hit, or a local/curated catalogue. |
+| **0.7 to 0.85** | Strong-signal search (title + year/artist agree). |
+| **0.5 to 0.6** | Fuzzy search, or an inherently noisy/unreliable source. |
 
 Multiply your base confidence by `match_quality(signals, candidate_signals)` so
 weak title/year/artist agreement scales the score down automatically.
@@ -121,11 +121,11 @@ weak title/year/artist agreement scales the score down automatically.
 Anything you put on `Signals` or `ExternalIds` must be a canonical mediavocab
 value, never an ad-hoc string:
 
-- `content_genres` ⊆ `mediavocab.taxonomy.KNOWN_GENRES` — use the `GENRE_*`
+- `content_genres` ⊆ `mediavocab.taxonomy.KNOWN_GENRES`: use the `GENRE_*`
   constants (`GENRE_ANIME`, not `"anime"`).
-- `picture_format` → `PictureFormat`; `programme_format` → `ProgrammeFormat`
-  (news/documentary/talk-show/sports are **ProgrammeFormat**, not genres);
-  `accessibility` → `AccessibilityKind`; `structure` → `Structure`.
+- `picture_format` → `PictureFormat`, `programme_format` → `ProgrammeFormat`
+  (news/documentary/talk-show/sports are **ProgrammeFormat**, not genres)
+  `accessibility` → `AccessibilityKind`, `structure` → `Structure`.
 - `source_format` is for distribution/container only (vinyl, blu-ray, vhs, …).
 
 A guard test (`tests/test_provider_genre_emission.py`) asserts no provider emits
@@ -133,15 +133,15 @@ a non-`KNOWN_GENRES` genre string, so a stray literal fails CI.
 
 ### 6. Optional overrides
 
-- `lookup_candidates(signals) -> List[ProviderMatch]` — override when the
+- `lookup_candidates(signals) -> List[ProviderMatch]`: override when the
   upstream API can cheaply rank multiple candidates and you want `consolidate()`
   to pick across providers (namesake bands, ambiguous people). Default wraps
   `lookup()`.
-- `list_variants(external_ids, signals) -> List[ProviderEntity]` — return
+- `list_variants(external_ids, signals) -> List[ProviderEntity]`: return
   release/cut/edition entities when `signals.include_variants=True`. Default
   `[]`.
-- `enrich(external_ids) -> ExternalIds | None` — given IDs, derive *more* IDs
-  without a free-text search (ID-keyed lookups). Return only the enrichment;
+- `enrich(external_ids) -> ExternalIds | None`: given IDs, derive *more* IDs
+  without a free-text search (ID-keyed lookups). Return only the enrichment
   the framework merges it first-writer-wins. Default `None`.
 
 All overrides follow the same never-raise contract as `lookup()`.
@@ -156,3 +156,6 @@ For an out-of-tree provider, just import your module before calling `resolve()`.
 
 See [testing.md](testing.md) for the offline-fixture / mocked-HTTP pattern and
 the parametrized per-provider smoke test every provider must pass.
+
+---
+[← Troubleshooting](troubleshooting.md) · [Home](README.md) · [Testing providers →](testing.md)

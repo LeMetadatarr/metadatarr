@@ -1,7 +1,7 @@
 # Getting started
 
 This page takes you from "never used metadatarr" to "successfully enriched a piece
-of media metadata." About 5 minutes if you read; 30 seconds if you skim.
+of media metadata." About 5 minutes if you read, 30 seconds if you skim.
 
 ## Install
 
@@ -30,7 +30,7 @@ for show in results[:3]:
 That call hits `https://skyhook.sonarr.tv/v1/tvdb/search/en/?term=The+Expanse`,
 parses the JSON list, and validates each entry into a `SonarrSeries` model.
 
-If anything goes wrong — DNS, 500, JSON parse error, schema mismatch — you get
+If anything goes wrong: DNS, 500, JSON parse error, schema mismatch: you get
 `[]` back, not an exception. See [Failure modes](#failure-modes) below.
 
 ## The mental model
@@ -54,7 +54,7 @@ metadatarr
 ```
 
 Plus a separate **resolve** subpackage (`metadatarr.resolve`) that fuses
-matches from many providers into one record — see
+matches from many providers into one record: see
 [resolve.md](resolve.md).
 
 Pick the client by **what you have** and **what you want**:
@@ -65,17 +65,23 @@ Pick the client by **what you have** and **what you want**:
 | A movie name | TMDB ID, year, overview | `ArrMetadataClient.search_movie` |
 | An artist name | MusicBrainz ID, bio | `ArrMetadataClient.search_artist` |
 | A book/author name + Goodreads-style data | work/edition/author triplet | `BookInfoClient.goodreads()` |
+
+| You have… | You want… | Use |
+|---|---|---|
 | A book/author name + Hardcover data | work/edition/author triplet | `BookInfoClient.hardcover()` |
 | An ISBN | publisher, page count, cover | `OpenLibraryClient.get_edition_by_isbn` |
 | A book title and need to find downloadable copies | mirror-hosted file refs | `AnnasArchiveClient.search` |
 | A disc title | technical specs (codec, HDR, bitrate, audio) | `BlurayComClient.search` + `get_edition` |
+
+| You have… | You want… | Use |
+|---|---|---|
 | A disc title | Director's Cut vs Theatrical, version differences | `DVDCompareClient.search` + `get_edition` |
 | A disc title or format (VHS, LaserDisc) | label, catalogue number, country | `DiscogsClient.search_film` + `get_release` |
 
 ## A slightly bigger example
 
 Enrich a movie title with both TMDB metadata (via Radarr) and a downloadable
-copy reference (via Anna's Archive — yes, books, but the pattern generalises):
+copy reference (via Anna's Archive: yes, books, but the pattern generalises):
 
 ```python
 from metadatarr import ArrMetadataClient, BookInfoClient, OpenLibraryClient
@@ -109,7 +115,7 @@ What this means in practice:
 ```python
 results = client.search_series("nonsense")  # always a list, possibly empty
 if not results:
-    ...  # provider down OR no matches — same shape
+    ...  # provider down OR no matches: same shape
 
 show = client.get_series_info(999_999_999)  # None on miss, None on error
 if show is None:
@@ -120,7 +126,7 @@ If you need to *distinguish* "no result" from "provider exploded", you have two
 options:
 
 1. Subclass and override `_get` to raise instead of swallow.
-2. Use the lower-level methods directly — `requests.get(...)` is one layer down.
+2. Use the lower-level methods directly: `requests.get(...)` is one layer down.
 
 There is no built-in retry, no built-in caching, no rate limiter. These belong
 in your pipeline, not in a metadata client. See [Recipes](recipes.md) for
@@ -144,8 +150,11 @@ pip-audit. See [testing.md](testing.md) for how provider tests are written and
 
 ## Where to go next
 
-- **[Models reference](models.md)** — every field on every model, with origin annotations.
+- **[Models reference](models.md)**: every field on every model, with origin annotations.
 - **One of the per-client guides** linked from the [docs index](README.md).
-- **[Recipes](recipes.md)** — concrete cross-provider workflows.
-- **[Adding a provider](add-provider.md)** — extend the resolver with a new source.
-- **[Testing providers](testing.md)** — the offline-fixture / mocked-HTTP pattern.
+- **[Recipes](recipes.md)**: concrete cross-provider workflows.
+- **[Adding a provider](add-provider.md)**: extend the resolver with a new source.
+- **[Testing providers](testing.md)**: the offline-fixture / mocked-HTTP pattern.
+
+---
+[Home](README.md) · [ArrMetadataClient →](clients/arr-metadata.md)
