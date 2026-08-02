@@ -5,16 +5,16 @@ resolve framework. Scripts marked **Network** make real HTTP requests — run
 them when you want to sanity-check a live API. Scripts marked **Offline** need
 no network and no auth.
 
-Providers route on a third axis — `modality` (`AUDIO`, `VIDEO`, `TEXT`).
-Pass `Signals(modality=PlaybackModality.AUDIO)` to restrict dispatch to audio-only
-providers; omitting `modality` (or setting it to `None`) keeps all-provider
+Providers route on a third axis — `playback_type` (`AUDIO`, `VIDEO`, `TEXT`).
+Pass `Signals(playback_type=PlaybackType.AUDIO)` to restrict dispatch to audio-only
+providers; omitting `playback_type` (or setting it to `None`) keeps all-provider
 fan-out. See [`docs/resolve.md`](../docs/resolve.md#three-axis-routing-gate).
 
 Run any of them directly:
 
 ```bash
 python examples/library_cut_dedup.py   # no network needed
-python examples/fanedit_discovery.py   # needs metadatarr[fanedit]
+python examples/fanedit_discovery.py   # needs network access
 ```
 
 ---
@@ -57,7 +57,8 @@ python examples/fanedit_discovery.py   # needs metadatarr[fanedit]
 
 ## Fanedits & release variants
 
-These examples all use `include_variants=True` and optionally `metadatarr[fanedit]`.
+These examples all use `include_variants=True`. `pyfanedit` is a core
+dependency, so no extra install step is needed.
 
 | Script                             | Network | User story |
 | ---------------------------------- | :-----: | ---------- |

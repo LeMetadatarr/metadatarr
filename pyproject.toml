@@ -42,9 +42,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/TigreGotico/metadatarr"
-Repository = "https://github.com/TigreGotico/metadatarr"
-Issues = "https://github.com/TigreGotico/metadatarr/issues"
+Homepage = "https://github.com/LeMetadatarr/metadatarr"
+Repository = "https://github.com/LeMetadatarr/metadatarr"
+Issues = "https://github.com/LeMetadatarr/metadatarr/issues"
 
 [project.optional-dependencies]
 test = ["pytest>=7"]

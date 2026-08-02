@@ -1,7 +1,7 @@
 """Step 8 — write your own provider.
 
 Subclass ``MetadataProvider``, implement ``is_available`` and
-``lookup``, declare your three routing axes (``media``, ``modality``,
+``lookup``, declare your three routing axes (``media``, ``playback_type``,
 ``genre_filter``), and call ``register()``. The resolver picks it up
 on the next call.
 """

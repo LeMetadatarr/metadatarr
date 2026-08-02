@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/metadatarr)](https://pypi.org/project/metadatarr/)
 [![Python](https://img.shields.io/pypi/pyversions/metadatarr)](https://pypi.org/project/metadatarr/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Build](https://github.com/TigreGotico/metadatarr/actions/workflows/build-tests.yml/badge.svg)](https://github.com/TigreGotico/metadatarr/actions/workflows/build-tests.yml)
+[![Build](https://github.com/LeMetadatarr/metadatarr/actions/workflows/build-tests.yml/badge.svg)](https://github.com/LeMetadatarr/metadatarr/actions/workflows/build-tests.yml)
 
 metadatarr is a set of Pydantic-powered Python clients for public media metadata
 catalogues, plus a cross-source entity resolver. It talks to the catalogues that
@@ -203,7 +203,7 @@ plus an `extra` dict for platform-specific IDs (Bandcamp, SoundCloud, YouTube Mu
 
 All providers are keyless. All dependencies are bundled in the core install.
 
-Routing is **three-axis**: `media`, `modality`, and `genre_filter`. Pass `modality` on
+Routing is **three-axis**: `media`, `playback_type`, and `genre_filter`. Pass `playback_type` on
 `Signals` to route a `MediaType.GENERIC` query to audio-only or video-only providers.
 See [`docs/resolve.md`](docs/resolve.md#three-axis-routing-gate) for details.
 
@@ -390,6 +390,21 @@ Pass `resolve(signals, max_workers=N)` to tune parallelism.
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Branch/PR flow, conventional commits → versioning |
 | [`docs/clients/`](docs/clients/) | Per-client deep dives |
 | [`examples/`](examples/) | One focused script per use case |
+
+---
+
+## Related projects
+
+`metadatarr` bundles these first-party scrapers as core dependencies:
+
+- [pymetal](https://github.com/LeMetadatarr/pymetal): Encyclopaedia Metallum (Metal Archives) client
+- [tutubo](https://github.com/LeMetadatarr/tutubo): YouTube / YouTube Music client
+- [py_bandcamp](https://github.com/LeMetadatarr/py_bandcamp): Bandcamp client
+- [nuvem_de_som](https://github.com/LeMetadatarr/nuvem_de_som): SoundCloud client
+- [unblock_requests](https://github.com/LeMetadatarr/unblock_requests): Cloudflare-aware HTTP transport used by the scraper-based clients
+
+`metadatarr` also depends on [mediavocab](https://github.com/TigreGotico/mediavocab) for its
+`Signals`, `MediaType`, and `ExternalIds` model layer.
 
 ---
 

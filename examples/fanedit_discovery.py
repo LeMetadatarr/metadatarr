@@ -12,7 +12,7 @@ Flow:
   4. Print per-film summary + rank by fanedit count
 
 Requires:
-    pip install metadatarr[fanedit]
+    pip install metadatarr   # pyfanedit is a core dependency, no extra needed
 """
 from __future__ import annotations
 
