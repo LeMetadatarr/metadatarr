@@ -1,6 +1,13 @@
 """Tests for the hanime provider (offline — pyhanime network is patched)."""
 from __future__ import annotations
 
+import pytest
+
+pytest.importorskip(
+    "pyhanime",
+    reason="pyhanime is an optional, unpublished dependency for the hanime provider",
+)
+
 from unittest.mock import patch
 
 from mediavocab import MediaType
