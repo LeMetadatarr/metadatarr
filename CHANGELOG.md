@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1a6](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a6) (2026-08-02)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a5...0.5.1a6)
+
+**Merged pull requests:**
+
+- fix: pin mediavocab\>=2.0.0a0 \(2.x prerelease has the API metadatarr targets\) [\#36](https://github.com/LeMetadatarr/metadatarr/pull/36) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.5.1a5](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a5) (2026-08-02)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a4...0.5.1a5)
