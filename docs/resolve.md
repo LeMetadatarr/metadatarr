@@ -106,28 +106,28 @@ only when **all three** axes pass:
 ```
 (no media declared        OR signals.medium    in provider.media)
 AND
-(no modality declared     OR signals.modality  in provider.modality)
+(no playback_type declared OR signals.playback_type in provider.playback_type)
 AND
 (no genre_filter declared OR provider.genre_filter ∩ signals.content_genres)
 ```
 
-`MetadataProvider.matches()`: `metadatarr/resolve/base.py:118`
+`MetadataProvider.matches()`: `metadatarr/resolve/base.py:122`
 
 **`media`**: which `MediaType` values the provider serves. Setting `medium`
 on `Signals` routes around unrelated catalogues: a `MUSIC` lookup never
 touches TVmaze, a `MOVIE` lookup never touches Bandcamp.
 
-**`modality`**: which `PlaybackModality` values (`AUDIO`, `VIDEO`, `TEXT`,
+**`playback_type`**: which `PlaybackType` values (`AUDIO`, `VIDEO`, `TEXT`,
 `INTERACTIVE`, `UNKNOWN`). This axis lets you route a `MediaType.GENERIC`
 query to audio-only or video-only providers without inventing a fake
-media type. An empty `modality` set means the provider accepts all modalities.
+media type. An empty `playback_type` set means the provider accepts all modalities.
 
 **`genre_filter`**: genre tags from `mediavocab.taxonomy.genre`. Used for
 Anime/Manga gating (rather than a fake `MediaType.ANIME`, per axiom 2).
 
 ```python
 from metadatarr.resolve.base import active_providers
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 
 # Without modality: all GENERIC-capable providers (youtube, wikidata, discogs, …)
 generic = active_providers(medium=MediaType.GENERIC)
@@ -136,21 +136,21 @@ generic = active_providers(medium=MediaType.GENERIC)
 # (discogs, youtube_music would be excluded as they declare MUSIC not GENERIC)
 audio_only = [
     p for p in generic
-    if not p.modality or PlaybackModality.AUDIO in p.modality
+    if not p.playback_type or PlaybackType.AUDIO in p.playback_type
 ]
 ```
 
-For `resolve()` callers, pass `modality` directly on `Signals`:
+For `resolve()` callers, pass `playback_type` directly on `Signals`:
 
 ```python
 from metadatarr.resolve.base import resolve
-from mediavocab import Signals, MediaType, PlaybackModality
+from mediavocab import Signals, MediaType, PlaybackType
 
 # "play something by Moonsorrow": route to AUDIO providers only
 result = resolve(Signals(
     title="Moonsorrow",
     medium=MediaType.GENERIC,
-    modality=PlaybackModality.AUDIO,
+    playback_type=PlaybackType.AUDIO,
 ))
 # → routes to musicbrainz, audiodb, bandcamp, soundcloud, metal_archives,
 #   youtube_music, librivox, discogs: NOT to tvmaze, bluray_com, etc.
@@ -159,12 +159,12 @@ result = resolve(Signals(
 result = resolve(Signals(
     title="Attack on Titan",
     medium=MediaType.EPISODIC_SERIES,
-    modality=PlaybackModality.VIDEO,
+    playback_type=PlaybackType.VIDEO,
 ))
 # → routes to tvmaze, anilist, jikan_anime, skyhook, wikidata
 ```
 
-`Signals.modality`: `mediavocab/models/signals.py`
+`Signals.playback_type`: `mediavocab/models/signals.py`
 
 #### Title comparison
 
@@ -339,7 +339,7 @@ The entity layer uses two separate enums with distinct concerns:
   `LABEL`, `CHANNEL`, `STUDIO`, `OTHER`. Work-shaped emissions (release variants)
   live on `ProviderMatch.variants` rather than as relation roles.
 
-`EntityKind` is re-exported from `mediavocab`. `EntityRole`: `metadatarr/resolve/entities.py:40`
+`EntityKind` is re-exported from `mediavocab`. `EntityRole`: `metadatarr/resolve/entities.py:57`
 
 ```python
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
@@ -360,7 +360,7 @@ match.variants = [ProviderEntity(role=EntityRole.OTHER, name="...", ...)]
 
 `ProviderEntity.kind` is auto-derived from `role.to_mediavocab_kind()` when omitted: `ARTIST` → `EntityKind.GROUP`, `DIRECTOR` → `EntityKind.PERSON`,
 `LABEL` → `EntityKind.ORGANISATION`, etc. Pass `kind` explicitly to override.
-`ProviderEntity`: `metadatarr/resolve/entities.py:235`
+`ProviderEntity`: `metadatarr/resolve/entities.py:281`
 
 Release variants (specific releases / cuts of a work: individual MusicBrainz
 releases within a release-group, or fanedit.org entries) are emitted on
@@ -371,7 +371,7 @@ Entities get their own stable IDs via `allocate_entity_id()`, which derives a
 deterministic SHA1 from the strongest known external ID (MusicBrainz > Metal
 Archives > Wikidata > platform numeric id > …).  Two providers referencing
 the same MusicBrainz artist will always produce the same entity ID.
-`allocate_entity_id()`: `metadatarr/resolve/entities.py:214`
+`allocate_entity_id()`: `metadatarr/resolve/entities.py:260`
 
 ---
 
@@ -384,7 +384,7 @@ extra is `[test]`.
 
 | Name | Source | Media | Modality | Notes |
 |---|---|---|---|---|
-| `skyhook` | Servarr proxies | movie / episodic_series / music / book | universal | no env vars needed: `metadatarr/resolve/providers/servarr_proxy.py:33` |
+| `skyhook` | Servarr proxies | movie / episodic_series / music / book | universal | no env vars needed: `metadatarr/resolve/providers/servarr_proxy.py:32` |
 | `musicbrainz` | MusicBrainz API | music | AUDIO | artist, release, recording IDs |
 | `audiodb` | TheAudioDB | music | AUDIO | free public key |
 | `tvmaze` | TVmaze public API | episodic_series | VIDEO | no auth, `MediaType.EPISODIC_SERIES` only |
@@ -408,7 +408,7 @@ extra is `[test]`.
 | `youtube_music` | YouTube Music | music | AUDIO | `tutubo` core dep, browseId entity records |
 | `youtube` | YouTube | movie / episodic_series / podcast / generic | universal | `tutubo` core dep, channel IDs only, refuses `MUSIC` |
 | `metal_archives` | Encyclopaedia Metallum | music | AUDIO | `pymetal` core dep |
-| `pyfanedit` | fanedit.org / IFDB | movie | VIDEO | variant-only: `lookup()` returns `None`, `list_variants()` calls `FaneditClient.search_by_original_title()`: `metadatarr/resolve/providers/pyfanedit.py:42` |
+| `pyfanedit` | fanedit.org / IFDB | movie | VIDEO | variant-only: `lookup()` returns `None`, `list_variants()` calls `FaneditClient.search_by_original_title()`: `metadatarr/resolve/providers/pyfanedit.py:41` |
 
 | Name | Source | Media | Modality | Notes |
 |---|---|---|---|---|
@@ -446,14 +446,14 @@ Providers without an override still emit a single candidate (their
 
 ```python
 from metadatarr.resolve.base import all_providers, active_providers
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 
 all_providers()                              # {name: provider}: every registered provider
 active_providers()                           # those whose is_available() is True
 active_providers(medium=MediaType.MUSIC)     # further filtered to music-capable providers
 
 # Modality filtering is manual: active_providers() doesn't take a modality kwarg:
-audio = [p for p in active_providers() if not p.modality or PlaybackModality.AUDIO in p.modality]
+audio = [p for p in active_providers() if not p.playback_type or PlaybackType.AUDIO in p.playback_type]
 ```
 
 ---
@@ -546,7 +546,7 @@ print(result.external_ids.tmdb_movie)
 | `relations` | `Dict[EntityRole, List[ProviderEntity]]` | Contribution entities collected from accepted matches |
 | `variants` | `List[ProviderEntity]` | Release-variant entities, populated only when `signals.include_variants=True` |
 
-`ResolveResult`: `metadatarr/resolve/base.py:56`
+`ResolveResult`: `metadatarr/resolve/base.py:63`
 
 #### Variant fan-out
 
@@ -570,7 +570,7 @@ for entity in result.variants:
     print(entity.name, entity.external_ids.fanedit_id)
 ```
 
-`resolve()` variant fan-out: `metadatarr/resolve/base.py:276`
+`resolve()` variant fan-out: `metadatarr/resolve/base.py:387`
 
 `consolidate()` consumes matches **highest-confidence first**, so the
 strongest provider anchors the consensus regardless of input order.
@@ -657,7 +657,7 @@ Supported section types correspond to `EntityRole` values:
 `actor`, `voice_actor`, `director`, `producer`, `composer`, `writer`,
 `narrator`, `host`, `author`, `artist`, `label`, `channel`, `studio`, `other`.
 
-`EntityRole`: `metadatarr/resolve/entities.py:39`
+`EntityRole`: `metadatarr/resolve/entities.py:57`
 
 Keys inside a section can be:
 - Any typed `ExternalIds` field name (`musicbrainz_artist`,
@@ -828,13 +828,13 @@ from typing import Optional
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import Signals, MediaType, PlaybackModality
+from mediavocab import Signals, MediaType, PlaybackType
 
 
 class MyProvider(MetadataProvider):
     name = "my_provider"
     media = {MediaType.MUSIC}
-    modality = {PlaybackModality.AUDIO}   # omit or leave empty to accept all modalities
+    playback_type = {PlaybackType.AUDIO}   # omit or leave empty to accept all modalities
 
     def is_available(self) -> bool:
         return True  # or check for env vars / optional deps

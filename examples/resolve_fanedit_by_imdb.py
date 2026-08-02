@@ -11,7 +11,7 @@ This example shows two paths:
      where you already have all the IDs you need.
 
 Requires:
-    pip install metadatarr[fanedit]
+    pip install metadatarr   # pyfanedit is a core dependency, no extra needed
 """
 import metadatarr.resolve.providers  # trigger provider self-registration
 from metadatarr.resolve.base import all_providers, enrich

@@ -323,18 +323,18 @@ rate-limit guidance.
 ## Voice agent: route by request verb
 
 When a voice assistant parses user intent, the request verb tells you the
-modality the user expects. Map it to `PlaybackModality` before resolving: the three-axis gate does the rest without you enumerating providers manually.
+modality the user expects. Map it to `PlaybackType` before resolving: the three-axis gate does the rest without you enumerating providers manually.
 
 ```python
 import metadatarr.resolve.providers  # triggers self-registration
 from metadatarr.resolve.base import resolve
-from mediavocab import Signals, MediaType, PlaybackModality
+from mediavocab import Signals, MediaType, PlaybackType
 
 _VERB_TO_MODALITY = {
-    "play":   PlaybackModality.AUDIO,   # "play X" → audio providers
-    "listen": PlaybackModality.AUDIO,
-    "watch":  PlaybackModality.VIDEO,   # "watch X" → video providers
-    "read":   PlaybackModality.TEXT,    # "read X" → text/book providers
+    "play":   PlaybackType.AUDIO,   # "play X" → audio providers
+    "listen": PlaybackType.AUDIO,
+    "watch":  PlaybackType.VIDEO,   # "watch X" → video providers
+    "read":   PlaybackType.TEXT,    # "read X" → text/book providers
 }
 
 def resolve_intent(title: str, verb: str, medium: MediaType = MediaType.GENERIC):
@@ -348,16 +348,16 @@ def resolve_intent(title: str, verb: str, medium: MediaType = MediaType.GENERIC)
     TEXT routes to:  openlibrary, annas_archive, jikan_manga, anilist.
     """
     modality = _VERB_TO_MODALITY.get(verb.lower())
-    return resolve(Signals(title=title, medium=medium, modality=modality))
+    return resolve(Signals(title=title, medium=medium, playback_type=modality))
 
 result = resolve_intent("Moonsorrow", "play")
 result = resolve_intent("Attack on Titan", "watch", MediaType.EPISODIC_SERIES)
 result = resolve_intent("The Hobbit", "read", MediaType.BOOK)
 ```
 
-Providers with an empty `modality` set (`skyhook`, `wikidata`, `youtube`) are
+Providers with an empty `playback_type` set (`skyhook`, `wikidata`, `youtube`) are
 universal and participate regardless of the modality passed.
-`MetadataProvider.modality`: `metadatarr/resolve/base.py:107`
+`MetadataProvider.playback_type`: `metadatarr/resolve/base.py:111`
 
 ## Building your own provider class
 

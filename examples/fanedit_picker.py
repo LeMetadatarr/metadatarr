@@ -14,7 +14,7 @@ Flow:
   4. Sort by user_rating descending, print top N with cuts preview
 
 Requires:
-    pip install metadatarr[fanedit]
+    pip install metadatarr   # pyfanedit is a core dependency, no extra needed
 """
 from __future__ import annotations
 
