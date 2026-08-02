@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1a5](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a5) (2026-08-02)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a4...0.5.1a5)
+
+**Merged pull requests:**
+
+- deep: bugs, real-fixture tests, docs/examples [\#35](https://github.com/LeMetadatarr/metadatarr/pull/35) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.5.1a4](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a4) (2026-08-02)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a3...0.5.1a4)
