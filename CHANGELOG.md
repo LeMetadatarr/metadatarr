@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.8.0a2) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.8.0a1...0.8.0a2)
+
+**Merged pull requests:**
+
+- feat: migrate scrapers batch 1 \(tmdb, rawg, tvmaze, jikan, steam\) onto the engine [\#40](https://github.com/LeMetadatarr/metadatarr/pull/40) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.8.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.8.0a1) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.7.0a3...0.8.0a1)
