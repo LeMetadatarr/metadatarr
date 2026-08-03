@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.6.0a1) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a8...0.6.0a1)
+
+**Merged pull requests:**
+
+- feat: record swallowed provider failures on the resolve result [\#27](https://github.com/LeMetadatarr/metadatarr/pull/27) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.5.1a8](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a8) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a7...0.5.1a8)
