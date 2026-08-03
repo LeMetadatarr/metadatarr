@@ -117,6 +117,10 @@ class Source(ABC):
         cursor = ckpt.get("cursor", self.initial_cursor())
         seen = (load_existing_ids(self.name, self.id_field, output_dir)
                 if self.id_field else set())
+        # Exposed for fetch() overrides that need the full persisted id set
+        # (e.g. computing a probe range over everything ever harvested), not
+        # just what this process has produced. Updated in place as rows land.
+        self._seen = seen
         total = count_rows(self.name, output_dir)
         LOG.info("[%s] resuming: cursor=%r, %d rows already collected",
                  self.name, cursor, total)
