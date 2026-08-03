@@ -21,7 +21,7 @@ from mediavocab.models.signals import Signals, match_quality
 LOG = logging.getLogger("metadatarr.resolve.providers.wikidata")
 _API = "https://www.wikidata.org/w/api.php"
 _HEADERS = {
-    "User-Agent": "metadatarr/0.1 (+https://github.com/TigreGotico/metadatarr)",
+    "User-Agent": "metadatarr/0.1 (+https://github.com/LeMetadatarr/metadatarr)",
     "Accept": "application/json",
 }
 _SESSION = make_session()

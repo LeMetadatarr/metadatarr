@@ -16,7 +16,7 @@ from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.musicbrainz")
 _BASE = "https://musicbrainz.org/ws/2"
-_UA = f"metadatarr/{__version__} (+https://github.com/TigreGotico/metadatarr)"
+_UA = f"metadatarr/{__version__} (+https://github.com/LeMetadatarr/metadatarr)"
 _SESSION = make_session()
 
 
