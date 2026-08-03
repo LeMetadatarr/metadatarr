@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.9.0a1) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.8.0a2...0.9.0a1)
+
+**Merged pull requests:**
+
+- feat: migrate scrapers batch 2 \(musicbrainz, anilist, metal, gutenberg, podcastindex, radiobrowser, audiodb\) [\#41](https://github.com/LeMetadatarr/metadatarr/pull/41) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.8.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.8.0a2) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.8.0a1...0.8.0a2)
