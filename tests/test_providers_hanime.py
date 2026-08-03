@@ -1,14 +1,22 @@
-"""Tests for the hanime provider (offline — pyhanime network is patched)."""
+"""Tests for the hanime provider (offline).
+
+pyhanime is not installable from PyPI, so these tests run against an in-file
+stand-in registered in ``sys.modules``: lightweight work objects plus adapter
+functions implementing pyhanime's documented identifier contract
+(``hanime_video_id`` / ``hanime_brand_id`` / ``hanime_franchise_id`` /
+``hanime_slug`` / ``hanime_url``). The provider imports pyhanime lazily, so
+the stand-in is what it sees in every environment and the tests behave the
+same whether or not the real package is installed.
+"""
 from __future__ import annotations
 
-import pytest
-
-pytest.importorskip(
-    "pyhanime",
-    reason="pyhanime is an optional, unpublished dependency for the hanime provider",
-)
-
+import sys
+import types
+from dataclasses import dataclass
+from typing import Optional
 from unittest.mock import patch
+
+import pytest
 
 from mediavocab import MediaType
 from mediavocab.models import ExternalIds
@@ -18,30 +26,80 @@ from mediavocab.taxonomy.genre import GENRE_ADULT, GENRE_ANIME
 from metadatarr.resolve.entities import EntityRole
 from metadatarr.resolve.providers.hanime import HanimeProvider
 
-from pyhanime.models import Franchise, Video, VideoPreview
+
+# --- pyhanime stand-in -----------------------------------------------------
+
+@dataclass
+class _Franchise:
+    id: int = 1251
+    name: str = "Ruins Seeker"
+    slug: str = "ruins-seeker"
+
+
+@dataclass
+class _Work:
+    """Shape shared by pyhanime's Video and VideoPreview objects."""
+    id: int = 3214
+    name: str = "Ruins Seeker 2"
+    slug: str = "ruins-seeker-2"
+    brand: str = "Magin Label"
+    brand_id: str = "54"
+    duration_in_ms: int = 0
+    franchise: Optional[_Franchise] = None
+
+    @property
+    def url(self) -> str:
+        return f"https://hanime.tv/videos/hentai/{self.slug}"
+
+
+def _stub_external_ids(obj) -> dict:
+    """pyhanime.mediavocab.external_ids identifier contract."""
+    extra = {}
+    if getattr(obj, "id", 0):
+        extra["hanime_video_id"] = str(obj.id)
+    if getattr(obj, "brand_id", ""):
+        extra["hanime_brand_id"] = str(obj.brand_id)
+    franchise = getattr(obj, "franchise", None)
+    if franchise is not None and getattr(franchise, "id", 0):
+        extra["hanime_franchise_id"] = str(franchise.id)
+    if getattr(obj, "slug", ""):
+        extra["hanime_slug"] = obj.slug
+        extra["hanime_url"] = obj.url
+    return extra
+
+
+def _stub_studio_external_ids(obj) -> dict:
+    """pyhanime.mediavocab.studio_external_ids identifier contract."""
+    extra = {}
+    if getattr(obj, "brand_id", ""):
+        extra["hanime_brand_id"] = str(obj.brand_id)
+    return extra
+
+
+def _make_stub_pyhanime() -> dict:
+    root = types.ModuleType("pyhanime")
+    root.search = lambda query: []
+    root.get_video = lambda slug: None
+    mv = types.ModuleType("pyhanime.mediavocab")
+    mv.external_ids = _stub_external_ids
+    mv.studio_external_ids = _stub_studio_external_ids
+    root.mediavocab = mv
+    return {"pyhanime": root, "pyhanime.mediavocab": mv}
+
+
+@pytest.fixture(autouse=True)
+def _pyhanime_stub():
+    with patch.dict(sys.modules, _make_stub_pyhanime()):
+        yield
 
 
 def _preview(id=3214, name="Ruins Seeker 2", slug="ruins-seeker-2"):
-    return VideoPreview(
-        id=id, name=name, slug=slug, brand="Magin Label", brand_id="54",
-        poster_url="", cover_url="", views=0, interests=0, likes=0,
-        dislikes=0, downloads=0, monthly_rank=0, is_censored=True,
-        created_at="", released_at="", created_at_unix=0, released_at_unix=0,
-    )
+    return _Work(id=id, name=name, slug=slug)
 
 
 def _video():
-    return Video(
-        id=3196, name="Ruins Seeker 1", slug="ruins-seeker-1",
-        brand="Magin Label", brand_id="54", description_raw="",
-        views=0, interests=0, likes=0, dislikes=0, downloads=0,
-        monthly_rank=0, poster_url="", cover_url="", preview_url="",
-        primary_color="", is_visible=True, is_censored=True,
-        is_hard_subtitled=False, is_banned_in="", rating=0.0,
-        duration_in_ms=858000, created_at="", released_at="",
-        created_at_unix=0, released_at_unix=0,
-        franchise=Franchise(id=1251, name="Ruins Seeker", slug="ruins-seeker"),
-    )
+    return _Work(id=3196, name="Ruins Seeker 1", slug="ruins-seeker-1",
+                 duration_in_ms=858000, franchise=_Franchise())
 
 
 # --- routing / gating ---
@@ -91,7 +149,8 @@ def test_lookup_emits_studio_relation():
 
 def test_lookup_candidates_ranked_and_capped():
     p = HanimeProvider()
-    hits = [_preview(id=i, name=f"Ruins Seeker {i}", slug=f"rs-{i}") for i in range(10)]
+    hits = [_preview(id=i + 1, name=f"Ruins Seeker {i}", slug=f"rs-{i}")
+            for i in range(10)]
     with patch("pyhanime.search", return_value=hits):
         cands = p.lookup_candidates(Signals(title="Ruins Seeker 1"))
     assert 0 < len(cands) <= 5
@@ -115,3 +174,9 @@ def test_enrich_by_slug_adds_franchise():
 
 def test_enrich_without_slug_returns_none():
     assert HanimeProvider().enrich(ExternalIds()) is None
+
+
+# --- availability ---
+
+def test_available_with_package_importable():
+    assert HanimeProvider().is_available() is True
