@@ -13,17 +13,12 @@ The whole crawl is a stateful graph walk (queue + stage), not offset/partition
 pagination, so :meth:`fetch` is overridden directly and the cursor carries
 the queue/stage/probe-position — same shape as the original's checkpoint.
 
-Deviation from the original (documented, since the engine's ``fetch`` has no
-access to the persisted id set the way ``run()`` does): the original's
-``fill`` stage computes its probe range from the *entire* on-disk dedup set
-(``min`` and ``max`` of every ID ever seen, across restarts). This port
-tracks the min/max of IDs seen *during the current process* (seed + crawl)
-instead, since a bare ``Source.fetch`` isn't handed the engine's dedup set.
-For an uninterrupted run this is identical; after a restart directly into an
-in-progress ``fill`` stage, the resumed bounds come from the checkpoint's own
-``fill_id``/``lo``/``hi`` (also carried forward, as in the original), so only
-a *fresh* process resuming mid-fill without those cached bounds would recompute
-a narrower range than the original.
+Like the original, the ``fill`` stage computes its probe range from the
+*entire* on-disk dedup set (``min``/``max`` of every id ever harvested, across
+restarts): the engine exposes that persisted set as ``self._seen`` during
+:meth:`run`, which this scraper unions with the ids seen this process. Cached
+``lo``/``hi``/``fill_id`` are still carried in the checkpoint, so a mid-fill
+resume reuses the exact bounds.
 
 Run it::
 
@@ -183,9 +178,20 @@ class AudioDBArtistsSource(PaginatedJSONSource):
             lo = cursor.get("lo")
             hi = cursor.get("hi")
             if lo is None or hi is None:
-                if self._seen_ids:
-                    lo = fill_id or min(self._seen_ids)
-                    hi = max(self._seen_ids) + 5000
+                # Prefer the engine's full persisted id set (every id ever
+                # harvested, across restarts) — matching the original, which
+                # computed the range from the whole on-disk dedup set. Fall
+                # back to ids seen this process if the engine set is absent.
+                persisted = set()
+                for s in getattr(self, "_seen", set()) or set():
+                    try:
+                        persisted.add(int(s))
+                    except (TypeError, ValueError):
+                        continue
+                pool = persisted | self._seen_ids
+                if pool:
+                    lo = fill_id or min(pool)
+                    hi = max(pool) + 5000
                 else:
                     lo, hi = 100000, 200000
             probe_id = fill_id if fill_id >= lo else lo
