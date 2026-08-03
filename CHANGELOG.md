@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0a3](https://github.com/LeMetadatarr/metadatarr/tree/0.10.0a3) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.10.0a2...0.10.0a3)
+
+**Merged pull requests:**
+
+- feat: migrate scrapers batch 5 \(HTML registries: pmda, codifa, fass, titck, swissmedic, who\_atc, grls\) [\#44](https://github.com/LeMetadatarr/metadatarr/pull/44) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.10.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.10.0a2) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.10.0a1...0.10.0a2)
