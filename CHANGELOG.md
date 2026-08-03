@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.8.0a1) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.7.0a3...0.8.0a1)
+
+**Merged pull requests:**
+
+- feat: declarative scraper engine + first migrations \(openlibrary, openfda\) [\#39](https://github.com/LeMetadatarr/metadatarr/pull/39) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.7.0a3](https://github.com/LeMetadatarr/metadatarr/tree/0.7.0a3) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.7.0a2...0.7.0a3)
