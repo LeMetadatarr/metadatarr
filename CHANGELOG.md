@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1a8](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a8) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a7...0.5.1a8)
+
+**Merged pull requests:**
+
+- test: exercise the hanime provider against a pyhanime stand-in [\#30](https://github.com/LeMetadatarr/metadatarr/pull/30) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.5.1a7](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a7) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a6...0.5.1a7)
