@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.10.0a2) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.10.0a1...0.10.0a2)
+
+**Merged pull requests:**
+
+- feat: migrate scrapers batch 4 \(deezer, lastfm, erowid, health\_canada, cmu, rxnorm, anmat\) [\#43](https://github.com/LeMetadatarr/metadatarr/pull/43) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.10.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.10.0a1) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.9.0a1...0.10.0a1)
