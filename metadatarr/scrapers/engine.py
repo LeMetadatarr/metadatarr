@@ -118,6 +118,9 @@ class Source(ABC):
         """
         output_dir = output_dir or default_output_dir()
         output_dir.mkdir(parents=True, exist_ok=True)
+        # Exposed so fetch() can resolve sidecar paths (cached bulk downloads,
+        # sibling datasets) without re-plumbing output_dir through the cursor.
+        self._output_dir = output_dir
         dataset = self.dataset_name or self.name
 
         # Checkpoint is keyed by `name`; the JSONL dataset by `dataset`.
