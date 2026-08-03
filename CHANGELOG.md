@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.10.0a1) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.9.0a1...0.10.0a1)
+
+**Merged pull requests:**
+
+- feat: migrate scrapers batch 3 \(wikidata, pubchem, who\_inn, chembl, dailymed, wiktionary, listennotes, anilist\_crawl\) [\#42](https://github.com/LeMetadatarr/metadatarr/pull/42) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.9.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.9.0a1) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.8.0a2...0.9.0a1)
