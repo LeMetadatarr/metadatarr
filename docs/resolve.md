@@ -585,8 +585,24 @@ print(result.external_ids.tmdb_movie)
 When `signals.include_variants=True`, `resolve()` runs a second pass after
 consolidation. It calls `list_variants(result.external_ids, signals)` on
 every active provider whose `media` set includes the requested medium.
-Results are de-duplicated by `fanedit_id` > `musicbrainz_release` > `name`
-(first seen wins) and stored in `result.variants`.
+Results are de-duplicated by identity (first seen wins) and stored in
+`result.variants`.
+
+**Variant identity.** Variants are work-shaped (`EntityRole.OTHER`), so
+deduplication does not go through the person/label-oriented ladder in
+`entities._dominant_external_id`. Instead `_variant_key` (`base.py`) uses a
+local, work-level ladder: it keys by the first populated field of
+`_VARIANT_ID_FIELDS`, an explicit priority tuple of work/release-identity
+`ExternalIds` fields (`fanedit_id`, `musicbrainz_release`, and similar
+release/edition/cut identifiers — person, artist, label, and channel fields
+are excluded). If none of those fields is set but the entity carries some
+other external id, the key uses the first populated field in the model's
+declared field order, so an id the ladder doesn't name still keeps two
+variants apart. Only when the entity has no external ids at all does the
+key fall back to `("name", normalized_name)`, with the same casefold +
+whitespace-collapse normalization the name-seeded `allocate_entity_id` path
+uses. Two variants that carry different dominant-id *fields* but share a
+secondary id are not merged by this key — that overlap is left to mappings.
 
 ```python
 from metadatarr.resolve.base import resolve
@@ -602,7 +618,7 @@ for entity in result.variants:
     print(entity.name, entity.external_ids.fanedit_id)
 ```
 
-`resolve()` variant fan-out: `metadatarr/resolve/base.py:387`
+`resolve()` variant fan-out — `metadatarr/resolve/base.py:483`
 
 `consolidate()` consumes matches **highest-confidence first**, so the
 strongest provider anchors the consensus regardless of input order.
