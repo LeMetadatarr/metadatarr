@@ -75,12 +75,14 @@ def test_cached_lookup_memoises_miss():
     assert p.calls == 1
 
 
-def test_cached_lookup_swallows_provider_exception():
+def test_cached_lookup_propagates_provider_exception():
     p = _Counted("c3", boom=True)
     s = Signals(title="X", medium=MediaType.MOVIE)
-    assert cached_lookup(p, s) is None
-    # Transient errors are NOT cached — the provider is retried on each call.
-    assert cached_lookup(p, s) is None
+    with pytest.raises(RuntimeError):
+        cached_lookup(p, s)
+    # A failed lookup is NOT cached — the provider is retried on each call.
+    with pytest.raises(RuntimeError):
+        cached_lookup(p, s)
     assert p.calls == 2
 
 

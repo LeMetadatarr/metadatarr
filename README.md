@@ -133,6 +133,11 @@ for m in result.accepted:
 for d in result.conflicts:
     fields = ", ".join(f"{c.signal}({c.ours}!={c.theirs})" for c in d.fields)
     print(f"  DROP {d.provider:<20} clashed on {fields}")
+
+# A provider that raised is swallowed to keep the run going, but recorded here —
+# a populated list means upstream schema drift, not "no match".
+for e in result.provider_errors:
+    print(f"  ERR  {e.provider:<20} {e.stage} raised {e.error_type}: {e.message}")
 ```
 
 ### Signals: tell the resolver what you know

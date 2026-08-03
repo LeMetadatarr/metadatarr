@@ -21,6 +21,7 @@ from typing import ClassVar, Dict, List, Optional, Set
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from metadatarr.resolve._errors import ProviderError, trap
 from metadatarr.resolve.entities import (
     EntityRole,
     ProviderEntity,
@@ -81,6 +82,13 @@ class ResolveResult(BaseModel):
     """Contribution entities collected from accepted matches."""
     variants: List[ProviderEntity] = Field(default_factory=list)
     """Release-variant entities collected when ``signals.include_variants=True``."""
+    provider_errors: List[ProviderError] = Field(default_factory=list)
+    """Failures swallowed during fan-out, one entry per provider that raised.
+
+    Empty when every provider either matched or returned nothing cleanly. A
+    non-empty list means a provider raised — often a sign of upstream schema
+    drift — while the run continued with the remaining providers. Inspect it to
+    tell "no match" apart from "the lookup broke"."""
 
 
 class MetadataProvider(ABC):
@@ -293,19 +301,23 @@ def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
 # ---------------------------------------------------------------------------
 
 def _gather_candidates(provider: "MetadataProvider",
-                       signals: Signals) -> List[ProviderMatch]:
+                       signals: Signals,
+                       sink: Optional[List[ProviderError]] = None,
+                       ) -> List[ProviderMatch]:
     """Internal: pull this provider's candidates via the cache when its
     `lookup_candidates` is the default (single-best wrapper); otherwise call
-    the override directly. Catches provider-side exceptions."""
+    the override directly. A provider that raises is trapped: the failure is
+    logged, recorded in ``sink``, and this returns ``[]``."""
     from metadatarr.resolve._cache import cached_lookup
 
     if type(provider).lookup_candidates is MetadataProvider.lookup_candidates:
-        single = cached_lookup(provider, signals)
-        return [single] if single is not None else []
-    try:
-        return provider.lookup_candidates(signals) or []
-    except Exception:
+        with trap(provider.name, "lookup", sink):
+            single = cached_lookup(provider, signals)
+            return [single] if single is not None else []
         return []
+    with trap(provider.name, "candidates", sink):
+        return provider.lookup_candidates(signals) or []
+    return []
 
 
 def _run_pool(providers: List["MetadataProvider"],
@@ -321,7 +333,9 @@ def _run_pool(providers: List["MetadataProvider"],
         return list(pool.map(fn, providers))
 
 
-def candidates(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
+def candidates(signals: Signals, *, max_workers: int = 8,
+               sink: Optional[List[ProviderError]] = None,
+               ) -> List[ProviderMatch]:
     """Fan out to every active provider, return the ranked candidate union.
 
     The raw, *un-consolidated* counterpart to :func:`resolve`. Use this when
@@ -345,7 +359,7 @@ def candidates(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]
     providers = active_providers(medium=signals.medium)
     matches: List[ProviderMatch] = []
     for batch in _run_pool(providers,
-                           lambda p: _gather_candidates(p, signals),
+                           lambda p: _gather_candidates(p, signals, sink),
                            max_workers):
         matches.extend(batch)
     matches.sort(key=lambda m: m.confidence, reverse=True)
@@ -383,15 +397,17 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
     you need the individual provider votes instead (disambiguation UI, custom
     merge policy), call :func:`candidates`.
     """
-    result = consolidate(candidates(signals, max_workers=max_workers), signals)
+    sink: List[ProviderError] = []
+    result = consolidate(
+        candidates(signals, max_workers=max_workers, sink=sink), signals)
+    result.provider_errors = sink
     if signals.include_variants:
         providers = active_providers(medium=signals.medium)
 
         def _get_variants(p: "MetadataProvider") -> List[ProviderEntity]:
-            try:
+            with trap(p.name, "variants", sink):
                 return p.list_variants(result.external_ids, signals) or []
-            except Exception:
-                return []
+            return []
 
         def _variant_key(ent: ProviderEntity) -> object:
             ids = ent.external_ids
@@ -442,10 +458,9 @@ def enrich(external_ids: ExternalIds, *,
     out = external_ids.model_copy(deep=True)
 
     def _call(p: "MetadataProvider") -> Optional[ExternalIds]:
-        try:
+        with trap(p.name, "enrich"):
             return cached_enrich(p, external_ids)
-        except Exception:
-            return None
+        return None
 
     for enrichment in _run_pool(providers, _call, max_workers):
         if enrichment is not None:

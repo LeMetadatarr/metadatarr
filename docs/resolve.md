@@ -493,7 +493,39 @@ Two things to know about how it runs:
   cache().clear()                 # force re-fetch
   ```
 
-### Raw candidate list: `candidates()`
+### Provider errors — `result.provider_errors`
+
+A provider that raises during fan-out never breaks a resolve: the failure is
+logged at `WARNING` and the run continues with whatever the other providers
+returned. Each swallowed failure is also recorded structurally on
+`ResolveResult.provider_errors` as a `ProviderError`:
+
+| Field | Meaning |
+|-------|---------|
+| `provider` | The provider that raised. |
+| `stage` | Where it raised — `"lookup"`, `"candidates"`, `"variants"`, or `"enrich"`. |
+| `error_type` | The exception class name (`"KeyError"`, `"ValueError"`, …). |
+| `message` | `str(exc)`, truncated to 500 characters. |
+
+Inspect it to tell "no match" apart from "the lookup broke" — a populated
+`provider_errors` list is the signal that an upstream response changed shape.
+The list is always present; it is empty when every provider either matched or
+returned nothing cleanly.
+
+```python
+from metadatarr.resolve import resolve
+from mediavocab import Signals, MediaType
+
+result = resolve(Signals(title="Inception", medium=MediaType.MOVIE))
+for err in result.provider_errors:
+    print(err.provider, err.stage, err.error_type, err.message)
+```
+
+`ProviderError` is exported from `metadatarr.resolve`. The same failures are
+logged under the `metadatarr.resolve` logger, so raising its level to `WARNING`
+surfaces them without inspecting the result.
+
+### Raw candidate list — `candidates()`
 
 When you want every provider's vote individually instead of one merged record: a disambiguation UI, a "did you mean…" list, or your own merge policy: call
 `candidates()`. It runs the same concurrent, cached fan-out as `resolve()` but

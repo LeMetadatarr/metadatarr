@@ -2,6 +2,26 @@
 
 Things that commonly break, with diagnoses and fixes.
 
+## "A provider returns nothing"
+
+Before guessing why, check `result.provider_errors`. When a provider raises
+during `resolve()`, the failure is swallowed to keep the run going, but it is
+recorded there as a `ProviderError` (`provider`, `stage`, `error_type`,
+`message`):
+
+```python
+result = resolve(Signals(title="Dune", medium=MediaType.BOOK))
+for err in result.provider_errors:
+    print(err.provider, err.stage, err.error_type, err.message)
+```
+
+An empty `provider_errors` means every provider ran cleanly and genuinely had no
+match; a populated one points straight at the provider and stage that broke —
+usually upstream schema drift. See
+[`provider_errors`](resolve.md#provider-errors--resultprovider_errors) for the
+field reference. The same failures are logged under the `metadatarr.resolve`
+logger.
+
 ## "I get an empty list / `None` for everything"
 
 metadatarr [swallows all errors](getting-started.md#failure-modes) by design, so an

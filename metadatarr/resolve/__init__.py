@@ -13,6 +13,7 @@ Importing this module triggers registration of every built-in provider.
 """
 from __future__ import annotations
 
+from metadatarr.resolve._errors import ProviderError
 from metadatarr.resolve.base import (
     MetadataProvider,
     ProviderMatch,
@@ -82,6 +83,7 @@ __all__ = [
     # providers / resolver
     "MetadataProvider",
     "ProviderMatch",
+    "ProviderError",
     "ResolutionConflict",
     "ResolveResult",
     "register",
