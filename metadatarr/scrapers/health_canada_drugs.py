@@ -145,10 +145,6 @@ class HealthCanadaDrugsSource(Source):
     def initial_cursor(self) -> int:
         return 0
 
-    def run(self, output_dir=None, *, limit: int = 0) -> int:
-        from metadatarr.scrapers._checkpoint import default_output_dir
-        self._output_dir = output_dir or default_output_dir()
-        return super().run(output_dir, limit=limit)
 
     def fetch(self, cursor: int):
         if cursor is None:

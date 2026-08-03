@@ -110,10 +110,6 @@ class CmuPronunciationsSource(Source):
     def initial_cursor(self) -> int:
         return 0
 
-    def run(self, output_dir=None, *, limit: int = 0) -> int:
-        from metadatarr.scrapers._checkpoint import default_output_dir
-        self._output_dir = output_dir or default_output_dir()
-        return super().run(output_dir, limit=limit)
 
     def map_row(self, name: str, arpabet: str, variant_num: int, source_file: str) -> dict:
         return {
