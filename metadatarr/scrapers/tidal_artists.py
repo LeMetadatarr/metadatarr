@@ -51,8 +51,27 @@ class TidalArtistsSource(Source):
     user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:120.0) Gecko/20100101 Firefox/120.0"
     accept = "text/html,application/xhtml+xml"
 
+    default_start = 1
+    default_end = 2_000_000
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.start = self.default_start
+        self.end = self.default_end
+
+    @classmethod
+    def add_cli_arguments(cls, parser):
+        parser.add_argument("--start", type=int, default=cls.default_start,
+                            help="first Tidal ID to scan")
+        parser.add_argument("--end", type=int, default=cls.default_end,
+                            help="last Tidal ID to scan")
+
+    def configure(self, args):
+        self.start = getattr(args, "start", self.default_start)
+        self.end = getattr(args, "end", self.default_end)
+
     def initial_cursor(self) -> int:
-        return 1
+        return self.start
 
     def session(self):
         if getattr(self, "_session", None) is None:
@@ -92,13 +111,16 @@ class TidalArtistsSource(Source):
 
     def fetch(self, cursor: int) -> Page:
         start = int(cursor)
+        if start > self.end:
+            return [], None
         rows = []
-        end = start + _ID_CHUNK
-        for tidal_id in range(start, end):
+        chunk_end = min(start + _ID_CHUNK, self.end + 1)
+        for tidal_id in range(start, chunk_end):
             row = self._fetch_artist(tidal_id)
             if row:
                 rows.append(row)
-        return rows, end
+        next_cursor = None if chunk_end > self.end else chunk_end
+        return rows, next_cursor
 
 
 if __name__ == "__main__":

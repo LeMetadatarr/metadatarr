@@ -123,3 +123,28 @@ def test_tidal_scrapers_registered():
     assert reg.get("tidal_albums") is TidalAlbumsSource
     assert reg.get("tidal_tracks") is TidalTracksSource
     assert reg.get("tidal_artists") is TidalArtistsSource
+
+
+def test_tidal_start_end_flags_bound_the_scan(monkeypatch):
+    import argparse
+    from metadatarr.scrapers.tidal_albums import TidalAlbumsSource
+
+    src = TidalAlbumsSource()
+    src.configure(argparse.Namespace(start=5, end=6))
+    assert src.initial_cursor() == 5
+    # never hit the network: stub the per-id fetch
+    monkeypatch.setattr(TidalAlbumsSource, "_fetch_album",
+                        lambda self, tid: {"tidal_id": tid}, raising=True)
+    rows, nxt = src.fetch(5)
+    # chunk capped at end+1 -> ids 5,6 only; then terminate
+    assert [r["tidal_id"] for r in rows] == [5, 6]
+    assert nxt is None
+
+
+def test_tidal_fetch_terminates_past_end(monkeypatch):
+    import argparse
+    from metadatarr.scrapers.tidal_artists import TidalArtistsSource
+    src = TidalArtistsSource()
+    src.configure(argparse.Namespace(start=1, end=10))
+    rows, nxt = src.fetch(11)
+    assert rows == [] and nxt is None
