@@ -15,15 +15,10 @@ Strategy:
      *if* run against the same output directory, since both scrapers key
      rows the same way.
 
-NOTE — deviation from the original: the original script deliberately wrote
-into ``anilist_anime.jsonl`` (shared dataset, separate checkpoint namespace
-``anilist_crawl``), so this ID scan topped up the same file the paginated
-crawler produced. The engine ties both the JSONL and the checkpoint to a
-single ``Source.name``, so a distinct source cannot share another source's
-output file without overriding :meth:`Source.run` itself. This port keeps
-its own dataset (``anilist_crawl.jsonl``) instead; row schema is identical
-to ``anilist_anime``, so the two JSONL files can be concatenated/deduped
-downstream if a single combined dataset is wanted.
+Like the original, this ID scan tops up the shared ``anilist_anime`` dataset:
+``dataset_name = "anilist_anime"`` routes rows into that JSONL while the
+checkpoint stays under this scraper's own ``anilist_crawl`` name. Dedup reads
+the shared file, so it never re-adds anime the paginated crawler already got.
 
 Run it::
 
@@ -81,6 +76,11 @@ def _date_str(d: Optional[Dict]) -> Optional[str]:
 @register
 class AniListCrawlSource(PaginatedJSONSource):
     name = "anilist_crawl"
+    # Tops up the shared anilist_anime dataset (identical row schema) while
+    # keeping its own checkpoint — matches the original, which appended into
+    # anilist_anime.jsonl. Dedup reads that shared file, so it won't re-add
+    # anime the primary scraper already captured.
+    dataset_name = "anilist_anime"
     id_field = "anilist_id"
     default_delay = 0.7
 

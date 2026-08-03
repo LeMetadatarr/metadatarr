@@ -13,11 +13,9 @@ Walks 10 name types, each offset-paginated against the API's own ``total``
 field (not a short-page signal), so :meth:`fetch` is overridden directly.
 The cursor is ``{"type_idx": i, "skip": s}``.
 
-NOTE — deviation: the original only deduplicated by UNII when the UNII was
-non-empty (``if unii and unii in seen: continue``), always keeping blank-UNII
-records. The engine's ``id_field`` dedup is unconditional, so after the
-first blank-UNII row, later ones would be treated as duplicates and dropped.
-This is an accepted, narrow edge case (incomplete/unregistered substances).
+Blank-UNII records are all kept, matching the original (which only skipped
+duplicates when the UNII was non-empty): the engine does not dedup rows whose
+``id_field`` value is empty/None, since an empty id is not an identity.
 
 Run it::
 

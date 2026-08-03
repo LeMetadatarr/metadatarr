@@ -299,3 +299,40 @@ def test_http_retry_then_success(tmp_path, monkeypatch):
     total = src.run(tmp_path)
     assert total == 1
     assert attempts["n"] == 3  # failed twice, succeeded on the third
+
+
+def test_empty_id_rows_are_never_deduped(tmp_path):
+    class _BlankIds(Source):
+        name = "blankids"
+        id_field = "uid"
+        default_delay = 0.0
+
+        def fetch(self, cursor):
+            if cursor == 0:
+                return [{"uid": "a"}, {"uid": ""}, {"uid": ""}], 1
+            return [{"uid": ""}, {"uid": "a"}, {"uid": None}], None
+
+    total = _BlankIds().run(tmp_path)
+    # 'a' deduped to one; every empty/None uid kept (1 + 2 + 1 blank + 1 None)
+    rows = _read_rows(tmp_path, "blankids")
+    assert [r["uid"] for r in rows] == ["a", "", "", "", None]
+    assert total == 5
+
+
+def test_dataset_name_decouples_output_file_from_checkpoint(tmp_path):
+    class _Topup(Source):
+        name = "topup"
+        dataset_name = "shared_ds"
+        id_field = "id"
+        default_delay = 0.0
+
+        def fetch(self, cursor):
+            return [{"id": "x"}], None
+
+    _Topup().run(tmp_path)
+    # rows land in the shared dataset file...
+    assert (tmp_path / "shared_ds.jsonl").exists()
+    assert not (tmp_path / "topup.jsonl").exists()
+    # ...while the checkpoint is keyed by the scraper name
+    assert (tmp_path / "topup_checkpoint.json").exists()
+    assert load_checkpoint("topup", tmp_path)["cursor"] is None
