@@ -2,9 +2,12 @@
 
 Provider responses are cached in-memory keyed by ``(provider.name,
 signal_hash(signals))``. A second resolve() call with equal signals
-hits the cache instead of the network. Disk caching for HTTP
-responses is provided by ``metadatarr.resolve._http_cache`` (used by
-several providers internally).
+hits the cache instead of the network.
+
+HTTP requests flow through a shared session (``metadatarr.transport``)
+that adds per-host rate limiting and an opt-in disk cache. Enable the
+disk cache by setting ``METADATARR_HTTP_CACHE=1`` before running — no
+code change is required. See ``docs/transport.md`` for details.
 """
 from time import perf_counter
 

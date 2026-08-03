@@ -49,7 +49,7 @@ def _make_response(payload):
 def test_happy_path():
     p = WikidataProvider()
     responses = [_make_response(_SEARCH_RESPONSE), _make_response(_ENTITY_RESPONSE)]
-    with patch("requests.get", side_effect=responses):
+    with patch("metadatarr.resolve.providers.wikidata._SESSION.get", side_effect=responses):
         m = p.lookup(Signals(title="Pulp Fiction"))
     assert m is not None
     assert m.external_ids.wikidata == "Q25188"
@@ -58,6 +58,6 @@ def test_happy_path():
 
 def test_empty_results():
     p = WikidataProvider()
-    with patch("requests.get", return_value=_make_response(_EMPTY_SEARCH)):
+    with patch("metadatarr.resolve.providers.wikidata._SESSION.get", return_value=_make_response(_EMPTY_SEARCH)):
         m = p.lookup(Signals(title="NonExistentThing999"))
     assert m is None

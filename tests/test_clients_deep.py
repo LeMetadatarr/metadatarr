@@ -32,7 +32,7 @@ class _Resp:
 
 def _patch_arr(monkeypatch, payload):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp(payload),
     )
 
@@ -74,7 +74,7 @@ def test_arr_get_artist_info_none(monkeypatch):
 def test_arr_search_handles_request_failure(monkeypatch):
     def boom(*a, **kw):
         raise RuntimeError("network")
-    monkeypatch.setattr("metadatarr.client.requests.get", boom)
+    monkeypatch.setattr("requests.sessions.Session.get", boom)
     assert ArrMetadataClient().search_series("x") == []
     assert ArrMetadataClient().get_movie_info(1) is None
 
@@ -85,7 +85,7 @@ def test_arr_search_handles_request_failure(monkeypatch):
 
 def test_openlibrary_get_work(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp({
             "key": "/works/OL27482W",
             "title": "The Hobbit",
@@ -105,7 +105,7 @@ def test_openlibrary_get_work(monkeypatch):
 
 def test_openlibrary_get_work_strips_prefix(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp({"key": "/works/OL1W", "title": "T"}),
     )
     # Pass with /works/ prefix — should still work
@@ -115,7 +115,7 @@ def test_openlibrary_get_work_strips_prefix(monkeypatch):
 
 def test_openlibrary_get_edition(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp({
             "key": "/books/OL1M",
             "title": "Hobbit Edition",
@@ -136,7 +136,7 @@ def test_openlibrary_get_edition(monkeypatch):
 
 def test_openlibrary_get_edition_by_isbn(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp({"key": "/books/OL1M", "title": "T"}),
     )
     e = OpenLibraryClient().get_edition_by_isbn("9781234567897")
@@ -145,7 +145,7 @@ def test_openlibrary_get_edition_by_isbn(monkeypatch):
 
 def test_openlibrary_get_author(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp({
             "key": "/authors/OL26320A",
             "name": "J. R. R. Tolkien",
@@ -160,7 +160,7 @@ def test_openlibrary_get_author(monkeypatch):
 def test_openlibrary_handles_failures(monkeypatch):
     def boom(*a, **kw):
         raise RuntimeError("net")
-    monkeypatch.setattr("metadatarr.client.requests.get", boom)
+    monkeypatch.setattr("requests.sessions.Session.get", boom)
     c = OpenLibraryClient()
     assert c.search("x") == []
     assert c.get_work("X") is None
@@ -171,7 +171,7 @@ def test_openlibrary_handles_failures(monkeypatch):
 
 def test_openlibrary_search_non_dict(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp([1, 2, 3]),
     )
     assert OpenLibraryClient().search("x") == []
@@ -194,7 +194,7 @@ def test_bookinfo_get_work_book_author(monkeypatch):
         "Books": [{"ForeignId": 1, "Title": "B1"}],
     }
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp(work_payload),
     )
     bi = BookInfoClient.goodreads()
@@ -204,7 +204,7 @@ def test_bookinfo_get_work_book_author(monkeypatch):
     assert b and b.title == "T"
 
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp({"ForeignId": 5, "Name": "Tolkien"}),
     )
     a = bi.get_author(5)
@@ -213,7 +213,7 @@ def test_bookinfo_get_work_book_author(monkeypatch):
 
 def test_bookinfo_handles_empty_and_errors(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp(None, content=b""),
     )
     bi = BookInfoClient.goodreads()
@@ -222,7 +222,7 @@ def test_bookinfo_handles_empty_and_errors(monkeypatch):
 
     def boom(*a, **kw):
         raise RuntimeError("net")
-    monkeypatch.setattr("metadatarr.client.requests.get", boom)
+    monkeypatch.setattr("requests.sessions.Session.get", boom)
     assert bi.get_book(1) is None
     assert bi.get_author(1) is None
 
@@ -255,7 +255,7 @@ _AA_HTML = """
 
 def test_annas_archive_parses_table(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp(content=_AA_HTML.encode()),
     )
     books = AnnasArchiveClient().search("hobbit")
@@ -268,7 +268,7 @@ def test_annas_archive_parses_table(monkeypatch):
 
 def test_annas_archive_no_table(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp(content=b"<html><body>nothing</body></html>"),
     )
     assert AnnasArchiveClient().search("x") == []
@@ -277,13 +277,13 @@ def test_annas_archive_no_table(monkeypatch):
 def test_annas_archive_all_mirrors_fail(monkeypatch):
     def boom(*a, **kw):
         raise RuntimeError("net")
-    monkeypatch.setattr("metadatarr.client.requests.get", boom)
+    monkeypatch.setattr("requests.sessions.Session.get", boom)
     assert AnnasArchiveClient(mirrors=["https://a", "https://b"]).search("x") == []
 
 
 def test_annas_archive_non_2xx_skips(monkeypatch):
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp(content=b"err", status=503),
     )
     assert AnnasArchiveClient(mirrors=["https://a"]).search("x") == []
@@ -302,7 +302,7 @@ _AA_FIXTURE = (
 def test_annas_archive_uses_header_column_map(monkeypatch):
     html = _AA_FIXTURE.read_text(encoding="utf-8")
     monkeypatch.setattr(
-        "metadatarr.client.requests.get",
+        "requests.sessions.Session.get",
         lambda *a, **kw: _Resp(content=html.encode()),
     )
     books = AnnasArchiveClient().search("lotr")

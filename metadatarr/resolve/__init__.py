@@ -45,10 +45,6 @@ from mediavocab.text import ARTIST_MIN as ARTIST_FUZZY_MIN, TITLE_MIN as TITLE_F
 from mediavocab import MediaType
 from mediavocab.models.signals import RUNTIME_TOLERANCE_S, SignalConflict, Signals, compare_signals as compare, match_quality, merge_signals as merged, signal_hash
 
-# Activate disk-backed HTTP cache if METADATARR_HTTP_CACHE is set.
-from metadatarr.resolve import _http_cache as _http_cache  # noqa: F401
-_http_cache.setup()
-
 # Trigger built-in provider registration as a side effect of `from
 # metadatarr.resolve import *` or `import metadatarr.resolve`.
 from metadatarr.resolve import providers as _providers  # noqa: F401
