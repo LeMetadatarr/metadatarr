@@ -61,9 +61,15 @@ class Source(ABC):
     checkpointing after every page, throttling, and honouring ``limit``.
     """
 
-    #: Dataset name — the JSONL and checkpoint files are named after it.
+    #: Scraper name — the checkpoint file and the CLI/registry key. Also the
+    #: default output-dataset name.
     name: str = ""
-    #: Row key used to deduplicate across pages/restarts. Empty disables dedup.
+    #: Output JSONL dataset name. Defaults to :attr:`name`; set it when several
+    #: scrapers feed one shared dataset but keep independent checkpoints (e.g. a
+    #: broad catalogue crawler topping up another scraper's dataset).
+    dataset_name: str = ""
+    #: Row key used to deduplicate across pages/restarts. Empty disables dedup;
+    #: rows whose value for this key is empty/None are kept (no identity).
     id_field: str = ""
     #: Default seconds between requests; overridable via ``--delay``.
     default_delay: float = 1.0
@@ -112,16 +118,18 @@ class Source(ABC):
         """
         output_dir = output_dir or default_output_dir()
         output_dir.mkdir(parents=True, exist_ok=True)
+        dataset = self.dataset_name or self.name
 
+        # Checkpoint is keyed by `name`; the JSONL dataset by `dataset`.
         ckpt = load_checkpoint(self.name, output_dir)
         cursor = ckpt.get("cursor", self.initial_cursor())
-        seen = (load_existing_ids(self.name, self.id_field, output_dir)
+        seen = (load_existing_ids(dataset, self.id_field, output_dir)
                 if self.id_field else set())
         # Exposed for fetch() overrides that need the full persisted id set
         # (e.g. computing a probe range over everything ever harvested), not
         # just what this process has produced. Updated in place as rows land.
         self._seen = seen
-        total = count_rows(self.name, output_dir)
+        total = count_rows(dataset, output_dir)
         LOG.info("[%s] resuming: cursor=%r, %d rows already collected",
                  self.name, cursor, total)
 
@@ -131,7 +139,13 @@ class Source(ABC):
             if self.id_field:
                 fresh = []
                 for r in rows:
-                    key = str(r.get(self.id_field))
+                    val = r.get(self.id_field)
+                    if val is None or val == "":
+                        # No identity to dedup on — keep it, matching scrapers
+                        # that only skipped duplicates when the id was present.
+                        fresh.append(r)
+                        continue
+                    key = str(val)
                     if key in seen:
                         continue
                     seen.add(key)
@@ -140,7 +154,7 @@ class Source(ABC):
                 fresh = list(rows)
 
             if fresh:
-                total += append_rows(self.name, fresh, output_dir)
+                total += append_rows(dataset, fresh, output_dir)
             # Checkpoint the *next* cursor so a restart doesn't re-fetch this page.
             save_checkpoint(self.name, {"cursor": next_cursor, "total": total},
                             output_dir)
