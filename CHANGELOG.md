@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.7.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.7.0a1) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.6.1a1...0.7.0a1)
+
+**Merged pull requests:**
+
+- feat: shared HTTP transport with per-host rate limiting [\#28](https://github.com/LeMetadatarr/metadatarr/pull/28) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.6.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.6.1a1) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.6.0a1...0.6.1a1)
