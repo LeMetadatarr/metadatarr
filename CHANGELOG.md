@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.1a7](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a7) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a6...0.5.1a7)
+
+**Merged pull requests:**
+
+- ci: grant conventional-label workflow write permissions [\#37](https://github.com/LeMetadatarr/metadatarr/pull/37) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.5.1a6](https://github.com/LeMetadatarr/metadatarr/tree/0.5.1a6) (2026-08-02)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.5.1a5...0.5.1a6)
