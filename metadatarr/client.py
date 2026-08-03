@@ -1290,7 +1290,7 @@ class DiscogsClient:
         self._min_interval = 2.5 if not self._token else 1.0
         self._session = make_session(rate_limits={"api.discogs.com": self._min_interval})
         self._session.headers.update({
-            "User-Agent": f"{_USER_AGENT} (+https://github.com/TigreGotico/metadatarr)",
+            "User-Agent": f"{_USER_AGENT} (+https://github.com/LeMetadatarr/metadatarr)",
             "Accept": "application/json",
         })
         if self._token:
