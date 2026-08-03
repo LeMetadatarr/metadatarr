@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0a5](https://github.com/LeMetadatarr/metadatarr/tree/0.10.0a5) (2026-08-03)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.10.0a4...0.10.0a5)
+
+**Merged pull requests:**
+
+- feat: migrate tidal scrapers + relocate HF utilities \(completes scraper migration\) [\#46](https://github.com/LeMetadatarr/metadatarr/pull/46) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.10.0a4](https://github.com/LeMetadatarr/metadatarr/tree/0.10.0a4) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.10.0a3...0.10.0a4)
