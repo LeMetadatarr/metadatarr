@@ -315,3 +315,37 @@ def test_batch1_scrapers_are_registered():
     assert reg.get("tvmaze_shows") is TVMazeShowsSource
     assert reg.get("jikan_manga") is JikanMangaSource
     assert reg.get("steam_games") is SteamGamesSource
+
+
+def test_steam_enrich_flag_applies_detail(monkeypatch):
+    from metadatarr.scrapers.steam_games import SteamGamesSource
+
+    src = SteamGamesSource()
+    # simulate --enrich
+    import argparse
+    src.configure(argparse.Namespace(enrich=True))
+    assert src.enrich is True
+
+    # one SteamSpy page + a store-detail stub
+    monkeypatch.setattr(SteamGamesSource, "get_json",
+                        lambda self, url, params=None: {"10": {"appid": 10, "name": "CS", "price": "0"}}
+                        if params.get("page") == 0 else {}, raising=True)
+    monkeypatch.setattr(SteamGamesSource, "_fetch_detail",
+                        lambda self, appid: {"type": "game", "genres": [{"description": "Action"}],
+                                             "is_free": True}, raising=True)
+    rows, nxt = src.fetch(0)
+    assert rows[0]["type"] == "game"
+    assert rows[0]["genres"] == ["Action"]
+    assert rows[0]["is_free"] is True
+
+
+def test_steam_without_enrich_leaves_detail_fields_unset(monkeypatch):
+    from metadatarr.scrapers.steam_games import SteamGamesSource
+
+    src = SteamGamesSource()  # enrich defaults False
+    monkeypatch.setattr(SteamGamesSource, "get_json",
+                        lambda self, url, params=None: {"10": {"appid": 10, "name": "CS", "price": "0"}}
+                        if params.get("page") == 0 else {}, raising=True)
+    rows, _ = src.fetch(0)
+    assert rows[0]["genres"] == []
+    assert rows[0]["type"] is None

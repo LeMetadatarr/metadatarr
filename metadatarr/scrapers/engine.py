@@ -73,6 +73,18 @@ class Source(ABC):
             raise ValueError(f"{type(self).__name__} must set a class-level `name`")
         self.throttle = Throttle(min_delay=self.default_delay if delay is None else delay)
 
+    # -- optional CLI hooks -------------------------------------------------
+    @classmethod
+    def add_cli_arguments(cls, parser: argparse.ArgumentParser) -> None:
+        """Register scraper-specific CLI flags. Default: none.
+
+        Override to add options (e.g. ``--enrich``); read them back in
+        :meth:`configure`.
+        """
+
+    def configure(self, args: argparse.Namespace) -> None:
+        """Apply parsed CLI args from :meth:`add_cli_arguments`. Default: no-op."""
+
     # -- to implement -------------------------------------------------------
     def initial_cursor(self) -> Cursor:
         """Cursor a fresh (checkpoint-less) run starts from. Default: ``0``."""
@@ -376,12 +388,14 @@ def run_cli(source_cls: type, argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--limit", type=int, default=0,
                     help="stop after the dataset reaches this many rows (0 = all)")
     ap.add_argument("-v", "--verbose", action="store_true")
+    source_cls.add_cli_arguments(ap)
     args = ap.parse_args(argv)
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
         format="%(asctime)s %(name)s %(levelname)s %(message)s",
     )
     source = source_cls(delay=args.delay)
+    source.configure(args)
     total = source.run(Path(args.output), limit=args.limit)
     LOG.info("[%s] finished with %d rows", source_cls.name, total)
     return 0
