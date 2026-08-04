@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.12.0a2) (2026-08-04)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.12.0a1...0.12.0a2)
+
+**Merged pull requests:**
+
+- test: expand server/WebUI coverage + docs polish [\#50](https://github.com/LeMetadatarr/metadatarr/pull/50) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.12.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.12.0a1) (2026-08-04)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.11.0a2...0.12.0a1)
