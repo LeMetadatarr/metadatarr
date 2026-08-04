@@ -8,6 +8,7 @@ own :class:`~metadatarr.resolve.base.ResolveResult` /
 """
 from __future__ import annotations
 
+import logging
 from typing import List
 
 # Triggers built-in provider self-registration as a side effect of import.
@@ -33,13 +34,38 @@ from metadatarr.server.models import (
 )
 from metadatarr.version import __version__
 
+LOG = logging.getLogger(__name__)
+
+
+def _provider_counts() -> "tuple[int, int]":
+    """Return ``(available, total)`` from the registry, tolerating a
+    provider whose ``is_available()`` itself raises (treated as unavailable
+    rather than failing the whole count)."""
+    registry = all_providers()
+    available = 0
+    for p in registry.values():
+        try:
+            if p.is_available():
+                available += 1
+        except Exception:  # pragma: no cover - defensive
+            pass
+    return available, len(registry)
+
 
 def register_routes(app, templates) -> None:
     from fastapi import HTTPException
 
     @app.get("/healthz", response_model=HealthResponse)
     def healthz() -> HealthResponse:
-        return HealthResponse(version=__version__)
+        # A static 200 proves only that the process is up; a metadatarr
+        # deployment with zero available providers is otherwise invisible
+        # to monitoring (no DB to fail against), so surface the counts.
+        available, total = _provider_counts()
+        return HealthResponse(
+            version=__version__,
+            providers_available=available,
+            providers_total=total,
+        )
 
     @app.get("/providers", response_model=ProvidersResponse)
     def providers() -> ProvidersResponse:
@@ -69,8 +95,10 @@ def register_routes(app, templates) -> None:
         signals = Signals(**payload)
         try:
             return run_resolve(signals, max_workers=request.max_workers)
-        except Exception as e:  # pragma: no cover - defensive
-            raise HTTPException(status_code=500, detail=str(e)) from None
+        except Exception:  # pragma: no cover - defensive
+            LOG.exception("resolve failed")
+            raise HTTPException(
+                status_code=500, detail="internal error during resolve") from None
 
     @app.post("/candidates", response_model=List[ProviderMatch])
     def candidates_endpoint(request: ResolveRequest) -> List[ProviderMatch]:
@@ -78,8 +106,10 @@ def register_routes(app, templates) -> None:
         signals = Signals(**payload)
         try:
             return run_candidates(signals, max_workers=request.max_workers)
-        except Exception as e:  # pragma: no cover - defensive
-            raise HTTPException(status_code=500, detail=str(e)) from None
+        except Exception:  # pragma: no cover - defensive
+            LOG.exception("candidates failed")
+            raise HTTPException(
+                status_code=500, detail="internal error during candidates") from None
 
     @app.post("/enrich", response_model=ExternalIds)
     def enrich_endpoint(request: EnrichRequest) -> ExternalIds:
@@ -96,5 +126,7 @@ def register_routes(app, templates) -> None:
                 apply_maps=request.apply_maps,
                 max_workers=request.max_workers,
             )
-        except Exception as e:  # pragma: no cover - defensive
-            raise HTTPException(status_code=500, detail=str(e)) from None
+        except Exception:  # pragma: no cover - defensive
+            LOG.exception("enrich failed")
+            raise HTTPException(
+                status_code=500, detail="internal error during enrich") from None

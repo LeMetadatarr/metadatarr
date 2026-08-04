@@ -22,7 +22,7 @@ from typing import ClassVar, Dict, List, Optional, Set, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from metadatarr.resolve._errors import ProviderError, trap
+from metadatarr.resolve._errors import LOG, ProviderError, trap
 from metadatarr.resolve.entities import (
     EntityRole,
     ProviderEntity,
@@ -322,21 +322,87 @@ def _gather_candidates(provider: "MetadataProvider",
     return []
 
 
+# Wall-clock budget for a single fan-out round (candidates/variants/enrich).
+# A provider that black-holes on connect never raises, so `trap()` never sees
+# it; without a deadline here `pool.map` (or `fut.result()`) waits forever and
+# the sync FastAPI handlers calling into this hang on uvicorn's threadpool,
+# eventually taking the whole process (incl. /healthz) down with them. This
+# bounds the *whole round*, not any single provider's request timeout.
+DEFAULT_FANOUT_DEADLINE: float = 20.0
+
+
 def _run_pool(providers: List["MetadataProvider"],
               fn,
-              max_workers: int) -> list:
-    """Bounded ThreadPoolExecutor.map wrapper. Empty in → empty out."""
-    from concurrent.futures import ThreadPoolExecutor
+              max_workers: int,
+              *,
+              deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE,
+              sink: Optional[List[ProviderError]] = None,
+              stage: str = "lookup") -> list:
+    """Bounded ThreadPoolExecutor wrapper with a wall-clock *deadline*.
+
+    Behaves like ``pool.map`` when *deadline* is ``None`` (waits for every
+    provider). When *deadline* is set, providers that haven't produced a
+    result within the budget are dropped from the returned list; if *sink* is
+    given, each dropped provider gets a :class:`ProviderError` (``stage`` /
+    ``"TimeoutError"``) appended so it surfaces in ``ResolveResult.provider_errors``
+    instead of the caller hanging indefinitely.
+
+    The underlying threads for timed-out providers are not force-killed
+    (Python threads can't be); the pool is shut down without waiting for them
+    so this call returns promptly, at the cost of leaking those threads until
+    their blocking call eventually returns or the process exits.
+    """
+    from concurrent.futures import ThreadPoolExecutor, wait
 
     if not providers:
         return []
     workers = max(1, min(max_workers, len(providers)))
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        return list(pool.map(fn, providers))
+    pool = ThreadPoolExecutor(max_workers=workers)
+    # dict preserves insertion order (py3.7+), so iterating `futures.items()`
+    # below walks the futures in the same order as `providers` was given.
+    futures = {pool.submit(fn, p): p for p in providers}
+    results: list = []
+    try:
+        done, _not_done = wait(futures, timeout=deadline)
+        # Iterate in *provider input order*, not `done`'s set-iteration
+        # order — `wait()` returns unordered sets, and consolidate()/
+        # candidates() do a stable sort on confidence, so equal-confidence
+        # matches tie-break on this function's output order. Set iteration
+        # order isn't guaranteed stable run-to-run, which would make that
+        # tie-break (and therefore which match gets accepted vs. dropped in
+        # conflict resolution) nondeterministic.
+        for fut, provider in futures.items():
+            if fut in done:
+                try:
+                    results.append(fut.result())
+                except Exception as exc:  # pragma: no cover - defensive
+                    # fn implementations trap their own exceptions; this is a
+                    # last-resort net so one bad future never sinks the batch.
+                    LOG.warning("provider %s failed during %s: %s",
+                                provider.name, stage, exc)
+                    if sink is not None:
+                        sink.append(ProviderError(
+                            provider=provider.name, stage=stage,
+                            error_type=exc.__class__.__name__,
+                            message=str(exc)[:500],
+                        ))
+            else:
+                LOG.warning("provider %s exceeded %ss fan-out deadline during %s",
+                            provider.name, deadline, stage)
+                if sink is not None:
+                    sink.append(ProviderError(
+                        provider=provider.name, stage=stage,
+                        error_type="TimeoutError",
+                        message=f"provider exceeded {deadline}s fan-out deadline",
+                    ))
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
+    return results
 
 
 def candidates(signals: Signals, *, max_workers: int = 8,
                sink: Optional[List[ProviderError]] = None,
+               deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE,
                ) -> List[ProviderMatch]:
     """Fan out to every active provider, return the ranked candidate union.
 
@@ -362,7 +428,8 @@ def candidates(signals: Signals, *, max_workers: int = 8,
     matches: List[ProviderMatch] = []
     for batch in _run_pool(providers,
                            lambda p: _gather_candidates(p, signals, sink),
-                           max_workers):
+                           max_workers,
+                           deadline=deadline, sink=sink, stage="candidates"):
         matches.extend(batch)
     matches.sort(key=lambda m: m.confidence, reverse=True)
     return matches
@@ -461,7 +528,8 @@ def _variant_key(ent: ProviderEntity) -> object:
     return ("name", _normalize_name(ent.name))
 
 
-def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
+def resolve(signals: Signals, *, max_workers: int = 8,
+            deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE) -> ResolveResult:
     """Fan out to all active providers that cover *signals.medium*, consolidate.
 
     Providers are filtered by ``medium`` before calling ``lookup()`` so a
@@ -484,7 +552,8 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
     """
     sink: List[ProviderError] = []
     result = consolidate(
-        candidates(signals, max_workers=max_workers, sink=sink), signals)
+        candidates(signals, max_workers=max_workers, sink=sink,
+                   deadline=deadline), signals)
     result.provider_errors = sink
     if signals.include_variants:
         providers = active_providers(medium=signals.medium)
@@ -499,7 +568,8 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
         for m in result.accepted:
             for ent in m.variants:
                 seen.setdefault(_variant_key(ent), ent)
-        for batch in _run_pool(providers, _get_variants, max_workers):
+        for batch in _run_pool(providers, _get_variants, max_workers,
+                               deadline=deadline, sink=sink, stage="variants"):
             for ent in batch:
                 seen.setdefault(_variant_key(ent), ent)
         if seen:
@@ -510,7 +580,8 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
 def enrich(external_ids: ExternalIds, *,
            medium: Optional[MediaType] = None,
            apply_maps: bool = True,
-           max_workers: int = 8) -> ExternalIds:
+           max_workers: int = 8,
+           deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE) -> ExternalIds:
     """Given some IDs, derive more IDs by consulting every active provider.
 
     Each provider's :meth:`MetadataProvider.enrich` is called with
@@ -533,13 +604,15 @@ def enrich(external_ids: ExternalIds, *,
 
     providers = active_providers(medium=medium)
     out = external_ids.model_copy(deep=True)
+    sink: List[ProviderError] = []
 
     def _call(p: "MetadataProvider") -> Optional[ExternalIds]:
-        with trap(p.name, "enrich"):
+        with trap(p.name, "enrich", sink):
             return cached_enrich(p, external_ids)
         return None
 
-    for enrichment in _run_pool(providers, _call, max_workers):
+    for enrichment in _run_pool(providers, _call, max_workers,
+                                deadline=deadline, sink=sink, stage="enrich"):
         if enrichment is not None:
             out = out.merge(enrichment)
 
