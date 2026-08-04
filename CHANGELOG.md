@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.11.0a2) (2026-08-04)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.11.0a1...0.11.0a2)
+
+**Merged pull requests:**
+
+- chore: remove relocated scraper subsystem \(metadatarr = pure resolver\) [\#47](https://github.com/LeMetadatarr/metadatarr/pull/47) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.11.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.11.0a1) (2026-08-04)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.10.0a5...0.11.0a1)
