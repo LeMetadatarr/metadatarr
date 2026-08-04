@@ -18,6 +18,12 @@ dependencies = [
     "tomli>=1.1.0; python_version < '3.11'",
     "mediavocab>=2.0.0a0",
     "unblock_requests",
+    # Per-source query clients, extracted from this repo's in-line HTTP /
+    # client.py into dedicated packages (git deps until published).
+    "pytvmaze @ git+https://github.com/LeMetadatarr/pytvmaze@dev",
+    "pyaudiodb @ git+https://github.com/LeMetadatarr/pyaudiodb@dev",
+    "pytmdb @ git+https://github.com/LeMetadatarr/pytmdb@dev",
+    "pywikidata @ git+https://github.com/LeMetadatarr/pywikidata@dev",
     # First-party scrapers — bundled by default so users get a working
     # resolver out of the box without optional-extra juggling.
     "pyfanedit",

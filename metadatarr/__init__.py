@@ -7,8 +7,6 @@ from .client import (
     AnnasArchiveClient,
     BookInfoClient,
     OpenLibraryClient,
-    AudioDBClient,
-    TVmazeClient,
 )
 from .models import (
     SonarrSeries,
@@ -56,8 +54,6 @@ __all__ = [
     "AnnasArchiveClient",
     "BookInfoClient",
     "OpenLibraryClient",
-    "AudioDBClient",
-    "TVmazeClient",
     "SonarrSeries",
     "RadarrMovie",
     "LidarrArtist",

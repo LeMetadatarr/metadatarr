@@ -36,7 +36,7 @@ class AudioDBProvider(MetadataProvider):
     playback_type = {PlaybackType.AUDIO}
 
     def __init__(self) -> None:
-        from metadatarr.client import AudioDBClient
+        from pyaudiodb import AudioDBClient
         self._client = AudioDBClient()
 
     def is_available(self) -> bool:
