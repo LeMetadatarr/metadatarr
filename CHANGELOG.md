@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.12.0a1) (2026-08-04)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.11.0a2...0.12.0a1)
+
+**Merged pull requests:**
+
+- feat: HTTP server, REST API, WebUI and Docker [\#49](https://github.com/LeMetadatarr/metadatarr/pull/49) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.11.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.11.0a2) (2026-08-04)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.11.0a1...0.11.0a2)
