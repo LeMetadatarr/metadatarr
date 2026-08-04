@@ -47,6 +47,13 @@ LOG = logging.getLogger("metadatarr.transport")
 _DEFAULT_CACHE_DIR = Path.home() / ".cache" / "metadatarr" / "http"
 _DEFAULT_TTL = 86400
 
+# Defense-in-depth: any request issued through a session built by
+# make_session() gets this timeout unless the caller passed an explicit one.
+# Without it, a call site that omits ``timeout=`` (easy to do, and the
+# default `requests` behaviour) can block forever on a black-holed host —
+# same failure mode as the provider fan-out hang, just one layer down.
+_DEFAULT_REQUEST_TIMEOUT = 15.0
+
 # Minimum seconds between requests per host, from each service's published
 # policy.  Unlisted hosts are not throttled (default interval 0.0).
 BUILTIN_RATE_LIMITS: Dict[str, float] = {
@@ -218,6 +225,13 @@ class CachingRateLimitedAdapter(requests.adapters.HTTPAdapter):
         super().__init__(**kwargs)
 
     def send(self, request, **kwargs):  # type: ignore[override]
+        # `requests` treats an omitted/None timeout as "wait forever". Force
+        # a bounded default so a call site that forgot `timeout=` still
+        # can't hang the calling thread indefinitely.
+        kwargs.setdefault("timeout", _DEFAULT_REQUEST_TIMEOUT)
+        if kwargs["timeout"] is None:
+            kwargs["timeout"] = _DEFAULT_REQUEST_TIMEOUT
+
         host = urlsplit(request.url).netloc.lower()
         self._limiter.wait(host)
 

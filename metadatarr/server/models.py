@@ -42,6 +42,8 @@ class HealthResponse(BaseModel):
 
     status: Literal["ok"] = "ok"
     version: str
+    providers_available: int = 0
+    providers_total: int = 0
 
 
 class ProviderInfo(BaseModel):
