@@ -55,6 +55,7 @@ Issues = "https://github.com/LeMetadatarr/metadatarr/issues"
 [project.optional-dependencies]
 test = ["pytest>=7", "httpx"]
 server = ["fastapi", "uvicorn[standard]", "jinja2", "python-multipart"]
+tag = ["guessit>=3", "mutagen>=1.45"]
 
 [project.scripts]
 metadatarr = "metadatarr.cli:main"

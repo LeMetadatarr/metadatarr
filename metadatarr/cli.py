@@ -28,6 +28,39 @@ def cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_tag_library(args: argparse.Namespace) -> int:
+    from metadatarr.library import tag_library
+
+    stats: dict = {}
+    results = tag_library(
+        args.path,
+        media=args.media,
+        write_nfo=not args.no_nfo,
+        dry_run=args.dry_run,
+        min_confidence=args.min_confidence,
+        skip_extras=not args.no_skip_extras,
+        stats=stats,
+    )
+
+    matched = 0
+    nfo_written = 0
+    errors = 0
+    for r in results:
+        print(f"{r.action}\t{r.path}\t{r.note}")
+        if r.matched:
+            matched += 1
+        if r.action == "wrote":
+            nfo_written += 1
+        if r.action == "error":
+            errors += 1
+
+    print(
+        f"scanned={len(results)} matched={matched} nfo-written={nfo_written} "
+        f"skipped-extras={stats.get('skipped_extras', 0)} errors={errors}"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="metadatarr",
@@ -42,6 +75,24 @@ def build_parser() -> argparse.ArgumentParser:
     p_serve.add_argument("--host", default="127.0.0.1")
     p_serve.add_argument("--port", type=int, default=8000)
     p_serve.set_defaults(func=cmd_serve)
+
+    p_tag = sub.add_parser(
+        "tag-library",
+        help="scan a local media library and write Kodi/Jellyfin .nfo sidecars",
+    )
+    p_tag.add_argument("--path", "-p", required=True, help="library root to scan")
+    p_tag.add_argument("--media", choices=["both", "video", "music"], default="both")
+    p_tag.add_argument("--nfo", dest="no_nfo", action="store_false",
+                       help="write .nfo sidecars (default)")
+    p_tag.add_argument("--no-nfo", dest="no_nfo", action="store_true",
+                       help="resolve only, do not write .nfo sidecars")
+    p_tag.set_defaults(no_nfo=False)
+    p_tag.add_argument("--dry-run", action="store_true",
+                       help="report what would be written without writing anything")
+    p_tag.add_argument("--min-confidence", type=float, default=0.5)
+    p_tag.add_argument("--no-skip-extras", action="store_true",
+                       help="also tag trailers/samples/extras (skipped by default)")
+    p_tag.set_defaults(func=cmd_tag_library)
 
     return parser
 

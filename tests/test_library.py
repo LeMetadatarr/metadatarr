@@ -1,0 +1,612 @@
+# SPDX-License-Identifier: Apache-2.0
+"""Tests for metadatarr.library — local media-library tagger.
+
+No real network access: metadatarr.resolve/enrich are always monkeypatched.
+"""
+from __future__ import annotations
+
+import xml.etree.ElementTree as ET
+from pathlib import Path
+from types import SimpleNamespace
+
+from metadatarr import library
+from mediavocab import MediaType
+from mediavocab.models.signals import Signals
+
+
+# ---------------------------------------------------------------------------
+# scan()
+# ---------------------------------------------------------------------------
+
+def _touch(path: Path, content: bytes = b"") -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(content)
+    return path
+
+
+def test_scan_finds_video_and_music_and_ignores_other_files(tmp_path):
+    _touch(tmp_path / "Movies" / "Big Buck Bunny (2008).mp4")
+    _touch(tmp_path / "Music" / "Aphex Twin - Avril 14th.mp3")
+    _touch(tmp_path / "Movies" / "poster.jpg")
+    _touch(tmp_path / "Movies" / "Big Buck Bunny (2008).srt")
+
+    found = {f.path.name: f.kind for f in library.scan(str(tmp_path))}
+    assert found == {
+        "Big Buck Bunny (2008).mp4": "video",
+        "Aphex Twin - Avril 14th.mp3": "music",
+    }
+
+
+def test_scan_respects_media_filter(tmp_path):
+    _touch(tmp_path / "a.mkv")
+    _touch(tmp_path / "b.flac")
+
+    video_only = list(library.scan(str(tmp_path), media="video"))
+    music_only = list(library.scan(str(tmp_path), media="music"))
+    assert [f.path.name for f in video_only] == ["a.mkv"]
+    assert [f.path.name for f in music_only] == ["b.flac"]
+
+
+def test_scan_skips_trailer_and_sample_suffixes(tmp_path):
+    _touch(tmp_path / "Bar - Trailer-trailer.mkv")
+    _touch(tmp_path / "Bar-sample.mkv")
+    _touch(tmp_path / "Real Movie (2020).mkv")
+
+    found = {f.path.name for f in library.scan(str(tmp_path))}
+    assert found == {"Real Movie (2020).mkv"}
+
+
+def test_scan_skips_extras_folders(tmp_path):
+    _touch(tmp_path / "Trailers" / "x-trailer.mkv")
+    _touch(tmp_path / "Extras" / "y.mkv")
+    _touch(tmp_path / "Movie (2020).mkv")
+
+    found = {f.path.name for f in library.scan(str(tmp_path))}
+    assert found == {"Movie (2020).mkv"}
+
+
+def test_scan_skip_extras_false_includes_them(tmp_path):
+    _touch(tmp_path / "Trailers" / "x-trailer.mkv")
+    _touch(tmp_path / "Movie (2020).mkv")
+
+    found = {f.path.name for f in library.scan(str(tmp_path), skip_extras=False)}
+    assert found == {"x-trailer.mkv", "Movie (2020).mkv"}
+
+
+def test_scan_does_not_over_match_legit_titles_containing_sample_word():
+    assert library._is_extra_path(Path("/lib/The Sample Case (2020).mkv")) is False
+    assert library._is_extra_path(Path("/lib/Sample.mkv")) is False
+
+
+def test_scan_reports_skipped_extras_count(tmp_path):
+    _touch(tmp_path / "Trailers" / "x-trailer.mkv")
+    _touch(tmp_path / "y-sample.mkv")
+    _touch(tmp_path / "Movie (2020).mkv")
+
+    stats: dict = {}
+    found = list(library.scan(str(tmp_path), stats=stats))
+    assert len(found) == 1
+    assert stats["skipped_extras"] == 2
+
+
+# ---------------------------------------------------------------------------
+# extract_signals() — filename fallback (guessit/mutagen absent)
+# ---------------------------------------------------------------------------
+
+def test_extract_signals_movie_filename_fallback(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    f = library.LocalMediaFile(path=_touch(tmp_path / "Inception (2010).mkv"), kind="video")
+    signals = library.extract_signals(f)
+    assert signals.title == "Inception"
+    assert signals.year == 2010
+    assert signals.medium == MediaType.MOVIE
+
+
+def test_extract_signals_tv_filename_fallback(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    f = library.LocalMediaFile(path=_touch(tmp_path / "Show.Name.S01E02.mkv"), kind="video")
+    signals = library.extract_signals(f)
+    assert signals.season == 1
+    assert signals.episode == 2
+    assert signals.medium == MediaType.EPISODIC_SERIES
+    assert "Show" in (signals.title or "")
+
+
+def test_extract_signals_music_filename_fallback(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    f = library.LocalMediaFile(path=_touch(tmp_path / "Artist - Song.mp3"), kind="music")
+    signals = library.extract_signals(f)
+    assert signals.artist == "Artist"
+    assert signals.title == "Song"
+    assert signals.medium == MediaType.MUSIC
+
+
+def test_extract_signals_music_reads_embedded_tags_when_mutagen_present(tmp_path, monkeypatch):
+    fake_tags = {"title": ["Real Title"], "artist": ["Real Artist"], "date": ["2015-01-01"]}
+
+    class _FakeAudio:
+        tags = fake_tags
+
+    class _FakeMutagenModule:
+        @staticmethod
+        def File(path, easy=True):
+            return _FakeAudio()
+
+    monkeypatch.setattr(library, "_mutagen", _FakeMutagenModule())
+    f = library.LocalMediaFile(path=_touch(tmp_path / "whatever.mp3"), kind="music")
+    signals = library.extract_signals(f)
+    assert signals.title == "Real Title"
+    assert signals.artist == "Real Artist"
+    assert signals.year == 2015
+
+
+# ---------------------------------------------------------------------------
+# extract_embedded_ids() — including the #46 fix
+# ---------------------------------------------------------------------------
+
+def test_extract_embedded_ids_tmdb_braces():
+    ids = library.extract_embedded_ids("The Adam Project (2022) {tmdb-696806} [WEBDL-1080p].mkv")
+    assert ids is not None
+    assert ids.tmdb_movie == 696806
+
+
+def test_extract_embedded_ids_tmdbid_braces():
+    ids = library.extract_embedded_ids("65 (2023) {tmdbid-700391}.mkv")
+    assert ids is not None
+    assert ids.tmdb_movie == 700391
+
+
+def test_extract_embedded_ids_tmdbid_brackets():
+    ids = library.extract_embedded_ids("The Boogeyman (2023) [tmdbid-532408].mkv")
+    assert ids is not None
+    assert ids.tmdb_movie == 532408
+
+
+def test_extract_embedded_ids_imdb_braces():
+    ids = library.extract_embedded_ids("Movie (2020) {imdb-tt1254207}.mkv")
+    assert ids is not None
+    assert ids.imdb == "tt1254207"
+
+
+def test_extract_embedded_ids_imdbid_brackets():
+    ids = library.extract_embedded_ids("Movie (2020) [imdbid-tt1254207].mkv")
+    assert ids is not None
+    assert ids.imdb == "tt1254207"
+
+
+def test_extract_embedded_ids_tvdb_braces():
+    ids = library.extract_embedded_ids("Show (2021) {tvdb-12345}.mkv")
+    assert ids is not None
+    assert ids.tvdb == 12345
+
+
+def test_extract_embedded_ids_true_episodic_uses_tmdb_tv():
+    ids = library.extract_embedded_ids("Show {tmdb-1234} S01E02.mkv", is_true_episodic=True)
+    assert ids is not None
+    assert ids.tmdb_tv == 1234
+    assert ids.tmdb_movie is None
+
+
+def test_extract_embedded_ids_no_id_returns_none():
+    assert library.extract_embedded_ids("Plain Title (2020).mkv") is None
+
+
+def test_extract_embedded_ids_false_positive_empty_tag_returns_none():
+    assert library.extract_embedded_ids("Movie {tmdb-} garbage (1984).mkv") is None
+
+
+def test_extract_embedded_ids_year_alone_not_mistaken_for_id():
+    assert library.extract_embedded_ids("1984 (1984).mkv") is None
+
+
+def test_extract_embedded_ids_numeric_title_defaults_to_tmdb_movie_not_tv():
+    """PR#46 regression: a numeric title like "65 (2023)" with no real SxxEyy
+    marker must default to tmdb_movie even if a shaky type-guesser (e.g.
+    guessit) might mistake it for an episode. This is exercised at the
+    tag_file level (test_tag_file_numeric_title_bugfix_46 below) where the
+    is_true_episodic gate is actually computed from the filename."""
+    ids = library.extract_embedded_ids("65 (2023) {tmdb-700391}.mkv", is_true_episodic=False)
+    assert ids is not None
+    assert ids.tmdb_movie == 700391
+    assert ids.tmdb_tv is None
+
+
+def test_extract_embedded_ids_tvdb_always_maps_to_tv_catalog():
+    ids = library.extract_embedded_ids("Show S01E02 {tvdb-12345}.mkv", is_true_episodic=False)
+    assert ids is not None
+    assert ids.tvdb == 12345
+
+
+# ---------------------------------------------------------------------------
+# tag_file()
+# ---------------------------------------------------------------------------
+
+def _fake_resolve_result(signals, external_ids):
+    return SimpleNamespace(signals=signals, external_ids=external_ids)
+
+
+class _FakeExternalIds:
+    def __init__(self, data):
+        self._data = data
+
+    def model_dump(self):
+        return dict(self._data)
+
+
+def test_tag_file_writes_nfo_on_match(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        merged = Signals(title="Big Buck Bunny", year=2008, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"imdb": "tt1254207"}))
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.action == "wrote"
+    assert result.matched is True
+    assert result.external_ids == {"imdb": "tt1254207"}
+    nfo_path = path.with_suffix(".nfo")
+    assert nfo_path.exists()
+    root = ET.fromstring(nfo_path.read_text())
+    assert root.tag == "movie"
+    assert root.findtext("title") == "Big Buck Bunny"
+    ids = {el.get("type"): el.text for el in root.findall("uniqueid")}
+    assert ids.get("imdb") == "tt1254207"
+
+
+def test_tag_file_dry_run_writes_nothing(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        merged = Signals(title="Big Buck Bunny", year=2008, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"imdb": "tt1254207"}))
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(f, write_nfo=True, dry_run=True)
+
+    assert result.action == "would-write"
+    assert not path.with_suffix(".nfo").exists()
+
+
+def test_tag_file_resolve_exception_is_graceful(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Inception (2010).mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        raise RuntimeError("provider exploded")
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.action in ("wrote", "error")
+    if result.action == "wrote":
+        assert result.matched is False
+        assert result.external_ids is None
+
+
+def test_tag_file_resolve_hard_error_before_signals_never_crashes(tmp_path, monkeypatch):
+    """If extract_signals itself blows up, tag_file reports 'error', not a crash."""
+    path = _touch(tmp_path / "whatever.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def boom(_file):
+        raise ValueError("boom")
+
+    monkeypatch.setattr(library, "extract_signals", boom)
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+    assert result.action == "error"
+    assert not path.with_suffix(".nfo").exists()
+
+
+def test_tag_file_low_match_falls_back_to_minimal_nfo(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Some Obscure Home Video (2019).mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        return _fake_resolve_result(None, None)
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.action == "wrote"
+    assert result.matched is False
+    assert result.external_ids is None
+    nfo_path = path.with_suffix(".nfo")
+    assert nfo_path.exists()
+    root = ET.fromstring(nfo_path.read_text())
+    assert root.findtext("title") == "Some Obscure Home Video"
+
+
+def test_tag_file_never_modifies_media_file_bytes(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    content = b"not really a video but bytes must survive"
+    path = _touch(tmp_path / "Movie (2001).mkv", content)
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+    library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert path.read_bytes() == content
+    siblings = {p.name for p in path.parent.iterdir()}
+    assert siblings == {"Movie (2001).mkv", "Movie (2001).nfo"}
+
+
+def test_tag_file_never_writes_outside_root(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    root = tmp_path / "library"
+    path = _touch(root / "Movie (2001).mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+    library.tag_file(f, write_nfo=True, dry_run=False)
+
+    nfo = path.with_suffix(".nfo")
+    assert nfo.parent == root
+    assert nfo.exists()
+
+
+def test_episodedetails_nfo_for_tv_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Show.Name.S01E02.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.action == "wrote"
+    root = ET.fromstring(result.nfo_path.read_text())
+    assert root.tag == "episodedetails"
+    assert root.findtext("season") == "1"
+    assert root.findtext("episode") == "2"
+
+
+def test_musicvideo_nfo_for_music_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "Artist - Song.mp3")
+    f = library.LocalMediaFile(path=path, kind="music")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.action == "wrote"
+    root = ET.fromstring(result.nfo_path.read_text())
+    assert root.tag == "musicvideo"
+    assert root.findtext("artist") == "Artist"
+
+
+# ---------------------------------------------------------------------------
+# tag_file() — embedded-id direct match, incl. #46 bugfix
+# ---------------------------------------------------------------------------
+
+class _FakeExpandedExternalIds:
+    def __init__(self, data):
+        self._data = data
+
+    def model_dump(self):
+        return dict(self._data)
+
+
+def test_tag_file_uses_embedded_id_and_enriches(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "65 (2023) {tmdb-700391}.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    resolve_calls = []
+    enrich_calls = []
+
+    def fake_resolve(signals, *, max_workers=8):
+        resolve_calls.append(signals)
+        raise AssertionError("resolve() must not be called when an embedded id is present")
+
+    def fake_enrich(seed, *, medium=None, apply_maps=True, max_workers=8):
+        enrich_calls.append(seed)
+        return _FakeExpandedExternalIds({"tmdb_movie": 700391, "imdb": "tt0765443", "wikidata": "Q104123"})
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    monkeypatch.setattr(library, "enrich", fake_enrich)
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert not resolve_calls
+    assert len(enrich_calls) == 1
+    assert enrich_calls[0].tmdb_movie == 700391
+    assert result.matched is True
+    assert result.external_ids == {
+        "tmdb_movie": 700391, "imdb": "tt0765443", "wikidata": "Q104123",
+    }
+    assert result.note == "matched (embedded id)"
+
+
+def test_tag_file_numeric_title_bugfix_46(tmp_path, monkeypatch):
+    """The core PR#46 regression: a numeric title "65 (2023)" with NO real
+    SxxEyy marker anywhere in the filename must map its embedded {tmdb-} id
+    to tmdb_movie, never tmdb_tv — even if guessit's shaky type guesser
+    thinks it looks like an episode number. is_true_episodic is derived
+    purely from a real SxxEyy regex match on the filename, not guessit."""
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "65 (2023) {tmdb-700391}.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    seen_seed = {}
+
+    def fake_enrich(seed, *, medium=None, apply_maps=True, max_workers=8):
+        seen_seed["seed"] = seed
+        return _FakeExpandedExternalIds({})
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: (_ for _ in ()).throw(
+                            AssertionError("resolve() must not be called")))
+    monkeypatch.setattr(library, "enrich", fake_enrich)
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert seen_seed["seed"].tmdb_movie == 700391
+    assert seen_seed["seed"].tmdb_tv is None
+    assert result.external_ids == {"tmdb_movie": 700391}
+
+
+def test_tag_file_true_episodic_embedded_id_maps_to_tmdb_tv(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Show {tmdb-1234} S01E02.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    seen_seed = {}
+
+    def fake_enrich(seed, *, medium=None, apply_maps=True, max_workers=8):
+        seen_seed["seed"] = seed
+        return _FakeExpandedExternalIds({})
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: (_ for _ in ()).throw(
+                            AssertionError("resolve() must not be called")))
+    monkeypatch.setattr(library, "enrich", fake_enrich)
+
+    library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert seen_seed["seed"].tmdb_tv == 1234
+    assert seen_seed["seed"].tmdb_movie is None
+
+
+def test_tag_file_embedded_id_enrich_empty_falls_back_to_raw_seed(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "65 (2023) {tmdb-700391}.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: (_ for _ in ()).throw(
+                            AssertionError("resolve() must not be called")))
+    monkeypatch.setattr(library, "enrich",
+                        lambda seed, **kw: _FakeExpandedExternalIds({}))
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is True
+    assert result.external_ids == {"tmdb_movie": 700391}
+    assert result.note == "matched (embedded id)"
+
+
+def test_tag_file_embedded_id_enrich_raises_falls_back_to_raw_seed(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "The Boogeyman (2023) {tmdb-532408}.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: (_ for _ in ()).throw(
+                            AssertionError("resolve() must not be called")))
+
+    def boom_enrich(seed, **kw):
+        raise RuntimeError("network down")
+
+    monkeypatch.setattr(library, "enrich", boom_enrich)
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is True
+    assert result.external_ids == {"tmdb_movie": 532408}
+    assert result.note == "matched (embedded id)"
+
+
+def test_tag_file_no_embedded_id_falls_back_to_resolve(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        merged = Signals(title="Big Buck Bunny", year=2008, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"imdb": "tt1254207"}))
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is True
+    assert result.note == "matched"
+    assert result.external_ids == {"imdb": "tt1254207"}
+
+
+# ---------------------------------------------------------------------------
+# tag_library() end-to-end (mocked resolve)
+# ---------------------------------------------------------------------------
+
+def test_tag_library_scans_and_tags_a_tree(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    monkeypatch.setattr(library, "_mutagen", None)
+    _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    _touch(tmp_path / "Aphex Twin - Avril 14th.mp3")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+    results = library.tag_library(str(tmp_path), dry_run=False)
+
+    assert len(results) == 2
+    assert all(r.action == "wrote" for r in results)
+    assert (tmp_path / "Big Buck Bunny (2008).nfo").exists()
+    assert (tmp_path / "Aphex Twin - Avril 14th.nfo").exists()
+
+
+def test_tag_library_dry_run_writes_nothing(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+    results = library.tag_library(str(tmp_path), dry_run=True)
+
+    assert results[0].action == "would-write"
+    assert not (tmp_path / "Big Buck Bunny (2008).nfo").exists()
+
+
+def test_tag_library_reports_skipped_extras_in_stats(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    _touch(tmp_path / "Trailers" / "x-trailer.mkv")
+    _touch(tmp_path / "Movie (2020).mkv")
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+
+    stats: dict = {}
+    results = library.tag_library(str(tmp_path), dry_run=True, stats=stats)
+    assert len(results) == 1
+    assert stats["skipped_extras"] == 1
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def test_cli_tag_library_dry_run(tmp_path, monkeypatch, capsys):
+    from metadatarr import cli
+
+    monkeypatch.setattr(library, "_guessit", None)
+    _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+
+    rc = cli.main(["tag-library", "-p", str(tmp_path), "--dry-run"])
+    out = capsys.readouterr()
+    assert rc == 0
+    assert "would-write" in out.out
+    assert "scanned=1" in out.out
+    assert not (tmp_path / "Big Buck Bunny (2008).nfo").exists()
+
+
+def test_cli_tag_library_real_run_writes_nfo(tmp_path, monkeypatch, capsys):
+    from metadatarr import cli
+
+    monkeypatch.setattr(library, "_guessit", None)
+    _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+
+    rc = cli.main(["tag-library", "-p", str(tmp_path)])
+    assert rc == 0
+    assert (tmp_path / "Big Buck Bunny (2008).nfo").exists()
