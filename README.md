@@ -54,6 +54,17 @@ metadatarr serve
 
 Open [http://localhost:8000/](http://localhost:8000/).
 
+**What you get out of the box (no API keys):**
+
+- The **Resolver Playground** — run any query through every keyless provider
+  and see the ranked candidates side by side with the consolidated result.
+- The `/resolve`, `/candidates`, `/enrich`, `/providers`, `/healthz` JSON API.
+- MusicBrainz, TVmaze, AniList, OpenLibrary, Anna's Archive, LibriVox,
+  Bandcamp, SoundCloud, YouTube/YouTube Music, Wikidata, and more — no
+  registration, no tokens.
+- Only TMDB, TVDB, and Discogs are key-gated; everything else works the
+  moment the server starts.
+
 **Quickstart (Docker):**
 
 ```bash
@@ -78,8 +89,16 @@ env vars, and healthchecks.
 ```bash
 curl -X POST http://localhost:8000/resolve \
   -H 'Content-Type: application/json' \
-  -d '{"title": "Inception", "year": 2010, "medium": "Movie"}'
+  -d '{"title": "Inception", "year": 2010, "medium": "movie"}'
 # → a ResolveResult JSON body: external_ids, accepted, conflicts, provider_errors
+
+curl -X POST http://localhost:8000/candidates \
+  -H 'Content-Type: application/json' \
+  -d '{"title": "Inception", "year": 2010, "medium": "movie"}'
+# → every provider's raw vote, unmerged, sorted by confidence descending
+
+curl http://localhost:8000/healthz
+# → {"status": "ok", "version": "..."}
 ```
 
 Most providers need **no API key**. Setting `TMDB_API_KEY`, `TVDB_API_KEY`,

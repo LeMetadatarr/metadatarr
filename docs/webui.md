@@ -84,3 +84,26 @@ Same as the HTTP API: there is no login, no session, no API key check on
 these routes. Fine for a single-tenant homelab box; put it behind a reverse
 proxy (Caddy, Traefik, nginx) with your own auth if it's reachable outside
 your LAN. See [`docs/deploy.md`](deploy.md#security-note).
+
+## Troubleshooting
+
+- **`Address already in use` / port 8000 taken.** Another process already
+  bound the port. Pick a different one: `metadatarr serve --port 8080`
+  (or `uvicorn.run(..., port=8080)` if you're embedding `create_app()`
+  yourself), or stop whatever is already listening on 8000.
+
+- **A provider shows "unavailable" on `/ui/providers`.** That is almost
+  always a missing API key, not a bug. TMDB, TVDB, and Discogs are
+  key-gated (`TMDB_API_KEY`, `TVDB_API_KEY`, `DISCOGS_TOKEN`) — every other
+  built-in provider is keyless and should already show "available". Set the
+  matching env var and restart the server; the badge flips live on the next
+  page load, no code change needed.
+
+- **Running behind a reverse-proxy subpath** (e.g. `example.com/metadatarr/`
+  instead of the domain root). The WebUI's static assets and htmx requests
+  are all root-relative (`/static/...`, `/ui/...`), so a subpath mount needs
+  the proxy to strip the prefix before forwarding — e.g. Caddy's
+  `handle_path /metadatarr/*` or nginx's `location /metadatarr/ { rewrite
+  ^/metadatarr/(.*) /$1 break; ... }` — rather than a bare `location`/`route`
+  that forwards the prefix along. See [`docs/deploy.md`](deploy.md) for the
+  full reverse-proxy example.
