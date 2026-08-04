@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.13.0a1) (2026-08-04)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.12.1a1...0.13.0a1)
+
+**Merged pull requests:**
+
+- feat: tag existing media libraries \(scan -\> resolve -\> .nfo sidecars\) + NFO generation [\#52](https://github.com/LeMetadatarr/metadatarr/pull/52) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.12.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.12.1a1) (2026-08-04)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.12.0a2...0.12.1a1)
