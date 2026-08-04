@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}metadatarr — Resolver Playground{% endblock %}
+{% block heading %}Resolver Playground{% endblock %}
+{% block content %}
+<div class="card">
+  <p class="note">
+    Fill in what you know about a work; metadatarr fans the query out to every
+    active provider concurrently, then shows you <strong>every provider's
+    vote</strong> (ranked by confidence) alongside the <strong>consolidated
+    result</strong> — conflicts, drops and provider errors included. This is
+    cross-catalog disambiguation made visible.
+  </p>
+  <form hx-post="ui/resolve" hx-target="#result" hx-swap="innerHTML" hx-indicator="#spinner">
+    <div class="form-grid">
+      <div class="field">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" placeholder="Inception">
+      </div>
+      <div class="field">
+        <label for="artist">Artist / Director</label>
+        <input type="text" id="artist" name="artist" placeholder="Christopher Nolan">
+      </div>
+      <div class="field">
+        <label for="year">Year</label>
+        <input type="number" id="year" name="year" placeholder="2010">
+      </div>
+      <div class="field">
+        <label for="medium">Medium</label>
+        <select id="medium" name="medium">
+          <option value="">(any)</option>
+          {% for m in media_types %}
+          <option value="{{ m }}">{{ m }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label for="season">Season</label>
+        <input type="number" id="season" name="season" placeholder="1">
+      </div>
+      <div class="field">
+        <label for="episode">Episode</label>
+        <input type="number" id="episode" name="episode" placeholder="1">
+      </div>
+      <div class="field">
+        <label for="country">Country</label>
+        <input type="text" id="country" name="country" placeholder="US">
+      </div>
+      <div class="field">
+        <label for="edition">Edition</label>
+        <input type="text" id="edition" name="edition" placeholder="director's cut">
+      </div>
+    </div>
+    <button class="btn" type="submit">Resolve</button>
+    <span id="spinner" class="htmx-indicator note">resolving…</span>
+  </form>
+</div>
+
+<div id="result">
+  <div class="empty">Submit the form to see ranked candidates and the consolidated result.</div>
+</div>
+{% endblock %}

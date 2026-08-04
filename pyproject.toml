@@ -53,7 +53,11 @@ Repository = "https://github.com/LeMetadatarr/metadatarr"
 Issues = "https://github.com/LeMetadatarr/metadatarr/issues"
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+test = ["pytest>=7", "httpx"]
+server = ["fastapi", "uvicorn[standard]", "jinja2", "python-multipart"]
+
+[project.scripts]
+metadatarr = "metadatarr.cli:main"
 
 [tool.setuptools.dynamic]
 version = { attr = "metadatarr.version.__version__" }
@@ -64,6 +68,7 @@ include = ["metadatarr*"]
 
 [tool.setuptools.package-data]
 "metadatarr.data" = ["*.toml"]
+"metadatarr.server" = ["templates/*", "templates/fragments/*", "static/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
