@@ -27,7 +27,7 @@ class TVmazeProvider(MetadataProvider):
     playback_type = {PlaybackType.VIDEO}
 
     def __init__(self) -> None:
-        from metadatarr.client import TVmazeClient
+        from pytvmaze import TVmazeClient
         self._client = TVmazeClient()
 
     def is_available(self) -> bool:
