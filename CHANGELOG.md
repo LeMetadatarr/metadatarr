@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.11.0a1) (2026-08-04)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.10.0a5...0.11.0a1)
+
+**Merged pull requests:**
+
+- feat: resolver consumes extracted query clients \(full extraction\) [\#48](https://github.com/LeMetadatarr/metadatarr/pull/48) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.10.0a5](https://github.com/LeMetadatarr/metadatarr/tree/0.10.0a5) (2026-08-03)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.10.0a4...0.10.0a5)
@@ -239,6 +247,18 @@
 **Merged pull requests:**
 
 - chore: migrate to mediavocab 1.0 [\#3](https://github.com/LeMetadatarr/metadatarr/pull/3) ([JarbasAl](https://github.com/JarbasAl))
+
+## [0.1.0](https://github.com/LeMetadatarr/metadatarr/tree/0.1.0) (2026-05-07)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.1.0a2...0.1.0)
+
+## [0.1.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.1.0a2) (2026-05-07)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/45444098ff4ede04e87009ceba33ed8978ee1218...0.1.0a2)
+
+**Merged pull requests:**
+
+- docs: rewrite README with full feature coverage and examples [\#1](https://github.com/LeMetadatarr/metadatarr/pull/1) ([JarbasAl](https://github.com/JarbasAl))
 
 
 
