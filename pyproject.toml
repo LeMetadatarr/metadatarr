@@ -58,9 +58,6 @@ test = ["pytest>=7"]
 [tool.setuptools.dynamic]
 version = { attr = "metadatarr.version.__version__" }
 
-[project.scripts]
-metadatarr-scrape = "metadatarr.scrapers.__main__:main"
-
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["metadatarr*"]
