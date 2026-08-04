@@ -11,6 +11,10 @@ the *arr ecosystem, media managers, and libraries rely on, then fuses the answer
 into one de-duplicated record with a canonical set of external IDs. Every
 built-in client and provider works without an API key.
 
+It ships two ways to use it: as a **Python library** (`pip install metadatarr`),
+and as a self-contained **HTTP server + Web UI** (`pip install "metadatarr[server]"`
+or Docker) for anyone who'd rather point-and-click than write code.
+
 ## TL;DR (60 seconds)
 
 ```bash
@@ -30,6 +34,71 @@ conflict-checks the answers, and hands you one merged set of external IDs. Need 
 different medium? Change `MediaType.MOVIE` to `MUSIC`, `BOOK`, `PODCAST`, … .
 
 **Nothing came back, or got `None`?** See **[docs/troubleshooting.md](docs/troubleshooting.md)**: empty results are by design (silent-failure), and the troubleshooting guide explains why and how to debug it.
+
+---
+
+## Web UI & server
+
+metadatarr now ships a self-contained HTTP server and a build-free Web UI
+(htmx, no JS build step, no CDN calls) — cross-catalogue disambiguation made
+visible instead of hidden behind a single "best guess."
+
+![Resolver Playground](docs/img/resolver-playground.png)
+
+**Quickstart (pip):**
+
+```bash
+pip install "metadatarr[server]"
+metadatarr serve
+```
+
+Open [http://localhost:8000/](http://localhost:8000/).
+
+**Quickstart (Docker):**
+
+```bash
+docker compose -f deploy/docker-compose.yml up -d --build
+```
+
+Builds from source against the repo checkout (git is a build-time dependency
+only, needed while a few first-party libs are still pinned to `@dev` refs).
+See [`deploy/`](deploy/) and [`docs/deploy.md`](docs/deploy.md) for volumes,
+env vars, and healthchecks.
+
+**HTTP API:**
+
+| Endpoint | What it does |
+|---|---|
+| `POST /resolve` | Run the full resolver on a `Signals` body, get back a `ResolveResult` |
+| `POST /candidates` | Same fan-out, but return every provider's raw vote unmerged |
+| `POST /enrich` | Take a partial `ExternalIds` and fill in the rest |
+| `GET /providers` | List built-in providers and whether each is currently available |
+| `GET /healthz` | Liveness check |
+
+```bash
+curl -X POST http://localhost:8000/resolve \
+  -H 'Content-Type: application/json' \
+  -d '{"title": "Inception", "year": 2010, "medium": "Movie"}'
+# → a ResolveResult JSON body: external_ids, accepted, conflicts, provider_errors
+```
+
+Most providers need **no API key**. Setting `TMDB_API_KEY`, `TVDB_API_KEY`,
+or `DISCOGS_TOKEN` unlocks the gated ones — see them flip on live in the
+providers grid:
+
+![Providers](docs/img/providers.png)
+
+There is **no built-in authentication**. This is meant for a single-tenant
+homelab box: put it behind a reverse proxy (Caddy, Traefik, nginx) if it's
+reachable outside your LAN.
+
+**Screenshots** — responsive down to phone width, dark by default with a
+light theme toggle:
+
+![Mobile](docs/img/mobile.png)
+
+Full tour of the pages (Resolver Playground, Providers, Mappings) in
+[`docs/webui.md`](docs/webui.md).
 
 ---
 
@@ -392,6 +461,8 @@ environment variables.
 | [`docs/models.md`](docs/models.md) | Full Pydantic model reference |
 | [`docs/resolve.md`](docs/resolve.md) | Signals, providers, ResolveResult, conflict detection |
 | [`docs/providers.md`](docs/providers.md) | Provider catalogue: config, optional deps, caveats |
+| [`docs/webui.md`](docs/webui.md) | Web UI pages, HTTP API, running it |
+| [`docs/deploy.md`](docs/deploy.md) | Docker deployment: env vars, volumes, reverse proxy |
 
 | Doc | Contents |
 |---|---|

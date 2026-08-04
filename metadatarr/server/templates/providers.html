@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}metadatarr — Providers{% endblock %}
+{% block heading %}Providers{% endblock %}
+{% block content %}
+<div class="card">
+  <p class="note">
+    <strong>{{ providers_resp.active }}</strong> of <strong>{{ providers_resp.total }}</strong>
+    providers are currently active. Some providers are key-gated and stay
+    unavailable until the matching env var is set:
+    <code>TMDB_API_KEY</code>, <code>TVDB_API_KEY</code>, <code>DISCOGS_TOKEN</code>.
+    The <span class="badge badge-ok">available</span> badge below already
+    reflects whether that key is set in this process.
+  </p>
+</div>
+<div class="grid">
+  {% for p in providers_resp.providers %}
+  <div class="card">
+    <div class="pmatch-head">
+      <span class="pmatch-name">{{ p.name }}</span>
+      {% if p.available %}
+      <span class="badge badge-ok">available</span>
+      {% else %}
+      <span class="badge badge-err">unavailable</span>
+      {% endif %}
+    </div>
+    <div class="kv" style="margin-top:8px">media: {{ p.media | join(", ") if p.media else "(any)" }}</div>
+    {% if p.modality %}<div class="kv">modality: {{ p.modality | join(", ") }}</div>{% endif %}
+    {% if p.genre_filter %}<div class="kv">genre_filter: {{ p.genre_filter | join(", ") }}</div>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
