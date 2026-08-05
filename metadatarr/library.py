@@ -35,6 +35,7 @@ import re
 import shutil
 import subprocess
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Literal, Optional
 
@@ -683,6 +684,29 @@ def _plan_rename_target(*, path: Path, signals: Signals, media_kind: str,
     return path.parent / new_name
 
 
+DEFAULT_JOURNAL_NAME = ".metadatarr-rename-journal.jsonl"
+
+
+def default_journal_path(root: str) -> Path:
+    """Default rename-journal location: ``<root>/.metadatarr-rename-journal.jsonl``."""
+    return Path(root) / DEFAULT_JOURNAL_NAME
+
+
+def _append_journal_record(journal_path: Path, record: Dict[str, Any]) -> None:
+    """Append one JSONL record to *journal_path*.
+
+    Best-effort: a journal write failure is logged but must never fail the
+    rename it's recording (the file has already been moved by the time
+    this runs).
+    """
+    try:
+        journal_path.parent.mkdir(parents=True, exist_ok=True)
+        with journal_path.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(record) + "\n")
+    except OSError as exc:
+        LOG.warning("rename journal: failed to append to %s: %s", journal_path, exc)
+
+
 def _move_atomic(src: Path, dst: Path) -> Optional[str]:
     """Move *src* -> *dst*, atomic within a filesystem.
 
@@ -703,12 +727,19 @@ def _apply_rename(*, path: Path, nfo_path: Optional[Path], matched: bool,
                   signals: Signals, media_kind: str,
                   external_ids: Optional[Dict[str, Any]],
                   dry_run: bool, rename_pattern: Optional[str],
-                  rename_folder: bool) -> "tuple[str, Optional[Path]]":
+                  rename_folder: bool,
+                  journal_path: Optional[Path] = None) -> "tuple[str, Optional[Path]]":
     """Compute (and, unless dry_run, perform) the rename for one file.
 
     Returns ``(rename_action, renamed_to)``. Never touches the media file's
     content — only its name/location. Never raises: any move failure is
     captured as ``("error", None)``.
+
+    When *journal_path* is given and a real (non-dry-run) move happens, one
+    JSONL record is appended recording the media move (and the ``.nfo``
+    move, if one happened) so it can later be undone — see
+    :func:`undo_renames`. Dry-run and skipped/error outcomes are never
+    journaled.
     """
     if not matched:
         return "skipped-unmatched", None
@@ -739,6 +770,8 @@ def _apply_rename(*, path: Path, nfo_path: Optional[Path], matched: bool,
     if error is not None:
         return "error", None
 
+    moved_nfo_from: Optional[Path] = None
+    moved_nfo_to: Optional[Path] = None
     if nfo_path is not None and nfo_path.exists():
         nfo_target = target.with_suffix(".nfo")
         if nfo_target.exists():
@@ -752,11 +785,27 @@ def _apply_rename(*, path: Path, nfo_path: Optional[Path], matched: bool,
                 LOG.warning(
                     "rename: nfo target %s already exists, leaving old nfo at %s",
                     nfo_target, nfo_path)
+                if journal_path is not None:
+                    _append_journal_record(journal_path, {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "old_path": str(path), "new_path": str(target),
+                        "old_nfo": None, "new_nfo": None,
+                    })
                 return "renamed", target
         nfo_error = _move_atomic(nfo_path, nfo_target)
         if nfo_error is not None:
             LOG.warning("rename: failed to move nfo %s -> %s: %s",
                        nfo_path, nfo_target, nfo_error)
+        else:
+            moved_nfo_from, moved_nfo_to = nfo_path, nfo_target
+
+    if journal_path is not None:
+        _append_journal_record(journal_path, {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "old_path": str(path), "new_path": str(target),
+            "old_nfo": str(moved_nfo_from) if moved_nfo_from else None,
+            "new_nfo": str(moved_nfo_to) if moved_nfo_to else None,
+        })
 
     return "renamed", target
 
@@ -775,7 +824,8 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
             dry_run: bool = False, min_confidence: float = 0.5,
             rename: bool = False, rename_pattern: Optional[str] = None,
             rename_folder: bool = False, incremental: bool = False,
-            force: bool = False) -> TagResult:
+            force: bool = False,
+            rename_journal: Optional[Path] = None) -> TagResult:
     """Resolve *file* via metadatarr and write (or preview) its ``.nfo``.
 
     Never raises: any failure to read/resolve the file is captured in the
@@ -990,7 +1040,7 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
             path=file.path, nfo_path=nfo_path_for_rename, matched=matched,
             signals=signals, media_kind=media_kind, external_ids=external_ids,
             dry_run=dry_run, rename_pattern=rename_pattern,
-            rename_folder=rename_folder,
+            rename_folder=rename_folder, journal_path=rename_journal,
         )
 
     if not write_nfo:
@@ -1043,7 +1093,8 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
                 rename: bool = False, rename_pattern: Optional[str] = None,
                 rename_folder: bool = False,
                 incremental: bool = False, force: bool = False,
-                stats: Optional[Dict[str, int]] = None) -> List[TagResult]:
+                stats: Optional[Dict[str, int]] = None,
+                rename_journal: Optional[str] = None) -> List[TagResult]:
     """Scan *root* and tag every discovered media file.
 
     ``skip_extras`` (default ``True``) excludes Jellyfin/Kodi local-extras
@@ -1068,14 +1119,159 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
     fingerprint match via the optional ``xazam`` client) to recover a
     title/artist to resolve against.
     """
+    journal_path = None
+    if rename and not dry_run:
+        journal_path = Path(rename_journal) if rename_journal else default_journal_path(root)
+
     results: List[TagResult] = []
     for file in scan(root, media=media, skip_extras=skip_extras, stats=stats):
         result = tag_file(file, write_nfo=write_nfo, dry_run=dry_run,
                           min_confidence=min_confidence,
                           rename=rename, rename_pattern=rename_pattern,
                           rename_folder=rename_folder,
-                          incremental=incremental, force=force)
+                          incremental=incremental, force=force,
+                          rename_journal=journal_path)
         if incremental and result.note == "already tagged (incremental)" and stats is not None:
             stats["skipped_existing"] = stats.get("skipped_existing", 0) + 1
         results.append(result)
     return results
+
+
+# ---------------------------------------------------------------------------
+# Undo (reverse a --rename run from its journal)
+# ---------------------------------------------------------------------------
+
+@dataclass
+class UndoResult:
+    reversed: int = 0
+    skipped_exists: int = 0
+    skipped_missing: int = 0
+    errors: int = 0
+    details: List[str] = None  # type: ignore[assignment]
+
+    def __post_init__(self) -> None:
+        if self.details is None:
+            self.details = []
+
+
+def _read_journal(journal_path: Path) -> List[Dict[str, Any]]:
+    records: List[Dict[str, Any]] = []
+    if not journal_path.exists():
+        return records
+    with journal_path.open("r", encoding="utf-8") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                records.append(json.loads(line))
+            except json.JSONDecodeError:
+                LOG.warning("rename journal: skipping malformed line in %s", journal_path)
+    return records
+
+
+def _write_journal(journal_path: Path, records: List[Dict[str, Any]]) -> None:
+    if not records:
+        # Nothing left to undo — remove the journal rather than leave an
+        # empty file behind.
+        try:
+            journal_path.unlink()
+        except FileNotFoundError:
+            pass
+        except OSError as exc:
+            LOG.warning("rename journal: failed to remove %s: %s", journal_path, exc)
+        return
+    try:
+        journal_path.parent.mkdir(parents=True, exist_ok=True)
+        with journal_path.open("w", encoding="utf-8") as fh:
+            for record in records:
+                fh.write(json.dumps(record) + "\n")
+    except OSError as exc:
+        LOG.warning("rename journal: failed to rewrite %s: %s", journal_path, exc)
+
+
+def undo_renames(root: str, *, journal_path: Optional[str] = None,
+                 dry_run: bool = False) -> UndoResult:
+    """Reverse the moves recorded in a ``--rename`` run's journal.
+
+    Processes journal records most-recent-first. For each record, moves
+    ``new_path`` back to ``old_path`` (and ``new_nfo`` back to ``old_nfo``,
+    if the record has one). Never raises.
+
+    Safety rules (never relaxed):
+
+    - Collision-safe: if ``old_path`` already exists, the record is
+      skipped (``skipped_exists``) rather than overwriting whatever is
+      there now.
+    - If ``new_path`` no longer exists (already moved or deleted outside
+      metadatarr), the record is skipped (``skipped_missing``).
+    - Moves are atomic within a filesystem (:func:`_move_atomic`); a
+      cross-filesystem move is reported as an error and the record is left
+      in the journal so it can be retried.
+    - ``dry_run`` previews the reversal (what would move where) without
+      touching anything, and never rewrites the journal.
+    - A successfully-undone record is removed from the journal on
+      completion so re-running ``--undo-rename`` never double-applies it.
+    """
+    jpath = Path(journal_path) if journal_path else default_journal_path(root)
+    result = UndoResult()
+    records = _read_journal(jpath)
+    if not records:
+        result.details.append(f"no journal records found at {jpath}")
+        return result
+
+    remaining: List[Dict[str, Any]] = []
+    # Most-recent-first.
+    for record in reversed(records):
+        old_path = Path(record["old_path"])
+        new_path = Path(record["new_path"])
+        old_nfo = Path(record["old_nfo"]) if record.get("old_nfo") else None
+        new_nfo = Path(record["new_nfo"]) if record.get("new_nfo") else None
+
+        if not new_path.exists():
+            result.skipped_missing += 1
+            result.details.append(f"skip (missing): {new_path} no longer exists")
+            remaining.append(record)
+            continue
+
+        if old_path.exists():
+            try:
+                same = old_path.samefile(new_path)
+            except OSError:
+                same = False
+            if not same:
+                result.skipped_exists += 1
+                result.details.append(f"skip (exists): {old_path} is occupied")
+                remaining.append(record)
+                continue
+
+        if dry_run:
+            result.reversed += 1
+            result.details.append(f"would move: {new_path} -> {old_path}")
+            remaining.append(record)
+            continue
+
+        error = _move_atomic(new_path, old_path)
+        if error is not None:
+            result.errors += 1
+            result.details.append(f"error moving {new_path} -> {old_path}: {error}")
+            remaining.append(record)
+            continue
+
+        if new_nfo is not None and old_nfo is not None and new_nfo.exists():
+            nfo_error = _move_atomic(new_nfo, old_nfo)
+            if nfo_error is not None:
+                LOG.warning("undo: failed to move nfo %s -> %s: %s",
+                           new_nfo, old_nfo, nfo_error)
+                result.details.append(
+                    f"warning: nfo {new_nfo} -> {old_nfo} failed: {nfo_error}")
+
+        result.reversed += 1
+        result.details.append(f"reversed: {new_path} -> {old_path}")
+        # record fully undone -> dropped from the journal.
+
+    if not dry_run:
+        # Restore chronological order for whatever's left.
+        _write_journal(jpath, list(reversed(remaining)))
+
+    return result
