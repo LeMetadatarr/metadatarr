@@ -219,6 +219,42 @@ def test_extract_embedded_ids_tvdb_always_maps_to_tv_catalog():
 
 
 # ---------------------------------------------------------------------------
+# extract_youtube_id() — yt-dlp / TubeArchivist / tubesync filenames
+# ---------------------------------------------------------------------------
+
+def test_extract_youtube_id_bracketed_yt_dlp_form():
+    assert library.extract_youtube_id("Some Talk [dQw4w9WgXcQ].mp4") == "dQw4w9WgXcQ"
+
+
+def test_extract_youtube_id_bare_tubearchivist_form():
+    assert library.extract_youtube_id("dQw4w9WgXcQ.mp4") == "dQw4w9WgXcQ"
+
+
+def test_extract_youtube_id_underscore_delimited_tubesync_form():
+    assert library.extract_youtube_id("Some_Show_d558tMKjvgc_720p.mp4") == "d558tMKjvgc"
+
+
+def test_extract_youtube_id_release_tag_bracket_returns_none():
+    assert library.extract_youtube_id("Movie (2020) [Bluray-1080p].mkv") is None
+
+
+def test_extract_youtube_id_ten_char_bracket_returns_none():
+    assert library.extract_youtube_id("[abcdefghij].mkv") is None
+
+
+def test_extract_youtube_id_twelve_char_bracket_returns_none():
+    assert library.extract_youtube_id("[abcdefghijkl].mkv") is None
+
+
+def test_extract_youtube_id_normal_movie_name_returns_none():
+    assert library.extract_youtube_id("Movie (2020).mkv") is None
+
+
+def test_extract_youtube_id_bare_stem_wrong_length_returns_none():
+    assert library.extract_youtube_id("dQw4w9WgXc.mp4") is None
+
+
+# ---------------------------------------------------------------------------
 # tag_file()
 # ---------------------------------------------------------------------------
 
@@ -889,3 +925,106 @@ def test_music_fingerprint_unavailable_degrades_gracefully(tmp_path, monkeypatch
     monkeypatch.setattr(identify_mod, "identify_audio", boom)
     result = library.tag_file(f, write_nfo=True, dry_run=False)
     assert result.matched is False  # degraded, no crash
+
+
+# ---------------------------------------------------------------------------
+# tag_file() — YouTube video id (yt-dlp/TubeArchivist/tubesync filenames)
+# ---------------------------------------------------------------------------
+
+def test_tag_file_matches_youtube_id_when_no_catalog_id(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Some Talk [dQw4w9WgXcQ].mp4")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    resolve_calls = []
+
+    def fake_resolve(signals, *, max_workers=8):
+        resolve_calls.append(signals)
+        raise AssertionError("resolve() must not be called when a youtube id is present")
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    monkeypatch.setattr(library, "_enrich_from_tutubo", lambda vid: None)
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert not resolve_calls
+    assert result.matched is True
+    assert result.note == "matched (youtube id)"
+    assert result.external_ids == {"extra": {"youtube": "dQw4w9WgXcQ"}}
+    root = ET.fromstring(result.nfo_path.read_text())
+    ids = {el.get("type"): el.text for el in root.findall("uniqueid")}
+    assert ids.get("youtube") == "dQw4w9WgXcQ"
+
+
+def test_tag_file_youtube_id_enriched_with_real_title(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "randomjunk [dQw4w9WgXcQ].mp4")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: (_ for _ in ()).throw(
+                            AssertionError("resolve() must not be called")))
+    monkeypatch.setattr(
+        library, "_enrich_from_tutubo",
+        lambda vid: {"title": "Never Gonna Give You Up", "artist": "Rick Astley", "year": 2009},
+    )
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is True
+    root = ET.fromstring(result.nfo_path.read_text())
+    assert root.findtext("title") == "Never Gonna Give You Up"
+    assert root.findtext("studio") == "Rick Astley"
+    assert root.findtext("year") == "2009"
+
+
+def test_tag_file_youtube_enrich_failure_falls_back_to_filename_title(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "My Cool Video [dQw4w9WgXcQ].mp4")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: (_ for _ in ()).throw(
+                            AssertionError("resolve() must not be called")))
+
+    def boom(vid):
+        raise RuntimeError("network down")
+
+    monkeypatch.setattr(library, "_enrich_from_tutubo", boom)
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is True
+    assert result.note == "matched (youtube id)"
+    root = ET.fromstring(result.nfo_path.read_text())
+    # Enrichment failed -> falls back to the filename-derived title (the
+    # regex parser doesn't strip a trailing "[VIDEOID]" bracket, only known
+    # release-junk tokens) — the important thing is it degrades, not crashes.
+    assert root.findtext("title") == "My Cool Video [dQw4w9WgXcQ]"
+    ids = {el.get("type"): el.text for el in root.findall("uniqueid")}
+    assert ids.get("youtube") == "dQw4w9WgXcQ"
+
+
+def test_tag_file_tmdb_id_wins_over_youtube_id(tmp_path, monkeypatch):
+    """Precedence: a Radarr {tmdb-} id always wins over a youtube id, even
+    when the filename also carries a bracketed 11-char youtube-id-shaped
+    token."""
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Movie (2020) {tmdb-27205} [dQw4w9WgXcQ].mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_enrich(seed, *, medium=None, apply_maps=True, max_workers=8):
+        return _FakeExpandedExternalIds({"tmdb_movie": 27205})
+
+    monkeypatch.setattr(library, "enrich", fake_enrich)
+    monkeypatch.setattr(
+        library, "_enrich_from_tutubo",
+        lambda vid: (_ for _ in ()).throw(
+            AssertionError("tutubo enrich must not run when a catalog id wins")),
+    )
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is True
+    assert result.note == "matched (embedded id)"
+    assert result.external_ids == {"tmdb_movie": 27205}

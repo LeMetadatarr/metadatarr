@@ -90,3 +90,21 @@ def test_uniqueids_omitted_for_music():
     ids = ExternalIds.model_validate({"tmdb_movie": 1})
     root = ET.fromstring(nfo_xml(title="X", media_kind="music", external_ids=ids))
     assert root.findall("uniqueid") == []
+
+
+def test_uniqueid_youtube_emitted_from_extra():
+    ids = ExternalIds.model_validate({"extra": {"youtube": "dQw4w9WgXcQ"}})
+    xml = nfo_xml(title="Some Talk", media_kind="movie", external_ids=ids)
+    root = ET.fromstring(xml)  # raises if malformed
+    uids = {el.get("type"): el.text for el in root.findall("uniqueid")}
+    assert uids.get("youtube") == "dQw4w9WgXcQ"
+
+
+def test_uniqueid_youtube_combined_with_catalog_ids():
+    ids = ExternalIds.model_validate({
+        "tmdb_movie": 700391, "extra": {"youtube": "abc12345678"},
+    })
+    root = ET.fromstring(nfo_xml(title="65", media_kind="movie", external_ids=ids))
+    uids = {el.get("type"): el.text for el in root.findall("uniqueid")}
+    assert uids.get("tmdb") == "700391"
+    assert uids.get("youtube") == "abc12345678"
