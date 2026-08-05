@@ -292,6 +292,68 @@ plus an `extra` dict for platform-specific IDs (Bandcamp, SoundCloud, YouTube Mu
 
 ---
 
+## Tag your existing media library
+
+metadatarr can add metadata to a library you *already have* — point it at a
+folder and it resolves each file and writes Jellyfin/Kodi `.nfo` sidecars
+**next to your media, without touching the files themselves**:
+
+```bash
+pip install "metadatarr[tag]"          # adds guessit + mutagen (filename/tag parsing)
+
+metadatarr tag-library --path /media/Movies --dry-run   # preview: writes nothing
+metadatarr tag-library --path /media/Movies             # write <name>.nfo sidecars
+metadatarr tag-library --path /media/Music --media music
+```
+
+How it identifies each file:
+
+- **Radarr/Sonarr-organized files** — an embedded id in the name
+  (`Inception (2010) {tmdb-27205}.mkv`) is used directly (expanded to the full
+  cross-catalog id set). Near-100% accurate.
+- **Plain names** — parsed to title/year and resolved via the providers.
+  Resolution is **year-aware** (so `Dawn of the Dead (1978)` gets the original,
+  not the 2004 remake) and **subtitle-aware** (`… - The Two Towers` keeps the
+  subtitle). It also reads **embedded container metadata via `ffprobe`** (title,
+  and any embedded tmdb/imdb tags) when available.
+- **Music** — reads embedded ID3/Vorbis tags; a track it still can't place
+  falls back to **audio fingerprinting** (see *Audio identification* below).
+- **Trailers/extras** (`-trailer`, `Trailers/`, `Extras/`, …) are skipped.
+
+On a real 12k-movie library, filename-only accuracy is ~96% (embedded-id files
+~100%). Everything is **non-destructive** and `--dry-run` previews it all.
+
+### Rename to a clean convention (opt-in)
+
+`--rename` additionally organizes confidently-matched files to the
+Radarr/Jellyfin convention `Title (Year) {tmdb-id}.ext`. It is **opt-in and
+safe**: `--dry-run` previews every move, only confident matches are renamed
+(never an unidentified file), it never overwrites an existing target, keeps the
+`.nfo` name in sync, and moves atomically without touching file content.
+
+```bash
+metadatarr tag-library --path /media/Movies --rename --dry-run   # preview renames
+metadatarr tag-library --path /media/Movies --rename             # e.g. → "Inception (2010) {tmdb-27205}.mkv"
+metadatarr tag-library --path /media/Movies --rename --rename-folder   # Jellyfin movie-folder layout
+```
+
+## Audio identification (Shazam)
+
+Identify a song from the audio itself — a fingerprint → title/artist/ISRC →
+enriched to the full cross-catalog id set. Built on the
+[`xazam`](https://github.com/LeMetadatarr/xazam) Shazam client:
+
+```bash
+pip install "metadatarr[identify]"     # adds xazam
+
+metadatarr identify song.mp3           # → recognized title/artist + resolved ids
+# or over HTTP: POST /identify/audio  (multipart file upload)
+```
+
+This is also the music fallback used by `tag-library` above.
+
+---
+
 ## Built-in providers
 
 All providers are keyless. All dependencies are bundled in the core install.
