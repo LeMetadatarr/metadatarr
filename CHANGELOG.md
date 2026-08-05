@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.18.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.18.0a1) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.17.0a2...0.18.0a1)
+
+**Merged pull requests:**
+
+- feat: metadatarr watch --path \(auto-tag new files on an interval; incremental\) [\#64](https://github.com/LeMetadatarr/metadatarr/pull/64) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.17.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.17.0a2) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.17.0a1...0.17.0a2)
