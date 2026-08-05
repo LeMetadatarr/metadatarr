@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.17.0a2) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.17.0a1...0.17.0a2)
+
+**Merged pull requests:**
+
+- feat: rename journal + --undo-rename \(reversible tag-library renames\) [\#63](https://github.com/LeMetadatarr/metadatarr/pull/63) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.17.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.17.0a1) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.16.0a1...0.17.0a1)
