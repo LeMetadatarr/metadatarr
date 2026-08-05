@@ -115,7 +115,8 @@ def nfo_xml(
         lines.append(_tag("year", year))
 
     if not is_music and external_ids is not None:
-        for field, value in external_ids.model_dump().items():
+        dumped = external_ids.model_dump()
+        for field, value in dumped.items():
             if not value or field == "extra":
                 continue
             uid_type = _UNIQUEID_TYPES.get(field)
@@ -123,6 +124,14 @@ def nfo_xml(
                 continue
             lines.append(
                 f'  <uniqueid type="{escape(uid_type)}">{escape(str(value))}</uniqueid>'
+            )
+        # YouTube video id — no dedicated ExternalIds field yet (see
+        # metadatarr.library.extract_youtube_id), carried in ``extra``.
+        # Read by Jellyfin's youtube-metadata plugin and Kodi.
+        youtube_id = (dumped.get("extra") or {}).get("youtube")
+        if youtube_id:
+            lines.append(
+                f'  <uniqueid type="youtube">{escape(str(youtube_id))}</uniqueid>'
             )
 
     lines.append(f"</{root}>")

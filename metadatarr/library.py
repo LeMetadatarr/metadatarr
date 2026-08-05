@@ -455,6 +455,114 @@ def extract_embedded_ids(name: str, *, is_true_episodic: bool = False) -> Option
 
 
 # ---------------------------------------------------------------------------
+# YouTube video-id extraction (yt-dlp / TubeArchivist / tubesync filenames)
+# ---------------------------------------------------------------------------
+
+# YouTube video ids are always exactly 11 chars from this alphabet.
+_YT_ID_CHARS = "A-Za-z0-9_-"
+_YT_ID_TOKEN = f"[{_YT_ID_CHARS}]{{11}}"
+# ``Some Title [dQw4w9WgXcQ].mp4`` — yt-dlp's ``%(title)s [%(id)s].%(ext)s``.
+# Anchored to the whole bracket so an 11-char *substring* of a longer/shorter
+# release-tag bracket (``[Bluray-1080p]``, ``[Directors Cut]``) never matches:
+# the bracket content must be *exactly* 11 id-alphabet chars, nothing else.
+_YT_ID_BRACKET_RE = re.compile(r"\[(" + _YT_ID_TOKEN + r")\]")
+# ``dQw4w9WgXcQ.mp4`` — TubeArchivist names the file after the bare id.
+_YT_ID_BARE_RE = re.compile(r"^(" + _YT_ID_TOKEN + r")$")
+# ``..._d558tMKjvgc_...`` — tubesync-style underscore-delimited id. Requires
+# underscore boundaries on both sides so it never fires on an incidental
+# 11-char run inside an ordinary title.
+_YT_ID_UNDERSCORE_RE = re.compile(r"(?<=_)(" + _YT_ID_TOKEN + r")(?=_)")
+
+
+def extract_youtube_id(name: str) -> Optional[str]:
+    """Extract a yt-dlp/TubeArchivist/tubesync ``[VIDEOID]``-style YouTube id.
+
+    *name* is a filename (basename or stem — an extension, if present, is
+    stripped). Recognizes, most-specific first:
+
+    - ``Title [VIDEOID].ext`` (yt-dlp's default ``%(id)s`` output template)
+    - bare ``VIDEOID.ext`` (TubeArchivist)
+    - ``..._VIDEOID_...`` underscore-delimited (tubesync)
+
+    Deliberately conservative: a YouTube video id is *always* exactly 11
+    characters from ``[A-Za-z0-9_-]``, so every pattern requires an exact
+    11-char match at a well-delimited boundary — a release-tag bracket like
+    ``[Bluray-1080p]`` (13 chars) or a 10/12-char bracketed string never
+    matches. Returns ``None`` when nothing matches.
+    """
+    stem = Path(name).stem
+
+    m = _YT_ID_BRACKET_RE.search(stem)
+    if m:
+        return m.group(1)
+
+    m = _YT_ID_BARE_RE.match(stem)
+    if m:
+        return m.group(1)
+
+    m = _YT_ID_UNDERSCORE_RE.search(stem)
+    if m:
+        return m.group(1)
+
+    return None
+
+
+def _enrich_from_tutubo(video_id: str) -> Optional[Dict[str, Any]]:
+    """Best-effort real title/uploader/upload-date lookup for *video_id*.
+
+    ``tutubo``'s public API (``Channel``/``Playlist``/``Video``) only lists
+    videos *belonging to* a channel/playlist page — it has no
+    fetch-a-single-video-by-id call. This reuses the same ``ytInitialData``
+    parsing tutubo's own ``Channel._get_data``/``Channel.live`` use
+    internally (``tutubo.transport.default_session`` + ``tutubo._utils.
+    initial_data``) against the video's own watch page to recover
+    ``videoDetails`` (title/author/publish date).
+
+    # TODO: upstream a ``tutubo.channel.get_video(video_id)`` helper so
+    # callers don't have to reach into these internals directly.
+
+    Never raises: any failure (tutubo not installed, network, parsing) is
+    swallowed and ``None`` is returned so the caller falls back to the
+    filename-derived title.
+    """
+    try:
+        from tutubo._utils import initial_data
+        from tutubo.channel import _YT_COOKIES, _YT_HEADERS
+        from tutubo.transport import default_session
+    except ImportError:
+        return None
+
+    try:
+        session = default_session()
+        resp = session.get(
+            f"https://www.youtube.com/watch?v={video_id}",
+            headers=_YT_HEADERS, cookies=_YT_COOKIES, timeout=15,
+        )
+        resp.raise_for_status()
+        data = initial_data(resp.text)
+    except Exception:
+        LOG.info("tutubo youtube enrich failed for %s", video_id, exc_info=True)
+        return None
+
+    details = data.get("videoDetails", {}) if isinstance(data, dict) else {}
+    micro = (data.get("microformat", {}) or {}).get("playerMicroformatRenderer", {}) \
+        if isinstance(data, dict) else {}
+
+    title = details.get("title") or None
+    author = details.get("author") or None
+    upload_date = micro.get("uploadDate") or micro.get("publishDate")
+    year = None
+    if upload_date:
+        m = re.match(r"(\d{4})", str(upload_date))
+        if m:
+            year = int(m.group(1))
+
+    if not (title or author or year):
+        return None
+    return {"title": title, "artist": author, "year": year}
+
+
+# ---------------------------------------------------------------------------
 # Tagging
 # ---------------------------------------------------------------------------
 
@@ -713,6 +821,13 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
         seed_ids = _embedded_ids_from_tags(
             _ffprobe_tags(file.path), is_true_episodic=is_true_episodic)
 
+    # No Radarr/Sonarr/Jellyfin catalog id -> check for a yt-dlp/
+    # TubeArchivist/tubesync ``[VIDEOID]``-style filename. A catalog id
+    # (checked above) always wins: YouTube content isn't in tmdb/imdb/tvdb,
+    # so the YouTube video id is only used as a last resort before the
+    # generic title/year resolver.
+    youtube_id = extract_youtube_id(file.path.name) if seed_ids is None else None
+
     if seed_ids is not None:
         # Authoritative: an id embedded by Radarr/Sonarr/Jellyfin beats a
         # title/year guess. Skip resolve() entirely and try to expand the
@@ -735,6 +850,28 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
                 external_ids = expanded_dict
         except Exception as exc:
             LOG.warning("metadatarr enrich failed for %s: %s", file.path, exc)
+    elif youtube_id is not None:
+        # The YouTube video id IS the canonical id for YouTube-sourced
+        # content — it's never in tmdb/imdb/tvdb. mediavocab's ExternalIds
+        # model has no dedicated video-id field yet (only
+        # ``youtube_channel_id``), so it's carried in the free-form
+        # ``extra`` dict.
+        # TODO: add a ``youtube_video`` field to mediavocab.ExternalIds.
+        external_ids = {"extra": {"youtube": youtube_id}}
+        matched = True
+        note = "matched (youtube id)"
+        # Optional: real title/uploader/upload-year via tutubo, in addition
+        # to (never instead of) the id — a network/parsing failure here
+        # must never downgrade the match, only skip the nicer title.
+        try:
+            enriched = _enrich_from_tutubo(youtube_id)
+        except Exception as exc:  # pragma: no cover — defensive belt+braces
+            LOG.info("youtube enrich failed for %s: %s", file.path, exc)
+            enriched = None
+        if enriched:
+            updates = {k: v for k, v in enriched.items() if v}
+            if updates:
+                signals = signals.model_copy(update=updates)
     else:
         original_title = signals.title
         try:
