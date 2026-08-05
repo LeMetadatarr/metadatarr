@@ -65,6 +65,8 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
         force=args.force,
         stats=stats,
         rename_journal=args.rename_journal,
+        write_tags=args.write_tags,
+        backup_tags=args.backup_tags,
     )
 
     matched = 0
@@ -73,14 +75,18 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
     renamed = 0
     would_rename = 0
     rename_skipped = 0
+    tags_written = 0
+    tags_would_write = 0
+    tags_skipped = 0
     for r in results:
         extra = f"\t{r.rename_action}:{r.renamed_to}" if r.rename_action != "off" else ""
-        print(f"{r.action}\t{r.path}\t{r.note}{extra}")
+        tags_extra = f"\ttags:{r.tags_written}:{r.tags_note}" if r.tags_written != "off" else ""
+        print(f"{r.action}\t{r.path}\t{r.note}{extra}{tags_extra}")
         if r.matched:
             matched += 1
         if r.action == "wrote":
             nfo_written += 1
-        if r.action == "error" or r.rename_action == "error":
+        if r.action == "error" or r.rename_action == "error" or r.tags_written == "error":
             errors += 1
         if r.rename_action == "renamed":
             renamed += 1
@@ -88,12 +94,20 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
             would_rename += 1
         elif r.rename_action in ("skipped-unmatched", "skipped-exists"):
             rename_skipped += 1
+        if r.tags_written == "written":
+            tags_written += 1
+        elif r.tags_written == "would-write":
+            tags_would_write += 1
+        elif r.tags_written in ("skipped-unmatched", "skipped-not-music"):
+            tags_skipped += 1
 
     print(
         f"scanned={len(results)} matched={matched} nfo-written={nfo_written} "
         f"skipped-extras={stats.get('skipped_extras', 0)} "
         f"skipped-existing={stats.get('skipped_existing', 0)} errors={errors} "
-        f"renamed={renamed} would-rename={would_rename} rename-skipped={rename_skipped}"
+        f"renamed={renamed} would-rename={would_rename} rename-skipped={rename_skipped} "
+        f"tags-written={tags_written} tags-would-write={tags_would_write} "
+        f"tags-skipped={tags_skipped}"
     )
     return 0
 
@@ -242,6 +256,24 @@ def build_parser() -> argparse.ArgumentParser:
                        help="rename journal file path (records every "
                             "--rename move so it can be undone). Defaults "
                             "to '<path>/.metadatarr-rename-journal.jsonl'.")
+    p_tag.add_argument("--write-tags", action="store_true",
+                       help="DESTRUCTIVE, opt-in: embed resolved metadata "
+                            "(title/artist/date/genre/album, ISRC, "
+                            "MusicBrainz recording id when known) into a "
+                            "confidently-matched MUSIC file's OWN tags via "
+                            "mutagen — ID3 for mp3, Vorbis comments for "
+                            "flac/ogg/opus, MP4 atoms for m4a — so it "
+                            "travels with the file to any player, not just "
+                            "the .nfo. Off by default. Combine with "
+                            "--dry-run to preview without writing anything. "
+                            "Never writes an unmatched or non-music file, "
+                            "never clobbers unrelated existing tags. "
+                            "Composes with --nfo/--no-nfo.")
+    p_tag.add_argument("--backup-tags", action="store_true",
+                       help="with --write-tags: before the first tag "
+                            "write to a file, save its pre-write tags to "
+                            "a '<file>.origtags.json' sidecar so they can "
+                            "be manually restored. Off by default.")
     p_tag.add_argument("--undo-rename", action="store_true",
                        help="reverse the moves recorded by a previous "
                             "--rename run's journal, most-recent-first. "

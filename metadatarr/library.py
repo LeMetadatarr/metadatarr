@@ -15,6 +15,16 @@ renamed, ``dry_run`` still previews without moving anything, a rename never
 overwrites an existing file at the target path, and the underlying move is
 atomic within a filesystem.
 
+Embedding resolved metadata into a MUSIC file's own tags (so it travels
+with the file to any player, not just the ``.nfo``) is likewise an OPT-IN,
+off-by-default ``write_tags`` capability (see :func:`tag_file`/
+:func:`tag_library`'s ``write_tags`` param and the CLI's ``--write-tags``
+flag) — it is destructive (rewrites the file's tag block) and is guarded
+by the same class of safety rules: only confidently-matched music files
+are ever written, ``dry_run`` still previews without touching the file,
+unrelated existing tags are never clobbered, and an optional
+``backup_tags`` sidecar preserves the pre-write tags.
+
 This is a metadatarr-native feature (not media-archivist's): tagging an
 existing local library is a metadata operation — scan the tree, build a
 ``Signals`` bag per file, resolve it via :mod:`metadatarr.resolve`, and
@@ -582,6 +592,186 @@ class TagResult:
         "skipped-exists", "error",
     ] = "off"
     renamed_to: Optional[Path] = None
+    # --write-tags outcome — always present, "off" when the feature isn't
+    # enabled. See :func:`_write_music_tags`.
+    tags_written: Literal[
+        "off", "written", "would-write", "skipped-unmatched",
+        "skipped-not-music", "error",
+    ] = "off"
+    tags_note: str = ""
+
+
+# ---------------------------------------------------------------------------
+# --write-tags (opt-in, destructive — embeds resolved metadata into the
+# music file's OWN tags via mutagen, see tag_file's ``write_tags`` param)
+# ---------------------------------------------------------------------------
+
+# Standard MP4 "quicktime" atom names for the fields Easy* interfaces don't
+# cover uniformly; freeform atoms (``----:...``) carry ISRC/MusicBrainz,
+# which have no reserved iTunes atom.
+_MP4_ATOM_MAP = {"title": "\xa9nam", "artist": "\xa9ART", "date": "\xa9day",
+                 "genre": "\xa9gen"}
+
+
+def _backup_tags_sidecar(path: Path, tags: Dict[str, Any]) -> None:
+    """Dump *tags* (the file's tags BEFORE any write-tags modification) to
+    a ``<file>.origtags.json`` sidecar, so a user can manually restore them.
+
+    Best-effort and never clobbers an existing backup — only the very first
+    write-tags pass over a file gets to record the pristine original.
+    """
+    backup_path = path.with_name(path.name + ".origtags.json")
+    if backup_path.exists():
+        return
+    try:
+        serializable = {
+            str(k): ([str(v) for v in val] if isinstance(val, list) else str(val))
+            for k, val in tags.items()
+        }
+        backup_path.write_text(json.dumps(serializable, indent=2, sort_keys=True),
+                               encoding="utf-8")
+    except OSError as exc:
+        LOG.warning("write-tags: failed to write backup sidecar for %s: %s", path, exc)
+
+
+def _write_music_tags(path: Path, *, fields: Dict[str, str],
+                      isrc: Optional[str], mb_recording_id: Optional[str],
+                      backup_tags: bool) -> None:
+    """Write *fields* (plus ISRC / MusicBrainz recording id, when known)
+    into *path*'s own tags via mutagen — ID3 for mp3, Vorbis comments for
+    flac/ogg/opus, MP4 atoms (+ freeform atoms for isrc/mb id) for m4a.
+
+    Only sets the fields given — never clears/clobbers unrelated existing
+    tags. Raises on failure (caller wraps in try/except); mutagen's
+    ``save()`` is format-safe, so a failure never leaves a half-written
+    tag block.
+    """
+    ext = path.suffix.lower()
+
+    if ext == ".mp3":
+        from mutagen.easyid3 import EasyID3
+        from mutagen.id3 import ID3NoHeaderError
+
+        try:
+            audio = EasyID3(path)
+        except ID3NoHeaderError:
+            audio = _mutagen.File(path, easy=True)  # type: ignore[union-attr]
+            audio.add_tags()
+            audio = EasyID3(path)
+        if backup_tags:
+            _backup_tags_sidecar(path, dict(audio))
+        for key, value in fields.items():
+            audio[key] = value
+        if isrc:
+            audio["isrc"] = isrc
+        if mb_recording_id:
+            audio["musicbrainz_trackid"] = mb_recording_id
+        audio.save()
+        return
+
+    if ext in (".m4a", ".mp4", ".m4b"):
+        from mutagen.mp4 import MP4, MP4FreeForm
+
+        audio = MP4(path)
+        if backup_tags:
+            _backup_tags_sidecar(path, dict(audio.tags or {}))
+        for key, value in fields.items():
+            atom = _MP4_ATOM_MAP.get(key)
+            if atom:
+                audio[atom] = [value]
+        if isrc:
+            audio["----:com.apple.iTunes:ISRC"] = [MP4FreeForm(isrc.encode("utf-8"))]
+        if mb_recording_id:
+            audio["----:com.apple.iTunes:MusicBrainz Track Id"] = [
+                MP4FreeForm(mb_recording_id.encode("utf-8"))]
+        audio.save()
+        return
+
+    # FLAC/OGG/OPUS and other Vorbis-comment formats: mutagen's generic
+    # easy=True object already accepts arbitrary comment keys, no Easy*
+    # wrapper (or its restricted key set) needed.
+    audio = _mutagen.File(path, easy=True)  # type: ignore[union-attr]
+    if audio is None:
+        raise ValueError(f"mutagen could not identify audio format: {path}")
+    if audio.tags is None:
+        audio.add_tags()
+    if backup_tags:
+        _backup_tags_sidecar(path, dict(audio))
+    for key, value in fields.items():
+        audio[key] = value
+    if isrc:
+        audio["isrc"] = isrc
+    if mb_recording_id:
+        audio["musicbrainz_trackid"] = mb_recording_id
+    audio.save()
+
+
+def _write_tags_for_file(path: Path, *, media_kind: str, matched: bool,
+                         signals: Signals, external_ids: Optional[Dict[str, Any]],
+                         resolved_album: Optional[str], resolved_isrc: Optional[str],
+                         dry_run: bool, backup_tags: bool) -> "tuple[str, str]":
+    """Compute (and, unless *dry_run*, perform) writing resolved metadata
+    into *path*'s own audio tags.
+
+    Returns ``(tags_written_action, note)``. Never raises — any mutagen
+    failure is captured as ``("error", str(exc))`` so one bad file never
+    aborts a batch run.
+
+    SAFETY (never relaxed):
+
+    - Only ``media_kind == "music"`` files are ever considered — video/other
+      files are always ``"skipped-not-music"``.
+    - Only a CONFIDENT match (``matched=True``) is ever written — an
+      unidentified file is never stamped with a guess
+      (``"skipped-unmatched"``).
+    - ``dry_run`` computes and reports the fields that WOULD be written
+      (``"would-write"``) without opening/touching the file at all.
+    - Never clobbers unrelated existing tags — only the resolved fields are
+      set.
+    """
+    if media_kind != "music":
+        return "skipped-not-music", ""
+    if not matched:
+        return "skipped-unmatched", ""
+    if _mutagen is None:
+        return "error", "mutagen is not installed (the '[tag]' extra)"
+
+    fields: Dict[str, str] = {}
+    if signals.title:
+        fields["title"] = signals.title
+    if signals.artist:
+        fields["artist"] = signals.artist
+    if signals.year is not None:
+        fields["date"] = str(signals.year)
+    if signals.content_genres:
+        fields["genre"] = signals.content_genres[0]
+    if resolved_album:
+        fields["album"] = resolved_album
+
+    mb_recording_id = (external_ids or {}).get("musicbrainz_recording")
+    isrc = resolved_isrc or (external_ids or {}).get("isrc")
+
+    written = sorted(fields.keys())
+    if isrc:
+        written.append("isrc")
+    if mb_recording_id:
+        written.append("musicbrainz_recording")
+
+    if not written:
+        return "skipped-unmatched", "no resolved metadata to write"
+
+    note = ", ".join(written)
+    if dry_run:
+        return "would-write", note
+
+    try:
+        _write_music_tags(path, fields=fields, isrc=isrc,
+                          mb_recording_id=mb_recording_id, backup_tags=backup_tags)
+    except Exception as exc:
+        LOG.exception("write-tags: failed to write tags for %s", path)
+        return "error", str(exc)
+
+    return "written", note
 
 
 # ---------------------------------------------------------------------------
@@ -826,7 +1016,8 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
             rename: bool = False, rename_pattern: Optional[str] = None,
             rename_folder: bool = False, incremental: bool = False,
             force: bool = False,
-            rename_journal: Optional[Path] = None) -> TagResult:
+            rename_journal: Optional[Path] = None,
+            write_tags: bool = False, backup_tags: bool = False) -> TagResult:
     """Resolve *file* via metadatarr and write (or preview) its ``.nfo``.
 
     Never raises: any failure to read/resolve the file is captured in the
@@ -862,6 +1053,32 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
     unfinished and is (re)processed normally. ``force`` (default ``False``)
     overrides ``incremental`` and always re-tags, even when a sidecar
     exists; ``force`` beats ``incremental``.
+
+    ``write_tags`` (default ``False``, opt-in and DESTRUCTIVE — it modifies
+    the media file's own tag block) additionally embeds the resolved
+    metadata (title/artist/date/genre/album, plus ISRC and MusicBrainz
+    recording id when known) into the audio file's native tags via
+    mutagen, so it travels with the file to any player — not just the
+    ``.nfo``. MUSIC ONLY; a video file is always
+    ``tags_written="skipped-not-music"``. Safety rules (never relaxed):
+
+    - Only a CONFIDENT match (``matched=True``) is ever written — an
+      unidentified file's tags are left untouched
+      (``tags_written="skipped-unmatched"``).
+    - ``dry_run`` still applies: the fields that would be written are
+      computed and reported (``tags_written="would-write"``,
+      ``tags_note``), but the file is never opened for writing.
+    - Never clobbers unrelated existing tags — only the resolved fields
+      are set.
+    - Never raises: a mutagen failure is captured as
+      ``tags_written="error"`` so one bad file never aborts a batch run.
+    - ``backup_tags`` (default ``False``): before the FIRST write-tags
+      modification of a file, dump its pre-write tags to a
+      ``<file>.origtags.json`` sidecar so they can be manually restored.
+      Off by default to avoid littering the library with sidecars on
+      every run; opt in for extra safety on a first pass.
+    - Composes with ``write_nfo``: run with both, or ``write_nfo=False,
+      write_tags=True`` to embed metadata only, with no ``.nfo``.
     """
     nfo_path = file.path.with_suffix(".nfo")
     if incremental and not force and write_nfo and nfo_path.exists():
@@ -886,6 +1103,12 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
     external_ids: Optional[Dict[str, Any]] = None
     matched = False
     note = ""
+    # Populated only by the audio-fingerprint (Shazam) fallback below, which
+    # is the one source that hands back an album/ISRC directly — Signals has
+    # no album field, and other match paths don't surface ISRC. Feeds
+    # write_tags (see _write_tags_for_file).
+    resolved_album: Optional[str] = None
+    resolved_isrc: Optional[str] = None
 
     # A "real" SxxEyy marker in the filename itself — never guessit's type
     # guess — is the only thing allowed to route a bare {tmdb-} tag to
@@ -1023,16 +1246,27 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
                             if am.signals is not None:
                                 signals = am.signals
                             note = "matched (audio fingerprint)"
+                            resolved_album = am.album or None
+                            resolved_isrc = am.isrc
                 except Exception as exc:
                     LOG.info("audio fingerprint identify failed for %s: %s",
                              file.path, exc)
 
+    media_kind = _media_kind(signals)
+
     if not signals.title:
+        tags_written, tags_note = (
+            _write_tags_for_file(
+                file.path, media_kind=media_kind, matched=matched,
+                signals=signals, external_ids=external_ids,
+                resolved_album=resolved_album, resolved_isrc=resolved_isrc,
+                dry_run=dry_run, backup_tags=backup_tags,
+            ) if write_tags else ("off", "")
+        )
         return TagResult(path=file.path, matched=False, external_ids=None,
                          nfo_path=None, action="skipped",
-                         note=note or "no title could be determined")
-
-    media_kind = _media_kind(signals)
+                         note=note or "no title could be determined",
+                         tags_written=tags_written, tags_note=tags_note)
 
     def _do_rename(nfo_path_for_rename: Optional[Path]) -> "tuple[str, Optional[Path]]":
         if not rename:
@@ -1044,20 +1278,34 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
             rename_folder=rename_folder, journal_path=rename_journal,
         )
 
+    def _do_write_tags() -> "tuple[str, str]":
+        if not write_tags:
+            return "off", ""
+        return _write_tags_for_file(
+            file.path, media_kind=media_kind, matched=matched,
+            signals=signals, external_ids=external_ids,
+            resolved_album=resolved_album, resolved_isrc=resolved_isrc,
+            dry_run=dry_run, backup_tags=backup_tags,
+        )
+
     if not write_nfo:
         rename_action, renamed_to = _do_rename(None)
+        tags_written, tags_note = _do_write_tags()
         return TagResult(path=file.path, matched=matched,
                          external_ids=external_ids, nfo_path=None,
                          action="skipped", note=note or "--no-nfo",
-                         rename_action=rename_action, renamed_to=renamed_to)
+                         rename_action=rename_action, renamed_to=renamed_to,
+                         tags_written=tags_written, tags_note=tags_note)
 
     if dry_run:
         rename_action, renamed_to = _do_rename(nfo_path if nfo_path.exists() else None)
+        tags_written, tags_note = _do_write_tags()
         return TagResult(path=file.path, matched=matched,
                          external_ids=external_ids, nfo_path=nfo_path,
                          action="would-write",
                          note=note or ("matched" if matched else "filename-only"),
-                         rename_action=rename_action, renamed_to=renamed_to)
+                         rename_action=rename_action, renamed_to=renamed_to,
+                         tags_written=tags_written, tags_note=tags_note)
 
     try:
         ext_ids_model = ExternalIds.model_validate(external_ids) if external_ids else None
@@ -1074,18 +1322,22 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
         nfo_path.write_text(xml, encoding="utf-8")
     except Exception as exc:
         LOG.exception("failed to write nfo for %s", file.path)
+        tags_written, tags_note = _do_write_tags()
         return TagResult(path=file.path, matched=matched,
                          external_ids=external_ids, nfo_path=None,
-                         action="error", note=str(exc))
+                         action="error", note=str(exc),
+                         tags_written=tags_written, tags_note=tags_note)
 
     rename_action, renamed_to = _do_rename(nfo_path)
+    tags_written, tags_note = _do_write_tags()
     final_nfo_path = renamed_to.with_suffix(".nfo") if (
         rename_action == "renamed" and renamed_to is not None) else nfo_path
 
     return TagResult(path=file.path, matched=matched, external_ids=external_ids,
                      nfo_path=final_nfo_path, action="wrote",
                      note=note or ("matched" if matched else "filename-only"),
-                     rename_action=rename_action, renamed_to=renamed_to)
+                     rename_action=rename_action, renamed_to=renamed_to,
+                     tags_written=tags_written, tags_note=tags_note)
 
 
 def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
@@ -1095,7 +1347,8 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
                 rename_folder: bool = False,
                 incremental: bool = False, force: bool = False,
                 stats: Optional[Dict[str, int]] = None,
-                rename_journal: Optional[str] = None) -> List[TagResult]:
+                rename_journal: Optional[str] = None,
+                write_tags: bool = False, backup_tags: bool = False) -> List[TagResult]:
     """Scan *root* and tag every discovered media file.
 
     ``skip_extras`` (default ``True``) excludes Jellyfin/Kodi local-extras
@@ -1119,6 +1372,14 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
     could fall back to :func:`metadatarr.identify.identify_audio` (Shazam
     fingerprint match via the optional ``xazam`` client) to recover a
     title/artist to resolve against.
+
+    ``write_tags`` (default ``False``, opt-in and DESTRUCTIVE — it modifies
+    music files' own tags) additionally embeds resolved metadata into each
+    confidently-matched MUSIC file's own tags via mutagen; see
+    :func:`tag_file` for the full safety contract (dry-run preview,
+    confident-match-only, no clobbering unrelated tags). ``backup_tags``
+    (default ``False``) writes a ``<file>.origtags.json`` sidecar with the
+    pre-write tags before the first modification of each file.
     """
     journal_path = None
     if rename and not dry_run:
@@ -1131,7 +1392,8 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
                           rename=rename, rename_pattern=rename_pattern,
                           rename_folder=rename_folder,
                           incremental=incremental, force=force,
-                          rename_journal=journal_path)
+                          rename_journal=journal_path,
+                          write_tags=write_tags, backup_tags=backup_tags)
         if incremental and result.note == "already tagged (incremental)" and stats is not None:
             stats["skipped_existing"] = stats.get("skipped_existing", 0) + 1
         results.append(result)
