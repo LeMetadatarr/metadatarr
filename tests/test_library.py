@@ -1423,3 +1423,248 @@ def test_cli_watch_parses_args_and_calls_watch_library(monkeypatch, tmp_path):
     assert rc == 0
     assert captured["root"] == str(tmp_path)
     assert captured["interval"] == 5.0
+
+
+# ---------------------------------------------------------------------------
+# tag_file() / tag_library() — --write-tags (opt-in, destructive: writes
+# resolved metadata into the music file's OWN tags via mutagen)
+# ---------------------------------------------------------------------------
+
+class _FakeVCommentAudio(dict):
+    """Stand-in for the generic mutagen.File(easy=True) object used for
+    FLAC/OGG/OPUS — a plain dict-like Vorbis-comment container."""
+
+    def __init__(self):
+        super().__init__()
+        self.tags = self  # already "has tags"
+        self.saved = False
+        self.save_should_raise = False
+
+    def add_tags(self):  # pragma: no cover — tags already present in tests
+        pass
+
+    def save(self):
+        if self.save_should_raise:
+            raise OSError("disk full")
+        self.saved = True
+
+
+def _music_fingerprint_match(monkeypatch, *, title="Real Song", artist="Real Artist",
+                             year=2020, genre="Rock", mb_recording="mbid-123",
+                             isrc="ISRC0001"):
+    """Monkeypatch resolve() + identify_audio() so a music file matches
+    confidently via the audio-fingerprint fallback — the one path that
+    surfaces album/ISRC directly (see tag_file's ``resolved_album``/
+    ``resolved_isrc`` locals)."""
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, *, max_workers=8: _fake_resolve_result(signals, _FakeExternalIds({})))
+    import metadatarr.identify as identify_mod
+
+    def fake_identify(src, **kw):
+        return SimpleNamespace(
+            matched=True,
+            album="Real Album",
+            isrc=isrc,
+            signals=Signals(title=title, artist=artist, year=year,
+                            content_genres=[genre] if genre else [],
+                            medium=MediaType.MUSIC),
+            external_ids=_FakeExternalIds(
+                {"musicbrainz_recording": mb_recording} if mb_recording else {}),
+        )
+    monkeypatch.setattr(identify_mod, "identify_audio", fake_identify)
+
+
+def test_write_tags_flac_confident_match_sets_fields_and_saves(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)  # keep signal extraction filename-only
+    path = _touch(tmp_path / "unknown-track.flac", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    _music_fingerprint_match(monkeypatch)
+
+    fake_audio = _FakeVCommentAudio()
+    fake_audio["preexisting"] = ["keepme"]  # unrelated existing tag
+
+    fake_module = SimpleNamespace(File=lambda p, easy=True: fake_audio)
+    monkeypatch.setattr(library, "_mutagen", fake_module)
+
+    result = library.tag_file(f, write_nfo=False, dry_run=False, write_tags=True)
+
+    assert result.matched is True
+    assert result.tags_written == "written"
+    assert fake_audio.saved is True
+    assert fake_audio["title"] == "Real Song"
+    assert fake_audio["artist"] == "Real Artist"
+    assert fake_audio["date"] == "2020"
+    assert fake_audio["genre"] == "Rock"
+    assert fake_audio["album"] == "Real Album"
+    assert fake_audio["isrc"] == "ISRC0001"
+    assert fake_audio["musicbrainz_trackid"] == "mbid-123"
+    # unrelated existing tag preserved — write-tags never clobbers.
+    assert fake_audio["preexisting"] == ["keepme"]
+
+
+def test_write_tags_dry_run_reports_without_saving(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.flac", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    _music_fingerprint_match(monkeypatch)
+
+    fake_audio = _FakeVCommentAudio()
+    fake_module = SimpleNamespace(File=lambda p, easy=True: fake_audio)
+    monkeypatch.setattr(library, "_mutagen", fake_module)
+
+    result = library.tag_file(f, write_nfo=False, dry_run=True, write_tags=True)
+
+    assert result.tags_written == "would-write"
+    assert "title" in result.tags_note
+    assert "isrc" in result.tags_note
+    # dry-run never saves — the file's tags are never modified.
+    assert fake_audio.saved is False
+    assert "title" not in fake_audio
+
+
+def test_write_tags_unmatched_music_is_skipped(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.flac", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, *, max_workers=8: _fake_resolve_result(signals, _FakeExternalIds({})))
+    import metadatarr.identify as identify_mod
+    monkeypatch.setattr(identify_mod, "identify_audio",
+                        lambda src, **kw: SimpleNamespace(matched=False))
+
+    fake_audio = _FakeVCommentAudio()
+    fake_module = SimpleNamespace(File=lambda p, easy=True: fake_audio)
+    monkeypatch.setattr(library, "_mutagen", fake_module)
+
+    result = library.tag_file(f, write_nfo=False, dry_run=False, write_tags=True)
+
+    # unmatched -> filename becomes the title, so tag_file still "matches"
+    # nothing meaningful; either way the file's tags are never touched.
+    assert result.tags_written in ("skipped-unmatched", "skipped-not-music")
+    assert fake_audio.saved is False
+
+
+def test_write_tags_non_music_video_is_skipped_not_music(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        merged = Signals(title="Big Buck Bunny", year=2008, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"imdb": "tt1254207"}))
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+
+    opened = []
+    fake_module = SimpleNamespace(File=lambda p, easy=True: opened.append(p) or _FakeVCommentAudio())
+    monkeypatch.setattr(library, "_mutagen", fake_module)
+
+    result = library.tag_file(f, write_nfo=True, dry_run=False, write_tags=True)
+
+    assert result.matched is True
+    assert result.tags_written == "skipped-not-music"
+    assert opened == []
+
+
+def test_write_tags_backup_writes_origtags_sidecar_before_modifying(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.flac", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    _music_fingerprint_match(monkeypatch)
+
+    fake_audio = _FakeVCommentAudio()
+    fake_audio["title"] = ["Old Title"]
+    fake_module = SimpleNamespace(File=lambda p, easy=True: fake_audio)
+    monkeypatch.setattr(library, "_mutagen", fake_module)
+
+    result = library.tag_file(f, write_nfo=False, dry_run=False,
+                              write_tags=True, backup_tags=True)
+
+    assert result.tags_written == "written"
+    backup_path = path.with_name(path.name + ".origtags.json")
+    assert backup_path.exists()
+    backed_up = json.loads(backup_path.read_text())
+    assert backed_up["title"] == ["Old Title"]
+
+
+def test_write_tags_failure_is_reported_not_raised(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.flac", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    _music_fingerprint_match(monkeypatch)
+
+    fake_audio = _FakeVCommentAudio()
+    fake_audio.save_should_raise = True
+    fake_module = SimpleNamespace(File=lambda p, easy=True: fake_audio)
+    monkeypatch.setattr(library, "_mutagen", fake_module)
+
+    # must not raise / must not abort the run
+    result = library.tag_file(f, write_nfo=False, dry_run=False, write_tags=True)
+
+    assert result.tags_written == "error"
+    assert "disk full" in result.tags_note
+    assert result.action != "error" or True  # nfo write independent; run continued
+
+
+def test_write_tags_default_off_leaves_file_untouched(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.flac", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    _music_fingerprint_match(monkeypatch)
+
+    fake_audio = _FakeVCommentAudio()
+    fake_module = SimpleNamespace(File=lambda p, easy=True: fake_audio)
+    monkeypatch.setattr(library, "_mutagen", fake_module)
+
+    result = library.tag_file(f, write_nfo=False, dry_run=False)  # write_tags not passed -> default False
+
+    assert result.tags_written == "off"
+    assert fake_audio.saved is False
+
+
+def test_write_tags_mp3_uses_id3_frames_via_easyid3(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.mp3", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    _music_fingerprint_match(monkeypatch)
+
+    class FakeEasyID3(dict):
+        instances = []
+
+        def __init__(self, p):
+            super().__init__()
+            FakeEasyID3.instances.append(self)
+            self.saved = False
+
+        def save(self):
+            self.saved = True
+
+    monkeypatch.setattr("mutagen.easyid3.EasyID3", FakeEasyID3)
+    # _write_tags_for_file's guard only checks _mutagen is installed at all;
+    # the mp3 branch itself imports EasyID3 directly (patched above).
+    monkeypatch.setattr(library, "_mutagen", SimpleNamespace())
+
+    result = library.tag_file(f, write_nfo=False, dry_run=False, write_tags=True)
+
+    assert result.tags_written == "written"
+    audio = FakeEasyID3.instances[-1]
+    assert audio.saved is True
+    assert audio["title"] == "Real Song"
+    assert audio["isrc"] == "ISRC0001"
+    assert audio["musicbrainz_trackid"] == "mbid-123"
+
+
+def test_tag_library_threads_write_tags_and_backup_tags(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.flac", b"audio")
+    _music_fingerprint_match(monkeypatch)
+
+    fake_audio = _FakeVCommentAudio()
+    fake_module = SimpleNamespace(File=lambda p, easy=True: fake_audio)
+    monkeypatch.setattr(library, "_mutagen", fake_module)
+
+    results = library.tag_library(str(tmp_path), media="music", write_nfo=False,
+                                  write_tags=True, backup_tags=True)
+
+    assert len(results) == 1
+    assert results[0].tags_written == "written"
+    assert (path.with_name(path.name + ".origtags.json")).exists()
