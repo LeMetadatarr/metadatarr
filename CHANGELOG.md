@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0a5](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a5) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a4...0.15.0a5)
+
+**Merged pull requests:**
+
+- docs: document library tagging \(tag-library, --rename\) + audio identify [\#59](https://github.com/LeMetadatarr/metadatarr/pull/59) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.15.0a4](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a4) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a3...0.15.0a4)
