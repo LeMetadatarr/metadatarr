@@ -34,6 +34,7 @@ import os
 import re
 import shutil
 import subprocess
+import threading
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -1135,6 +1136,92 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
             stats["skipped_existing"] = stats.get("skipped_existing", 0) + 1
         results.append(result)
     return results
+
+
+# ---------------------------------------------------------------------------
+# watch (poll a library on an interval, incrementally tagging new files)
+# ---------------------------------------------------------------------------
+
+def watch_library(root: str, *, interval: float, media: str = "both",
+                  write_nfo: bool = True, min_confidence: float = 0.5,
+                  skip_extras: bool = True,
+                  rename: bool = False, rename_pattern: Optional[str] = None,
+                  rename_folder: bool = False,
+                  rename_journal: Optional[str] = None,
+                  stop_event: Optional[threading.Event] = None,
+                  on_cycle: Optional[Any] = None) -> Dict[str, int]:
+    """Poll *root* every ``interval`` seconds, tagging only new/untagged files.
+
+    Each cycle runs :func:`tag_library` with ``incremental=True`` (and
+    ``dry_run=False``) so already-tagged files are skipped without any
+    network access — a cycle over a huge, mostly-already-tagged library is
+    cheap, and network cost is spent only on files that landed since the
+    last cycle. This makes a "watch folder" self-maintaining library
+    practical to run continuously (e.g. under systemd or in a docker
+    container), without pulling in a filesystem-event dependency such as
+    ``watchdog``/inotify — a plain polling loop reusing ``--incremental``
+    is dependency-free and good enough for this use case. (A future
+    enhancement could swap the sleep loop for real filesystem-event
+    watching via ``watchdog`` if sub-second latency is ever needed.)
+
+    A single cycle's exception is caught, logged, and never propagates —
+    one bad cycle (e.g. a transient network error) must not kill the
+    daemon. ``stop_event`` (a :class:`threading.Event`), if given, is
+    waited on between cycles so the loop can be stopped promptly (e.g. on
+    SIGINT) instead of sleeping the full interval; the loop also checks it
+    before starting each cycle. ``on_cycle``, if given, is called after
+    every cycle with a per-cycle stats dict (``tagged``, ``skipped_existing``,
+    ``skipped_extras``, ``errors``).
+
+    Returns accumulated totals across all cycles once the loop stops.
+    """
+    if stop_event is None:
+        stop_event = threading.Event()
+
+    totals: Dict[str, int] = {
+        "cycles": 0, "tagged": 0, "skipped_existing": 0,
+        "skipped_extras": 0, "errors": 0,
+    }
+
+    LOG.info("watch: starting on %s (interval=%ss)", root, interval)
+    while not stop_event.is_set():
+        cycle_stats: Dict[str, int] = {}
+        try:
+            results = tag_library(
+                root, media=media, write_nfo=write_nfo, dry_run=False,
+                min_confidence=min_confidence, skip_extras=skip_extras,
+                rename=rename, rename_pattern=rename_pattern,
+                rename_folder=rename_folder,
+                incremental=True, force=False,
+                stats=cycle_stats, rename_journal=rename_journal,
+            )
+            tagged = sum(1 for r in results if r.action == "wrote")
+            errors = sum(1 for r in results if r.action == "error")
+            cycle_stats["tagged"] = tagged
+            cycle_stats["errors"] = errors
+            totals["cycles"] += 1
+            totals["tagged"] += tagged
+            totals["errors"] += errors
+            totals["skipped_existing"] += cycle_stats.get("skipped_existing", 0)
+            totals["skipped_extras"] += cycle_stats.get("skipped_extras", 0)
+            LOG.info(
+                "watch: cycle %d done — tagged=%d skipped-existing=%d errors=%d",
+                totals["cycles"], tagged,
+                cycle_stats.get("skipped_existing", 0), errors,
+            )
+        except Exception:  # noqa: BLE001 - a cycle must never kill the loop
+            LOG.exception("watch: cycle failed, will retry next interval")
+            cycle_stats.setdefault("errors", 1)
+            totals["errors"] += 1
+
+        if on_cycle is not None:
+            on_cycle(cycle_stats)
+
+        if stop_event.wait(interval):
+            break
+
+    LOG.info("watch: stopped after %d cycle(s)", totals["cycles"])
+    return totals
 
 
 # ---------------------------------------------------------------------------
