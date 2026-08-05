@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.19.0a1) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.18.0a1...0.19.0a1)
+
+**Merged pull requests:**
+
+- feat: --write-tags — embed resolved metadata into music files \(opt-in, dry-run, mutagen\) [\#65](https://github.com/LeMetadatarr/metadatarr/pull/65) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.18.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.18.0a1) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.17.0a2...0.18.0a1)
