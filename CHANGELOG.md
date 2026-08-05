@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0a6](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a6) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a5...0.15.0a6)
+
+**Merged pull requests:**
+
+- docs: timeless/STE cleanup of README \(drop 'now', drifting stats\) [\#60](https://github.com/LeMetadatarr/metadatarr/pull/60) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.15.0a5](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a5) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a4...0.15.0a5)
