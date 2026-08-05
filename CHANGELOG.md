@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a1) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.14.0a1...0.15.0a1)
+
+**Merged pull requests:**
+
+- feat: tagger reads embedded video metadata \(ffprobe\) + keeps subtitles so 'Title - Subtitle' resolves [\#54](https://github.com/LeMetadatarr/metadatarr/pull/54) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.14.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.14.0a1) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.13.0a1...0.14.0a1)
