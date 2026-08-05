@@ -39,24 +39,38 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
         dry_run=args.dry_run,
         min_confidence=args.min_confidence,
         skip_extras=not args.no_skip_extras,
+        rename=args.rename,
+        rename_pattern=args.rename_pattern,
+        rename_folder=args.rename_folder,
         stats=stats,
     )
 
     matched = 0
     nfo_written = 0
     errors = 0
+    renamed = 0
+    would_rename = 0
+    rename_skipped = 0
     for r in results:
-        print(f"{r.action}\t{r.path}\t{r.note}")
+        extra = f"\t{r.rename_action}:{r.renamed_to}" if r.rename_action != "off" else ""
+        print(f"{r.action}\t{r.path}\t{r.note}{extra}")
         if r.matched:
             matched += 1
         if r.action == "wrote":
             nfo_written += 1
-        if r.action == "error":
+        if r.action == "error" or r.rename_action == "error":
             errors += 1
+        if r.rename_action == "renamed":
+            renamed += 1
+        elif r.rename_action == "would-rename":
+            would_rename += 1
+        elif r.rename_action in ("skipped-unmatched", "skipped-exists"):
+            rename_skipped += 1
 
     print(
         f"scanned={len(results)} matched={matched} nfo-written={nfo_written} "
-        f"skipped-extras={stats.get('skipped_extras', 0)} errors={errors}"
+        f"skipped-extras={stats.get('skipped_extras', 0)} errors={errors} "
+        f"renamed={renamed} would-rename={would_rename} rename-skipped={rename_skipped}"
     )
     return 0
 
@@ -131,6 +145,22 @@ def build_parser() -> argparse.ArgumentParser:
     p_tag.add_argument("--min-confidence", type=float, default=0.5)
     p_tag.add_argument("--no-skip-extras", action="store_true",
                        help="also tag trailers/samples/extras (skipped by default)")
+    p_tag.add_argument("--rename", action="store_true",
+                       help="DESTRUCTIVE, opt-in: also rename/organize confidently-"
+                            "matched media files (and their .nfo) to a clean "
+                            "'Title (Year) {tmdb-id}' convention. Off by default. "
+                            "Combine with --dry-run to preview without moving "
+                            "anything. Never renames an unmatched file and never "
+                            "overwrites an existing file at the target path.")
+    p_tag.add_argument("--rename-pattern", default=None,
+                       help="optional custom rename pattern, e.g. "
+                            "'{title} ({year})'; fields: title, year, id, artist, "
+                            "season, episode. Defaults to a built-in Radarr/"
+                            "Jellyfin-style pattern per media kind.")
+    p_tag.add_argument("--rename-folder", action="store_true",
+                       help="with --rename: also move the file into a "
+                            "'Title (Year)/' folder (Jellyfin movie-folder "
+                            "layout). Off by default (renames in place).")
     p_tag.set_defaults(func=cmd_tag_library)
 
     p_identify = sub.add_parser(

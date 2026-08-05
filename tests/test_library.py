@@ -784,3 +784,74 @@ def test_cli_tag_library_real_run_writes_nfo(tmp_path, monkeypatch, capsys):
     rc = cli.main(["tag-library", "-p", str(tmp_path)])
     assert rc == 0
     assert (tmp_path / "Big Buck Bunny (2008).nfo").exists()
+
+
+# ---------------------------------------------------------------------------
+# --rename (opt-in, safety-first)
+# ---------------------------------------------------------------------------
+
+def _match_resolve(title, year, ids):
+    def fake_resolve(signals, *, max_workers=8):
+        merged = Signals(title=title, year=year, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds(ids))
+    return fake_resolve
+
+
+def test_rename_off_by_default_leaves_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Inception 2010.mkv", b"data")
+    f = library.LocalMediaFile(path=path, kind="video")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+    assert result.rename_action == "off"
+    assert path.exists()  # untouched
+
+
+def test_rename_dry_run_previews_and_moves_nothing(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Inception 2010.mkv", b"data")
+    f = library.LocalMediaFile(path=path, kind="video")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+    result = library.tag_file(f, write_nfo=True, dry_run=True, rename=True)
+    assert result.rename_action == "would-rename"
+    assert result.renamed_to.name == "Inception (2010) {tmdb-27205}.mkv"
+    assert path.exists()  # nothing moved
+    assert not result.renamed_to.exists()
+
+
+def test_rename_real_moves_file_and_syncs_nfo(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Inception 2010.mkv", b"videobytes")
+    f = library.LocalMediaFile(path=path, kind="video")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+    result = library.tag_file(f, write_nfo=True, dry_run=False, rename=True)
+    assert result.rename_action == "renamed"
+    target = tmp_path / "Inception (2010) {tmdb-27205}.mkv"
+    assert target.exists()
+    assert target.read_bytes() == b"videobytes"   # content byte-identical
+    assert not path.exists()                        # original name gone
+    assert (tmp_path / "Inception (2010) {tmdb-27205}.nfo").exists()  # nfo synced
+
+
+def test_rename_skips_unmatched(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Zzq Unknown Nonsense Xyz.mkv", b"x")
+    f = library.LocalMediaFile(path=path, kind="video")
+    # resolve yields no ids -> not a confident match
+    monkeypatch.setattr(library, "resolve", _match_resolve("Zzq Unknown Nonsense Xyz", None, {}))
+    result = library.tag_file(f, write_nfo=True, dry_run=False, rename=True)
+    assert result.matched is False
+    assert result.rename_action == "skipped-unmatched"
+    assert path.exists()  # never renames what it couldn't identify
+
+
+def test_rename_collision_safe_when_target_exists(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Inception 2010.mkv", b"orig")
+    _touch(tmp_path / "Inception (2010) {tmdb-27205}.mkv", b"pre-existing")  # occupy the target
+    f = library.LocalMediaFile(path=path, kind="video")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+    result = library.tag_file(f, write_nfo=True, dry_run=False, rename=True)
+    assert result.rename_action == "skipped-exists"
+    assert path.exists() and path.read_bytes() == b"orig"          # original intact
+    assert (tmp_path / "Inception (2010) {tmdb-27205}.mkv").read_bytes() == b"pre-existing"  # not clobbered
