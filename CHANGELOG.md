@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.16.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.16.0a1) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a6...0.16.0a1)
+
+**Merged pull requests:**
+
+- feat: tagger recognizes yt-dlp/TubeArchivist \[VIDEOID\] filenames -\> youtube id + nfo uniqueid + tutubo enrich [\#61](https://github.com/LeMetadatarr/metadatarr/pull/61) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.15.0a6](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a6) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a5...0.15.0a6)
