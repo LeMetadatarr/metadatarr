@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0a4](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a4) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a3...0.15.0a4)
+
+**Merged pull requests:**
+
+- feat: tag-library falls back to Shazam audio fingerprint for unmatched music [\#58](https://github.com/LeMetadatarr/metadatarr/pull/58) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.15.0a3](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a3) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a2...0.15.0a3)
