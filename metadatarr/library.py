@@ -1,9 +1,19 @@
 # SPDX-License-Identifier: Apache-2.0
 """Local media-library tagger — scan, resolve, write NFO sidecars.
 
-NON-DESTRUCTIVE by design: this module only ever *reads* files under a
-library root and *writes* ``<basename>.nfo`` sidecars next to them. It never
-edits, moves, renames, remuxes, or deletes the underlying media file.
+NON-DESTRUCTIVE BY DEFAULT: this module only ever *reads* files under a
+library root and *writes* ``<basename>.nfo`` sidecars next to them by
+default. It never edits, remuxes, or deletes the underlying media file's
+*content*.
+
+Renaming/organizing the media file itself (``<title> (<year>)
+{tmdb-<id>}.ext``) is available as an OPT-IN, off-by-default ``rename``
+capability (see :func:`tag_file`/:func:`tag_library`'s ``rename`` param and
+the CLI's ``--rename`` flag) — it is destructive (moves user files) and is
+guarded by several safety rules: only confidently-matched files are ever
+renamed, ``dry_run`` still previews without moving anything, a rename never
+overwrites an existing file at the target path, and the underlying move is
+atomic within a filesystem.
 
 This is a metadatarr-native feature (not media-archivist's): tagging an
 existing local library is a metadata operation — scan the tree, build a
@@ -456,6 +466,191 @@ class TagResult:
     nfo_path: Optional[Path]
     action: Literal["wrote", "would-write", "skipped", "error"]
     note: str = ""
+    # --rename outcome — always present, "off" when the feature isn't enabled.
+    rename_action: Literal[
+        "off", "renamed", "would-rename", "skipped-unmatched",
+        "skipped-exists", "error",
+    ] = "off"
+    renamed_to: Optional[Path] = None
+
+
+# ---------------------------------------------------------------------------
+# Rename (opt-in, destructive — see tag_file's ``rename`` parameter)
+# ---------------------------------------------------------------------------
+
+# Windows/POSIX-illegal path characters plus control chars; kept conservative
+# so a title survives round-tripping through any of the filesystems a
+# Jellyfin/Kodi library might live on (NTFS, exFAT, ext4, ...).
+_ILLEGAL_CHARS_RE = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
+
+
+def _sanitize_name_component(text: str) -> str:
+    """Strip filesystem-illegal characters from a single path component."""
+    text = _ILLEGAL_CHARS_RE.sub("", text)
+    text = re.sub(r"\s+", " ", text).strip(" .")
+    return text or "untitled"
+
+
+def _tmdb_id_from_external_ids(external_ids: Optional[Dict[str, Any]]) -> Optional[int]:
+    if not external_ids:
+        return None
+    return external_ids.get("tmdb_movie") or external_ids.get("tmdb_tv")
+
+
+def build_rename_target(*, signals: Signals, media_kind: str,
+                        external_ids: Optional[Dict[str, Any]],
+                        ext: str, pattern: Optional[str] = None) -> str:
+    """Build a sanitized target basename (incl. leading ``.``-extension).
+
+    Built-in patterns, keyed by *media_kind* (Radarr/Jellyfin conventions):
+
+    - ``movie``:    ``Title (Year) {tmdb-ID}.ext`` — ID omitted if unknown.
+    - ``episodic``: ``Title (Year) {tmdb-ID}.ext``, or ``Title - SxxEyy.ext``
+                    when a season/episode pair is known and no year/id is.
+    - ``music``:    ``Artist - Title.ext``.
+
+    *pattern*, when given, is a small ``{title}``/``{year}``/``{id}``/
+    ``{artist}``/``{season}``/``{episode}`` format string — no full
+    templating engine, just ``str.format`` over a fixed field set with each
+    substituted value pre-sanitized.
+    """
+    title = _sanitize_name_component(signals.title or "untitled")
+    year = signals.year
+    tmdb_id = _tmdb_id_from_external_ids(external_ids)
+    artist = _sanitize_name_component(signals.artist or "") if signals.artist else ""
+    season = signals.season
+    episode = signals.episode
+
+    if pattern:
+        fields = {
+            "title": title,
+            "year": year if year is not None else "",
+            "id": tmdb_id if tmdb_id is not None else "",
+            "artist": artist,
+            "season": f"{season:02d}" if season is not None else "",
+            "episode": f"{episode:02d}" if episode is not None else "",
+        }
+        try:
+            base = pattern.format(**fields)
+        except (KeyError, IndexError):
+            base = title
+        base = _sanitize_name_component(base)
+        return f"{base}{ext}"
+
+    if media_kind == "music":
+        base = f"{artist} - {title}" if artist else title
+        return f"{_sanitize_name_component(base)}{ext}"
+
+    if media_kind == "episodic":
+        if year is not None or tmdb_id is not None:
+            year_part = f" ({year})" if year is not None else ""
+            id_part = f" {{tmdb-{tmdb_id}}}" if tmdb_id is not None else ""
+            base = f"{title}{year_part}{id_part}"
+        elif season is not None and episode is not None:
+            base = f"{title} - S{season:02d}E{episode:02d}"
+        else:
+            base = title
+        return f"{_sanitize_name_component(base)}{ext}"
+
+    # movie (default)
+    year_part = f" ({year})" if year is not None else ""
+    id_part = f" {{tmdb-{tmdb_id}}}" if tmdb_id is not None else ""
+    base = f"{title}{year_part}{id_part}"
+    return f"{_sanitize_name_component(base)}{ext}"
+
+
+def _plan_rename_target(*, path: Path, signals: Signals, media_kind: str,
+                        external_ids: Optional[Dict[str, Any]],
+                        pattern: Optional[str], folderize: bool) -> Path:
+    new_name = build_rename_target(
+        signals=signals, media_kind=media_kind, external_ids=external_ids,
+        ext=path.suffix, pattern=pattern,
+    )
+    if folderize:
+        folder_name = _sanitize_name_component(
+            f"{_sanitize_name_component(signals.title or 'untitled')}"
+            + (f" ({signals.year})" if signals.year is not None else "")
+        )
+        return path.parent / folder_name / new_name
+    return path.parent / new_name
+
+
+def _move_atomic(src: Path, dst: Path) -> Optional[str]:
+    """Move *src* -> *dst*, atomic within a filesystem.
+
+    Returns ``None`` on success, or an error string on failure. Never
+    partially moves: on a cross-filesystem rename (``OSError`` with
+    ``errno.EXDEV``) the source is left untouched and an error is reported
+    rather than falling back to copy+delete.
+    """
+    try:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(src, dst)
+    except OSError as exc:
+        return str(exc)
+    return None
+
+
+def _apply_rename(*, path: Path, nfo_path: Optional[Path], matched: bool,
+                  signals: Signals, media_kind: str,
+                  external_ids: Optional[Dict[str, Any]],
+                  dry_run: bool, rename_pattern: Optional[str],
+                  rename_folder: bool) -> "tuple[str, Optional[Path]]":
+    """Compute (and, unless dry_run, perform) the rename for one file.
+
+    Returns ``(rename_action, renamed_to)``. Never touches the media file's
+    content — only its name/location. Never raises: any move failure is
+    captured as ``("error", None)``.
+    """
+    if not matched:
+        return "skipped-unmatched", None
+
+    target = _plan_rename_target(
+        path=path, signals=signals, media_kind=media_kind,
+        external_ids=external_ids, pattern=rename_pattern,
+        folderize=rename_folder,
+    )
+
+    # already correctly named/placed — nothing to move.
+    if target == path:
+        return ("would-rename" if dry_run else "renamed"), target
+
+    target_exists = False
+    if target.exists():
+        try:
+            target_exists = not target.samefile(path)
+        except OSError:
+            target_exists = True
+    if target_exists:
+        return "skipped-exists", None
+
+    if dry_run:
+        return "would-rename", target
+
+    error = _move_atomic(path, target)
+    if error is not None:
+        return "error", None
+
+    if nfo_path is not None and nfo_path.exists():
+        nfo_target = target.with_suffix(".nfo")
+        if nfo_target.exists():
+            try:
+                same = nfo_target.samefile(nfo_path)
+            except OSError:
+                same = False
+            if not same:
+                # Media file already moved successfully; don't lose the nfo
+                # (leave it where it is) but the media rename itself stands.
+                LOG.warning(
+                    "rename: nfo target %s already exists, leaving old nfo at %s",
+                    nfo_target, nfo_path)
+                return "renamed", target
+        nfo_error = _move_atomic(nfo_path, nfo_target)
+        if nfo_error is not None:
+            LOG.warning("rename: failed to move nfo %s -> %s: %s",
+                       nfo_path, nfo_target, nfo_error)
+
+    return "renamed", target
 
 
 def _media_kind(signals: Signals) -> str:
@@ -469,12 +664,30 @@ def _media_kind(signals: Signals) -> str:
 
 
 def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
-            dry_run: bool = False, min_confidence: float = 0.5) -> TagResult:
+            dry_run: bool = False, min_confidence: float = 0.5,
+            rename: bool = False, rename_pattern: Optional[str] = None,
+            rename_folder: bool = False) -> TagResult:
     """Resolve *file* via metadatarr and write (or preview) its ``.nfo``.
 
     Never raises: any failure to read/resolve the file is captured in the
     returned :class:`TagResult` (``action="error"``) so a bad file never
-    aborts a batch run. Never touches the media file itself.
+    aborts a batch run.
+
+    ``rename`` (default ``False``, opt-in) additionally renames/moves the
+    media file — and its ``.nfo`` sidecar, if any — to a clean
+    Radarr/Jellyfin-style name built from the RESOLVED metadata; see
+    :func:`build_rename_target`. Safety rules (never relaxed):
+
+    - Only a CONFIDENT match (``matched=True``) is ever renamed — a
+      filename-only guess never moves a file the run couldn't identify.
+    - ``dry_run`` still applies: the planned rename is computed and
+      reported via ``rename_action="would-rename"``/``renamed_to``, but
+      nothing is moved.
+    - Collision-safe: an existing, different file at the target path is
+      never overwritten (``rename_action="skipped-exists"``).
+    - Atomic within a filesystem (``os.replace``); a cross-filesystem move
+      is reported as an error rather than partially completed.
+    - Never edits file *content* — only name/location.
     """
     try:
         signals = extract_signals(file)
@@ -575,25 +788,41 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
                          nfo_path=None, action="skipped",
                          note=note or "no title could be determined")
 
+    media_kind = _media_kind(signals)
+
+    def _do_rename(nfo_path_for_rename: Optional[Path]) -> "tuple[str, Optional[Path]]":
+        if not rename:
+            return "off", None
+        return _apply_rename(
+            path=file.path, nfo_path=nfo_path_for_rename, matched=matched,
+            signals=signals, media_kind=media_kind, external_ids=external_ids,
+            dry_run=dry_run, rename_pattern=rename_pattern,
+            rename_folder=rename_folder,
+        )
+
     nfo_path = file.path.with_suffix(".nfo")
 
     if not write_nfo:
+        rename_action, renamed_to = _do_rename(None)
         return TagResult(path=file.path, matched=matched,
                          external_ids=external_ids, nfo_path=None,
-                         action="skipped", note=note or "--no-nfo")
+                         action="skipped", note=note or "--no-nfo",
+                         rename_action=rename_action, renamed_to=renamed_to)
 
     if dry_run:
+        rename_action, renamed_to = _do_rename(nfo_path if nfo_path.exists() else None)
         return TagResult(path=file.path, matched=matched,
                          external_ids=external_ids, nfo_path=nfo_path,
                          action="would-write",
-                         note=note or ("matched" if matched else "filename-only"))
+                         note=note or ("matched" if matched else "filename-only"),
+                         rename_action=rename_action, renamed_to=renamed_to)
 
     try:
         ext_ids_model = ExternalIds.model_validate(external_ids) if external_ids else None
         xml = nfo_xml(
             title=signals.title,
             year=signals.year,
-            media_kind=_media_kind(signals),
+            media_kind=media_kind,
             external_ids=ext_ids_model,
             artist=signals.artist,
             runtime=signals.runtime,
@@ -607,14 +836,21 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
                          external_ids=external_ids, nfo_path=None,
                          action="error", note=str(exc))
 
+    rename_action, renamed_to = _do_rename(nfo_path)
+    final_nfo_path = renamed_to.with_suffix(".nfo") if (
+        rename_action == "renamed" and renamed_to is not None) else nfo_path
+
     return TagResult(path=file.path, matched=matched, external_ids=external_ids,
-                     nfo_path=nfo_path, action="wrote",
-                     note=note or ("matched" if matched else "filename-only"))
+                     nfo_path=final_nfo_path, action="wrote",
+                     note=note or ("matched" if matched else "filename-only"),
+                     rename_action=rename_action, renamed_to=renamed_to)
 
 
 def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
                 dry_run: bool = False, min_confidence: float = 0.5,
                 skip_extras: bool = True,
+                rename: bool = False, rename_pattern: Optional[str] = None,
+                rename_folder: bool = False,
                 stats: Optional[Dict[str, int]] = None) -> List[TagResult]:
     """Scan *root* and tag every discovered media file.
 
@@ -623,6 +859,10 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
     :func:`scan`. Pass a ``stats`` dict to have the number of skipped
     extras recorded under its ``"skipped_extras"`` key, for summary
     reporting.
+
+    ``rename`` (default ``False``, opt-in and DESTRUCTIVE — it moves user
+    files) additionally renames/organizes each confidently-matched file;
+    see :func:`tag_file` for the full safety contract.
 
     Future enhancement (not implemented here): for music files whose
     filename/tags give :func:`tag_file` nothing useful to search on, this
@@ -633,6 +873,8 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
     results: List[TagResult] = []
     for file in scan(root, media=media, skip_extras=skip_extras, stats=stats):
         result = tag_file(file, write_nfo=write_nfo, dry_run=dry_run,
-                          min_confidence=min_confidence)
+                          min_confidence=min_confidence,
+                          rename=rename, rename_pattern=rename_pattern,
+                          rename_folder=rename_folder)
         results.append(result)
     return results
