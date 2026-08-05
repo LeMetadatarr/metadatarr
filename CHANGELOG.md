@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.17.0a1) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.16.0a1...0.17.0a1)
+
+**Merged pull requests:**
+
+- feat: --incremental tag-library \(skip already-tagged files; --force to re-tag\) [\#62](https://github.com/LeMetadatarr/metadatarr/pull/62) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.16.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.16.0a1) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a6...0.16.0a1)
