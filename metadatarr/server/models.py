@@ -56,6 +56,20 @@ class ProviderInfo(BaseModel):
     genre_filter: List[str] = Field(default_factory=list)
 
 
+class AudioIdentifyResponse(BaseModel):
+    """Response for ``POST /identify/audio`` — Shazam hit + cross-catalog ids."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    matched: bool
+    title: str = ""
+    artist: str = ""
+    album: str = ""
+    isrc: Optional[str] = None
+    cover_art: str = ""
+    external_ids: ExternalIds = Field(default_factory=ExternalIds)
+
+
 class ProvidersResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

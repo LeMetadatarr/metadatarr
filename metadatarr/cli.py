@@ -61,6 +61,45 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_identify(args: argparse.Namespace) -> int:
+    from metadatarr.identify import AudioIdentifyError, identify_audio
+
+    try:
+        match = identify_audio(args.audiofile)
+    except AudioIdentifyError as e:
+        print(str(e), file=sys.stderr)
+        return 1
+
+    if not match.matched:
+        print("no match")
+        return 0
+
+    if args.json:
+        import json
+
+        print(json.dumps({
+            "matched": match.matched,
+            "title": match.title,
+            "artist": match.artist,
+            "album": match.album,
+            "isrc": match.isrc,
+            "cover_art": match.cover_art,
+            "external_ids": match.external_ids.model_dump(),
+        }, indent=2))
+    else:
+        print(f"{match.title} — {match.artist}")
+        if match.album:
+            print(f"album: {match.album}")
+        if match.isrc:
+            print(f"isrc: {match.isrc}")
+        ids = match.external_ids.model_dump(exclude_defaults=True, exclude={"extra"})
+        for k, v in ids.items():
+            print(f"{k}: {v}")
+        for k, v in match.external_ids.extra.items():
+            print(f"{k}: {v}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="metadatarr",
@@ -93,6 +132,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_tag.add_argument("--no-skip-extras", action="store_true",
                        help="also tag trailers/samples/extras (skipped by default)")
     p_tag.set_defaults(func=cmd_tag_library)
+
+    p_identify = sub.add_parser(
+        "identify",
+        help="identify a song from an audio file (Shazam via xazam) and resolve/enrich its metadata",
+    )
+    p_identify.add_argument("audiofile", help="path to an audio file (mp3/wav/etc.)")
+    p_identify.add_argument("--json", action="store_true",
+                            help="print the full result as JSON")
+    p_identify.set_defaults(func=cmd_identify)
 
     return parser
 

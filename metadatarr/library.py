@@ -469,6 +469,12 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
     :func:`scan`. Pass a ``stats`` dict to have the number of skipped
     extras recorded under its ``"skipped_extras"`` key, for summary
     reporting.
+
+    Future enhancement (not implemented here): for music files whose
+    filename/tags give :func:`tag_file` nothing useful to search on, this
+    could fall back to :func:`metadatarr.identify.identify_audio` (Shazam
+    fingerprint match via the optional ``xazam`` client) to recover a
+    title/artist to resolve against.
     """
     results: List[TagResult] = []
     for file in scan(root, media=media, skip_extras=skip_extras, stats=stats):

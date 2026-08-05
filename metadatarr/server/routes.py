@@ -9,7 +9,15 @@ own :class:`~metadatarr.resolve.base.ResolveResult` /
 from __future__ import annotations
 
 import logging
-from typing import List
+from typing import List, Optional
+
+# Safe at module level: this module is only ever imported by
+# metadatarr.server.app.create_app(), which calls _require_fastapi() first.
+# Needed as a real (non-forward-ref) name so FastAPI/pydantic can resolve the
+# `UploadFile` parameter annotation on identify_audio_endpoint below — a
+# purely-local `from fastapi import ...` inside register_routes() leaves the
+# name unresolvable under `from __future__ import annotations`.
+from fastapi import File, UploadFile
 
 # Triggers built-in provider self-registration as a side effect of import.
 import metadatarr.resolve.providers  # noqa: F401
@@ -26,6 +34,7 @@ from metadatarr.resolve.base import (
     resolve as run_resolve,
 )
 from metadatarr.server.models import (
+    AudioIdentifyResponse,
     EnrichRequest,
     HealthResponse,
     ProviderInfo,
@@ -110,6 +119,42 @@ def register_routes(app, templates) -> None:
             LOG.exception("candidates failed")
             raise HTTPException(
                 status_code=500, detail="internal error during candidates") from None
+
+    @app.post("/identify/audio", response_model=AudioIdentifyResponse)
+    async def identify_audio_endpoint(
+        file: UploadFile = File(None),
+        path: Optional[str] = None,
+    ) -> AudioIdentifyResponse:
+        from metadatarr.identify import AudioIdentifyError, identify_audio_async
+
+        if file is None and not path:
+            raise HTTPException(
+                status_code=422, detail="provide either a `file` upload or a `path`")
+
+        if file is not None:
+            audio_bytes = await file.read()
+            source = audio_bytes
+        else:
+            source = path
+
+        try:
+            match = await identify_audio_async(source)
+        except AudioIdentifyError as e:
+            raise HTTPException(status_code=503, detail=str(e)) from None
+        except Exception:  # pragma: no cover - defensive
+            LOG.exception("audio identify failed")
+            raise HTTPException(
+                status_code=500, detail="internal error during audio identify") from None
+
+        return AudioIdentifyResponse(
+            matched=match.matched,
+            title=match.title,
+            artist=match.artist,
+            album=match.album,
+            isrc=match.isrc,
+            cover_art=match.cover_art,
+            external_ids=match.external_ids,
+        )
 
     @app.post("/enrich", response_model=ExternalIds)
     def enrich_endpoint(request: EnrichRequest) -> ExternalIds:
