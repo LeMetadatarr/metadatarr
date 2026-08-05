@@ -774,7 +774,8 @@ def _media_kind(signals: Signals) -> str:
 def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
             dry_run: bool = False, min_confidence: float = 0.5,
             rename: bool = False, rename_pattern: Optional[str] = None,
-            rename_folder: bool = False) -> TagResult:
+            rename_folder: bool = False, incremental: bool = False,
+            force: bool = False) -> TagResult:
     """Resolve *file* via metadatarr and write (or preview) its ``.nfo``.
 
     Never raises: any failure to read/resolve the file is captured in the
@@ -796,7 +797,34 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
     - Atomic within a filesystem (``os.replace``); a cross-filesystem move
       is reported as an error rather than partially completed.
     - Never edits file *content* — only name/location.
+
+    ``incremental`` (default ``False``, opt-in) makes re-running over a
+    huge library fast: a file already considered "tagged" is skipped
+    WITHOUT resolving — no :func:`~metadatarr.resolve.resolve`/
+    :func:`~metadatarr.resolve.enrich` call, no network — which is the
+    whole point for 40k+ file libraries. "Already tagged" means a sibling
+    ``.nfo`` already exists (only checked when ``write_nfo`` is on); when
+    ``rename`` is also on, the file's name must additionally already carry
+    an embedded catalog id (``{tmdb-...}``/``{imdb-...}``/``{tvdb-...}``,
+    see :func:`extract_embedded_ids`) — a cheap, resolve-free proxy for
+    "already matches the rename target" — otherwise it's still considered
+    unfinished and is (re)processed normally. ``force`` (default ``False``)
+    overrides ``incremental`` and always re-tags, even when a sidecar
+    exists; ``force`` beats ``incremental``.
     """
+    nfo_path = file.path.with_suffix(".nfo")
+    if incremental and not force and write_nfo and nfo_path.exists():
+        already_done = True
+        if rename and extract_embedded_ids(str(file.path)) is None:
+            already_done = False
+        if already_done:
+            return TagResult(
+                path=file.path, matched=False, external_ids=None,
+                nfo_path=nfo_path, action="skipped",
+                note="already tagged (incremental)",
+                rename_action="skipped-exists" if rename else "off",
+            )
+
     try:
         signals = extract_signals(file)
     except Exception as exc:  # pragma: no cover — defensive, extractors are safe
@@ -965,8 +993,6 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
             rename_folder=rename_folder,
         )
 
-    nfo_path = file.path.with_suffix(".nfo")
-
     if not write_nfo:
         rename_action, renamed_to = _do_rename(None)
         return TagResult(path=file.path, matched=matched,
@@ -1016,6 +1042,7 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
                 skip_extras: bool = True,
                 rename: bool = False, rename_pattern: Optional[str] = None,
                 rename_folder: bool = False,
+                incremental: bool = False, force: bool = False,
                 stats: Optional[Dict[str, int]] = None) -> List[TagResult]:
     """Scan *root* and tag every discovered media file.
 
@@ -1029,6 +1056,12 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
     files) additionally renames/organizes each confidently-matched file;
     see :func:`tag_file` for the full safety contract.
 
+    ``incremental`` (default ``False``) skips already-tagged files
+    without resolving/enriching (no network) — see :func:`tag_file`. A
+    ``stats`` dict, if given, has the number of such skips recorded under
+    ``"skipped_existing"``. ``force`` (default ``False``) always re-tags,
+    overriding ``incremental``.
+
     Future enhancement (not implemented here): for music files whose
     filename/tags give :func:`tag_file` nothing useful to search on, this
     could fall back to :func:`metadatarr.identify.identify_audio` (Shazam
@@ -1040,6 +1073,9 @@ def tag_library(root: str, *, media: str = "both", write_nfo: bool = True,
         result = tag_file(file, write_nfo=write_nfo, dry_run=dry_run,
                           min_confidence=min_confidence,
                           rename=rename, rename_pattern=rename_pattern,
-                          rename_folder=rename_folder)
+                          rename_folder=rename_folder,
+                          incremental=incremental, force=force)
+        if incremental and result.note == "already tagged (incremental)" and stats is not None:
+            stats["skipped_existing"] = stats.get("skipped_existing", 0) + 1
         results.append(result)
     return results

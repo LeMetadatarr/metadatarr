@@ -1028,3 +1028,157 @@ def test_tag_file_tmdb_id_wins_over_youtube_id(tmp_path, monkeypatch):
     assert result.matched is True
     assert result.note == "matched (embedded id)"
     assert result.external_ids == {"tmdb_movie": 27205}
+
+
+# ---------------------------------------------------------------------------
+# --incremental / --force
+# ---------------------------------------------------------------------------
+
+def test_tag_file_incremental_skips_when_nfo_exists_without_resolving(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    nfo_path = path.with_suffix(".nfo")
+    nfo_path.write_text("<movie><title>stale</title></movie>", encoding="utf-8")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def must_not_resolve(signals, *, max_workers=8):
+        raise AssertionError("resolve() must not be called for an incremental skip")
+
+    monkeypatch.setattr(library, "resolve", must_not_resolve)
+    result = library.tag_file(f, write_nfo=True, dry_run=False, incremental=True)
+
+    assert result.action == "skipped"
+    assert "already tagged" in result.note
+    # existing (stale) nfo content is left untouched — proves no write happened.
+    assert nfo_path.read_text() == "<movie><title>stale</title></movie>"
+
+
+def test_tag_file_incremental_tags_normally_when_no_nfo_exists(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        merged = Signals(title="Big Buck Bunny", year=2008, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"imdb": "tt1254207"}))
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(f, write_nfo=True, dry_run=False, incremental=True)
+
+    assert result.action == "wrote"
+    assert result.matched is True
+    assert path.with_suffix(".nfo").exists()
+
+
+def test_tag_file_force_retags_even_when_nfo_exists(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    nfo_path = path.with_suffix(".nfo")
+    nfo_path.write_text("<movie><title>stale</title></movie>", encoding="utf-8")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    calls = {"n": 0}
+
+    def fake_resolve(signals, *, max_workers=8):
+        calls["n"] += 1
+        merged = Signals(title="Big Buck Bunny", year=2008, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"imdb": "tt1254207"}))
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(
+        f, write_nfo=True, dry_run=False, incremental=True, force=True,
+    )
+
+    assert calls["n"] == 1
+    assert result.action == "wrote"
+    root = ET.fromstring(nfo_path.read_text())
+    assert root.findtext("title") == "Big Buck Bunny"
+
+
+def test_tag_file_incremental_with_rename_treats_already_id_tagged_name_as_done(
+    tmp_path, monkeypatch,
+):
+    """With --rename, a file already carrying an embedded {tmdb-id} — the
+    rename-target marker — plus its .nfo is considered fully done and
+    skipped without resolving."""
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008) {tmdb-5431}.mp4")
+    path.with_suffix(".nfo").write_text("<movie/>", encoding="utf-8")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def must_not_resolve(signals, *, max_workers=8):
+        raise AssertionError("resolve() must not be called for an incremental skip")
+
+    monkeypatch.setattr(library, "resolve", must_not_resolve)
+    result = library.tag_file(
+        f, write_nfo=True, dry_run=False, incremental=True, rename=True,
+    )
+
+    assert result.action == "skipped"
+    assert "already tagged" in result.note
+    assert result.rename_action == "skipped-exists"
+
+
+def test_tag_file_incremental_with_rename_still_tags_when_name_lacks_id(
+    tmp_path, monkeypatch,
+):
+    """With --rename, an nfo existing is not enough on its own — the
+    filename must also already carry the embedded id, otherwise the file
+    still needs (re)processing."""
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    path.with_suffix(".nfo").write_text("<movie/>", encoding="utf-8")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        merged = Signals(title="Big Buck Bunny", year=2008, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"tmdb_movie": 5431}))
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(
+        f, write_nfo=True, dry_run=False, incremental=True, rename=True,
+    )
+
+    assert result.action == "wrote"
+    assert result.matched is True
+
+
+def test_tag_library_summary_counts_skipped_existing(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    tagged = _touch(tmp_path / "Already Tagged (2001).mkv")
+    tagged.with_suffix(".nfo").write_text("<movie/>", encoding="utf-8")
+    fresh = _touch(tmp_path / "Fresh Movie (2002).mkv")
+
+    def fake_resolve(signals, *, max_workers=8):
+        return _fake_resolve_result(None, None)
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    stats: dict = {}
+    results = library.tag_library(str(tmp_path), incremental=True, stats=stats)
+
+    assert len(results) == 2
+    assert stats.get("skipped_existing") == 1
+    by_path = {r.path: r for r in results}
+    assert by_path[tagged].note == "already tagged (incremental)"
+    assert by_path[fresh].action == "wrote"
+
+
+def test_tag_file_default_no_incremental_overwrites_existing_nfo(tmp_path, monkeypatch):
+    """Unchanged default behaviour: without --incremental, an existing .nfo
+    is simply overwritten, resolve() still runs."""
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Big Buck Bunny (2008).mp4")
+    nfo_path = path.with_suffix(".nfo")
+    nfo_path.write_text("<movie><title>stale</title></movie>", encoding="utf-8")
+    f = library.LocalMediaFile(path=path, kind="video")
+
+    def fake_resolve(signals, *, max_workers=8):
+        merged = Signals(title="Big Buck Bunny", year=2008, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"imdb": "tt1254207"}))
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.action == "wrote"
+    root = ET.fromstring(nfo_path.read_text())
+    assert root.findtext("title") == "Big Buck Bunny"
