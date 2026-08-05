@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0a3](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a3) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a2...0.15.0a3)
+
+**Merged pull requests:**
+
+- feat: optional --rename for tag-library \(clean 'Title \(Year\) {tmdb-id}' naming, safety-first\) [\#57](https://github.com/LeMetadatarr/metadatarr/pull/57) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.15.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a2) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a1...0.15.0a2)
