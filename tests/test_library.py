@@ -5,6 +5,7 @@ No real network access: metadatarr.resolve/enrich are always monkeypatched.
 """
 from __future__ import annotations
 
+import json
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from types import SimpleNamespace
@@ -532,6 +533,179 @@ def test_tag_file_no_embedded_id_falls_back_to_resolve(tmp_path, monkeypatch):
     assert result.matched is True
     assert result.note == "matched"
     assert result.external_ids == {"imdb": "tt1254207"}
+
+
+# ---------------------------------------------------------------------------
+# ffprobe embedded container metadata (title/date, tmdb/imdb tags)
+# ---------------------------------------------------------------------------
+
+def _fake_ffprobe_run(tags):
+    """A fake ``subprocess.run`` returning an ffprobe-shaped JSON stdout."""
+    payload = json.dumps({"format": {"tags": tags}})
+
+    def _run(cmd, *, capture_output=True, text=True, timeout=None, check=False):
+        return SimpleNamespace(stdout=payload, returncode=0)
+    return _run
+
+
+def test_extract_signals_uses_ffprobe_embedded_title(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    monkeypatch.setattr(library.shutil, "which", lambda name: "/usr/bin/ffprobe")
+    monkeypatch.setattr(library.subprocess, "run",
+                        _fake_ffprobe_run({"title": "Correct Title"}))
+
+    f = library.LocalMediaFile(
+        path=_touch(tmp_path / "messy.file.name.2010.mkv"), kind="video")
+    signals = library.extract_signals(f)
+    assert signals.title == "Correct Title"
+
+
+def test_extract_signals_uses_ffprobe_date_when_filename_has_no_year(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    monkeypatch.setattr(library.shutil, "which", lambda name: "/usr/bin/ffprobe")
+    monkeypatch.setattr(library.subprocess, "run",
+                        _fake_ffprobe_run({"title": "Some Title", "date": "2015-03-01"}))
+
+    f = library.LocalMediaFile(
+        path=_touch(tmp_path / "Some Title.mkv"), kind="video")
+    signals = library.extract_signals(f)
+    assert signals.title == "Some Title"
+    assert signals.year == 2015
+
+
+def test_extract_signals_ffprobe_absent_falls_back_cleanly(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    monkeypatch.setattr(library.shutil, "which", lambda name: None)
+
+    def _run_should_not_be_called(*a, **kw):
+        raise AssertionError("subprocess.run must not be called when ffprobe is absent")
+    monkeypatch.setattr(library.subprocess, "run", _run_should_not_be_called)
+
+    f = library.LocalMediaFile(
+        path=_touch(tmp_path / "Inception (2010).mkv"), kind="video")
+    signals = library.extract_signals(f)
+    assert signals.title == "Inception"
+    assert signals.year == 2010
+
+
+def test_tag_file_uses_ffprobe_embedded_tmdb_id(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    monkeypatch.setattr(library.shutil, "which", lambda name: "/usr/bin/ffprobe")
+    monkeypatch.setattr(library.subprocess, "run",
+                        _fake_ffprobe_run({"title": "Some Movie", "tmdb": "12345"}))
+
+    def fake_enrich(seed, *, medium=None, apply_maps=True, max_workers=8):
+        return _FakeExpandedExternalIds({"tmdb_movie": 12345})
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: (_ for _ in ()).throw(
+                            AssertionError("resolve() must not be called when an embedded id is present")))
+    monkeypatch.setattr(library, "enrich", fake_enrich)
+
+    path = _touch(tmp_path / "Some Movie.mkv")  # no filename id -> falls back to ffprobe tag
+    f = library.LocalMediaFile(path=path, kind="video")
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is True
+    assert result.external_ids == {"tmdb_movie": 12345}
+
+
+# ---------------------------------------------------------------------------
+# Subtitle-truncation fix: "Title - Subtitle (Year)" must not resolve as
+# just "Title" (real-library finding: guessit truncates "The Lord of the
+# Rings - The Two Towers" down to "The Lord of the Rings").
+# ---------------------------------------------------------------------------
+
+def test_tag_file_retries_with_full_title_when_truncated_title_has_no_match(tmp_path, monkeypatch):
+    monkeypatch.setattr(library.shutil, "which", lambda name: None)  # no ffprobe in play
+
+    # Simulate guessit truncating the subtitle off the title.
+    def fake_guessit_signals(path):
+        return Signals(title="The Lord of the Rings", year=2002, medium=MediaType.MOVIE)
+    monkeypatch.setattr(library, "_guessit_video_signals", fake_guessit_signals)
+
+    seen_titles = []
+
+    def fake_resolve(signals, *, max_workers=8):
+        seen_titles.append(signals.title)
+        if signals.title == "The Lord of the Rings: The Two Towers":
+            merged = Signals(title="The Lord of the Rings: The Two Towers",
+                             year=2002, medium=MediaType.MOVIE)
+            return _fake_resolve_result(merged, _FakeExternalIds({"tmdb_movie": 121}))
+        # The truncated title alone finds nothing.
+        return _fake_resolve_result(None, None)
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+    monkeypatch.setattr(library, "_full_title_candidate",
+                        lambda stem: "The Lord of the Rings: The Two Towers")
+
+    path = _touch(tmp_path / "The Lord of the Rings - The Two Towers (2002) WEBDL-1080p.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert seen_titles == ["The Lord of the Rings", "The Lord of the Rings: The Two Towers"]
+    assert result.matched is True
+    assert result.external_ids == {"tmdb_movie": 121}
+    assert result.note == "matched (full-title retry)"
+
+
+def test_tag_file_no_retry_needed_when_first_title_already_matches(tmp_path, monkeypatch):
+    """Regression: a clean title (e.g. Stargate) must match on the first
+    attempt and never trigger a needless second resolve() call."""
+    monkeypatch.setattr(library, "_guessit", None)
+    monkeypatch.setattr(library.shutil, "which", lambda name: None)
+
+    resolve_calls = []
+
+    def fake_resolve(signals, *, max_workers=8):
+        resolve_calls.append(signals.title)
+        merged = Signals(title="Stargate", year=1994, medium=MediaType.MOVIE)
+        return _fake_resolve_result(merged, _FakeExternalIds({"tmdb_movie": 2164}))
+
+    monkeypatch.setattr(library, "resolve", fake_resolve)
+
+    path = _touch(tmp_path / "Stargate (1994).mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert resolve_calls == ["Stargate"]  # only one attempt
+    assert result.matched is True
+    assert result.external_ids == {"tmdb_movie": 2164}
+
+
+def test_tag_file_full_title_retry_no_match_either_stays_unmatched(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    monkeypatch.setattr(library.shutil, "which", lambda name: None)
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: _fake_resolve_result(None, None))
+
+    path = _touch(tmp_path / "Totally Unknown Movie - A Subtitle (2099).mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is False
+    assert result.action == "wrote"  # filename-only nfo still written
+    assert result.note == "filename-only"
+
+
+def test_embedded_filename_tmdb_id_unaffected_by_full_title_retry(tmp_path, monkeypatch):
+    """Regression: an embedded {tmdb-} filename id must still short-circuit
+    resolve() entirely, regardless of subtitle content in the title."""
+    monkeypatch.setattr(library, "_guessit", None)
+    monkeypatch.setattr(library.shutil, "which", lambda name: None)
+
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, **kw: (_ for _ in ()).throw(
+                            AssertionError("resolve() must not be called")))
+    monkeypatch.setattr(library, "enrich",
+                        lambda seed, **kw: _FakeExpandedExternalIds({}))
+
+    path = _touch(tmp_path / "The Lord of the Rings - The Two Towers (2002) {tmdb-121}.mkv")
+    f = library.LocalMediaFile(path=path, kind="video")
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+
+    assert result.matched is True
+    assert result.external_ids == {"tmdb_movie": 121}
 
 
 # ---------------------------------------------------------------------------

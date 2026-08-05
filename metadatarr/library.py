@@ -18,9 +18,12 @@ optionally sharpened by ``guessit``/``mutagen`` when installed) ->
 """
 from __future__ import annotations
 
+import json
 import logging
 import os
 import re
+import shutil
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Literal, Optional
@@ -252,19 +255,134 @@ def _mutagen_music_signals(path: Path) -> Optional[Signals]:
     ) if title or artist else None
 
 
+_FFPROBE_TIMEOUT_S = 10
+
+
+def _ffprobe_tags(path: Path) -> Dict[str, Any]:
+    """Read embedded container-format tags via ``ffprobe``, best-effort.
+
+    Optional: only runs when ``ffprobe`` (shipped with ffmpeg, not a pip
+    dependency) is on ``PATH``. Real-library files often carry a correct
+    embedded ``title``/``date`` — and sometimes a Radarr/Jellyfin-stamped
+    tmdb/imdb tag — in the container even when the filename is messy, so
+    this is read *in addition to* filename parsing, never instead of it.
+
+    Metadata-only (``-show_format``, no decode), bounded by a short
+    timeout. Any failure (binary missing, timeout, malformed output, not a
+    real media file) is swallowed and returns ``{}`` so the caller silently
+    falls back to filename/guessit signals — this must never abort a scan.
+    Uses an explicit argument list, never ``shell=True``.
+    """
+    if shutil.which("ffprobe") is None:
+        return {}
+    try:
+        proc = subprocess.run(
+            ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", str(path)],
+            capture_output=True, text=True, timeout=_FFPROBE_TIMEOUT_S, check=False,
+        )
+        data = json.loads(proc.stdout or "{}")
+    except Exception:
+        LOG.debug("ffprobe failed on %s", path, exc_info=True)
+        return {}
+    tags = data.get("format", {}).get("tags", {})
+    return tags if isinstance(tags, dict) else {}
+
+
+def _apply_ffprobe_overrides(signals: Signals, path: Path) -> Signals:
+    """Sharpen *signals* with embedded container tags, when available.
+
+    A non-trivial embedded ``title`` tag always wins over a guessit/regex
+    title (the latter can truncate, see :func:`_full_title_candidate`'s
+    docstring), and an embedded ``date``/``year`` tag fills in a year the
+    filename lacked. No-op when ffprobe found nothing.
+    """
+    tags = _ffprobe_tags(path)
+    if not tags:
+        return signals
+    lower = {str(k).lower(): v for k, v in tags.items()}
+    updates: Dict[str, Any] = {}
+
+    title = lower.get("title")
+    if title and str(title).strip():
+        updates["title"] = str(title).strip()
+
+    if signals.year is None:
+        date = lower.get("date") or lower.get("year")
+        if date:
+            m = re.match(r"(\d{4})", str(date))
+            if m:
+                updates["year"] = int(m.group(1))
+
+    if not updates:
+        return signals
+    return signals.model_copy(update=updates)
+
+
+# ffprobe/container-tag keys that carry a Radarr/Jellyfin-style embedded id,
+# mirroring the filename convention handled by :func:`extract_embedded_ids`.
+_FFPROBE_TMDB_KEYS = ("tmdb", "tmdbid")
+_FFPROBE_IMDB_KEYS = ("imdb", "imdbid", "imdb_id")
+
+
+def _embedded_ids_from_tags(tags: Dict[str, Any], *,
+                            is_true_episodic: bool = False) -> Optional[ExternalIds]:
+    """Extract tmdb/imdb ids from ffprobe container tags, if present.
+
+    Same acceptance rules as :func:`extract_embedded_ids`: a bare tmdb tag
+    defaults to ``tmdb_movie`` unless *is_true_episodic* (derived from an
+    actual SxxEyy filename marker, never a type guess).
+    """
+    if not tags:
+        return None
+    lower = {str(k).lower(): v for k, v in tags.items()}
+    ids: Dict[str, Any] = {}
+
+    for key in _FFPROBE_TMDB_KEYS:
+        val = lower.get(key)
+        if val is not None and str(val).strip().isdigit():
+            ids["tmdb_tv" if is_true_episodic else "tmdb_movie"] = int(str(val).strip())
+            break
+
+    for key in _FFPROBE_IMDB_KEYS:
+        val = lower.get(key)
+        if val is not None and re.match(r"^tt\d+$", str(val).strip(), re.IGNORECASE):
+            ids["imdb"] = str(val).strip()
+            break
+
+    if not ids:
+        return None
+    return ExternalIds.model_validate(ids)
+
+
+def _full_title_candidate(stem: str) -> Optional[str]:
+    """A title candidate that keeps a " - Subtitle" / ": Subtitle" tail.
+
+    guessit's ``title`` field sometimes drops everything after a
+    " - "/": " separator (e.g. "The Lord of the Rings - The Two Towers
+    (2002)" -> title "The Lord of the Rings"), which then fails to resolve
+    even though the resolver matches the *full* title fine. This reuses the
+    regex filename parser — which never splits on that separator — purely
+    for its title-cleaning, independent of whatever guessit decided.
+    """
+    return _parse_video_filename(stem).title
+
+
 def extract_signals(file: LocalMediaFile) -> Signals:
     """Build a ``Signals`` bag describing *file* for metadatarr resolution.
 
-    VIDEO: ``guessit`` when available, else a regex filename fallback.
+    VIDEO: ``guessit`` when available, else a regex filename fallback —
+    then sharpened by embedded container metadata (title/date, via
+    ``ffprobe``) when ``ffprobe`` is installed; see
+    :func:`_apply_ffprobe_overrides`.
     MUSIC: embedded tags via ``mutagen`` when available, else a regex
     filename fallback ("Artist - Title" / "NN Title").
     """
     stem = file.path.stem
     if file.kind == "video":
         signals = _guessit_video_signals(file.path)
-        if signals is not None:
-            return signals
-        return _parse_video_filename(stem)
+        if signals is None:
+            signals = _parse_video_filename(stem)
+        return _apply_ffprobe_overrides(signals, file.path)
 
     signals = _mutagen_music_signals(file.path)
     if signals is not None:
@@ -374,6 +492,13 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
     # tmdb_tv instead of the Radarr-convention default tmdb_movie.
     is_true_episodic = bool(_SXXEXX_RE.search(file.path.stem))
     seed_ids = extract_embedded_ids(str(file.path), is_true_episodic=is_true_episodic)
+    if seed_ids is None and file.kind == "video":
+        # No id in the filename — Radarr/Jellyfin sometimes stamp one into
+        # the container instead. Optional, ffprobe-gated (see
+        # `_ffprobe_tags`): silently {} when ffprobe is absent or the file
+        # carries no such tag.
+        seed_ids = _embedded_ids_from_tags(
+            _ffprobe_tags(file.path), is_true_episodic=is_true_episodic)
 
     if seed_ids is not None:
         # Authoritative: an id embedded by Radarr/Sonarr/Jellyfin beats a
@@ -398,6 +523,7 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
         except Exception as exc:
             LOG.warning("metadatarr enrich failed for %s: %s", file.path, exc)
     else:
+        original_title = signals.title
         try:
             result = resolve(signals)
             if result.signals is not None and result.external_ids is not None:
@@ -415,6 +541,34 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
             # nfo.
             LOG.warning("metadatarr resolve failed for %s: %s", file.path, exc)
             note = f"resolve failed: {exc}"
+
+        # Subtitle-truncation fallback (bounded to one extra resolve() call):
+        # guessit can drop a " - Subtitle" tail from the title (e.g. "The
+        # Lord of the Rings - The Two Towers (2002)" -> title "The Lord of
+        # the Rings"), which then fails to resolve even though the full
+        # title matches fine. Retry once against the fuller title — derived
+        # independently from the filename, see `_full_title_candidate` — only
+        # when the first attempt found nothing.
+        if not matched and file.kind == "video":
+            alt_title = _full_title_candidate(file.path.stem)
+            if alt_title and alt_title != original_title:
+                alt_signals = signals.model_copy(update={"title": alt_title})
+                try:
+                    alt_result = resolve(alt_signals)
+                    if alt_result.signals is not None and alt_result.external_ids is not None:
+                        alt_ids_dict = {
+                            k: v for k, v in alt_result.external_ids.model_dump().items()
+                            if v and k != "extra"
+                        }
+                        if alt_ids_dict:
+                            external_ids = alt_ids_dict
+                            matched = True
+                            signals = alt_result.signals
+                            note = "matched (full-title retry)"
+                except Exception as exc:
+                    LOG.warning(
+                        "metadatarr resolve (full-title retry) failed for %s: %s",
+                        file.path, exc)
 
     if not signals.title:
         return TagResult(path=file.path, matched=False, external_ids=None,
