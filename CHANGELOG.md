@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.14.0a1) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.13.0a1...0.14.0a1)
+
+**Merged pull requests:**
+
+- feat: audio identification endpoint \(Shazam via xazam\) -\> resolve/enrich to cross-catalog ids [\#53](https://github.com/LeMetadatarr/metadatarr/pull/53) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.13.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.13.0a1) (2026-08-04)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.12.1a1...0.13.0a1)
