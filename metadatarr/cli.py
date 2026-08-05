@@ -11,7 +11,9 @@ from __future__ import annotations
 
 import argparse
 import logging
+import signal
 import sys
+import threading
 from typing import List, Optional
 
 from metadatarr.version import __version__
@@ -92,6 +94,49 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
         f"skipped-extras={stats.get('skipped_extras', 0)} "
         f"skipped-existing={stats.get('skipped_existing', 0)} errors={errors} "
         f"renamed={renamed} would-rename={would_rename} rename-skipped={rename_skipped}"
+    )
+    return 0
+
+
+def cmd_watch(args: argparse.Namespace) -> int:
+    from metadatarr.library import watch_library
+
+    stop_event = threading.Event()
+
+    def _on_signal(signum, frame):  # noqa: ARG001
+        print("watch: stopping (signal received)...", file=sys.stderr)
+        stop_event.set()
+
+    signal.signal(signal.SIGINT, _on_signal)
+    signal.signal(signal.SIGTERM, _on_signal)
+
+    def _on_cycle(stats: dict) -> None:
+        print(
+            f"cycle tagged={stats.get('tagged', 0)} "
+            f"skipped-existing={stats.get('skipped_existing', 0)} "
+            f"skipped-extras={stats.get('skipped_extras', 0)} "
+            f"errors={stats.get('errors', 0)}"
+        )
+
+    totals = watch_library(
+        args.path,
+        interval=args.interval,
+        media=args.media,
+        write_nfo=not args.no_nfo,
+        min_confidence=args.min_confidence,
+        skip_extras=not args.no_skip_extras,
+        rename=args.rename,
+        rename_pattern=args.rename_pattern,
+        rename_folder=args.rename_folder,
+        rename_journal=args.rename_journal,
+        stop_event=stop_event,
+        on_cycle=_on_cycle,
+    )
+    print(
+        f"watch stopped: cycles={totals.get('cycles', 0)} "
+        f"tagged={totals.get('tagged', 0)} "
+        f"skipped-existing={totals.get('skipped_existing', 0)} "
+        f"errors={totals.get('errors', 0)}"
     )
     return 0
 
@@ -206,6 +251,37 @@ def build_parser() -> argparse.ArgumentParser:
                             "Collision-safe: never overwrites a file that "
                             "now occupies the original path.")
     p_tag.set_defaults(func=cmd_tag_library)
+
+    p_watch = sub.add_parser(
+        "watch",
+        help="foreground daemon: periodically re-run tag-library --incremental "
+             "so new files landing in a watch folder get auto-tagged, cheaply "
+             "(already-tagged files are skipped, no network spent on them). "
+             "Stop with Ctrl-C (SIGINT) or SIGTERM. Suitable for running under "
+             "systemd (a simple service unit with Restart=on-failure) or in a "
+             "docker container as the entrypoint, to keep a library "
+             "self-maintaining as files land in it.",
+    )
+    p_watch.add_argument("--path", "-p", required=True, help="library root to watch")
+    p_watch.add_argument("--interval", type=float, required=True,
+                         help="seconds to sleep between scan cycles")
+    p_watch.add_argument("--media", choices=["both", "video", "music"], default="both")
+    p_watch.add_argument("--nfo", dest="no_nfo", action="store_false",
+                         help="write .nfo sidecars (default)")
+    p_watch.add_argument("--no-nfo", dest="no_nfo", action="store_true",
+                         help="resolve only, do not write .nfo sidecars")
+    p_watch.set_defaults(no_nfo=False)
+    p_watch.add_argument("--min-confidence", type=float, default=0.5)
+    p_watch.add_argument("--no-skip-extras", action="store_true",
+                         help="also tag trailers/samples/extras (skipped by default)")
+    p_watch.add_argument("--rename", action="store_true",
+                         help="DESTRUCTIVE, opt-in: also rename/organize each "
+                              "newly confidently-matched file per cycle; see "
+                              "tag-library --rename for the full safety contract.")
+    p_watch.add_argument("--rename-pattern", default=None)
+    p_watch.add_argument("--rename-folder", action="store_true")
+    p_watch.add_argument("--rename-journal", default=None)
+    p_watch.set_defaults(func=cmd_watch)
 
     p_identify = sub.add_parser(
         "identify",

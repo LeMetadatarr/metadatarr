@@ -1324,3 +1324,102 @@ def test_tag_file_default_no_incremental_overwrites_existing_nfo(tmp_path, monke
     assert result.action == "wrote"
     root = ET.fromstring(nfo_path.read_text())
     assert root.findtext("title") == "Big Buck Bunny"
+
+
+# ---------------------------------------------------------------------------
+# watch (poll incrementally on an interval)
+# ---------------------------------------------------------------------------
+
+def test_watch_library_runs_cycles_incrementally_and_stops_on_event(tmp_path, monkeypatch):
+    import threading
+
+    calls = []
+    stop_event = threading.Event()
+
+    def fake_tag_library(root, *, incremental=False, stats=None, **kw):
+        calls.append({"incremental": incremental})
+        if len(calls) >= 2:
+            stop_event.set()
+        return []
+
+    monkeypatch.setattr(library, "tag_library", fake_tag_library)
+
+    totals = library.watch_library(
+        str(tmp_path), interval=0.001, stop_event=stop_event,
+    )
+
+    assert len(calls) == 2
+    assert all(c["incremental"] is True for c in calls)
+    assert totals["cycles"] == 2
+
+
+def test_watch_library_cycle_exception_is_logged_and_loop_continues(tmp_path, monkeypatch):
+    import threading
+
+    calls = []
+    stop_event = threading.Event()
+
+    def flaky_tag_library(root, *, incremental=False, stats=None, **kw):
+        calls.append(1)
+        if len(calls) == 1:
+            raise RuntimeError("transient failure")
+        stop_event.set()
+        return []
+
+    monkeypatch.setattr(library, "tag_library", flaky_tag_library)
+
+    totals = library.watch_library(
+        str(tmp_path), interval=0.001, stop_event=stop_event,
+    )
+
+    # Kept going past the exception into a second, successful cycle.
+    assert len(calls) == 2
+    assert totals["cycles"] == 1
+    assert totals["errors"] == 1
+
+
+def test_watch_library_on_cycle_receives_per_cycle_stats(tmp_path, monkeypatch):
+    import threading
+
+    stop_event = threading.Event()
+    seen = []
+
+    def fake_tag_library(root, *, incremental=False, stats=None, **kw):
+        if stats is not None:
+            stats["skipped_existing"] = 3
+        stop_event.set()
+        return []
+
+    monkeypatch.setattr(library, "tag_library", fake_tag_library)
+
+    def on_cycle(stats):
+        seen.append(dict(stats))
+
+    library.watch_library(
+        str(tmp_path), interval=0.001, stop_event=stop_event, on_cycle=on_cycle,
+    )
+
+    assert len(seen) == 1
+    assert seen[0]["skipped_existing"] == 3
+    assert "tagged" in seen[0] and "errors" in seen[0]
+
+
+def test_cli_watch_parses_args_and_calls_watch_library(monkeypatch, tmp_path):
+    from metadatarr import cli
+
+    captured = {}
+
+    def fake_watch_library(root, *, interval, stop_event=None, on_cycle=None, **kw):
+        captured["root"] = root
+        captured["interval"] = interval
+        captured["kw"] = kw
+        # Simulate the daemon stopping immediately (as if signalled).
+        return {"cycles": 0, "tagged": 0, "skipped_existing": 0, "errors": 0}
+
+    monkeypatch.setattr("metadatarr.library.watch_library", fake_watch_library)
+
+    rc = cli.main(["watch", "--path", str(tmp_path), "--interval", "5"])
+
+    assert rc == 0
+    assert captured["root"] == str(tmp_path)
+    assert captured["interval"] == 5.0
