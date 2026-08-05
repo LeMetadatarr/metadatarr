@@ -39,7 +39,7 @@ different medium? Change `MediaType.MOVIE` to `MUSIC`, `BOOK`, `PODCAST`, … .
 
 ## Web UI & server
 
-metadatarr now ships a self-contained HTTP server and a build-free Web UI
+metadatarr provides a self-contained HTTP server and a build-free Web UI
 (htmx, no JS build step, no CDN calls) — cross-catalogue disambiguation made
 visible instead of hidden behind a single "best guess."
 
@@ -310,7 +310,7 @@ How it identifies each file:
 
 - **Radarr/Sonarr-organized files** — an embedded id in the name
   (`Inception (2010) {tmdb-27205}.mkv`) is used directly (expanded to the full
-  cross-catalog id set). Near-100% accurate.
+  cross-catalog id set) — the most reliable path.
 - **Plain names** — parsed to title/year and resolved via the providers.
   Resolution is **year-aware** (so `Dawn of the Dead (1978)` gets the original,
   not the 2004 remake) and **subtitle-aware** (`… - The Two Towers` keeps the
@@ -320,8 +320,8 @@ How it identifies each file:
   falls back to **audio fingerprinting** (see *Audio identification* below).
 - **Trailers/extras** (`-trailer`, `Trailers/`, `Extras/`, …) are skipped.
 
-On a real 12k-movie library, filename-only accuracy is ~96% (embedded-id files
-~100%). Everything is **non-destructive** and `--dry-run` previews it all.
+Tagging is **non-destructive** — it writes `.nfo` sidecars beside your media and
+never touches the files themselves — and `--dry-run` previews every change.
 
 ### Rename to a clean convention (opt-in)
 
