@@ -29,6 +29,25 @@ from mediavocab.models.signals import Signals, match_quality
 LOG = logging.getLogger("metadatarr.resolve.providers.servarr_proxy")
 
 
+def _pick_by_year(results, want_year):
+    """Pick the best search result, preferring one matching ``want_year``.
+
+    Skyhook/TMDB search results are ordered by popularity, not by relevance
+    to the query's year — same-title remakes and originals collapse to
+    whichever is more popular unless we disambiguate here. Falls back to
+    ``results[0]`` (previous behaviour) when no year is given or no
+    year-bearing result is close enough.
+    """
+    if want_year:
+        exact = [r for r in results if getattr(r, "year", None) == want_year]
+        if exact:
+            return exact[0]
+        near = [r for r in results if getattr(r, "year", None) and abs(r.year - want_year) <= 1]
+        if near:
+            return near[0]
+    return results[0]
+
+
 class ServarrProxyProvider(MetadataProvider):
     """Single provider that dispatches to skyhook / radarr / lidarr / OpenLibrary by medium."""
 
@@ -76,7 +95,7 @@ class ServarrProxyProvider(MetadataProvider):
         results = self._client.search_movie(signals.title)
         if not results:
             return None
-        top = results[0]
+        top = _pick_by_year(results, signals.year)
         cand = Signals(title=top.title, year=top.year, medium=MediaType.MOVIE)
         return ProviderMatch(
             provider=self.name,
@@ -91,7 +110,7 @@ class ServarrProxyProvider(MetadataProvider):
         results = self._client.search_series(signals.title)
         if not results:
             return None
-        top = results[0]
+        top = _pick_by_year(results, signals.year)
         cand = Signals(title=top.title, year=top.year, medium=MediaType.EPISODIC_SERIES)
         return ProviderMatch(
             provider=self.name,
