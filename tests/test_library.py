@@ -855,3 +855,37 @@ def test_rename_collision_safe_when_target_exists(tmp_path, monkeypatch):
     assert result.rename_action == "skipped-exists"
     assert path.exists() and path.read_bytes() == b"orig"          # original intact
     assert (tmp_path / "Inception (2010) {tmdb-27205}.mkv").read_bytes() == b"pre-existing"  # not clobbered
+
+
+def test_music_falls_back_to_audio_fingerprint(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.mp3", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    # normal resolve yields no ids -> not matched by tags/filename
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, *, max_workers=8: _fake_resolve_result(signals, _FakeExternalIds({})))
+    import metadatarr.identify as identify_mod
+    def fake_identify(src, **kw):
+        return SimpleNamespace(
+            matched=True,
+            signals=Signals(title="Real Song", artist="Real Artist", medium=MediaType.MUSIC),
+            external_ids=_FakeExternalIds({"musicbrainz_recording": "mbid-123"}))
+    monkeypatch.setattr(identify_mod, "identify_audio", fake_identify)
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+    assert result.matched is True
+    assert result.note == "matched (audio fingerprint)"
+    assert result.external_ids == {"musicbrainz_recording": "mbid-123"}
+
+
+def test_music_fingerprint_unavailable_degrades_gracefully(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_mutagen", None)
+    path = _touch(tmp_path / "unknown-track.mp3", b"audio")
+    f = library.LocalMediaFile(path=path, kind="music")
+    monkeypatch.setattr(library, "resolve",
+                        lambda signals, *, max_workers=8: _fake_resolve_result(signals, _FakeExternalIds({})))
+    import metadatarr.identify as identify_mod
+    def boom(src, **kw):
+        raise RuntimeError("xazam not installed")
+    monkeypatch.setattr(identify_mod, "identify_audio", boom)
+    result = library.tag_file(f, write_nfo=True, dry_run=False)
+    assert result.matched is False  # degraded, no crash

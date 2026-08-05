@@ -783,6 +783,34 @@ def tag_file(file: LocalMediaFile, *, write_nfo: bool = True,
                         "metadatarr resolve (full-title retry) failed for %s: %s",
                         file.path, exc)
 
+        # Music fingerprint fallback: a music file that couldn't be matched by
+        # embedded tags / filename (obscure or mistagged) can often still be
+        # identified from the audio itself via Shazam (metadatarr.identify).
+        # Optional — only runs when the ``[identify]`` extra (xazam) is
+        # installed; any failure degrades silently to a filename-only nfo.
+        if not matched and file.kind == "music":
+            try:
+                from metadatarr.identify import identify_audio
+            except ImportError:
+                identify_audio = None  # type: ignore[assignment]
+            if identify_audio is not None:
+                try:
+                    am = identify_audio(str(file.path))
+                    if am.matched:
+                        dumped = (am.external_ids.model_dump()
+                                  if am.external_ids is not None else {})
+                        am_ids = {k: v for k, v in dumped.items()
+                                  if v and k != "extra"}
+                        if am_ids or am.signals is not None:
+                            external_ids = am_ids
+                            matched = True
+                            if am.signals is not None:
+                                signals = am.signals
+                            note = "matched (audio fingerprint)"
+                except Exception as exc:
+                    LOG.info("audio fingerprint identify failed for %s: %s",
+                             file.path, exc)
+
     if not signals.title:
         return TagResult(path=file.path, matched=False, external_ids=None,
                          nfo_path=None, action="skipped",
