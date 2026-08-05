@@ -42,6 +42,8 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
         rename=args.rename,
         rename_pattern=args.rename_pattern,
         rename_folder=args.rename_folder,
+        incremental=args.incremental,
+        force=args.force,
         stats=stats,
     )
 
@@ -69,7 +71,8 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
 
     print(
         f"scanned={len(results)} matched={matched} nfo-written={nfo_written} "
-        f"skipped-extras={stats.get('skipped_extras', 0)} errors={errors} "
+        f"skipped-extras={stats.get('skipped_extras', 0)} "
+        f"skipped-existing={stats.get('skipped_existing', 0)} errors={errors} "
         f"renamed={renamed} would-rename={would_rename} rename-skipped={rename_skipped}"
     )
     return 0
@@ -161,6 +164,17 @@ def build_parser() -> argparse.ArgumentParser:
                        help="with --rename: also move the file into a "
                             "'Title (Year)/' folder (Jellyfin movie-folder "
                             "layout). Off by default (renames in place).")
+    p_tag.add_argument("--incremental", action="store_true",
+                       help="fast re-run over a huge library: skip a file "
+                            "that's already tagged (its .nfo sidecar "
+                            "already exists — plus, with --rename, its "
+                            "name already carries an embedded catalog id) "
+                            "without resolving it, so re-runs only spend "
+                            "network on new/untagged files.")
+    p_tag.add_argument("--force", action="store_true",
+                       help="with --incremental: re-tag anyway, even when "
+                            "a file already looks tagged. --force always "
+                            "wins over --incremental.")
     p_tag.set_defaults(func=cmd_tag_library)
 
     p_identify = sub.add_parser(
