@@ -28,8 +28,25 @@ def cmd_serve(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_undo_rename(args: argparse.Namespace) -> int:
+    from metadatarr.library import undo_renames
+
+    result = undo_renames(args.path, journal_path=args.rename_journal,
+                          dry_run=args.dry_run)
+    for line in result.details:
+        print(line)
+    print(
+        f"reversed={result.reversed} skipped-exists={result.skipped_exists} "
+        f"skipped-missing={result.skipped_missing} errors={result.errors}"
+    )
+    return 1 if result.errors else 0
+
+
 def cmd_tag_library(args: argparse.Namespace) -> int:
     from metadatarr.library import tag_library
+
+    if args.undo_rename:
+        return cmd_undo_rename(args)
 
     stats: dict = {}
     results = tag_library(
@@ -45,6 +62,7 @@ def cmd_tag_library(args: argparse.Namespace) -> int:
         incremental=args.incremental,
         force=args.force,
         stats=stats,
+        rename_journal=args.rename_journal,
     )
 
     matched = 0
@@ -175,6 +193,18 @@ def build_parser() -> argparse.ArgumentParser:
                        help="with --incremental: re-tag anyway, even when "
                             "a file already looks tagged. --force always "
                             "wins over --incremental.")
+    p_tag.add_argument("--rename-journal", default=None,
+                       help="rename journal file path (records every "
+                            "--rename move so it can be undone). Defaults "
+                            "to '<path>/.metadatarr-rename-journal.jsonl'.")
+    p_tag.add_argument("--undo-rename", action="store_true",
+                       help="reverse the moves recorded by a previous "
+                            "--rename run's journal, most-recent-first. "
+                            "Distinct mode: when set, no scanning/tagging "
+                            "happens, only the undo. Combine with "
+                            "--dry-run to preview without moving anything. "
+                            "Collision-safe: never overwrites a file that "
+                            "now occupies the original path.")
     p_tag.set_defaults(func=cmd_tag_library)
 
     p_identify = sub.add_parser(

@@ -893,6 +893,148 @@ def test_rename_collision_safe_when_target_exists(tmp_path, monkeypatch):
     assert (tmp_path / "Inception (2010) {tmdb-27205}.mkv").read_bytes() == b"pre-existing"  # not clobbered
 
 
+# ---------------------------------------------------------------------------
+# rename journal + --undo-rename
+# ---------------------------------------------------------------------------
+
+def test_rename_real_run_writes_journal(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Inception 2010.mkv", b"videobytes")
+    f = library.LocalMediaFile(path=path, kind="video")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+    result = library.tag_file(f, write_nfo=True, dry_run=False, rename=True,
+                              rename_journal=library.default_journal_path(str(tmp_path)))
+    assert result.rename_action == "renamed"
+
+    journal = library.default_journal_path(str(tmp_path))
+    assert journal.exists()
+    records = [json.loads(line) for line in journal.read_text().splitlines()]
+    assert len(records) == 1
+    rec = records[0]
+    assert rec["old_path"] == str(path)
+    assert rec["new_path"] == str(tmp_path / "Inception (2010) {tmdb-27205}.mkv")
+    assert rec["old_nfo"] == str(tmp_path / "Inception 2010.nfo")
+    assert rec["new_nfo"] == str(tmp_path / "Inception (2010) {tmdb-27205}.nfo")
+    assert "timestamp" in rec
+
+
+def test_rename_dry_run_writes_no_journal(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    path = _touch(tmp_path / "Inception 2010.mkv", b"videobytes")
+    f = library.LocalMediaFile(path=path, kind="video")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+    library.tag_file(f, write_nfo=True, dry_run=True, rename=True,
+                     rename_journal=library.default_journal_path(str(tmp_path)))
+    assert not library.default_journal_path(str(tmp_path)).exists()
+
+
+def test_cli_tag_library_rename_writes_journal_and_undo_reverses(tmp_path, monkeypatch):
+    from metadatarr import cli
+
+    monkeypatch.setattr(library, "_guessit", None)
+    orig_media = _touch(tmp_path / "Inception 2010.mkv", b"videobytes")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+
+    rc = cli.main(["tag-library", "-p", str(tmp_path), "--rename"])
+    assert rc == 0
+    target = tmp_path / "Inception (2010) {tmdb-27205}.mkv"
+    target_nfo = tmp_path / "Inception (2010) {tmdb-27205}.nfo"
+    assert target.exists()
+    assert target_nfo.exists()
+    assert not orig_media.exists()
+
+    journal = library.default_journal_path(str(tmp_path))
+    assert journal.exists()
+
+    # --dry-run preview: nothing moves.
+    result = library.undo_renames(str(tmp_path), dry_run=True)
+    assert result.reversed == 1
+    assert target.exists()
+    assert not orig_media.exists()
+    assert journal.exists()
+
+    # Real undo: file (and nfo) go back to their original names, content
+    # byte-identical, journal cleared of the undone record.
+    result = library.undo_renames(str(tmp_path))
+    assert result.reversed == 1
+    assert result.errors == 0
+    assert orig_media.exists()
+    assert orig_media.read_bytes() == b"videobytes"
+    assert (tmp_path / "Inception 2010.nfo").exists()
+    assert not target.exists()
+    assert not target_nfo.exists()
+    assert not journal.exists()  # fully drained -> removed
+
+
+def test_undo_rename_collision_safe(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    orig_media = _touch(tmp_path / "Inception 2010.mkv", b"videobytes")
+    f = library.LocalMediaFile(path=orig_media, kind="video")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+    journal = library.default_journal_path(str(tmp_path))
+    result = library.tag_file(f, write_nfo=True, dry_run=False, rename=True,
+                              rename_journal=journal)
+    assert result.rename_action == "renamed"
+
+    # Something new now occupies the original path.
+    _touch(orig_media, b"someone-elses-file")
+
+    undo_result = library.undo_renames(str(tmp_path))
+    assert undo_result.skipped_exists == 1
+    assert undo_result.reversed == 0
+    assert orig_media.read_bytes() == b"someone-elses-file"  # untouched
+    assert result.renamed_to.exists()  # renamed file left alone too
+    # Record is retained (not silently dropped) for a later retry.
+    records = [json.loads(line) for line in journal.read_text().splitlines()]
+    assert len(records) == 1
+
+
+def test_undo_rename_skips_missing_new_path(tmp_path, monkeypatch):
+    monkeypatch.setattr(library, "_guessit", None)
+    orig_media = _touch(tmp_path / "Inception 2010.mkv", b"videobytes")
+    f = library.LocalMediaFile(path=orig_media, kind="video")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+    journal = library.default_journal_path(str(tmp_path))
+    result = library.tag_file(f, write_nfo=True, dry_run=False, rename=True,
+                              rename_journal=journal)
+    assert result.rename_action == "renamed"
+
+    # The renamed file is deleted/moved outside metadatarr's knowledge.
+    result.renamed_to.unlink()
+
+    undo_result = library.undo_renames(str(tmp_path))
+    assert undo_result.skipped_missing == 1
+    assert undo_result.reversed == 0
+    assert not orig_media.exists()
+    records = [json.loads(line) for line in journal.read_text().splitlines()]
+    assert len(records) == 1  # retained
+
+
+def test_rename_then_undo_round_trips_tree(tmp_path, monkeypatch):
+    """rename followed by undo returns the tree to its original state,
+    both names and bytes."""
+    from metadatarr import cli
+
+    monkeypatch.setattr(library, "_guessit", None)
+    a = _touch(tmp_path / "Inception 2010.mkv", b"aaa")
+    monkeypatch.setattr(library, "resolve", _match_resolve("Inception", 2010, {"tmdb_movie": 27205}))
+
+    before_name, before_bytes = a.name, a.read_bytes()
+
+    rc = cli.main(["tag-library", "-p", str(tmp_path), "--rename"])
+    assert rc == 0
+    assert not a.exists()
+
+    rc = cli.main(["tag-library", "-p", str(tmp_path), "--undo-rename"])
+    assert rc == 0
+
+    assert a.exists()
+    assert a.name == before_name
+    assert a.read_bytes() == before_bytes
+    assert (tmp_path / "Inception 2010.nfo").exists()  # the nfo, undone alongside it
+    assert not library.default_journal_path(str(tmp_path)).exists()
+
+
 def test_music_falls_back_to_audio_fingerprint(tmp_path, monkeypatch):
     monkeypatch.setattr(library, "_mutagen", None)
     path = _touch(tmp_path / "unknown-track.mp3", b"audio")
