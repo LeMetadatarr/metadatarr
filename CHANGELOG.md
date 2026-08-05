@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a2) (2026-08-05)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.15.0a1...0.15.0a2)
+
+**Merged pull requests:**
+
+- fix: servarr-proxy uses query year to disambiguate same-title results \(remakes vs originals\) [\#55](https://github.com/LeMetadatarr/metadatarr/pull/55) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.15.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.15.0a1) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.14.0a1...0.15.0a1)
