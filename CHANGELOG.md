@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.19.0a2) (2026-09-01)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.19.0a1...0.19.0a2)
+
+**Merged pull requests:**
+
+- chore: Configure Renovate [\#2](https://github.com/LeMetadatarr/metadatarr/pull/2) ([renovate[bot]](https://github.com/apps/renovate))
+
 ## [0.19.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.19.0a1) (2026-08-05)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.18.0a1...0.19.0a1)
