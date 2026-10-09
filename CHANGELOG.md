@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.20.0a1) (2026-10-09)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.19.2a1...0.20.0a1)
+
+**Merged pull requests:**
+
+- feat: add GET /stats endpoint [\#67](https://github.com/LeMetadatarr/metadatarr/pull/67) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.19.2a1](https://github.com/LeMetadatarr/metadatarr/tree/0.19.2a1) (2026-10-09)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.19.1a2...0.19.2a1)
