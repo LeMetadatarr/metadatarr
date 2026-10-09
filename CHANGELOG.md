@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.21.0a1) (2026-10-09)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.20.1a1...0.21.0a1)
+
+**Merged pull requests:**
+
+- feat: load providers from installed plugin packages [\#68](https://github.com/LeMetadatarr/metadatarr/pull/68) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.20.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.20.1a1) (2026-10-09)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.20.0a2...0.20.1a1)
