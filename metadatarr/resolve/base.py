@@ -191,16 +191,45 @@ def all_providers() -> Dict[str, MetadataProvider]:
     return dict(_REGISTRY)
 
 
-def active_providers(medium: Optional[MediaType] = None) -> List[MetadataProvider]:
+def active_providers(medium: Optional[MediaType] = None,
+                     signals: Optional[Signals] = None) -> List[MetadataProvider]:
     """Return providers whose ``is_available()`` is True.
 
     If ``medium`` is given, only providers whose ``media`` set includes that
-    medium are returned.
+    medium are returned. If ``signals`` is given, only providers whose
+    three-axis routing :meth:`MetadataProvider.matches` it are returned.
     """
     out = [p for p in _REGISTRY.values() if p.is_available()]
     if medium is not None:
         out = [p for p in out if not p.media or medium in p.media]
-    return out
+    return _routed(out, signals)
+
+
+def _routed(providers: List[MetadataProvider],
+            signals: Optional[Signals]) -> List[MetadataProvider]:
+    """Keep the providers whose declared routing axes match ``signals``."""
+    if signals is None:
+        return providers
+    return [p for p in providers if _matches(p, signals)]
+
+
+_MATCH_FAILED: Set[str] = set()
+
+
+def _matches(provider: MetadataProvider, signals: Signals) -> bool:
+    """``provider.matches(signals)``; a provider whose check raises does not match.
+
+    The failure is logged once per provider, so a broken ``matches()`` cannot
+    fail the fan-out or flood the log.
+    """
+    try:
+        return provider.matches(signals)
+    except Exception as exc:
+        if provider.name not in _MATCH_FAILED:
+            _MATCH_FAILED.add(provider.name)
+            LOG.warning("provider %s: matches() raised, treating as not matching: %s",
+                        provider.name, exc)
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -412,7 +441,7 @@ def candidates(signals: Signals, *, max_workers: int = 8,
     :func:`resolve` instead when you just want the single merged record.
 
     Same fan-out plumbing as :func:`resolve` (concurrent, cached, filtered
-    by ``signals.medium``) but emits the raw candidate list instead of
+    by each provider's routing axes via :meth:`MetadataProvider.matches`) but emits the raw candidate list instead of
     consolidating into one record. Sorted by ``ProviderMatch.confidence``
     descending, ties broken by provider iteration order.
 
@@ -424,7 +453,7 @@ def candidates(signals: Signals, *, max_workers: int = 8,
         # top-N for a UI list:
         candidates(signals)[:5]
     """
-    providers = active_providers(medium=signals.medium)
+    providers = _routed(active_providers(medium=signals.medium), signals)
     matches: List[ProviderMatch] = []
     for batch in _run_pool(providers,
                            lambda p: _gather_candidates(p, signals, sink),
@@ -532,8 +561,10 @@ def resolve(signals: Signals, *, max_workers: int = 8,
             deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE) -> ResolveResult:
     """Fan out to all active providers that cover *signals.medium*, consolidate.
 
-    Providers are filtered by ``medium`` before calling ``lookup()`` so a
-    music lookup never touches the TMDB movie provider, etc. Lookups run
+    Providers are filtered by :meth:`MetadataProvider.matches` (media,
+    modality and genre axes) before calling ``lookup()`` so a music lookup
+    never touches the TMDB movie provider and an ordinary movie lookup never
+    touches an adult-genre provider. Lookups run
     concurrently (bounded by *max_workers*) and pass through a cache that
     memoises both hits and misses keyed by
     ``(provider.name, signal_hash(signals))``. Providers with an empty
@@ -556,7 +587,7 @@ def resolve(signals: Signals, *, max_workers: int = 8,
                    deadline=deadline), signals)
     result.provider_errors = sink
     if signals.include_variants:
-        providers = active_providers(medium=signals.medium)
+        providers = _routed(active_providers(medium=signals.medium), signals)
 
         def _get_variants(p: "MetadataProvider") -> List[ProviderEntity]:
             with trap(p.name, "variants", sink):
