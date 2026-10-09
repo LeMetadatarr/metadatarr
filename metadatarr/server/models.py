@@ -46,6 +46,15 @@ class HealthResponse(BaseModel):
     providers_total: int = 0
 
 
+class StatsResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    resolves_total: int = 0
+    cache_enabled: bool = False
+    cache_entries: int = 0
+    cache_bytes: int = 0
+
+
 class ProviderInfo(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

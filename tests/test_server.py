@@ -164,3 +164,72 @@ def test_resolve_live_network(client):
     body = resp.json()
     assert "external_ids" in body
     assert "accepted" in body
+
+
+# ---------------------------------------------------------------------------
+# /stats
+# ---------------------------------------------------------------------------
+
+def test_stats_counts_resolves_and_scans_cache(tmp_path, monkeypatch):
+    cache_dir = tmp_path / "http-cache"
+    cache_dir.mkdir()
+    (cache_dir / "a.json").write_text("12345")
+    (cache_dir / "b.json").write_text("123")
+    (cache_dir / "ignored.txt").write_text("not a cache entry")
+    monkeypatch.setenv("METADATARR_HTTP_CACHE", str(cache_dir))
+    c = TestClient(create_app())
+
+    assert c.get("/stats").json() == {
+        "resolves_total": 0, "cache_enabled": True,
+        "cache_entries": 2, "cache_bytes": 8}
+
+    for _ in range(2):
+        assert c.post("/resolve", json={
+            "title": "Inception", "year": 2010, "medium": "movie"}).status_code == 200
+    c.post("/candidates", json={"title": "Inception", "medium": "movie"})
+
+    assert c.get("/stats").json()["resolves_total"] == 2
+
+
+def test_stats_reports_no_cache_when_caching_is_disabled(tmp_path, monkeypatch):
+    from metadatarr import transport
+    default_dir = tmp_path / "default-cache"
+    default_dir.mkdir()
+    (default_dir / "stale.json").write_text("12345")
+    monkeypatch.setattr(transport, "_DEFAULT_CACHE_DIR", default_dir)
+    monkeypatch.delenv("METADATARR_HTTP_CACHE", raising=False)
+
+    body = TestClient(create_app()).get("/stats").json()
+
+    assert body["cache_enabled"] is False
+    assert body["cache_entries"] == 0
+    assert body["cache_bytes"] == 0
+
+
+def test_stats_counter_is_per_app(monkeypatch, tmp_path):
+    monkeypatch.setenv("METADATARR_HTTP_CACHE", str(tmp_path / "empty"))
+    first, second = TestClient(create_app()), TestClient(create_app())
+    first.post("/resolve", json={"title": "Inception", "medium": "movie"})
+    assert first.get("/stats").json()["resolves_total"] == 1
+    assert second.get("/stats").json()["resolves_total"] == 0
+    assert second.get("/stats").json()["cache_entries"] == 0
+
+
+def test_stats_survives_cache_file_vanishing(tmp_path, monkeypatch):
+    from pathlib import Path
+    cache_dir = tmp_path / "http-cache"
+    cache_dir.mkdir()
+    (cache_dir / "a.json").write_text("1234")
+    (cache_dir / "b.json").write_text("56")
+    monkeypatch.setenv("METADATARR_HTTP_CACHE", str(cache_dir))
+    real_stat = Path.stat
+
+    def flaky(self, *a, **k):
+        if self.name == "b.json":
+            raise FileNotFoundError(self)
+        return real_stat(self, *a, **k)
+
+    monkeypatch.setattr(Path, "stat", flaky)
+    resp = TestClient(create_app()).get("/stats")
+    assert resp.status_code == 200
+    assert resp.json()["cache_bytes"] == 4

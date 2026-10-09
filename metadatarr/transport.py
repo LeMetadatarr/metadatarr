@@ -288,6 +288,17 @@ def clear() -> int:
     return count
 
 
+def _total_size(files) -> int:
+    """Sum file sizes, skipping files removed between listing and stat."""
+    total = 0
+    for f in files:
+        try:
+            total += f.stat().st_size
+        except OSError:
+            pass
+    return total
+
+
 def info() -> dict:
     """Return a dict describing the current cache state."""
     env = os.environ.get("METADATARR_HTTP_CACHE", "").strip()
@@ -304,5 +315,5 @@ def info() -> dict:
         "path": str(d),
         "ttl": ttl,
         "entries": len(files),
-        "size_bytes": sum(f.stat().st_size for f in files),
+        "size_bytes": _total_size(files),
     }

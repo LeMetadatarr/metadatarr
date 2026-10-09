@@ -9,6 +9,7 @@ own :class:`~metadatarr.resolve.base.ResolveResult` /
 from __future__ import annotations
 
 import logging
+import threading
 from typing import List, Optional
 
 # Safe at module level: this module is only ever imported by
@@ -40,7 +41,9 @@ from metadatarr.server.models import (
     ProviderInfo,
     ProvidersResponse,
     ResolveRequest,
+    StatsResponse,
 )
+from metadatarr.transport import info as cache_info
 from metadatarr.version import __version__
 
 LOG = logging.getLogger(__name__)
@@ -64,6 +67,9 @@ def _provider_counts() -> "tuple[int, int]":
 def register_routes(app, templates) -> None:
     from fastapi import HTTPException
 
+    resolves_total = 0
+    resolves_lock = threading.Lock()
+
     @app.get("/healthz", response_model=HealthResponse)
     def healthz() -> HealthResponse:
         # A static 200 proves only that the process is up; a metadatarr
@@ -74,6 +80,18 @@ def register_routes(app, templates) -> None:
             version=__version__,
             providers_available=available,
             providers_total=total,
+        )
+
+    @app.get("/stats", response_model=StatsResponse)
+    def stats() -> StatsResponse:
+        cache = cache_info()
+        with resolves_lock:
+            total = resolves_total
+        return StatsResponse(
+            resolves_total=total,
+            cache_enabled=cache["enabled"],
+            cache_entries=cache["entries"] if cache["enabled"] else 0,
+            cache_bytes=cache["size_bytes"] if cache["enabled"] else 0,
         )
 
     @app.get("/providers", response_model=ProvidersResponse)
@@ -100,6 +118,9 @@ def register_routes(app, templates) -> None:
 
     @app.post("/resolve", response_model=ResolveResult)
     def resolve_endpoint(request: ResolveRequest) -> ResolveResult:
+        nonlocal resolves_total
+        with resolves_lock:
+            resolves_total += 1
         payload = request.model_dump(exclude={"max_workers"})
         signals = Signals(**payload)
         try:
