@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.20.0a2) (2026-10-09)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.20.0a1...0.20.0a2)
+
+**Merged pull requests:**
+
+- chore: remove adult content providers [\#70](https://github.com/LeMetadatarr/metadatarr/pull/70) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.20.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.20.0a1) (2026-10-09)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.19.2a1...0.20.0a1)
