@@ -291,13 +291,6 @@ Everything a provider emits that doesn't have a typed slot lands in
 |---|---|
 | `youtube_music_playlist_id` | YouTube Music album playlist id |
 | `youtube_content_type` | Classifier hint from tutubo |
-| `hanime_video_id` | hanime.tv numeric video id (canonical) |
-| `hanime_brand_id` | hanime.tv numeric studio id (canonical, anchors the `STUDIO` entity) |
-
-| Key | Platform |
-|---|---|
-| `hanime_franchise_id` | hanime.tv numeric series id (canonical) |
-| `hanime_slug` / `hanime_url` | hanime.tv watch slug / URL (link-back, slug is renameable) |
 
 #### ISBN normalisation
 

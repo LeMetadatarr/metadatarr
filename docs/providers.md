@@ -56,7 +56,6 @@ An empty set on any axis means "accept all" for that axis.
 | Name              | Media                            | Modality          | Notes                                                  |
 | ----------------- | -------------------------------- | ----------------- | ------------------------------------------------------ |
 | `annas_archive`   | book                             | TEXT              | Auto-registered, HTML scrape of Anna's Archive mirrors: `metadatarr/resolve/providers/annas_archive.py:28` |
-| `hanime`          | movie / episodic_series          | VIDEO             | hentai-anime, optional dep (`pyhanime`), **genre-gated** to `adult`+`anime` queries, stable numeric IDs (`hanime_video_id`, `hanime_brand_id`, `hanime_franchise_id`) in `extra`, emits `STUDIO` relation: `metadatarr/resolve/providers/hanime.py` |
 
 | Name              | Media                            | Modality          | Notes                                                  |
 | ----------------- | -------------------------------- | ----------------- | ------------------------------------------------------ |

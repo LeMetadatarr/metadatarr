@@ -21,7 +21,6 @@ EXPECTED_PROVIDER_NAMES = {
     "bluray_com",
     "discogs",
     "dvdcompare",
-    "hanime",
     "jikan_anime",
     "jikan_manga",
     "librivox",
