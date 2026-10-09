@@ -85,6 +85,7 @@ env vars, and healthchecks.
 | `POST /enrich` | Take a partial `ExternalIds` and fill in the rest |
 | `GET /providers` | List built-in providers and whether each is currently available |
 | `GET /healthz` | Liveness check |
+| `GET /stats` | `resolves_total` (`POST /resolve` calls since start), `cache_enabled`, and `cache_entries` and `cache_bytes` of the on-disk HTTP cache (zero when caching is off) |
 
 ```bash
 curl -X POST http://localhost:8000/resolve \

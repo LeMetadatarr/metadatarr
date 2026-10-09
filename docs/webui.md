@@ -3,7 +3,7 @@
 `metadatarr serve` (requires `pip install "metadatarr[server]"`) starts a
 FastAPI app with:
 
-- A JSON API (`/resolve`, `/candidates`, `/enrich`, `/providers`, `/healthz`).
+- A JSON API (`/resolve`, `/candidates`, `/enrich`, `/providers`, `/healthz`, `/stats`).
 - A server-rendered, build-free WebUI at `/`.
 
 No JavaScript build step — the UI is Jinja2 templates plus a locally
