@@ -53,7 +53,7 @@ Repository = "https://github.com/LeMetadatarr/metadatarr"
 Issues = "https://github.com/LeMetadatarr/metadatarr/issues"
 
 [project.optional-dependencies]
-test = ["pytest>=7", "httpx"]
+test = ["pytest>=7", "httpx<1"]
 server = ["fastapi", "uvicorn[standard]", "jinja2", "python-multipart"]
 tag = ["guessit>=3", "mutagen>=1.45"]
 # xazam isn't on PyPI yet — git dep bridge, same pattern as pytvmaze/pyaudiodb/
