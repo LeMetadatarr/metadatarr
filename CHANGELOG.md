@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.1a2](https://github.com/LeMetadatarr/metadatarr/tree/0.19.1a2) (2026-10-09)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.19.1a1...0.19.1a2)
+
+**Merged pull requests:**
+
+- ci: install the server and tag extras so every test runs [\#71](https://github.com/LeMetadatarr/metadatarr/pull/71) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.19.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.19.1a1) (2026-09-01)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.19.0a2...0.19.1a1)
