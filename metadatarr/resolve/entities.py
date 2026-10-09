@@ -207,8 +207,6 @@ def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
                 EntityRole.SCREENWRITER, EntityRole.CINEMATOGRAPHER,
                 EntityRole.EDITOR, EntityRole.NARRATOR, EntityRole.HOST,
                 EntityRole.GUEST, EntityRole.CURATOR}:
-        # iafd_performer_uuid is authoritative for adult-industry performers
-        # (no TMDB/IMDB equivalent exists for most of them)
         return (_int(ext.tmdb_person)
                 or ext.imdb_person
                 or _int(ext.anilist_staff_id)
@@ -217,11 +215,7 @@ def _dominant_external_id(ext: ExternalIds, role: EntityRole) -> Optional[str]:
                 or ext.wikidata
                 # legacy extra fallbacks
                 or ext.extra.get("tmdb_person")
-                or ext.extra.get("imdb_person")
-                or ext.extra.get("iafd_performer_uuid")
-                or ext.extra.get("boobpedia_slug")
-                or ext.extra.get("theporndb_id")
-                or ext.extra.get("stashdb_id"))
+                or ext.extra.get("imdb_person"))
 
     if role == EntityRole.AUTHOR:
         return (ext.olid or ext.goodreads or ext.extra.get("goodreads_author")
