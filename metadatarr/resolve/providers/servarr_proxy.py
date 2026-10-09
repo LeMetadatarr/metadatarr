@@ -103,6 +103,7 @@ class ServarrProxyProvider(MetadataProvider):
             signals=cand,
             external_ids=ExternalIds(
                 tmdb_movie=int(top.tmdb_id) if top.tmdb_id else None,
+                imdb=top.imdb_id,
             ),
         )
 
