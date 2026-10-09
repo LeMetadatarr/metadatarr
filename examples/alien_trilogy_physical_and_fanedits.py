@@ -48,7 +48,6 @@ import metadatarr.resolve.providers  # noqa: F401 — trigger provider self-regi
 from metadatarr.client import DVDCompareClient
 from metadatarr.models import DVDCompareEdition
 from metadatarr.resolve import resolve
-from metadatarr.resolve.entities import Role
 from mediavocab import MediaType, VariantKind
 from mediavocab.models.signals import Signals, compare_signals as compare, signal_hash
 
@@ -261,7 +260,7 @@ def section_fanedits(film: dict) -> None:
         print(f"  resolve() failed: {exc}")
         return
 
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     fanedits = [r for r in releases if r.external_ids.fanedit_id]
 
     print(f"  resolver accepted: {[m.provider for m in result.accepted]}")

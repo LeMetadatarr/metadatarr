@@ -1,0 +1,1729 @@
+[
+ {
+  "TmdbId": 452132,
+  "ImdbId": "tt2766788",
+  "Title": "Auroras",
+  "Overview": "Constantly orbiting at 400 km (250 mi) above the earth, the ISS is perfectly situated to witness the beautiful streamers of green and red light emanating from the collision of highly charged solar wind particles with oxygen and nitrogen atoms in the earth's atmosphere. Centered about the northern (Aurora Borealis) and southern (Aurora Australis) poles the Auroras move in an almost hypnotic dance below the space station.",
+  "OriginalTitle": "Auroras",
+  "OriginalLanguage": "ja",
+  "TitleSlug": "452132",
+  "Runtime": 5,
+  "Popularity": 0.6362,
+  "Year": 2015,
+  "Premier": null,
+  "InCinema": null,
+  "PhysicalRelease": null,
+  "DigitalRelease": "2015-07-31T00:00:00Z",
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/jGmXG646sgMNxGtyrbju4AFzARI.jpg"
+   },
+   {
+    "CoverType": "Fanart",
+    "Url": "https://image.tmdb.org/t/p/original/2PE23MDJO20pSDp8ZnFvXe8KAtU.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 5,
+    "Value": 6,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 5,
+    "Value": 6,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 48,
+    "Value": 4.8,
+    "Type": "User"
+   },
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": {
+    "Count": 2,
+    "Value": 4,
+    "Type": "User"
+   }
+  },
+  "Genres": [
+   "Science Fiction",
+   "Drama"
+  ],
+  "Keywords": [
+   "aurora borealis",
+   "lgbt",
+   "short film"
+  ],
+  "AlternativeTitles": [],
+  "Translations": [
+   {
+    "Title": "Auroras",
+    "Overview": "Constantly orbiting at 400 km (250 mi) above the earth, the ISS is perfectly situated to witness the beautiful streamers of green and red light emanating from the collision of highly charged solar wind particles with oxygen and nitrogen atoms in the earth's atmosphere. Centered about the northern (Aurora Borealis) and southern (Aurora Australis) poles the Auroras move in an almost hypnotic dance below the space station.",
+    "Language": "en-US"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 846956,
+    "Title": "Rogue Agent"
+   },
+   {
+    "TmdbId": 413337,
+    "Title": "Girl in the Box"
+   },
+   {
+    "TmdbId": 98548,
+    "Title": "People Like Us"
+   },
+   {
+    "TmdbId": 976720,
+    "Title": "Vesper"
+   },
+   {
+    "TmdbId": 1143128,
+    "Title": "Omni Loop"
+   },
+   {
+    "TmdbId": 607430,
+    "Title": "Nine Days"
+   },
+   {
+    "TmdbId": 306963,
+    "Title": "Wanderers"
+   },
+   {
+    "TmdbId": 741067,
+    "Title": "Welcome to Sudden Death"
+   },
+   {
+    "TmdbId": 152795,
+    "Title": "The Congress"
+   },
+   {
+    "TmdbId": 14842,
+    "Title": "44 Minutes: The North Hollywood Shoot-Out"
+   }
+  ],
+  "Credits": {
+   "Cast": [
+    {
+     "Name": "Jess Dela Merced",
+     "Order": 0,
+     "Character": "Occupant",
+     "TmdbId": 1458129,
+     "CreditId": "5ae70d779251410cec008f6f",
+     "Images": []
+    },
+    {
+     "Name": "Jess Dela Merced",
+     "Order": 1,
+     "Character": "Loved one",
+     "TmdbId": 1458129,
+     "CreditId": "5ae70d890e0a26107200a77b",
+     "Images": []
+    },
+    {
+     "Name": "Mana Nagee",
+     "Order": 2,
+     "Character": "Shuttle Launch Voice",
+     "TmdbId": 2032976,
+     "CreditId": "5ae70da8c3a368134500935d",
+     "Images": []
+    }
+   ],
+   "Crew": [
+    {
+     "Name": "Niles Heckman",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 1796024,
+     "CreditId": "58f0d7cf92514125ad0126b8",
+     "Images": []
+    },
+    {
+     "Name": "Niles Heckman",
+     "Order": 1,
+     "Job": "Writer",
+     "Department": "Writing",
+     "TmdbId": 1796024,
+     "CreditId": "5ae709769251410d0900ab81",
+     "Images": []
+    },
+    {
+     "Name": "Sarah Cave",
+     "Order": 2,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 1998223,
+     "CreditId": "5ae70bb29251410d0900acad",
+     "Images": []
+    },
+    {
+     "Name": "Seayoon Jeong",
+     "Order": 3,
+     "Job": "Executive Producer",
+     "Department": "Production",
+     "TmdbId": 1555910,
+     "CreditId": "5ae70c970e0a26105e00a66b",
+     "Images": []
+    },
+    {
+     "Name": "Laide Agunbiade",
+     "Order": 4,
+     "Job": "Executive Producer",
+     "Department": "Production",
+     "TmdbId": 1673809,
+     "CreditId": "5ae70cb2c3a3681370006078",
+     "Images": []
+    },
+    {
+     "Name": "Jackie Dela Merced",
+     "Order": 5,
+     "Job": "Executive Producer",
+     "Department": "Production",
+     "TmdbId": 2032975,
+     "CreditId": "5ae70c5ac3a36813550100c5",
+     "Images": []
+    },
+    {
+     "Name": "Niles Heckman",
+     "Order": 6,
+     "Job": "Director of Photography",
+     "Department": "Camera",
+     "TmdbId": 1796024,
+     "CreditId": "5ae70b86c3a368134c010050",
+     "Images": []
+    },
+    {
+     "Name": "Bruce Woodside",
+     "Order": 7,
+     "Job": "Associate Producer",
+     "Department": "Production",
+     "TmdbId": 1115298,
+     "CreditId": "5ae70bd8c3a368135800bc98",
+     "Images": []
+    },
+    {
+     "Name": "Bastiaan Koch",
+     "Order": 8,
+     "Job": "Co-Director",
+     "Department": "Directing",
+     "TmdbId": 2027267,
+     "CreditId": "5ae709960e0a261058009d18",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/y0YSCoQvPINdvfAdEzDbj7bQhxY.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Bastiaan Koch",
+     "Order": 9,
+     "Job": "Art Direction",
+     "Department": "Art",
+     "TmdbId": 2027267,
+     "CreditId": "5ae70aa0c3a368135100ec05",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/y0YSCoQvPINdvfAdEzDbj7bQhxY.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Brian Goodwin",
+     "Order": 10,
+     "Job": "Associate Producer",
+     "Department": "Production",
+     "TmdbId": 1179271,
+     "CreditId": "5ae70bf59251417baa005f02",
+     "Images": []
+    },
+    {
+     "Name": "Dark Hoffman",
+     "Order": 11,
+     "Job": "Painter",
+     "Department": "Art",
+     "TmdbId": 1402107,
+     "CreditId": "5ae709d70e0a261058009d4d",
+     "Images": []
+    },
+    {
+     "Name": "Rick Glenn",
+     "Order": 12,
+     "Job": "Animation Director",
+     "Department": "Visual Effects",
+     "TmdbId": 1744046,
+     "CreditId": "5ae709fb0e0a26107500a8d7",
+     "Images": []
+    },
+    {
+     "Name": "Nate Pantumsinchai",
+     "Order": 13,
+     "Job": "Associate Producer",
+     "Department": "Production",
+     "TmdbId": 2032973,
+     "CreditId": "5ae70c11c3a3681361009113",
+     "Images": []
+    },
+    {
+     "Name": "Marco Iozzi",
+     "Order": 14,
+     "Job": "Painter",
+     "Department": "Art",
+     "TmdbId": 2032965,
+     "CreditId": "5ae709c5c3a368134c00fecb",
+     "Images": []
+    },
+    {
+     "Name": "Marco Iozzi",
+     "Order": 15,
+     "Job": "Art Direction",
+     "Department": "Art",
+     "TmdbId": 2032965,
+     "CreditId": "5ae70a7a9251410cec008de3",
+     "Images": []
+    },
+    {
+     "Name": "Alex Westaway",
+     "Order": 16,
+     "Job": "Music",
+     "Department": "Sound",
+     "TmdbId": 2032972,
+     "CreditId": "5ae70b5d0e0a26105e00a57c",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/sJtxvOkmRoKMiXeXsZf1lbzg6gr.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Dan Haigh",
+     "Order": 17,
+     "Job": "Music",
+     "Department": "Sound",
+     "TmdbId": 2032971,
+     "CreditId": "5ae70b380e0a26105400a5c3",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/3g3VZlsq9S74Nst7GHvxRddVSJt.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Audrey Riley",
+     "Order": 18,
+     "Job": "Music",
+     "Department": "Sound",
+     "TmdbId": 2032970,
+     "CreditId": "5ae70af8c3a368135500ffd5",
+     "Images": []
+    },
+    {
+     "Name": "Davee Troublefield",
+     "Order": 19,
+     "Job": "Makeup Artist",
+     "Department": "Costume & Make-Up",
+     "TmdbId": 2032967,
+     "CreditId": "5ae70a1e0e0a26107200a58c",
+     "Images": []
+    },
+    {
+     "Name": "Andrew Duncan",
+     "Order": 20,
+     "Job": "Sound Designer",
+     "Department": "Sound",
+     "TmdbId": 1945209,
+     "CreditId": "5ae70ad69251410cd900a9c9",
+     "Images": []
+    },
+    {
+     "Name": "Quanrico Gibson",
+     "Order": 21,
+     "Job": "Associate Producer",
+     "Department": "Production",
+     "TmdbId": 2032974,
+     "CreditId": "5ae70c360e0a26105e00a617",
+     "Images": []
+    },
+    {
+     "Name": "Vanessa Mi-Kyung Lee",
+     "Order": 22,
+     "Job": "Costume Design",
+     "Department": "Costume & Make-Up",
+     "TmdbId": 2032969,
+     "CreditId": "5ae70a5ec3a368134c00ff4c",
+     "Images": []
+    }
+   ]
+  },
+  "Studio": "Aurora Lab",
+  "YoutubeTrailerId": "",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ },
+ {
+  "TmdbId": 297860,
+  "ImdbId": "tt0419708",
+  "Title": "Dos auroras",
+  "Overview": "When her son Mauricio suffers a severe crisis, Aurora, a wealthy woman from Guadalajara, returns from Greece to try to help him with the possible disclosure of the identity of his father.",
+  "OriginalTitle": "Dos auroras",
+  "OriginalLanguage": "es",
+  "TitleSlug": "297860",
+  "Runtime": 93,
+  "Popularity": 0.7776,
+  "Year": 2005,
+  "Premier": null,
+  "InCinema": "2005-11-10T00:00:00Z",
+  "PhysicalRelease": null,
+  "DigitalRelease": null,
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/XT26aMvJoHUAkRHhfVujvBSt1f.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 3,
+    "Value": 6.3,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 3,
+    "Value": 6.3,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 17,
+    "Value": 3.5,
+    "Type": "User"
+   },
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": null
+  },
+  "Genres": [
+   "Drama"
+  ],
+  "Keywords": [],
+  "AlternativeTitles": [],
+  "Translations": [
+   {
+    "Title": "Dos auroras",
+    "Overview": "When her son Mauricio suffers a severe crisis, Aurora, a wealthy woman from Guadalajara, returns from Greece to try to help him with the possible disclosure of the identity of his father.",
+    "Language": "en-US"
+   },
+   {
+    "Title": "Dos auroras",
+    "Overview": "Cuando su hijo Mauricio sufre una severa crisis, Aurora, una acaudalada mujer de Guadalajara, regresa desde Grecia para tratar de ayudarlo con la posible revelación del secreto de la identidad de su padre.",
+    "Language": "es-MX"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 1428226,
+    "Title": "Until the End of the World"
+   },
+   {
+    "TmdbId": 846956,
+    "Title": "Rogue Agent"
+   },
+   {
+    "TmdbId": 545237,
+    "Title": "The Nest"
+   },
+   {
+    "TmdbId": 32579,
+    "Title": "Under the Same Moon"
+   },
+   {
+    "TmdbId": 1600028,
+    "Title": "A Father's Miracle"
+   },
+   {
+    "TmdbId": 62395,
+    "Title": "The Miracle of Marcelino"
+   },
+   {
+    "TmdbId": 157351,
+    "Title": "The Truth About Emanuel"
+   },
+   {
+    "TmdbId": 530956,
+    "Title": "All Day and a Night"
+   },
+   {
+    "TmdbId": 537617,
+    "Title": "The Padre"
+   },
+   {
+    "TmdbId": 69557,
+    "Title": "The Pumpkin Eater"
+   }
+  ],
+  "Credits": {
+   "Cast": [
+    {
+     "Name": "María Rojo",
+     "Order": 0,
+     "Character": "Aurora",
+     "TmdbId": 955272,
+     "CreditId": "544080c90e0a2628fb0005f4",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/ybAqZhtCHX9Rd26kNWxjeZPWjYV.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Rogelio Guerra",
+     "Order": 1,
+     "Character": "",
+     "TmdbId": 975020,
+     "CreditId": "544080d0c3a368617200063c",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/osROYzlKnitI1lhW1UR0hkab7iA.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Tizoc Arroyo",
+     "Order": 2,
+     "Character": "Mauricio",
+     "TmdbId": 991854,
+     "CreditId": "544080d7c3a36860980005e9",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/zHqLpULNwrH9huf7rZTVALaTq59.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Jesús Hernández",
+     "Order": 3,
+     "Character": "",
+     "TmdbId": 970051,
+     "CreditId": "544080df0e0a26293b0005e7",
+     "Images": []
+    },
+    {
+     "Name": "José Juan Meraz",
+     "Order": 4,
+     "Character": "",
+     "TmdbId": 937678,
+     "CreditId": "544080e5c3a368606a00060d",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/ySgorvyf4ZWoL0Axukfo8d1Ia20.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Manuel Medina",
+     "Order": 5,
+     "Character": "",
+     "TmdbId": 1400026,
+     "CreditId": "5fb037ac3a48c5003c7d4dba",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/2MIBHMkXxhTIJrtUbrYTgw9L8tZ.jpg"
+      }
+     ]
+    }
+   ],
+   "Crew": [
+    {
+     "Name": "Jaime Humberto Hermosillo",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 1044178,
+     "CreditId": "544080a5c3a3686078000632",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/i29onuwImyK97Sv8F6utXjzZ1Vv.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Jaime Humberto Hermosillo",
+     "Order": 1,
+     "Job": "Screenplay",
+     "Department": "Writing",
+     "TmdbId": 1044178,
+     "CreditId": "544080ad0e0a2628fb0005f1",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/i29onuwImyK97Sv8F6utXjzZ1Vv.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Jorge Z. López",
+     "Order": 2,
+     "Job": "Cinematography",
+     "Department": "Crew",
+     "TmdbId": 2678141,
+     "CreditId": "5fb035dfc15f89004083e9a0",
+     "Images": []
+    }
+   ]
+  },
+  "Studio": "",
+  "YoutubeTrailerId": "",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ },
+ {
+  "TmdbId": 868861,
+  "ImdbId": "tt7988554",
+  "Title": "Aurora's Law",
+  "Overview": "Aurora Hernandez is a normal girl doing her best to live a normal life. But as her bipolar mother becomes increasingly unhinged, Aurora finds herself looking for a way to bring order to her chaotic life.",
+  "OriginalTitle": "Aurora's Law",
+  "OriginalLanguage": "en",
+  "TitleSlug": "868861",
+  "Runtime": 88,
+  "Popularity": 0.9719,
+  "Year": 2021,
+  "Premier": null,
+  "InCinema": null,
+  "PhysicalRelease": null,
+  "DigitalRelease": "2021-08-30T00:00:00Z",
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/wNxIVzIIEDOnk8S9xOIRrT2dnCo.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 0,
+    "Value": 0,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 0,
+    "Value": 0,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 55,
+    "Value": 5.3,
+    "Type": "User"
+   },
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": null
+  },
+  "Genres": [
+   "Drama"
+  ],
+  "Keywords": [],
+  "AlternativeTitles": [],
+  "Translations": [
+   {
+    "Title": "Aurora's Law",
+    "Overview": "Aurora Hernandez is a normal girl doing her best to live a normal life. But as her bipolar mother becomes increasingly unhinged, Aurora finds herself looking for a way to bring order to her chaotic life.",
+    "Language": "en-US"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 41240,
+    "Title": "Bastard Out of Carolina"
+   },
+   {
+    "TmdbId": 846956,
+    "Title": "Rogue Agent"
+   },
+   {
+    "TmdbId": 339849,
+    "Title": "Not Without Hope"
+   },
+   {
+    "TmdbId": 1145725,
+    "Title": "Tyler Perry's Duplicity"
+   },
+   {
+    "TmdbId": 20857,
+    "Title": "Hardball"
+   },
+   {
+    "TmdbId": 574207,
+    "Title": "The Operative"
+   },
+   {
+    "TmdbId": 545237,
+    "Title": "The Nest"
+   },
+   {
+    "TmdbId": 43549,
+    "Title": "The Experiment"
+   },
+   {
+    "TmdbId": 35030,
+    "Title": "The Young One"
+   },
+   {
+    "TmdbId": 184341,
+    "Title": "Hands of Stone"
+   }
+  ],
+  "Credits": {
+   "Cast": [
+    {
+     "Name": "Steven Michael Quezada",
+     "Order": 0,
+     "Character": "Jose Hernandez",
+     "TmdbId": 61535,
+     "CreditId": "612ca407223e2000668364ff",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/pVYrDkwI6GWvCNL2kJhpDJfBFyd.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Quinton Aaron",
+     "Order": 1,
+     "Character": "Dave",
+     "TmdbId": 112560,
+     "CreditId": "612ca41a04b596002a6826b7",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/yoK8q52hZ0oTEpRHtZfByIA7sEd.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Suzanne Roxanne Fortner",
+     "Order": 2,
+     "Character": "Aurora Herandez",
+     "TmdbId": 3216749,
+     "CreditId": "612ca43750733c00890aaabd",
+     "Images": []
+    },
+    {
+     "Name": "Janelle Lovin-Mancha",
+     "Order": 3,
+     "Character": "Georgia Herandez",
+     "TmdbId": 3216750,
+     "CreditId": "612ca454223e20006683653e",
+     "Images": []
+    },
+    {
+     "Name": "Micah McNeil",
+     "Order": 4,
+     "Character": "Landon Quin",
+     "TmdbId": 2752580,
+     "CreditId": "612ca4706611b4004477c8c0",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/1XqHWsvDHyRoqn60v0NrL8Bt6aB.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Addison Fulton",
+     "Order": 5,
+     "Character": "Annalese Hernandez",
+     "TmdbId": 3216751,
+     "CreditId": "612ca48c6611b4006333b8ec",
+     "Images": []
+    },
+    {
+     "Name": "Kaitlyn Lewis",
+     "Order": 6,
+     "Character": "Sarah Herandez",
+     "TmdbId": 1798207,
+     "CreditId": "612ca4a6223e2000457668f3",
+     "Images": []
+    },
+    {
+     "Name": "Eric Martinez",
+     "Order": 7,
+     "Character": "Carlos",
+     "TmdbId": 1460904,
+     "CreditId": "612ca4d781140f0065e860b2",
+     "Images": []
+    },
+    {
+     "Name": "Alexis Ortiz",
+     "Order": 8,
+     "Character": "Madison",
+     "TmdbId": 3216753,
+     "CreditId": "612ca500001bbd002c86ba45",
+     "Images": []
+    }
+   ],
+   "Crew": [
+    {
+     "Name": "Brent Garcia",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 3216744,
+     "CreditId": "612ca2186611b4004477c793",
+     "Images": []
+    },
+    {
+     "Name": "Alec G. Garcia",
+     "Order": 1,
+     "Job": "Writer",
+     "Department": "Writing",
+     "TmdbId": 3216745,
+     "CreditId": "612ca232b84cdd00863856c8",
+     "Images": []
+    }
+   ]
+  },
+  "Studio": "Two4One4 Productions",
+  "YoutubeTrailerId": "",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ },
+ {
+  "TmdbId": 970578,
+  "ImdbId": "tt20873160",
+  "Title": "Aurora's Sunrise",
+  "Overview": "The story of how Aurora Mardiganian (1901-94), a survivor of the Armenian genocide perpetrated by the Ottoman Empire (1915-17), became a Hollywood silent film star.",
+  "OriginalTitle": "Արշալույսի լուսաբացը",
+  "OriginalLanguage": "hy",
+  "TitleSlug": "970578",
+  "Runtime": 97,
+  "Popularity": 1.2482,
+  "Year": 2023,
+  "Premier": "2022-06-11T00:00:00Z",
+  "InCinema": "2023-04-21T00:00:00Z",
+  "PhysicalRelease": null,
+  "DigitalRelease": "2023-04-26T00:00:00Z",
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/9XmZBIc5gEbaeAU5ECHSCoc2GtN.jpg"
+   },
+   {
+    "CoverType": "Fanart",
+    "Url": "https://image.tmdb.org/t/p/original/21oCMK0dJ3G8l7KW6XKSiIGNG3v.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 13,
+    "Value": 8.2,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 13,
+    "Value": 8.2,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 1124,
+    "Value": 7.9,
+    "Type": "User"
+   },
+   "Metacritic": {
+    "Count": 0,
+    "Value": 79,
+    "Type": "User"
+   },
+   "RottenTomatoes": null,
+   "Trakt": {
+    "Count": 18,
+    "Value": 6.61111,
+    "Type": "User"
+   }
+  },
+  "Genres": [
+   "Animation",
+   "Documentary",
+   "History"
+  ],
+  "Keywords": [
+   "adult animation",
+   "armenian diaspora",
+   "armenian genocide",
+   "based on true story",
+   "cinema on cinema",
+   "docudrama",
+   "world war i"
+  ],
+  "AlternativeTitles": [
+   {
+    "Title": "Aurora – Star wider Willen",
+    "Type": "Tmdb",
+    "Language": "de"
+   },
+   {
+    "Title": "Aurora, l'étoile arménienne",
+    "Type": "Tmdb",
+    "Language": "fr"
+   },
+   {
+    "Title": "Η ανατολή της Ορόρα",
+    "Type": "Tmdb",
+    "Language": "en"
+   }
+  ],
+  "Translations": [
+   {
+    "Title": "Aurora's Sunrise",
+    "Overview": "The story of how Aurora Mardiganian (1901-94), a survivor of the Armenian genocide perpetrated by the Ottoman Empire (1915-17), became a Hollywood silent film star.",
+    "Language": "en-US"
+   },
+   {
+    "Title": "Aurora's sunrise",
+    "Overview": "L'histoire d'Aurora Mardiganian (1901-94), survivante du génocide arménien perpétré par l'Empire ottoman (1915-17), devenue une star du cinéma muet hollywoodien.",
+    "Language": "fr-FR"
+   },
+   {
+    "Title": "Auroras Sunrise",
+    "Overview": "Die Geschichte, wie Aurora Mardiganian (1901-94), eine Überlebende des vom Osmanischen Reich (1915-17) verübten Völkermords an den Armeniern, zum Hollywood-Stummfilmstar wurde.",
+    "Language": "de-DE"
+   },
+   {
+    "Title": "Aurora's sunrise",
+    "Overview": "La sorprendente historia de cómo Aurora Mardiganian (1901-94), superviviente del genocidio armenio perpetrado por el Imperio otomano (1915-17), se convirtió en una estrella del cine mudo hollywoodiense.",
+    "Language": "es-ES"
+   },
+   {
+    "Title": "오로라 마르디가니안의 빛",
+    "Overview": "제1차 세계대전의 여파로 벌어진 아르메니아 학살 사건. 그 끔찍한 역사는 열네 살 소녀 오로라의 모든 것을 앗아갔다. 목숨을 건 탈주 끝에 그녀가 다다른 곳은 뉴욕. 그곳에는 영화배우의 미래가 그녀를 기다리고 있었다. 역사의 비극을 알리고 정의를 호소하는 투사의 운명에 관한 이야기이다.",
+    "Language": "ko-KR"
+   },
+   {
+    "Title": "Aurora's Sunrise",
+    "Overview": "",
+    "Language": "it-IT"
+   },
+   {
+    "Title": "Auroran aamunkoitto",
+    "Overview": "14-vuotiaana Aurora menetti kaiken Armenian kansanmurhan kauhuissa. Kaksi vuotta myöhemmin onnen ja poikkeuksellisen rohkeuden avulla hän pakeni New Yorkiin, missä hänen tarinastaan tuli mediailmiö. Aurora esiintyi omana itsenään Hollywood-elokuvassa ja hänestä tuli historiallisen suuren hyväntekeväisyyskampanjan kasvot. Dokumentti \"Auroran aamu\" herättää tämän unohdetun selviytymistarinan eloon animaatiolla, Auroran haastatteluilla sekä melkein kadonneesta mykkäelokuvasta säilyneellä filmimateriaalilla.",
+    "Language": "fi-FI"
+   },
+   {
+    "Title": "Aurora's sunrise",
+    "Overview": "La sorprendente historia de cómo Aurora Mardiganian (1901-94), superviviente del genocidio armenio perpetrado por el Imperio otomano (1915-17), se convirtió en una estrella del cine mudo hollywoodiense.",
+    "Language": "es-MX"
+   },
+   {
+    "Title": "欧若拉之晨",
+    "Overview": "亚美尼亚大屠杀幸存少女欧娜拉逃到美国，口述亲身经历出版成书，更被好莱坞拍成电影，由她本人重演惨案。十四岁遭遇家破人亡，被鄂图曼士兵强行驱逐，眼前尽是掠夺、饥饿、强奸和杀戮，盼望黎明曙光，死里逃生有责任说出灭绝真相。由她主演的默片面世后引起极大回响，拷贝原已散佚，部分失而复得。生于亚美尼亚的茵娜莎哈基安，以动画形式，结合这些寻回的片段，以及欧娜拉生前访问，重述她走过死荫幽谷背负创伤的故事，提醒世人勿忘种族灭绝暴行。",
+    "Language": "zh-CN"
+   },
+   {
+    "Title": "Արշալույսի լուսաբացը",
+    "Overview": "Het verhaal van hoe Aurora Mardiganian (1901-94), een overlevende van de Armeense genocide gepleegd door het Ottomaanse Rijk (1915-1917), een ster van de stomme film uit Hollywood werd.",
+    "Language": "nl-NL"
+   },
+   {
+    "Title": "Рассвет Авроры",
+    "Overview": "",
+    "Language": "ru-RU"
+   },
+   {
+    "Title": "L'alba de l'Aurora",
+    "Overview": "Amb només 14 anys, Arshaluys (Aurora) Mardiganian ho va perdre tot durant l'horror del genocidi armeni. Dos anys més tard, gràcies a la sort i un coratge extraordinari, va arribar a Nova York, on la seva història es va convertir en una sensació mediàtica. Protagonitzada per ella mateixa a \"Auction of Souls\" (\"Subhasta d'ànimes\"), un dels primers èxits de Hollywood, l'Aurora es va convertir en la cara d'una de les campanyes benèfiques més grans de la història americana.",
+    "Language": "ca-ES"
+   },
+   {
+    "Title": "歐若拉之晨",
+    "Overview": "亞美尼亞大屠殺倖存少女歐娜拉逃到美國，口述親身經歷出版成書，更被好萊塢拍成電影，由她本人重演慘案。十四歲遭遇家破人亡，被鄂圖曼士兵強行驅逐，眼前盡是掠奪、飢餓、強姦和殺戮，盼望黎明曙光，死裏逃生有責任説出滅絕真相。由她主演的默片面世後引起極大迴響，拷貝原已散佚，部分失而復得。生於亞美尼亞的茵娜莎哈基安，以動畫形式，結合這些尋回的片段，以及歐娜拉生前訪問，重述她走過死蔭幽谷揹負創傷的故事，提醒世人勿忘種族滅絕暴行。",
+    "Language": "zh-HK"
+   },
+   {
+    "Title": "Sielų aukcionas. Neįtikėtina Auroros Madriganian istorija",
+    "Overview": "",
+    "Language": "lt-LT"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 1251636,
+    "Title": "The Bloody Hundredth"
+   },
+   {
+    "TmdbId": 1236419,
+    "Title": "Piece by Piece"
+   },
+   {
+    "TmdbId": 848981,
+    "Title": "9/11: Inside the President's War Room"
+   },
+   {
+    "TmdbId": 836919,
+    "Title": "Who Are You, Charlie Brown?"
+   },
+   {
+    "TmdbId": 595841,
+    "Title": "Making Waves: The Art of Cinematic Sound"
+   },
+   {
+    "TmdbId": 473334,
+    "Title": "My Generation"
+   },
+   {
+    "TmdbId": 613341,
+    "Title": "Apollo: Missions to the Moon"
+   },
+   {
+    "TmdbId": 1149947,
+    "Title": "To End All War: Oppenheimer & the Atomic Bomb"
+   },
+   {
+    "TmdbId": 757388,
+    "Title": "Audrey"
+   },
+   {
+    "TmdbId": 13016,
+    "Title": "Zeitgeist: The Movie"
+   }
+  ],
+  "Credits": {
+   "Cast": [
+    {
+     "Name": "Anzhelika Hakobyan",
+     "Order": 0,
+     "Character": "Aurora",
+     "TmdbId": 3700468,
+     "CreditId": "6321b1eb1b722c0084366121",
+     "Images": []
+    },
+    {
+     "Name": "Tamara Chalkhifalaqyan",
+     "Order": 1,
+     "Character": "Aurora's Mother",
+     "TmdbId": 4199101,
+     "CreditId": "64ce826c549dda00c53edabe",
+     "Images": []
+    },
+    {
+     "Name": "Shushan Abrahamyan",
+     "Order": 2,
+     "Character": "Lusineh",
+     "TmdbId": 3700471,
+     "CreditId": "64ce827e303c85013a14c6be",
+     "Images": []
+    },
+    {
+     "Name": "Sergey Gasparyan",
+     "Order": 3,
+     "Character": "Hovnan",
+     "TmdbId": 4199108,
+     "CreditId": "64ce82b4549dda00ffa3b61b",
+     "Images": []
+    },
+    {
+     "Name": "Ani Ghazaryan",
+     "Order": 4,
+     "Character": "Sara",
+     "TmdbId": 1882030,
+     "CreditId": "64ce82c685090f00c87cd71d",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/efamtdl5hANL1IeMBprbQIaBKiu.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Rafael Melqonyan",
+     "Order": 5,
+     "Character": "Martiros",
+     "TmdbId": 4199111,
+     "CreditId": "64ce82e3d9f4a603b5497781",
+     "Images": []
+    },
+    {
+     "Name": "Hambardzum Ghazanchyan",
+     "Order": 6,
+     "Character": "Aurora's Father",
+     "TmdbId": 4199114,
+     "CreditId": "64ce8310549dda0139328383",
+     "Images": []
+    },
+    {
+     "Name": "Vahagn Tulbenjyan",
+     "Order": 7,
+     "Character": "Poghos",
+     "TmdbId": 4199117,
+     "CreditId": "64ce8335549dda00ffa3b650",
+     "Images": []
+    },
+    {
+     "Name": "Harut Galstyan",
+     "Order": 8,
+     "Character": "Shepherd",
+     "TmdbId": 4199120,
+     "CreditId": "64ce83594d6791011c172f89",
+     "Images": []
+    },
+    {
+     "Name": "Vram Meliqyan",
+     "Order": 9,
+     "Character": "Turkish Soldier #1",
+     "TmdbId": 3700481,
+     "CreditId": "64ce83896d4c97012e8acf46",
+     "Images": []
+    },
+    {
+     "Name": "Tigran Baghdasaryan",
+     "Order": 10,
+     "Character": "Turkish Soldier #2",
+     "TmdbId": 3700480,
+     "CreditId": "64ce83a685090f00ae83420b",
+     "Images": []
+    },
+    {
+     "Name": "Hrant Gishyan",
+     "Order": 11,
+     "Character": "Wealthy Buyer",
+     "TmdbId": 4199129,
+     "CreditId": "64ce841c4d67910139ee0f35",
+     "Images": []
+    },
+    {
+     "Name": "Ashkhen Tsaturyan",
+     "Order": 12,
+     "Character": "First Aunt",
+     "TmdbId": 3700477,
+     "CreditId": "64ce85b66d4c9700ec577e7d",
+     "Images": []
+    },
+    {
+     "Name": "Nara Sargsyan",
+     "Order": 13,
+     "Character": "Second Aunt",
+     "TmdbId": 3700478,
+     "CreditId": "64ce85d04d67910139ee0fb3",
+     "Images": []
+    },
+    {
+     "Name": "Arman Tovmasyan",
+     "Order": 14,
+     "Character": "Turkish Soldier #3",
+     "TmdbId": 4130839,
+     "CreditId": "64ce860f549dda00e2dceab7",
+     "Images": []
+    },
+    {
+     "Name": "Valter Avetisyan",
+     "Order": 15,
+     "Character": "Turkish Soldier #4",
+     "TmdbId": 4199141,
+     "CreditId": "64ce8648303c85011dd3a541",
+     "Images": []
+    },
+    {
+     "Name": "Miqael Shaqaryan",
+     "Order": 16,
+     "Character": "Cousin Suren",
+     "TmdbId": 4199143,
+     "CreditId": "64ce866b4d679100c52c1249",
+     "Images": []
+    },
+    {
+     "Name": "Anri Karapetyan",
+     "Order": 17,
+     "Character": "Cousin Hrant",
+     "TmdbId": 4199146,
+     "CreditId": "64ce868a4d67910139ee0fec",
+     "Images": []
+    },
+    {
+     "Name": "Seyran Akopov",
+     "Order": 18,
+     "Character": "German Officer",
+     "TmdbId": 3700472,
+     "CreditId": "64cf046b614c6d011c2ac40b",
+     "Images": []
+    },
+    {
+     "Name": "Mikael Frangulyan",
+     "Order": 19,
+     "Character": "German Soldier #1",
+     "TmdbId": 4199799,
+     "CreditId": "64cf04c84d679100e24063db",
+     "Images": []
+    },
+    {
+     "Name": "Armen Hovhannisyan",
+     "Order": 20,
+     "Character": "German Soldier #2",
+     "TmdbId": 4199800,
+     "CreditId": "64cf052b549dda00e2dd22c6",
+     "Images": []
+    },
+    {
+     "Name": "Tigran Arakelyan",
+     "Order": 21,
+     "Character": "Kind German Soldier",
+     "TmdbId": 2950728,
+     "CreditId": "64cf054685090f0125bc90b0",
+     "Images": []
+    },
+    {
+     "Name": "Marine Petrosyan",
+     "Order": 22,
+     "Character": "Kurdish Woman",
+     "TmdbId": 4199801,
+     "CreditId": "64cf056bd9f4a603b875a09c",
+     "Images": []
+    },
+    {
+     "Name": "Mikayel Aleksanyan",
+     "Order": 23,
+     "Character": "Kurdish Man",
+     "TmdbId": 3700474,
+     "CreditId": "64cf058a303c85013a150113",
+     "Images": []
+    },
+    {
+     "Name": "Apaven Aleksanyan",
+     "Order": 24,
+     "Character": "Wounded Turkish Soldier",
+     "TmdbId": 4199802,
+     "CreditId": "64cf05e1303c85013a150143",
+     "Images": []
+    },
+    {
+     "Name": "Gor Hakobyan",
+     "Order": 25,
+     "Character": "Priest #1",
+     "TmdbId": 4199803,
+     "CreditId": "64cf0629d9f4a603b875a0f7",
+     "Images": []
+    },
+    {
+     "Name": "Arsen Khechoyan",
+     "Order": 26,
+     "Character": "Priest #2",
+     "TmdbId": 4199793,
+     "CreditId": "64cf06494d679100e2406499",
+     "Images": []
+    },
+    {
+     "Name": "Garik Torosyan",
+     "Order": 27,
+     "Character": "Bandit #1",
+     "TmdbId": 4199804,
+     "CreditId": "64cf0673303c8500c613a072",
+     "Images": []
+    },
+    {
+     "Name": "Aleksandr Harutyunyan",
+     "Order": 28,
+     "Character": "Bandit #2",
+     "TmdbId": 4199805,
+     "CreditId": "64cf0693d9f4a603b549a4de",
+     "Images": []
+    },
+    {
+     "Name": "Armen Machkaryan",
+     "Order": 29,
+     "Character": "Bey",
+     "TmdbId": 4199806,
+     "CreditId": "64cf06ae85090f01445b5d35",
+     "Images": []
+    }
+   ],
+   "Crew": [
+    {
+     "Name": "Inna Sahakyan",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 1066871,
+     "CreditId": "627096aca24c50393bd80c63",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/mEagDR0izWUNvvdPM5GV8jjUMIr.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Kerstin Meyer-Beetz",
+     "Order": 1,
+     "Job": "Writer",
+     "Department": "Writing",
+     "TmdbId": 3056968,
+     "CreditId": "64cefd476d4c97010d50af01",
+     "Images": []
+    },
+    {
+     "Name": "Inna Sahakyan",
+     "Order": 2,
+     "Job": "Writer",
+     "Department": "Writing",
+     "TmdbId": 1066871,
+     "CreditId": "64cefd5c614c6d011c2abf45",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/mEagDR0izWUNvvdPM5GV8jjUMIr.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Peter Liakhov",
+     "Order": 3,
+     "Job": "Writer",
+     "Department": "Writing",
+     "TmdbId": 3534738,
+     "CreditId": "64cefd2f6d4c97014f4242d6",
+     "Images": []
+    },
+    {
+     "Name": "Christian Beetz",
+     "Order": 4,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 1328871,
+     "CreditId": "627126d8245dbe337f4cf4c1",
+     "Images": []
+    },
+    {
+     "Name": "Kęstutis Drazdauskas",
+     "Order": 5,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 1342885,
+     "CreditId": "6321b0f5fd4a96007a27b4f1",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/a2S5FJr6stGc93CTnS77BgmRktK.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Justė Michailinaitė",
+     "Order": 6,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 3534739,
+     "CreditId": "627126e772d8551a4b2df21c",
+     "Images": []
+    },
+    {
+     "Name": "Inna Sahakyan",
+     "Order": 7,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 1066871,
+     "CreditId": "6321b1121b722c007cca75a1",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/mEagDR0izWUNvvdPM5GV8jjUMIr.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Eric Esrailian",
+     "Order": 8,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 1651503,
+     "CreditId": "6321b106fd4a96007f6125e1",
+     "Images": []
+    },
+    {
+     "Name": "Vardan Hovhannisyan",
+     "Order": 9,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 1293838,
+     "CreditId": "627126c85800c40065ebc700",
+     "Images": []
+    },
+    {
+     "Name": "Vardan Brutyan",
+     "Order": 10,
+     "Job": "Director of Photography",
+     "Department": "Camera",
+     "TmdbId": 4199792,
+     "CreditId": "64cf0255549dda00ffa3eacd",
+     "Images": []
+    },
+    {
+     "Name": "Christine Aufderhaar",
+     "Order": 11,
+     "Job": "Original Music Composer",
+     "Department": "Sound",
+     "TmdbId": 55987,
+     "CreditId": "644eb68423168c02dc54dd1a",
+     "Images": []
+    },
+    {
+     "Name": "Kerstin Meyer-Beetz",
+     "Order": 12,
+     "Job": "Creative Producer",
+     "Department": "Writing",
+     "TmdbId": 3056968,
+     "CreditId": "6321b125f14dad008287fab2",
+     "Images": []
+    },
+    {
+     "Name": "Kathrin Isberner",
+     "Order": 13,
+     "Job": "Line Producer",
+     "Department": "Production",
+     "TmdbId": 2215213,
+     "CreditId": "64cefdf7549dda013932b384",
+     "Images": []
+    },
+    {
+     "Name": "Andranik Berberyan",
+     "Order": 14,
+     "Job": "Additional Music",
+     "Department": "Crew",
+     "TmdbId": 2374005,
+     "CreditId": "6321b1a2fd4a96007a27b534",
+     "Images": []
+    },
+    {
+     "Name": "Ruben Ghazaryan",
+     "Order": 15,
+     "Job": "Editor",
+     "Department": "Editing",
+     "TmdbId": 3700465,
+     "CreditId": "6321b17c9a3c49007ad6c0b4",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/ousylYAabaD88bXI8NmFI8ebEgT.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ruben Ghazaryan",
+     "Order": 16,
+     "Job": "Co-Director",
+     "Department": "Directing",
+     "TmdbId": 3700465,
+     "CreditId": "64cf0177549dda011c27f402",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/ousylYAabaD88bXI8NmFI8ebEgT.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ruben Ghazaryan",
+     "Order": 17,
+     "Job": "Art Direction",
+     "Department": "Art",
+     "TmdbId": 3700465,
+     "CreditId": "64ceffde303c8500e338abc8",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/ousylYAabaD88bXI8NmFI8ebEgT.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ruben Ghazaryan",
+     "Order": 18,
+     "Job": "Animation Supervisor",
+     "Department": "Visual Effects",
+     "TmdbId": 3700465,
+     "CreditId": "64cf0004d9f4a603b4a038a6",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/ousylYAabaD88bXI8NmFI8ebEgT.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Tigran Baghinyan",
+     "Order": 19,
+     "Job": "Color Grading",
+     "Department": "Editing",
+     "TmdbId": 2548266,
+     "CreditId": "64cf120f303c85013a1508f3",
+     "Images": []
+    },
+    {
+     "Name": "Garegin Arakelyan",
+     "Order": 20,
+     "Job": "Additional Music",
+     "Department": "Crew",
+     "TmdbId": 3700467,
+     "CreditId": "6321b1c09a3c49007ddf241d",
+     "Images": []
+    },
+    {
+     "Name": "Vahan Setoyan",
+     "Order": 21,
+     "Job": "Additional Editor",
+     "Department": "Editing",
+     "TmdbId": 4199787,
+     "CreditId": "64ceffafd9f4a603b7971868",
+     "Images": []
+    },
+    {
+     "Name": "Komitas",
+     "Order": 22,
+     "Job": "Songs",
+     "Department": "Sound",
+     "TmdbId": 1732306,
+     "CreditId": "67f155ddaa77e08af7998e6d",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/sep58SJgUIthBal99C0RLoyhVjc.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Gediminas Skyrius",
+     "Order": 23,
+     "Job": "Background Designer",
+     "Department": "Art",
+     "TmdbId": 2584216,
+     "CreditId": "64cf013c4d679100ff67de89",
+     "Images": []
+    },
+    {
+     "Name": "Gediminas Skyrius",
+     "Order": 24,
+     "Job": "Storyboard Artist",
+     "Department": "Art",
+     "TmdbId": 2584216,
+     "CreditId": "64cf00fd549dda011c27f39d",
+     "Images": []
+    },
+    {
+     "Name": "Gediminas Skyrius",
+     "Order": 25,
+     "Job": "Animation Supervisor",
+     "Department": "Visual Effects",
+     "TmdbId": 2584216,
+     "CreditId": "64cf0038d9f4a603b6c8b262",
+     "Images": []
+    },
+    {
+     "Name": "Gediminas Skyrius",
+     "Order": 26,
+     "Job": "Graphic Designer",
+     "Department": "Art",
+     "TmdbId": 2584216,
+     "CreditId": "64cf006d4d679100e240614f",
+     "Images": []
+    },
+    {
+     "Name": "Šarūnas Vyštartas",
+     "Order": 27,
+     "Job": "Lead Animator",
+     "Department": "Visual Effects",
+     "TmdbId": 3757794,
+     "CreditId": "64cf00b06d4c97014f424510",
+     "Images": []
+    },
+    {
+     "Name": "Armen Mirakyan",
+     "Order": 28,
+     "Job": "Camera Operator",
+     "Department": "Camera",
+     "TmdbId": 4735963,
+     "CreditId": "66526ff902f294f75126fc99",
+     "Images": []
+    },
+    {
+     "Name": "Tigran Kuzikyan",
+     "Order": 29,
+     "Job": "Sound Editor",
+     "Department": "Sound",
+     "TmdbId": 2466484,
+     "CreditId": "64cf11c2614c6d00c5dc3d59",
+     "Images": []
+    }
+   ]
+  },
+  "Studio": "Beetz Brothers Film Production",
+  "YoutubeTrailerId": "wIl2_Rsha7Q",
+  "Certifications": [
+   {
+    "Country": "AU",
+    "Certification": "M"
+   },
+   {
+    "Country": "KR",
+    "Certification": "12"
+   },
+   {
+    "Country": "NL",
+    "Certification": "14"
+   }
+  ],
+  "Status": null,
+  "Collection": null,
+  "Homepage": "https://documentarystudio.barsmedia.am/aurora"
+ },
+ {
+  "TmdbId": 868944,
+  "ImdbId": null,
+  "Title": "Dinosaurs Under Auroras",
+  "Overview": "",
+  "OriginalTitle": "オーロラを見た恐竜たち",
+  "OriginalLanguage": "ja",
+  "TitleSlug": "868944",
+  "Runtime": 35,
+  "Popularity": 0.447,
+  "Year": 2012,
+  "Premier": null,
+  "InCinema": "2012-04-01T00:00:00Z",
+  "PhysicalRelease": null,
+  "DigitalRelease": null,
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/9BAGuqnICOzfgHrATvN5V4BCYD1.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 1,
+    "Value": 3,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 1,
+    "Value": 3,
+    "Type": "User"
+   },
+   "Imdb": null,
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": null
+  },
+  "Genres": [
+   "Animation"
+  ],
+  "Keywords": [
+   "dinosaur"
+  ],
+  "AlternativeTitles": [
+   {
+    "Title": "Dinosaurs Under Auroeas",
+    "Type": "Tmdb",
+    "Language": "ja"
+   },
+   {
+    "Title": "Dinosaurs Under the Aurora",
+    "Type": "Tmdb",
+    "Language": "ja"
+   }
+  ],
+  "Translations": [
+   {
+    "Title": "オーロラを見た恐竜たち",
+    "Overview": "今から7000万年前のアラスカ。冬には太陽が昇らないこの厳しい大地を生きた恐竜たちがいました。彼らは極寒の地でお互いに助け合いながら暮らし、その夜空にはオーロラが輝いていたことでしょう。 ある日、パキリノサウルスのリンが生まれました。心やさしい草食恐竜のリンを狙う肉食恐竜たちやリンを守る旅の仲間たち。さあ大冒険の始まりです。 現在調査が進む極圏の恐竜の最新成果を紹介しながら、オーロラの仕組みや、人工衛星などの天文トピックを解説します。お子様から大人まで楽しめるプラネタリウム番組です。",
+    "Language": "ja-JP"
+   },
+   {
+    "Title": "Dinosaurs Under Auroras",
+    "Overview": "",
+    "Language": "en-US"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 416153,
+    "Title": "Arctic Dogs"
+   },
+   {
+    "TmdbId": 1029119,
+    "Title": "Minions & More Volume 1"
+   },
+   {
+    "TmdbId": 409421,
+    "Title": "BLAME!"
+   },
+   {
+    "TmdbId": 743439,
+    "Title": "PAW Patrol: Jet to the Rescue"
+   },
+   {
+    "TmdbId": 162092,
+    "Title": "Doraemon: Nobita and the Winged Braves"
+   },
+   {
+    "TmdbId": 77951,
+    "Title": "Walking with Dinosaurs"
+   },
+   {
+    "TmdbId": 128868,
+    "Title": "Crayon Shin-chan: Action Mask vs. Leotard Devil"
+   },
+   {
+    "TmdbId": 19004,
+    "Title": "The Land Before Time III: The Time of the Great Giving"
+   },
+   {
+    "TmdbId": 128883,
+    "Title": "Crayon Shin-chan: The Legend Called: Dance! Amigo!"
+   },
+   {
+    "TmdbId": 136793,
+    "Title": "Dino Time"
+   }
+  ],
+  "Credits": {
+   "Cast": [],
+   "Crew": []
+  },
+  "Studio": "D&D Pictures",
+  "YoutubeTrailerId": "",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ }
+]

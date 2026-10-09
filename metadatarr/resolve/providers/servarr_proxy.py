@@ -17,6 +17,8 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
+import requests
+
 from metadatarr.client import ArrMetadataClient, OpenLibraryClient
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
@@ -27,13 +29,32 @@ from mediavocab.models.signals import Signals, match_quality
 LOG = logging.getLogger("metadatarr.resolve.providers.servarr_proxy")
 
 
+def _pick_by_year(results, want_year):
+    """Pick the best search result, preferring one matching ``want_year``.
+
+    Skyhook/TMDB search results are ordered by popularity, not by relevance
+    to the query's year — same-title remakes and originals collapse to
+    whichever is more popular unless we disambiguate here. Falls back to
+    ``results[0]`` (previous behaviour) when no year is given or no
+    year-bearing result is close enough.
+    """
+    if want_year:
+        exact = [r for r in results if getattr(r, "year", None) == want_year]
+        if exact:
+            return exact[0]
+        near = [r for r in results if getattr(r, "year", None) and abs(r.year - want_year) <= 1]
+        if near:
+            return near[0]
+    return results[0]
+
+
 class ServarrProxyProvider(MetadataProvider):
     """Single provider that dispatches to skyhook / radarr / lidarr / OpenLibrary by medium."""
 
     name = "skyhook"
     media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES, MediaType.MUSIC, MediaType.BOOK}
     # Universal — dispatches internally by medium to the right Skyhook backend.
-    modality: set = set()
+    playback_type: set = set()
 
     def __init__(self) -> None:
         self._client = ArrMetadataClient()
@@ -61,15 +82,20 @@ class ServarrProxyProvider(MetadataProvider):
                 if got is not None:
                     return got
             return None
-        except Exception as exc:
-            LOG.warning("metadatarr-servarr-proxy lookup failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("servarr-proxy lookup failed query=%r medium=%s: %s",
+                        signals.title, signals.medium, exc)
+            return None
+        except Exception:
+            LOG.exception("servarr-proxy lookup unexpected error query=%r medium=%s",
+                          signals.title, signals.medium)
             return None
 
     def _lookup_movie(self, signals: Signals) -> Optional[ProviderMatch]:
         results = self._client.search_movie(signals.title)
         if not results:
             return None
-        top = results[0]
+        top = _pick_by_year(results, signals.year)
         cand = Signals(title=top.title, year=top.year, medium=MediaType.MOVIE)
         return ProviderMatch(
             provider=self.name,
@@ -77,6 +103,7 @@ class ServarrProxyProvider(MetadataProvider):
             signals=cand,
             external_ids=ExternalIds(
                 tmdb_movie=int(top.tmdb_id) if top.tmdb_id else None,
+                imdb=top.imdb_id,
             ),
         )
 
@@ -84,7 +111,7 @@ class ServarrProxyProvider(MetadataProvider):
         results = self._client.search_series(signals.title)
         if not results:
             return None
-        top = results[0]
+        top = _pick_by_year(results, signals.year)
         cand = Signals(title=top.title, year=top.year, medium=MediaType.EPISODIC_SERIES)
         return ProviderMatch(
             provider=self.name,
@@ -186,7 +213,11 @@ class ServarrProxyProvider(MetadataProvider):
         if isbn:
             try:
                 edition = self._ol.get_edition_by_isbn(isbn)
+            except requests.RequestException as exc:
+                LOG.warning("servarr-proxy get_edition_by_isbn failed isbn=%r: %s", isbn, exc)
+                edition = None
             except Exception:
+                LOG.exception("servarr-proxy get_edition_by_isbn unexpected error isbn=%r", isbn)
                 edition = None
             if edition is not None:
                 # Edition.work_keys[0] is the OLID work id.
@@ -200,7 +231,11 @@ class ServarrProxyProvider(MetadataProvider):
         if external_ids.olid and out == ExternalIds():
             try:
                 work = self._ol.get_work(external_ids.olid)
+            except requests.RequestException as exc:
+                LOG.warning("servarr-proxy get_work failed olid=%r: %s", external_ids.olid, exc)
+                work = None
             except Exception:
+                LOG.exception("servarr-proxy get_work unexpected error olid=%r", external_ids.olid)
                 work = None
             if work is None:
                 return None

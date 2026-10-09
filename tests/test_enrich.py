@@ -273,7 +273,7 @@ def test_musicbrainz_enrich_walks_url_relations(monkeypatch):
         def json(self): return self._p
 
     monkeypatch.setattr(
-        "metadatarr.resolve.providers.musicbrainz.requests.get",
+        "metadatarr.resolve.providers.musicbrainz._SESSION.get",
         lambda *a, **kw: _Resp(payload),
     )
     p = MusicBrainzProvider()

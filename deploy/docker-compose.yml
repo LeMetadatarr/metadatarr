@@ -1,0 +1,31 @@
+services:
+  metadatarr:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: metadatarr:latest
+    container_name: metadatarr
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - metadatarr-cache:/data
+      - metadatarr-config:/config
+    environment:
+      # Optional provider API keys — unset providers stay disabled, the
+      # keyless providers still work fine.
+      # TMDB_API_KEY: ""
+      # TVDB_API_KEY: ""
+      # DISCOGS_TOKEN: ""
+      METADATARR_HTTP_CACHE: /data/http-cache
+      # METADATARR_HTTP_CACHE_TTL: "86400"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  metadatarr-cache:
+  metadatarr-config:

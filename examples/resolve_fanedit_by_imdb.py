@@ -11,11 +11,10 @@ This example shows two paths:
      where you already have all the IDs you need.
 
 Requires:
-    pip install metadatarr[fanedit]
+    pip install metadatarr   # pyfanedit is a core dependency, no extra needed
 """
 import metadatarr.resolve.providers  # trigger provider self-registration
 from metadatarr.resolve.base import all_providers, enrich
-from metadatarr.resolve.entities import Entity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
@@ -38,7 +37,7 @@ def path_1_via_resolve() -> None:
     ))
     print(f"  accepted : {[m.provider for m in result.accepted]}")
     print(f"  imdb     : {result.external_ids.imdb}")
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     print(f"  variants : {len(releases)} found")
     for r in releases[:10]:
         ids = r.external_ids.model_dump(exclude_none=True, exclude={"extra"})

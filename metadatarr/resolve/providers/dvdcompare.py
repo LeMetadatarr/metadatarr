@@ -17,9 +17,11 @@ import re
 from difflib import SequenceMatcher
 from typing import Optional
 
+import requests
+
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, VariantKind, PlaybackModality
+from mediavocab import MediaType, PictureFormat, VariantKind, PlaybackType
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.dvdcompare")
@@ -29,8 +31,21 @@ _VARIANT_MAP = {
     "theatrical": VariantKind.THEATRICAL,
     "extended": VariantKind.EXTENDED,
     "remaster": VariantKind.REMASTERED,
-    "regional": VariantKind.REGIONAL,
 }
+
+# Picture-format cues DVDCompare puts in the version/edition string. Ordered:
+# the first cue found wins, so the more specific entries come first.
+_PICTURE_FORMAT_CUES = (
+    ("colorized", PictureFormat.COLORIZED),
+    ("colourized", PictureFormat.COLORIZED),
+    ("black and white", PictureFormat.BLACK_AND_WHITE),
+    ("black & white", PictureFormat.BLACK_AND_WHITE),
+    ("b&w", PictureFormat.BLACK_AND_WHITE),
+    ("imax", PictureFormat.IMAX),
+    ("3d", PictureFormat.THREE_D),
+    ("4k", PictureFormat.FOUR_K),
+    ("uhd", PictureFormat.FOUR_K),
+)
 
 
 def _infer_variant(version: Optional[str]) -> Optional[VariantKind]:
@@ -40,6 +55,17 @@ def _infer_variant(version: Optional[str]) -> Optional[VariantKind]:
     for keyword, kind in _VARIANT_MAP.items():
         if keyword in v:
             return kind
+    return None
+
+
+def _infer_picture_format(*texts: Optional[str]) -> Optional[PictureFormat]:
+    """Derive a canonical :class:`PictureFormat` from version/format text."""
+    blob = " ".join(t.lower() for t in texts if t)
+    if not blob:
+        return None
+    for cue, fmt in _PICTURE_FORMAT_CUES:
+        if cue in blob:
+            return fmt
     return None
 
 
@@ -61,6 +87,7 @@ def _match_to_provider(signals: Signals, top) -> ProviderMatch:
         year=cand_year,
         medium=signals.medium or MediaType.MOVIE,
         source_format=top.disc_format or "Blu-ray",
+        picture_format=_infer_picture_format(top.version, top.disc_format),
         region=top.region,
         variant_kind=variant_kind,
         edition=top.version,
@@ -90,7 +117,7 @@ def _match_to_provider(signals: Signals, top) -> ProviderMatch:
 class DVDCompareProvider(MetadataProvider):
     name = "dvdcompare"
     media = {MediaType.MOVIE, MediaType.EPISODIC_SERIES}
-    modality = {PlaybackModality.VIDEO}
+    playback_type = {PlaybackType.VIDEO}
 
     def __init__(self) -> None:
         from metadatarr.client import DVDCompareClient
@@ -105,8 +132,11 @@ class DVDCompareProvider(MetadataProvider):
 
         try:
             hits = self._client.search(signals.title)
-        except Exception as exc:
-            LOG.warning("dvdcompare search failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("dvdcompare search failed query=%r: %s", signals.title, exc)
+            return None
+        except Exception:
+            LOG.exception("dvdcompare search unexpected error query=%r", signals.title)
             return None
 
         if not hits:
@@ -128,14 +158,20 @@ class DVDCompareProvider(MetadataProvider):
                 return None
             try:
                 top = self._client.get_edition(url)  # takes a URL string
-            except Exception as exc:
-                LOG.warning("dvdcompare enrich by url failed: %s", exc)
+            except requests.RequestException as exc:
+                LOG.warning("dvdcompare enrich by url failed url=%r: %s", url, exc)
+                return None
+            except Exception:
+                LOG.exception("dvdcompare enrich by url unexpected error url=%r", url)
                 return None
         else:
             try:
                 top = self._client.get_edition_by_fid(fid)
-            except Exception as exc:
-                LOG.warning("dvdcompare enrich by fid=%s failed: %s", fid, exc)
+            except requests.RequestException as exc:
+                LOG.warning("dvdcompare enrich by fid failed fid=%r: %s", fid, exc)
+                return None
+            except Exception:
+                LOG.exception("dvdcompare enrich by fid unexpected error fid=%r", fid)
                 return None
 
         if top is None:
@@ -145,6 +181,7 @@ class DVDCompareProvider(MetadataProvider):
         cand_signals = Signals(
             title=top.title,
             medium=(signals.medium if signals else None) or MediaType.MOVIE,
+            picture_format=_infer_picture_format(top.version, top.disc_format),
             variant_kind=variant_kind,
             edition=top.version,
         )

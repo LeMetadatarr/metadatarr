@@ -2,7 +2,7 @@
 
 Wraps the three public Servarr metadata proxies: **Skyhook** (Sonarr / TV),
 **Servarr Movie API** (Radarr / movies), and **MusicInfo** (Lidarr / music).
-These are the same servers Sonarr/Radarr/Lidarr hit by default — no auth,
+These are the same servers Sonarr/Radarr/Lidarr hit by default: no auth,
 no quota documented, but be polite.
 
 ```python
@@ -18,6 +18,9 @@ client = ArrMetadataClient()
 | TV | `get_series_info(tvdb_id)` | `SonarrSeries \| None` | `GET skyhook.sonarr.tv/v1/tvdb/shows/en/{id}` |
 | Movies | `search_movie(term)` | `list[RadarrMovie]` | `GET radarrapi.servarr.com/v1/search?q=` |
 | Movies | `get_movie_info(tmdb_id)` | `RadarrMovie \| None` | `GET radarrapi.servarr.com/v1/movie/{id}` |
+
+| Domain | Method | Returns | Upstream |
+|---|---|---|---|
 | Music | `search_artist(term)` | `list[LidarrArtist]` | `GET api.lidarr.audio/api/v0.4/search?query=&type=artist` |
 | Music | `get_artist_info(mbid)` | `LidarrArtist \| None` | `GET api.lidarr.audio/api/v0.4/artist/{mbid}` |
 
@@ -33,7 +36,7 @@ detail = client.get_series_info(371980)
 ```
 
 `SonarrSeries` fields: `title`, `tvdb_id`, `year`, `overview`. Anything else
-returned by Skyhook is ignored — extend the model if you need more (see
+returned by Skyhook is ignored: extend the model if you need more (see
 [Extending models](../models.md#extending-models)).
 
 ## Movies (Radarr / Servarr Movie API)
@@ -60,9 +63,9 @@ for a in artists:
 `LidarrArtist` fields: `id` (MusicBrainz ID, a string UUID), `name`, `title`
 (alias of name), `overview`.
 
-> ⚠️ Lidarr's response can wrap the artist inside an `Artist` envelope or
+> Warning: Lidarr's response can wrap the artist inside an `Artist` envelope or
 > return it flat depending on the endpoint. The model uses `AliasPath` to
-> handle both — you always read `artist.name` regardless.
+> handle both: you always read `artist.name` regardless.
 
 ## Customising
 
@@ -71,10 +74,10 @@ client = ArrMetadataClient(user_agent="my-app/2.0 (+https://example.org)")
 ```
 
 Pass a meaningful `User-Agent`. The Servarr operators run these as a public
-service for the *arr ecosystem; identifying yourself helps them spot abuse
+service for the *arr ecosystem, identifying yourself helps them spot abuse
 versus legitimate use.
 
-The base URLs are public attributes — `client.endpoints["sonarr"]` etc. — and
+The base URLs are public attributes: `client.endpoints["sonarr"]` etc.: and
 you can monkey-patch them if a provider migrates or you self-host a mirror.
 
 ## Internals
@@ -97,6 +100,9 @@ without extra null checks at the call site.
   `tenacity` or your retry library of choice if you care.
 - **TVDB-only for series, TMDB-only for movies.** If you need IMDb, MAL, AniDB
   or other IDs you'll need to chain to those services yourself.
-- **Lidarr's MusicInfo is the most volatile** of the three; expect occasional
+- **Lidarr's MusicInfo is the most volatile** of the three, expect occasional
   schema drift. Open an issue if you see a real upstream change that the
   `AliasChoices` doesn't already cover.
+
+---
+[← Getting started](../getting-started.md) · [Home](../README.md) · [BookInfoClient →](bookinfo.md)

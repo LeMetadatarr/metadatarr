@@ -120,3 +120,36 @@ def test_search_compose_with_consolidate(monkeypatch):
     cand = search(sig)
     result = consolidate(cand, sig)
     assert result.external_ids.tmdb_movie == 1
+
+
+def test_candidates_is_headline_name_and_search_is_alias(monkeypatch):
+    """`candidates()` is the headline name; `search()` is a thin alias that
+    returns identical output."""
+    from metadatarr.resolve import candidates
+
+    a = _Stub("a", [_match("a", 0.9, tmdb_movie=1), _match("a", 0.4, tmdb_movie=2)])
+    b = _Stub("b", [_match("b", 0.7, tmdb_movie=3)])
+    monkeypatch.setattr(
+        "metadatarr.resolve.base.active_providers",
+        lambda medium=None: [a, b],
+    )
+    sig = Signals(title="X", medium=MediaType.MOVIE)
+    via_candidates = candidates(sig)
+    via_search = search(sig)
+    assert [m.external_ids.tmdb_movie for m in via_candidates] == \
+           [m.external_ids.tmdb_movie for m in via_search]
+    assert {m.external_ids.tmdb_movie for m in via_candidates} == {1, 2, 3}
+
+
+def test_candidates_exported_from_top_level_package():
+    """Headline entry points are reachable from the package root."""
+    import metadatarr
+
+    assert hasattr(metadatarr, "candidates")
+    assert hasattr(metadatarr, "consolidate")
+    assert hasattr(metadatarr, "enrich")
+    assert hasattr(metadatarr, "Signals")
+    # the `resolve` submodule must remain a module (not shadowed by the fn)
+    import types
+    assert isinstance(metadatarr.resolve, types.ModuleType)
+    assert callable(metadatarr.resolve.resolve)

@@ -20,7 +20,7 @@ from typing import List, Optional
 
 import metadatarr.resolve.providers  # trigger built-in self-registration
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register, resolve
-from metadatarr.resolve.entities import Entity ProviderEntity
+from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, VariantKind
 from mediavocab.models.signals import Signals

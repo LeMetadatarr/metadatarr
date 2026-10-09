@@ -1,10 +1,10 @@
 import logging
 import os
 import re
-import requests
 from typing import Dict, List, Optional, Union
 
 from .version import __version__
+from .transport import make_session
 
 LOG = logging.getLogger("metadatarr.client")
 
@@ -24,13 +24,6 @@ from .models import (
     OpenLibraryWork,
     OpenLibraryEdition,
     OpenLibraryAuthor,
-    AudioDBArtist,
-    AudioDBAlbum,
-    AudioDBTrack,
-    TVmazeShow,
-    TVmazePerson,
-    TVmazeSeason,
-    TVmazeCastMember,
     BlurayComSearchHit,
     BlurayComEdition,
     BlurayComAudioTrack,
@@ -60,11 +53,12 @@ class ArrMetadataClient:
             "radarr": "https://radarrapi.servarr.com/v1",
             "lidarr": "https://api.lidarr.audio/api/v0.4"
         }
+        self._session = make_session()
 
     def _get(self, url: str, params: Optional[Dict] = None) -> Union[Dict, List]:
         """Internal helper to execute the GET request."""
         try:
-            response = requests.get(url, headers=self.headers, params=params, timeout=10)
+            response = self._session.get(url, headers=self.headers, params=params, timeout=10)
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -130,6 +124,7 @@ class BookInfoClient:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.headers = {"User-Agent": user_agent, "Accept": "application/json"}
+        self._session = make_session()
 
     @classmethod
     def goodreads(cls, **kwargs) -> "BookInfoClient":
@@ -141,7 +136,7 @@ class BookInfoClient:
 
     def _get(self, path: str, params: Optional[Dict] = None) -> Union[Dict, List, None]:
         try:
-            r = requests.get(f"{self.base_url}{path}", headers=self.headers, params=params, timeout=self.timeout)
+            r = self._session.get(f"{self.base_url}{path}", headers=self.headers, params=params, timeout=self.timeout)
             r.raise_for_status()
             if not r.content:
                 return None
@@ -190,10 +185,11 @@ class OpenLibraryClient:
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
         self.headers = {"User-Agent": user_agent, "Accept": "application/json"}
+        self._session = make_session()
 
     def _get(self, path: str, params: Optional[Dict] = None) -> Optional[Union[Dict, List]]:
         try:
-            r = requests.get(f"{self.base_url}{path}", headers=self.headers, params=params, timeout=self.timeout)
+            r = self._session.get(f"{self.base_url}{path}", headers=self.headers, params=params, timeout=self.timeout)
             r.raise_for_status()
             return r.json() if r.content else None
         except Exception:
@@ -252,6 +248,7 @@ class AnnasArchiveClient:
         self.headers = {
             "User-Agent": user_agent
         }
+        self._session = make_session()
 
     def search(self, query: str, timeout: int = 15) -> List[AnnasArchiveBook]:
         """Search for books across mirrors and parse HTML results."""
@@ -259,7 +256,7 @@ class AnnasArchiveClient:
         for mirror in mirrors:
             try:
                 search_url = f"{mirror}/search?q={quote_plus(query)}&display=table"
-                response = requests.get(search_url, headers=self.headers, timeout=timeout)
+                response = self._session.get(search_url, headers=self.headers, timeout=timeout)
                 if 200 <= response.status_code < 300:
                     self.working_mirror = mirror
                     return self._parse_search_results(response.text)
@@ -268,38 +265,94 @@ class AnnasArchiveClient:
         
         return []
 
+    # Fallback column positions for the ``display=table`` view, used when the
+    # table ships no header row.  Anna's Archive periodically reshuffles its
+    # columns, so :meth:`_column_map` prefers a header-name lookup and only
+    # falls back to these positions when no ``<th>`` header is present.
+    _DEFAULT_COLUMNS = {
+        "cover": 0,
+        "title": 1,
+        "author": 2,
+        "language": 3,
+        "size": 8,
+        "formats": 9,
+    }
+
+    # Maps each logical field to the header-text substrings that identify its
+    # column.  Matching is case-insensitive on the stripped header text.
+    _HEADER_ALIASES = {
+        "title": ("title",),
+        "author": ("author",),
+        "language": ("language", "lang"),
+        "size": ("size", "filesize"),
+        "formats": ("format", "extension", "filetype", "type"),
+    }
+
+    @classmethod
+    def _column_map(cls, table) -> Dict[str, int]:
+        """Build a ``{field: column_index}`` map from the table header.
+
+        Falls back to :attr:`_DEFAULT_COLUMNS` when the table has no header
+        row, so callers always get a position for every known field.
+        """
+        headers = table.find_all("th")
+        if not headers:
+            header_row = table.find("tr")
+            if header_row is not None and header_row.find("th"):
+                headers = header_row.find_all("th")
+        col_map = dict(cls._DEFAULT_COLUMNS)
+        for idx, th in enumerate(headers):
+            text = th.get_text(strip=True).lower()
+            if not text:
+                continue
+            for field, aliases in cls._HEADER_ALIASES.items():
+                if any(alias in text for alias in aliases):
+                    col_map[field] = idx
+                    break
+        return col_map
+
     def _parse_search_results(self, html_content: str) -> List[AnnasArchiveBook]:
         soup = BeautifulSoup(html_content, "html.parser")
         books = []
-        
+
         table = soup.find('table')
         if not table:
             return []
-            
+
+        col = self._column_map(table)
+
+        def cell(columns, field: str) -> str:
+            idx = col[field]
+            if idx < len(columns):
+                return columns[idx].get_text(strip=True)
+            return ""
+
         rows = table.find_all('tr')
         for row in rows:
             columns = row.find_all("td")
             if not columns or len(columns) < 10:
                 continue
 
-            cover_link = columns[0].find('a', tabindex="-1")
+            cover_idx = col["cover"]
+            cover_cell = columns[cover_idx] if cover_idx < len(columns) else columns[0]
+            cover_link = cover_cell.find('a', tabindex="-1")
             if not cover_link:
                 continue
-            
+
             href = cover_link.get('href', '')
             md5 = href.split('/')[-1] if href else ""
             if not md5:
                 continue
 
-            title = columns[1].get_text(strip=True)
-            author = columns[2].get_text(strip=True)
-            formats = columns[9].get_text(strip=True).upper()
-            
-            img = columns[0].find('img')
+            title = cell(columns, "title")
+            author = cell(columns, "author")
+            formats = cell(columns, "formats").upper()
+
+            img = cover_cell.find('img')
             cover_url = img.get('src', '') if img else ''
-            
-            language = columns[3].get_text(strip=True)
-            size = columns[8].get_text(strip=True)
+
+            language = cell(columns, "language")
+            size = cell(columns, "size")
 
             if title and author:
                 books.append(AnnasArchiveBook(
@@ -311,176 +364,8 @@ class AnnasArchiveClient:
                     language=language,
                     size=size
                 ))
-        
+
         return books
-
-
-class AudioDBClient:
-    """Client for TheAudioDB free API (key=123).
-
-    All endpoints are read-only and require no authentication.  The free key
-    ``123`` is the public key documented at theaudiodb.com/api_guide.php.
-    """
-
-    BASE = "https://www.theaudiodb.com/api/v1/json/123"
-
-    def __init__(self, user_agent: str = _USER_AGENT):
-        self._session = requests.Session()
-        self._session.headers["User-Agent"] = user_agent
-        self._session.headers["Accept"] = "application/json"
-
-    def _get(self, path: str, **params) -> dict:
-        try:
-            r = self._session.get(f"{self.BASE}/{path}", params=params, timeout=10)
-            r.raise_for_status()
-            return r.json()
-        except Exception:
-            return {}
-
-    # ------------------------------------------------------------------
-    # Artist
-    # ------------------------------------------------------------------
-
-    def search_artist(self, name: str) -> List[AudioDBArtist]:
-        data = self._get("search.php", s=name)
-        return [AudioDBArtist.model_validate(a) for a in (data.get("artists") or [])]
-
-    def get_artist(self, audiodb_id: str) -> Optional[AudioDBArtist]:
-        data = self._get("artist.php", i=audiodb_id)
-        artists = data.get("artists") or []
-        return AudioDBArtist.model_validate(artists[0]) if artists else None
-
-    def get_artist_by_mbid(self, mbid: str) -> Optional[AudioDBArtist]:
-        data = self._get("artist-mb.php", i=mbid)
-        artists = data.get("artists") or []
-        return AudioDBArtist.model_validate(artists[0]) if artists else None
-
-    # ------------------------------------------------------------------
-    # Album
-    # ------------------------------------------------------------------
-
-    def search_album(self, artist: str, album: Optional[str] = None) -> List[AudioDBAlbum]:
-        params = {"s": artist}
-        if album:
-            params["a"] = album
-        data = self._get("searchalbum.php", **params)
-        return [AudioDBAlbum.model_validate(a) for a in (data.get("album") or [])]
-
-    def get_album(self, audiodb_id: str) -> Optional[AudioDBAlbum]:
-        data = self._get("album.php", i=audiodb_id)
-        albums = data.get("album") or []
-        return AudioDBAlbum.model_validate(albums[0]) if albums else None
-
-    def get_album_by_mbid(self, mbid: str) -> Optional[AudioDBAlbum]:
-        data = self._get("album-mb.php", i=mbid)
-        albums = data.get("album") or []
-        return AudioDBAlbum.model_validate(albums[0]) if albums else None
-
-    def discography(self, artist: str) -> List[AudioDBAlbum]:
-        """Lightweight discography — returns album name + year only (free tier)."""
-        data = self._get("discography.php", s=artist)
-        out = []
-        for raw in data.get("album") or []:
-            try:
-                out.append(AudioDBAlbum.model_validate(raw))
-            except Exception:
-                pass
-        return out
-
-    # ------------------------------------------------------------------
-    # Track
-    # ------------------------------------------------------------------
-
-    def search_track(self, artist: str, title: str) -> List[AudioDBTrack]:
-        data = self._get("searchtrack.php", s=artist, t=title)
-        return [AudioDBTrack.model_validate(t) for t in (data.get("track") or [])]
-
-    def get_track(self, audiodb_id: str) -> Optional[AudioDBTrack]:
-        data = self._get("track.php", h=audiodb_id)
-        tracks = data.get("track") or []
-        return AudioDBTrack.model_validate(tracks[0]) if tracks else None
-
-    def get_track_by_mbid(self, mbid: str) -> Optional[AudioDBTrack]:
-        data = self._get("track-mb.php", i=mbid)
-        tracks = data.get("track") or []
-        return AudioDBTrack.model_validate(tracks[0]) if tracks else None
-
-
-class TVmazeClient:
-    """Client for the TVmaze public API (https://www.tvmaze.com/api).
-
-    No authentication or API key required.  Rate limit is 20 requests per 10
-    seconds for unauthenticated clients.
-    """
-
-    BASE = "https://api.tvmaze.com"
-
-    def __init__(self, user_agent: str = _USER_AGENT):
-        self._session = requests.Session()
-        self._session.headers["User-Agent"] = user_agent
-        self._session.headers["Accept"] = "application/json"
-
-    def _get(self, path: str, **params) -> Optional[Union[Dict, List]]:
-        try:
-            r = self._session.get(f"{self.BASE}{path}", params=params or None, timeout=10)
-            if r.status_code == 404:
-                return None
-            r.raise_for_status()
-            return r.json()
-        except Exception:
-            return None
-
-    # ------------------------------------------------------------------
-    # Show search & lookup
-    # ------------------------------------------------------------------
-
-    def search_shows(self, query: str) -> List[TVmazeShow]:
-        data = self._get("/search/shows", q=query)
-        if not isinstance(data, list):
-            return []
-        return [TVmazeShow.model_validate(item["show"]) for item in data if "show" in item]
-
-    def singlesearch(self, query: str) -> Optional[TVmazeShow]:
-        data = self._get("/singlesearch/shows", q=query)
-        return TVmazeShow.model_validate(data) if isinstance(data, dict) else None
-
-    def get_show(self, tvmaze_id: int) -> Optional[TVmazeShow]:
-        data = self._get(f"/shows/{tvmaze_id}")
-        return TVmazeShow.model_validate(data) if isinstance(data, dict) else None
-
-    def lookup_by_thetvdb(self, thetvdb_id: int) -> Optional[TVmazeShow]:
-        data = self._get("/lookup/shows", thetvdb=thetvdb_id)
-        return TVmazeShow.model_validate(data) if isinstance(data, dict) else None
-
-    def lookup_by_imdb(self, imdb_id: str) -> Optional[TVmazeShow]:
-        data = self._get("/lookup/shows", imdb=imdb_id)
-        return TVmazeShow.model_validate(data) if isinstance(data, dict) else None
-
-    # ------------------------------------------------------------------
-    # Seasons & cast
-    # ------------------------------------------------------------------
-
-    def get_seasons(self, tvmaze_id: int) -> List[TVmazeSeason]:
-        data = self._get(f"/shows/{tvmaze_id}/seasons")
-        if not isinstance(data, list):
-            return []
-        return [TVmazeSeason.model_validate(s) for s in data]
-
-    def get_cast(self, tvmaze_id: int) -> List[TVmazeCastMember]:
-        data = self._get(f"/shows/{tvmaze_id}/cast")
-        if not isinstance(data, list):
-            return []
-        return [TVmazeCastMember.model_validate(m) for m in data]
-
-    # ------------------------------------------------------------------
-    # People
-    # ------------------------------------------------------------------
-
-    def search_people(self, query: str) -> List[TVmazePerson]:
-        data = self._get("/search/people", q=query)
-        if not isinstance(data, list):
-            return []
-        return [TVmazePerson.model_validate(item["person"]) for item in data if "person" in item]
 
 
 # ---------------------------------------------------------------------------
@@ -503,7 +388,7 @@ class BlurayComClient:
     }
 
     def __init__(self, timeout: int = 15) -> None:
-        self._session = requests.Session()
+        self._session = make_session()
         self._session.headers.update(self._HEADERS)
         self._timeout = timeout
 
@@ -896,7 +781,7 @@ class DVDCompareClient:
     }
 
     def __init__(self, timeout: int = 15) -> None:
-        self._session = requests.Session()
+        self._session = make_session()
         self._session.headers.update(self._HEADERS)
         self._timeout = timeout
 
@@ -1228,23 +1113,17 @@ class DiscogsClient:
         # Discogs rate limits: 25 req/min unauthenticated, 60/min with token.
         # _min_interval is the floor sleep between consecutive requests.
         self._min_interval = 2.5 if not self._token else 1.0
-        self._last_request: float = 0.0
-        self._session = requests.Session()
+        self._session = make_session(rate_limits={"api.discogs.com": self._min_interval})
         self._session.headers.update({
-            "User-Agent": "metadatarr/1.0 +https://github.com/JarbasAl/metadatarr",
+            "User-Agent": f"{_USER_AGENT} (+https://github.com/LeMetadatarr/metadatarr)",
             "Accept": "application/json",
         })
         if self._token:
             self._session.headers["Authorization"] = f"Discogs token={self._token}"
 
     def _get(self, path: str, params: Optional[Dict] = None) -> dict:
-        import time as _time
-        elapsed = _time.monotonic() - self._last_request
-        if elapsed < self._min_interval:
-            _time.sleep(self._min_interval - elapsed)
         resp = self._session.get(f"{_DISCOGS_BASE}{path}",
                                  params=params, timeout=self._timeout)
-        self._last_request = _time.monotonic()
         resp.raise_for_status()
         return resp.json()
 

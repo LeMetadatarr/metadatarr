@@ -1,5 +1,5 @@
 """AudioDB artist + album lookup."""
-from metadatarr import AudioDBClient
+from pyaudiodb import AudioDBClient
 
 
 def main() -> None:

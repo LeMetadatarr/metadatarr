@@ -732,20 +732,11 @@ class TestDiscogsClientMethods:
         monkeypatch.setattr(client._session, "get", _fail)
         assert client.get_master_versions(292715) == []
 
-    def test_rate_limit_sleep_enforced(self, client, monkeypatch):
-        """_get() should sleep when called faster than _min_interval."""
-        import time as _time
-        sleeps = []
-        data = _json("discogs_release_1383918.json")
+    def test_rate_limit_registered_with_transport(self, client):
+        """The client registers its per-host interval with the shared limiter."""
+        from metadatarr import transport
 
-        monkeypatch.setattr(_time, "sleep", lambda s: sleeps.append(s))
-        monkeypatch.setattr(client._session, "get",
-                            lambda *a, **kw: _Resp(data=data))
-
-        client._last_request = _time.monotonic()   # simulate very recent request
-        client.get_release(1383918)
-        assert len(sleeps) >= 1
-        assert sleeps[0] > 0
+        assert transport._GLOBAL_LIMITER._per_host["api.discogs.com"] == client._min_interval
 
 
 # ===========================================================================

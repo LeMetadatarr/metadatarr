@@ -43,7 +43,7 @@ Run it::
 """
 from __future__ import annotations
 
-from metadatarr.resolve.entities import Entity
+from metadatarr.resolve.entities import EntityRole
 from metadatarr.resolve.mappings import MappingEntry
 
 # ---------------------------------------------------------------------------
