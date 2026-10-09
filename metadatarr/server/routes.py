@@ -39,6 +39,7 @@ from metadatarr.server.models import (
     EnrichRequest,
     HealthResponse,
     ProviderInfo,
+    plugin_infos,
     ProvidersResponse,
     ResolveRequest,
     StatsResponse,
@@ -114,6 +115,7 @@ def register_routes(app, templates) -> None:
             total=len(infos),
             active=sum(1 for i in infos if i.available),
             providers=infos,
+            plugins=plugin_infos(),
         )
 
     @app.post("/resolve", response_model=ResolveResult)

@@ -79,9 +79,29 @@ class AudioIdentifyResponse(BaseModel):
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
 
 
+class PluginInfo(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    distribution: Optional[str] = None
+    version: Optional[str] = None
+    error: Optional[str] = None
+
+
 class ProvidersResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     total: int
     active: int
     providers: List[ProviderInfo]
+    plugins: List[PluginInfo] = Field(default_factory=list)
+
+
+def plugin_infos() -> List[PluginInfo]:
+    """Status of the provider plugins loaded from installed distributions."""
+    from metadatarr.resolve.providers import loaded_plugins
+
+    return [
+        PluginInfo(name=p.name, distribution=p.distribution, version=p.version, error=p.error)
+        for p in loaded_plugins()
+    ]

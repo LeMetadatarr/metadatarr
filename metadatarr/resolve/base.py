@@ -176,6 +176,7 @@ class MetadataProvider(ABC):
 
 
 _REGISTRY: Dict[str, MetadataProvider] = {}
+_AVAILABILITY_FAILED: set = set()
 
 
 def register(provider: MetadataProvider) -> MetadataProvider:
@@ -191,6 +192,18 @@ def all_providers() -> Dict[str, MetadataProvider]:
     return dict(_REGISTRY)
 
 
+def _is_available(provider: MetadataProvider) -> bool:
+    """``provider.is_available()``, with a raising provider treated as unavailable."""
+    try:
+        return bool(provider.is_available())
+    except Exception as exc:
+        if provider.name not in _AVAILABILITY_FAILED:
+            _AVAILABILITY_FAILED.add(provider.name)
+            LOG.error("provider %r is_available() raised %s: %s; treating it as unavailable",
+                      provider.name, type(exc).__name__, exc)
+        return False
+
+
 def active_providers(medium: Optional[MediaType] = None,
                      signals: Optional[Signals] = None) -> List[MetadataProvider]:
     """Return providers whose ``is_available()`` is True.
@@ -199,7 +212,7 @@ def active_providers(medium: Optional[MediaType] = None,
     medium are returned. If ``signals`` is given, only providers whose
     three-axis routing :meth:`MetadataProvider.matches` it are returned.
     """
-    out = [p for p in _REGISTRY.values() if p.is_available()]
+    out = [p for p in list(_REGISTRY.values()) if _is_available(p)]
     if medium is not None:
         out = [p for p in out if not p.media or medium in p.media]
     return _routed(out, signals)

@@ -29,4 +29,13 @@
   </div>
   {% endfor %}
 </div>
+{% if providers_resp.plugins %}
+<div class="card">
+  <p class="note">Provider plugins from installed packages:</p>
+  {% for pl in providers_resp.plugins %}
+  <div class="kv">{{ pl.name }}{% if pl.distribution %} ({{ pl.distribution }} {{ pl.version }}){% endif %}
+    {% if pl.error %}<span class="badge badge-err">failed: {{ pl.error }}</span>{% else %}<span class="badge badge-ok">loaded</span>{% endif %}</div>
+  {% endfor %}
+</div>
+{% endif %}
 {% endblock %}

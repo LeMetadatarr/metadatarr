@@ -150,7 +150,61 @@ All overrides follow the same never-raise contract as `lookup()`.
 
 Call `register(MyCatalogueProvider())` at module bottom. Built-in providers are
 imported (and thus registered) by `metadatarr/resolve/providers/__init__.py`.
-For an out-of-tree provider, just import your module before calling `resolve()`.
+For an out-of-tree provider, either import your module before calling
+`resolve()` or ship it as a plugin package (next section).
+
+## Shipping a provider as a separate package
+
+A provider can live in its own distribution and be discovered automatically.
+Declare an entry point in the `metadatarr.providers` group. The entry point
+names either a module or a callable that takes no arguments:
+
+```toml
+[project]
+name = "metadatarr-example"
+version = "0.1.0"
+dependencies = ["metadatarr"]
+
+[project.entry-points."metadatarr.providers"]
+example = "metadatarr_example.provider"          # a module, or
+# example = "metadatarr_example:setup"           # a no-argument callable
+```
+
+```python
+# metadatarr_example/provider.py
+from metadatarr.resolve import MetadataProvider, register
+
+class ExampleProvider(MetadataProvider):
+    name = "example"
+    def is_available(self): return True
+    def lookup(self, signals): ...
+
+register(ExampleProvider())
+```
+
+A plugin imports from `metadatarr.resolve` (`from metadatarr.resolve import
+MetadataProvider, register`), never from the top-level `metadatarr` package.
+Plugins load while `import metadatarr` is still running, so a top-level import
+such as `from metadatarr import Signals` fails with a circular-import error and
+the plugin is skipped.
+
+metadatarr loads plugins once, after the built-in providers, when
+`metadatarr.resolve.providers` is first imported. The loader imports the
+module, or calls the callable, and expects it to call `register()` for each
+provider it ships. Plugin providers use the same routing (`media`, `modality`,
+`genre_filter`), availability checks and error contract as built-ins.
+
+A plugin that fails to import or raises (including `SystemExit`) is logged at
+ERROR level and skipped, and any provider it registered before failing is
+removed; resolution continues without it. A plugin that registers a name that
+is already taken does not replace the existing provider; the loader logs a
+WARNING naming both and keeps the first. A built-in that a plugin removes
+from the registry is restored with a WARNING. A plugin that registers
+nothing, or only names that are already taken, is listed with an error. A provider whose `is_available()`
+raises is logged once and treated as unavailable. `GET /providers` (and the Providers page of
+the web UI) lists every plugin with its distribution, version and, if it
+failed or registered nothing, the error. Set `METADATARR_DISABLE_PLUGINS=1` to skip plugin loading
+entirely.
 
 ## Testing your provider
 

@@ -12,7 +12,7 @@ import metadatarr.resolve.providers  # noqa: F401
 from mediavocab import MediaType
 
 from metadatarr.resolve.base import candidates as run_candidates, consolidate
-from metadatarr.server.models import ProviderInfo, ProvidersResponse
+from metadatarr.server.models import ProviderInfo, ProvidersResponse, plugin_infos
 from metadatarr.version import __version__
 
 
@@ -68,6 +68,7 @@ def _providers_response() -> ProvidersResponse:
         total=len(infos),
         active=sum(1 for i in infos if i.available),
         providers=infos,
+        plugins=plugin_infos(),
     )
 
 
