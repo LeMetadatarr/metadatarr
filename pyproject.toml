@@ -7,7 +7,7 @@ name = "metadatarr"
 dynamic = ["version"]
 description = "Pydantic-powered Python clients and cross-source resolver for media metadata (Servarr proxies, OpenLibrary, MusicBrainz, TMDB, TVmaze, AudioDB, Anna's Archive, Wikidata, Bandcamp, SoundCloud, YouTube, Metal Archives)"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [{ name = "JarbasAi", email = "jarbasai@mailfence.com" }]
 keywords = ["metadata", "servarr", "sonarr", "radarr", "lidarr", "musicbrainz", "openlibrary", "tmdb", "tvmaze", "pydantic"]
@@ -36,11 +36,12 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Software Development :: Libraries :: Python Modules",

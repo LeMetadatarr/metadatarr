@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/metadatarr)](https://pypi.org/project/metadatarr/)
 [![Python](https://img.shields.io/pypi/pyversions/metadatarr)](https://pypi.org/project/metadatarr/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Build](https://github.com/LeMetadatarr/metadatarr/actions/workflows/build-tests.yml/badge.svg)](https://github.com/LeMetadatarr/metadatarr/actions/workflows/build-tests.yml)
 
 metadatarr is a set of Pydantic-powered Python clients for public media metadata
@@ -58,7 +58,8 @@ Open [http://localhost:8000/](http://localhost:8000/).
 
 - The **Resolver Playground** — run any query through every keyless provider
   and see the ranked candidates side by side with the consolidated result.
-- The `/resolve`, `/candidates`, `/enrich`, `/providers`, `/healthz` JSON API.
+- A versioned JSON API under `/api/v1`: resolve (single and batch), candidates,
+  enrich, video and audio identify, providers, health.
 - MusicBrainz, TVmaze, AniList, OpenLibrary, Anna's Archive, LibriVox,
   Bandcamp, SoundCloud, YouTube/YouTube Music, Wikidata, and more — no
   registration, no tokens.
@@ -76,11 +77,13 @@ only, needed while a few first-party libs are still pinned to `@dev` refs).
 See [`deploy/`](deploy/) and [`docs/deploy.md`](docs/deploy.md) for volumes,
 env vars, and healthchecks.
 
-**HTTP API:**
+**HTTP API** (every route under `/api/v1`; the unversioned paths below remain as aliases):
 
 | Endpoint | What it does |
 |---|---|
 | `POST /resolve` | Run the full resolver on a `Signals` body, get back a `ResolveResult` |
+| `POST /api/v1/resolve/batch` | Up to 100 `Signals` bodies, results in order with per-item errors |
+| `POST /api/v1/identify/video` | Identify a video from its file name, optional duration and hints |
 | `POST /candidates` | Same fan-out, but return every provider's raw vote unmerged |
 | `POST /enrich` | Take a partial `ExternalIds` and fill in the rest |
 | `GET /providers` | List built-in providers and whether each is currently available |
@@ -88,12 +91,12 @@ env vars, and healthchecks.
 | `GET /stats` | `resolves_total` (`POST /resolve` calls since start), `cache_enabled`, and `cache_entries` and `cache_bytes` of the on-disk HTTP cache (zero when caching is off) |
 
 ```bash
-curl -X POST http://localhost:8000/resolve \
+curl -X POST http://localhost:8000/api/v1/resolve \
   -H 'Content-Type: application/json' \
   -d '{"title": "Inception", "year": 2010, "medium": "movie"}'
 # → a ResolveResult JSON body: external_ids, accepted, conflicts, provider_errors
 
-curl -X POST http://localhost:8000/candidates \
+curl -X POST http://localhost:8000/api/v1/candidates \
   -H 'Content-Type: application/json' \
   -d '{"title": "Inception", "year": 2010, "medium": "movie"}'
 # → every provider's raw vote, unmerged, sorted by confidence descending
@@ -108,9 +111,9 @@ providers grid:
 
 ![Providers](docs/img/providers.png)
 
-There is **no built-in authentication**. This is meant for a single-tenant
-homelab box: put it behind a reverse proxy (Caddy, Traefik, nginx) if it's
-reachable outside your LAN.
+The server is open by default. Optional API keys (with LAN exemption) and
+per-key rate limiting are set by environment variables; see
+[`docs/deploy.md`](docs/deploy.md#access-control).
 
 **Screenshots** — responsive down to phone width, dark by default with a
 light theme toggle:
@@ -348,7 +351,7 @@ enriched to the full cross-catalog id set. Built on the
 pip install "metadatarr[identify]"     # adds xazam
 
 metadatarr identify song.mp3           # → recognized title/artist + resolved ids
-# or over HTTP: POST /identify/audio  (multipart file upload)
+# or over HTTP: POST /api/v1/identify/audio  (multipart file upload)
 ```
 
 This is also the music fallback used by `tag-library` above.
@@ -602,4 +605,4 @@ same command runs in CI. See [`docs/testing.md`](docs/testing.md).
 
 ## License
 
-MIT: see [LICENSE](LICENSE).
+Apache-2.0: see [LICENSE](LICENSE).

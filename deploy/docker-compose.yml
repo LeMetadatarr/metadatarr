@@ -19,6 +19,11 @@ services:
       # DISCOGS_TOKEN: ""
       METADATARR_HTTP_CACHE: /data/http-cache
       # METADATARR_HTTP_CACHE_TTL: "86400"
+      # Access control (see docs/deploy.md#access-control). Published ports
+      # reach the container from the Docker bridge gateway, so an exempt
+      # network that contains it (e.g. "private") exempts every client.
+      # METADATARR_API_KEYS: "change-me"
+      # METADATARR_RATE_LIMIT: "120"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz"]
       interval: 30s

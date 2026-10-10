@@ -13,7 +13,7 @@ From a checkout of this repo. There's no PyPI release yet. Dependencies are
 `requests`, `pydantic>=2`, and `beautifulsoup4` (only needed if you use
 `AnnasArchiveClient`).
 
-Python 3.9+ is required (Pydantic V2 baseline).
+Python 3.10+ is required.
 
 ## Your first call (30 seconds)
 

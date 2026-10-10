@@ -3,7 +3,7 @@
 `metadatarr serve` (requires `pip install "metadatarr[server]"`) starts a
 FastAPI app with:
 
-- A JSON API (`/resolve`, `/candidates`, `/enrich`, `/providers`, `/healthz`, `/stats`).
+- A JSON API under `/api/v1` (see [`docs/deploy.md`](deploy.md#http-api)).
 - A server-rendered, build-free WebUI at `/`.
 
 No JavaScript build step — the UI is Jinja2 templates plus a locally
@@ -78,12 +78,12 @@ Same variables as the HTTP API / Docker image — see the table in
 keyless; `TMDB_API_KEY`, `TVDB_API_KEY`, `DISCOGS_TOKEN` unlock the gated
 ones, reflected live on `/ui/providers`.
 
-## No built-in auth
+## Access control
 
-Same as the HTTP API: there is no login, no session, no API key check on
-these routes. Fine for a single-tenant homelab box; put it behind a reverse
-proxy (Caddy, Traefik, nginx) with your own auth if it's reachable outside
-your LAN. See [`docs/deploy.md`](deploy.md#security-note).
+The WebUI is open unless `METADATARR_API_KEYS` is set. With keys set, the
+pages answer only clients from the networks in `METADATARR_AUTH_EXEMPT`
+(the browser sends no key), so set that to your LAN when you enable keys.
+See [`docs/deploy.md`](deploy.md#access-control).
 
 ## Troubleshooting
 

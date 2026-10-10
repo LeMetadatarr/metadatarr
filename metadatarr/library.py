@@ -389,7 +389,7 @@ def _full_title_candidate(stem: str) -> Optional[str]:
     return _parse_video_filename(stem).title
 
 
-def extract_signals(file: LocalMediaFile) -> Signals:
+def extract_signals(file: LocalMediaFile, *, probe: bool = True) -> Signals:
     """Build a ``Signals`` bag describing *file* for metadatarr resolution.
 
     VIDEO: ``guessit`` when available, else a regex filename fallback —
@@ -398,15 +398,19 @@ def extract_signals(file: LocalMediaFile) -> Signals:
     :func:`_apply_ffprobe_overrides`.
     MUSIC: embedded tags via ``mutagen`` when available, else a regex
     filename fallback ("Artist - Title" / "NN Title").
+
+    With ``probe=False`` only the file *name* is read: no ffprobe, no
+    mutagen, nothing opened on disk. Use it for names that do not refer to
+    a local file (e.g. a filename sent by an HTTP client).
     """
     stem = file.path.stem
     if file.kind == "video":
         signals = _guessit_video_signals(file.path)
         if signals is None:
             signals = _parse_video_filename(stem)
-        return _apply_ffprobe_overrides(signals, file.path)
+        return _apply_ffprobe_overrides(signals, file.path) if probe else signals
 
-    signals = _mutagen_music_signals(file.path)
+    signals = _mutagen_music_signals(file.path) if probe else None
     if signals is not None:
         return signals
     return _parse_music_filename(stem)
