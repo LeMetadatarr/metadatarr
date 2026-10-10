@@ -3,7 +3,7 @@
 `metadatarr serve` (requires `pip install "metadatarr[server]"`) starts a
 FastAPI app with:
 
-- A JSON API (`/resolve`, `/candidates`, `/enrich`, `/providers`, `/healthz`, `/stats`).
+- A JSON API under `/api/v1` (see [`docs/deploy.md`](deploy.md#http-api)).
 - A server-rendered, build-free WebUI at `/`.
 
 No JavaScript build step — the UI is Jinja2 templates plus a locally
@@ -78,19 +78,20 @@ Same variables as the HTTP API / Docker image — see the table in
 keyless; `TMDB_API_KEY`, `TVDB_API_KEY`, `DISCOGS_TOKEN` unlock the gated
 ones, reflected live on `/ui/providers`.
 
-## No built-in auth
+## Access control
 
-Same as the HTTP API: there is no login, no session, no API key check on
-these routes. Fine for a single-tenant homelab box; put it behind a reverse
-proxy (Caddy, Traefik, nginx) with your own auth if it's reachable outside
-your LAN. See [`docs/deploy.md`](deploy.md#security-note).
+The WebUI is open unless `METADATARR_API_KEYS` is set. With keys set, the
+pages answer only clients from the networks in `METADATARR_AUTH_EXEMPT`
+(the browser sends no key), so set that to your LAN when you enable keys.
+See [`docs/deploy.md`](deploy.md#access-control).
 
 ## Troubleshooting
 
 - **`Address already in use` / port 8000 taken.** Another process already
   bound the port. Pick a different one: `metadatarr serve --port 8080`
-  (or `uvicorn.run(..., port=8080)` if you're embedding `create_app()`
-  yourself), or stop whatever is already listening on 8000.
+  (or `uvicorn.run(create_app(), port=8080, **UVICORN_OPTIONS)` if you're
+  embedding `create_app()` yourself; import `UVICORN_OPTIONS` from
+  `metadatarr.server.app`, it turns off uvicorn's proxy-header handling), or stop whatever is already listening on 8000.
 
 - **A provider shows "unavailable" on `/ui/providers`.** That is almost
   always a missing API key, not a bug. TMDB, TVDB, and Discogs are

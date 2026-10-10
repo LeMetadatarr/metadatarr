@@ -145,7 +145,7 @@ async def identify_audio_async(
     there would fail with "asyncio.run() cannot be called from a running
     event loop". See :func:`identify_audio` for the full contract.
     """
-    audio_bytes = _load_audio(source)
+    audio_bytes = await asyncio.to_thread(_load_audio, source)
 
     try:
         result = await _recognize(audio_bytes)
@@ -158,13 +158,16 @@ async def identify_audio_async(
     if not match.matched:
         return match
 
+    # resolve/enrich block on provider HTTP for seconds; run them off the
+    # event loop so one identify call does not stall every other request.
     if resolve and match.signals is not None:
-        match.resolved = run_resolve(match.signals)
+        match.resolved = await asyncio.to_thread(run_resolve, match.signals)
         if match.resolved.external_ids:
             match.external_ids = match.external_ids.merge(match.resolved.external_ids)
 
     if enrich:
-        enriched = run_enrich(match.external_ids, medium=MediaType.MUSIC)
+        enriched = await asyncio.to_thread(
+            run_enrich, match.external_ids, medium=MediaType.MUSIC)
         match.external_ids = match.external_ids.merge(enriched)
 
     return match
