@@ -20,15 +20,25 @@ def _require_fastapi():
         ) from e
 
 
-def create_app():
-    """Build the metadatarr FastAPI app: JSON API + WebUI + static assets."""
+def create_app(config=None):
+    """Build the metadatarr FastAPI app: JSON API + WebUI + static assets.
+
+    *config* is a :class:`~metadatarr.server.config.ServerConfig`; when
+    omitted it is read from the ``METADATARR_*`` environment variables.
+    """
     _require_fastapi()
     from fastapi import FastAPI
     from fastapi.staticfiles import StaticFiles
     from fastapi.templating import Jinja2Templates
 
+    from metadatarr.server.config import ServerConfig
     from metadatarr.server.routes import register_routes
+    from metadatarr.server.security import install_access_control
     from metadatarr.server.web import register_web
+    from metadatarr.version import __version__
+
+    if config is None:
+        config = ServerConfig.from_env()
 
     here = Path(__file__).parent
     static_dir = here / "static"
@@ -37,11 +47,13 @@ def create_app():
     app = FastAPI(
         title="metadatarr",
         description="Cross-source media metadata resolver — HTTP surface.",
+        version=__version__,
     )
+    install_access_control(app, config)
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
     templates = Jinja2Templates(directory=str(templates_dir))
 
-    register_routes(app, templates)
+    register_routes(app, templates, config)
     register_web(app, templates)
     return app
 

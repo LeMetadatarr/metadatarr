@@ -29,6 +29,8 @@ Environment variables
 from __future__ import annotations
 
 import base64
+import contextlib
+import contextvars
 import hashlib
 import json
 import logging
@@ -36,7 +38,7 @@ import os
 import threading
 import time
 from pathlib import Path
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Iterator, Optional
 from urllib.parse import urlsplit
 
 import requests
@@ -46,6 +48,38 @@ LOG = logging.getLogger("metadatarr.transport")
 
 _DEFAULT_CACHE_DIR = Path.home() / ".cache" / "metadatarr" / "http"
 _DEFAULT_TTL = 86400
+
+# True inside :func:`bypass_cache`: cache reads are skipped and fresh results
+# are written back. A context variable, so it follows a request into the
+# provider fan-out threads (see ``resolve.base._run_pool``) and nowhere else.
+_BYPASS = contextvars.ContextVar("metadatarr_cache_bypass", default=False)
+
+
+@contextlib.contextmanager
+def bypass_cache(active: bool = True) -> Iterator[None]:
+    """Skip cache reads (HTTP disk cache and provider lookup cache) for the
+    calls made inside this block; fresh responses still refresh the caches."""
+    token = _BYPASS.set(bool(active))
+    try:
+        yield
+    finally:
+        _BYPASS.reset(token)
+
+
+def cache_bypassed() -> bool:
+    """True inside a :func:`bypass_cache` block."""
+    return _BYPASS.get()
+
+
+def _ttl_from_env() -> Optional[int]:
+    """Configured cache TTL in seconds; ``None`` means no expiry."""
+    ttl_raw = os.environ.get("METADATARR_HTTP_CACHE_TTL", str(_DEFAULT_TTL)).strip()
+    try:
+        ttl_val = int(ttl_raw)
+    except ValueError:
+        LOG.warning("Invalid METADATARR_HTTP_CACHE_TTL %r — using default", ttl_raw)
+        return _DEFAULT_TTL
+    return ttl_val if ttl_val > 0 else None
 
 # Defense-in-depth: any request issued through a session built by
 # make_session() gets this timeout unless the caller passed an explicit one.
@@ -193,13 +227,7 @@ def _cache_from_env() -> Optional[DiskCache]:
     env = os.environ.get("METADATARR_HTTP_CACHE", "").strip()
     if not env:
         return None
-    ttl_raw = os.environ.get("METADATARR_HTTP_CACHE_TTL", str(_DEFAULT_TTL)).strip()
-    try:
-        ttl_val = int(ttl_raw)
-        ttl: Optional[int] = ttl_val if ttl_val > 0 else None
-    except ValueError:
-        LOG.warning("Invalid METADATARR_HTTP_CACHE_TTL %r — using default", ttl_raw)
-        ttl = _DEFAULT_TTL
+    ttl = _ttl_from_env()
     cache = DiskCache(_resolve_dir(env), ttl)
     LOG.info("HTTP cache enabled: path=%s ttl=%s",
              cache.directory, f"{ttl}s" if ttl else "∞")
@@ -239,7 +267,8 @@ class CachingRateLimitedAdapter(requests.adapters.HTTPAdapter):
         if not cacheable:
             return super().send(request, **kwargs)
 
-        hit = self._cache.get(request.method, request.url, request.body)
+        hit = None if cache_bypassed() else self._cache.get(
+            request.method, request.url, request.body)
         if hit is not None:
             return hit
         LOG.debug("http_cache MISS %s", request.url)
@@ -304,16 +333,10 @@ def info() -> dict:
     env = os.environ.get("METADATARR_HTTP_CACHE", "").strip()
     d = _resolve_dir(env or "1")
     files = list(d.glob("*.json")) if d.is_dir() else []
-    ttl_raw = os.environ.get("METADATARR_HTTP_CACHE_TTL", str(_DEFAULT_TTL)).strip()
-    try:
-        ttl_val = int(ttl_raw)
-        ttl: Optional[int] = ttl_val if ttl_val > 0 else None
-    except ValueError:
-        ttl = _DEFAULT_TTL
     return {
         "enabled": bool(env),
         "path": str(d),
-        "ttl": ttl,
+        "ttl": _ttl_from_env(),
         "entries": len(files),
         "size_bytes": _total_size(files),
     }

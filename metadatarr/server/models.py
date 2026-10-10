@@ -7,12 +7,14 @@ package), so the server's request/response shapes live here instead of a
 """
 from __future__ import annotations
 
-from typing import Dict, List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
+
+from metadatarr.resolve.base import ResolveResult
 
 
 class ResolveRequest(Signals):
@@ -26,6 +28,65 @@ class ResolveRequest(Signals):
     model_config = ConfigDict(extra="forbid")
 
     max_workers: int = Field(default=8, ge=1, le=32)
+
+
+MAX_BATCH_ITEMS = 100
+
+
+class BatchResolveRequest(BaseModel):
+    """Up to :data:`MAX_BATCH_ITEMS` signal bags, each resolved on its own.
+
+    Items are validated one by one, so a malformed item becomes an error in
+    its own slot of the response instead of failing the whole batch.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    items: List[Dict[str, Any]] = Field(min_length=1, max_length=MAX_BATCH_ITEMS)
+    max_workers: int = Field(default=8, ge=1, le=32)
+
+
+class BatchItemResult(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    index: int
+    ok: bool
+    result: Optional[ResolveResult] = None
+    error: Optional[str] = None
+
+
+class BatchResolveResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    results: List[BatchItemResult]
+
+
+class VideoIdentifyRequest(BaseModel):
+    """A video file described by its name, as a client sees it.
+
+    Only the final path component of ``filename`` is used; the server never
+    opens it. ``duration`` (seconds) fills ``Signals.runtime`` when the name
+    does not carry one. ``size`` (bytes) is accepted for clients that send it
+    and is not used for matching. ``hints`` are ``Signals`` fields that
+    override what the name parser found.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    filename: str = Field(min_length=1, max_length=1024)
+    duration: Optional[float] = Field(default=None, gt=0)
+    size: Optional[int] = Field(default=None, ge=0)
+    hints: Dict[str, Any] = Field(default_factory=dict)
+    max_workers: int = Field(default=8, ge=1, le=32)
+
+
+class VideoIdentifyResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    filename: str
+    signals: Signals
+    embedded_ids: Optional[ExternalIds] = None
+    result: ResolveResult
 
 
 class EnrichRequest(BaseModel):

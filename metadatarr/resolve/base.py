@@ -16,6 +16,7 @@ from mediavocab import MediaType
 """
 from __future__ import annotations
 
+import contextvars
 import warnings
 from abc import ABC, abstractmethod
 from typing import ClassVar, Dict, List, Optional, Set, Tuple
@@ -402,7 +403,9 @@ def _run_pool(providers: List["MetadataProvider"],
     pool = ThreadPoolExecutor(max_workers=workers)
     # dict preserves insertion order (py3.7+), so iterating `futures.items()`
     # below walks the futures in the same order as `providers` was given.
-    futures = {pool.submit(fn, p): p for p in providers}
+    # Each worker runs in a copy of the caller's context, so request-scoped
+    # context variables (e.g. ``transport.bypass_cache``) reach the providers.
+    futures = {pool.submit(contextvars.copy_context().run, fn, p): p for p in providers}
     results: list = []
     try:
         done, _not_done = wait(futures, timeout=deadline)
