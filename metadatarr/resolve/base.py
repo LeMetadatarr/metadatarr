@@ -603,25 +603,34 @@ def resolve(signals: Signals, *, max_workers: int = 8,
                    deadline=deadline), signals)
     result.provider_errors = sink
     if signals.include_variants:
-        providers = _routed(active_providers(medium=signals.medium), signals)
-
-        def _get_variants(p: "MetadataProvider") -> List[ProviderEntity]:
-            with trap(p.name, "variants", sink):
-                return p.list_variants(result.external_ids, signals) or []
-            return []
-
-        seen: dict = {}
-        # Seed from any variants already present in accepted matches.
-        for m in result.accepted:
-            for ent in m.variants:
-                seen.setdefault(_variant_key(ent), ent)
-        for batch in _run_pool(providers, _get_variants, max_workers,
-                               deadline=deadline, sink=sink, stage="variants"):
-            for ent in batch:
-                seen.setdefault(_variant_key(ent), ent)
-        if seen:
-            result.variants = list(seen.values())
+        add_variants(result, signals, max_workers=max_workers, deadline=deadline)
     return result
+
+
+def add_variants(result: ResolveResult, signals: Signals, *, max_workers: int = 8,
+                 deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE) -> None:
+    """Fill ``result.variants`` from the accepted matches and every routed
+    provider's :meth:`MetadataProvider.list_variants`; failures go to
+    ``result.provider_errors``."""
+    sink = result.provider_errors
+    providers = _routed(active_providers(medium=signals.medium), signals)
+
+    def _get_variants(p: "MetadataProvider") -> List[ProviderEntity]:
+        with trap(p.name, "variants", sink):
+            return p.list_variants(result.external_ids, signals) or []
+        return []
+
+    seen: dict = {}
+    # Seed from any variants already present in accepted matches.
+    for m in result.accepted:
+        for ent in m.variants:
+            seen.setdefault(_variant_key(ent), ent)
+    for batch in _run_pool(providers, _get_variants, max_workers,
+                           deadline=deadline, sink=sink, stage="variants"):
+        for ent in batch:
+            seen.setdefault(_variant_key(ent), ent)
+    if seen:
+        result.variants = list(seen.values())
 
 
 def enrich(external_ids: ExternalIds, *,

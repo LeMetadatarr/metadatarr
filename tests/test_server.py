@@ -70,7 +70,7 @@ def test_providers(client):
     names = [p["name"] for p in body["providers"]]
     assert "stub_movie_test" in names
     for p in body["providers"]:
-        assert set(p.keys()) == {"name", "available", "media", "modality", "genre_filter"}
+        assert set(p.keys()) == {"name", "available", "media", "modality", "genre_filter", "capabilities"}
 
 
 def test_resolve_uses_stub_provider(client):

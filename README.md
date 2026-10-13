@@ -81,12 +81,15 @@ env vars, and healthchecks.
 
 | Endpoint | What it does |
 |---|---|
-| `POST /resolve` | Run the full resolver on a `Signals` body, get back a `ResolveResult` |
+| `POST /resolve` | Run the full resolver on a `Signals` body, get back a `ResolveResult`; under `/api/v1` it also takes external `ids` |
 | `POST /api/v1/resolve/batch` | Up to 100 `Signals` bodies, results in order with per-item errors |
 | `POST /api/v1/identify/video` | Identify a video from its file name, optional duration and hints |
+| `GET /api/v1/lookup` | An item by external id, with its children one level down (seasons, episodes, albums, tracks, books, chapters) |
+| `GET /api/v1/credits` | The people credited on an item, with normalised roles and characters |
+| `GET /api/v1/person` | A person and their filmography |
 | `POST /candidates` | Same fan-out, but return every provider's raw vote unmerged |
 | `POST /enrich` | Take a partial `ExternalIds` and fill in the rest |
-| `GET /providers` | List built-in providers and whether each is currently available |
+| `GET /providers` | List built-in providers, whether each is currently available, and what each answers by id (`capabilities`) |
 | `GET /healthz` | Liveness check |
 | `GET /stats` | `resolves_total` (resolve lookups started since the server began: each `resolve`, `GET /api/v1/resolve` and `identify/video` request, and each well-formed item of a batch; candidates, enrich and audio requests are not counted), `cache_enabled`, and `cache_entries` and `cache_bytes` of the on-disk HTTP cache (zero when caching is off) |
 
@@ -545,6 +548,7 @@ environment variables.
 | [`docs/getting-started.md`](docs/getting-started.md) | Install, first calls, common patterns |
 | [`docs/models.md`](docs/models.md) | Full Pydantic model reference |
 | [`docs/resolve.md`](docs/resolve.md) | Signals, providers, ResolveResult, conflict detection |
+| [`docs/catalog.md`](docs/catalog.md) | Lookup, credits and person by external id; resolving with ids |
 | [`docs/providers.md`](docs/providers.md) | Provider catalogue: config, optional deps, caveats |
 | [`docs/webui.md`](docs/webui.md) | Web UI pages, HTTP API, running it |
 | [`docs/deploy.md`](docs/deploy.md) | Docker deployment: env vars, volumes, reverse proxy |

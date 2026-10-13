@@ -1,0 +1,137 @@
+<rss xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://github.com/Podcastindex-org/podcast-namespace/blob/main/docs/1.0.md" version="2.0">
+  <channel>
+    <title>Podcasting 2.0</title>
+    <description>The Podcast Index presents Podcasting 2.0 - Upgrading Podcasting</description>
+    <link>http://podcastindex.org</link>
+    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+    <language>en</language>
+    <generator>Sovereign Feeds</generator>
+    <pubDate>Fri, 09 Oct 2026 19:47:29 +0000</pubDate>
+    <lastBuildDate>Fri, 09 Oct 2026 19:47:29 +0000</lastBuildDate>
+    <podcast:locked owner="adam@curry.com">yes</podcast:locked>
+    <podcast:funding url="https://paypal.me/podcastindex">Value 4 Value</podcast:funding>
+    <managingEditor>adam@curry.com (Adam Curry)</managingEditor>
+    <webMaster>adam@curry.com (Adam Curry)</webMaster>
+    <itunes:owner>
+      <itunes:email>adam@curry.com</itunes:email>
+      <itunes:name><![CDATA[Adam Curry & Dave Jones]]></itunes:name>
+    </itunes:owner>
+    <image>
+      <url>https://noagendaassets.com/enc/1684513486.722_pcifeedimage.png</url>
+      <link>http://podcastindex.org</link>
+      <title>Podcasting 2.0</title>
+      <description>The Podcast Index presents Podcasting 2.0 - Upgrading Podcasting</description>
+      <width>144</width>
+      <height>144</height>
+    </image>
+    
+    <itunes:author>Podcast Index LLC</itunes:author>
+    <itunes:image href="https://noagendaassets.com/enc/1684513486.722_pcifeedimage.png"/>
+    <itunes:explicit>no</itunes:explicit>
+    <itunes:keywords>podcasting,media,software</itunes:keywords>
+    <itunes:category text="News &amp; Politics"/>
+    <itunes:category text="Technology"/>
+    <podcast:guid>917393e3-1b1e-5cef-ace4-edaa54e1f810</podcast:guid>
+    <podcast:medium>podcast</podcast:medium>
+    <podcast:complete>no</podcast:complete>
+    <podcast:block>no</podcast:block>
+    <podcast:block id="apple">yes</podcast:block>
+    <podcast:block id="spotify">yes</podcast:block>
+    <podcast:block id="amazon">yes</podcast:block>
+    <podcast:person href="http://curry.com/" img="https://feeds.podcastindex.org/adam_avatar.jpg" group="cast" role="host">Adam Curry</podcast:person>
+    <podcast:person href="http://dave.sobr.org" img="https://feeds.podcastindex.org/dave_avatar.jpg" group="cast" role="host">Dave Jones</podcast:person>
+    <category><![CDATA[News & Politics]]></category>
+    <category>Technology</category>
+    <podcast:podroll>
+      </podcast:podroll>
+    <podcast:liveItem status="ended" start="2026-10-09T17:20:00.000Z" chat="irc.zeronode.net" end="2026-10-09T19:50:00.000Z">
+      <title>PC2.0 274 Live October 9th 2026</title>
+      <description>PC2.0 Episode #274 October 9th 2026 Live!
+Pre-Boost Us!
+Get Podcast Addict, Podcast Guru, CurioCaster, Podverse, Fountain and Truefans from newpodcastapps.com</description>
+      <enclosure length="33" type="audio/mpeg" url="https://op3.dev/e/live.noagendastream.com/noagenda"/>
+      <guid isPermaLink="false">0707dcfa-fcf7-479f-9714-a38dd768daab</guid>
+      <itunes:image href="https://behindthesch3m3s.com/wp-content/uploads/2023/01/v4v-storm-good-quality.gif"/>
+      <itunes:subtitle>PC2.0 274 Live October 9th 2026</itunes:subtitle>
+      
+      <podcast:contentLink href="http://adam.curry.com/html/NoAgendaStreamandCha-1414965812.html">Listen Live in the Chat Room</podcast:contentLink>
+      <podcast:chat server="irc.zeronode.net" protocol="irc" accountId="adamc1999" space="#Podcasting20" embedUrl="https://kiwiirc.com/nextclient/irc.zeronode.net/?nick=webtroll?#Podcasting20"/>
+      <podcast:socialInteract uri="https://podcastindex.social/@dave/110634382833124876" protocol="activitypub" accountId="adam" accountUrl="https://podcastindex.social/users/dave"/>
+      <podcast:liveValue uri="https://curiohoster.com/event?event_id=8a2cfa5a-7a4d-466a-9d32-362ad68f945e" protocol="socket.io"/>
+    </podcast:liveItem>
+    <item>
+      <title><![CDATA[Episode 274: "Vibe Cloning"]]></title>
+      <description>Podcasting 2.0 October 9th 2026 Episode 274 - "Vibe Cloning"
+
+The Future is here! And so is the risk of spinning out. Adam &amp;amp; Dave go deep
+
+&amp;lt;b&amp;gt;ShowNotes&amp;lt;/b&amp;gt;
+----------------------------</description>
+      <link>https://www.podpage.com/podcasting-20/vibe-cloning/</link>
+      <guid isPermaLink="false">PC20-274</guid>
+      <pubDate>Fri, 09 Oct 2026 19:37:54 +0000</pubDate>
+      <itunes:subtitle><![CDATA[Episode 274: "Vibe Cloning"]]></itunes:subtitle>
+      
+      <itunes:author>Podcast Index LLC</itunes:author>
+      <author>Podcast Index LLC</author>
+      <itunes:image href="https://noagendaassets.com/enc/1684513486.722_pcifeedimage.png"/>
+      <itunes:explicit>No</itunes:explicit>
+      <itunes:keywords>podcasting,curry,podfather,technology,developers</itunes:keywords>
+      <enclosure url="https://op3.dev/e/mp3s.nashownotes.com/PC20-274-2026-10-09-Final.mp3" type="audio/mpeg" length="72798142"/>
+      <podcast:person group="cast" role="host" img="https://feeds.podcastindex.org/adam_avatar.jpg" href="http://curry.com">Adam Curry</podcast:person>
+      <podcast:person href="http://dave.sobr.org" img="https://feeds.podcastindex.org/dave_avatar.jpg" group="cast" role="host">Dave Jones</podcast:person>
+      <podcast:socialInteract protocol="activitypub" uri="https://podcastindex.social/@samsethi/117412398628484808" accountId="@adam" accountUrl="https://podcastindex.social/users/adam"/>
+      <itunes:duration>6065</itunes:duration>
+      <podcast:funding url="https://www.paypal.com/donate?token=-hvWBEXZQfp7oSFJz0TwT3QXYcjYuemZRPIOml3nrL-EhtiUPAwuVHS6DPN5cBat9wjqwYEtyW-K8zSS">Support us with Value 4 Value</podcast:funding>
+    </item>
+<item>
+      <title><![CDATA[Episode 273: "Advertising is the Horse and Buggies of Podcasting"]]></title>
+      <description>Podcasting 2.0 October 2nd 2026 Episode 273 - "Advertising is The Horse and Buggies of Podcasting"
+One topic only today - Big changes coming to podcast discovery!
+
+05 - 🤖 PODCAST ROBOT &amp;mdash; ADAM'S </description>
+      <link>https://www.podpage.com/podcasting-20/horse-and-buggies/</link>
+      <guid isPermaLink="false">PC20-273</guid>
+      <pubDate>Fri, 02 Oct 2026 19:18:08 +0000</pubDate>
+      <itunes:subtitle><![CDATA[Episode 273: "Advertising is the Horse and Buggies of Podcasting"]]></itunes:subtitle>
+      
+      <itunes:author>Podcast Index LLC</itunes:author>
+      <author>Podcast Index LLC</author>
+      <itunes:image href="https://noagendaassets.com/enc/1684513486.722_pcifeedimage.png"/>
+      <itunes:explicit>No</itunes:explicit>
+      <itunes:keywords>podcasting,curry,podfather,technology,developers</itunes:keywords>
+      <enclosure url="https://op3.dev/e/mp3s.nashownotes.com/PC20-273-2026-10-02-Final.mp3" type="audio/mpeg" length="64648222"/>
+      <podcast:person group="cast" role="host" img="https://feeds.podcastindex.org/adam_avatar.jpg" href="http://curry.com">Adam Curry</podcast:person>
+      <podcast:person href="http://dave.sobr.org" img="https://feeds.podcastindex.org/dave_avatar.jpg" group="cast" role="host">Dave Jones</podcast:person>
+      <podcast:socialInteract protocol="activitypub" uri="https://podcastindex.social/@dave/117372749874166353" accountId="@adam" accountUrl="https://podcastindex.social/users/adam"/>
+      <itunes:duration>5385</itunes:duration>
+      <podcast:funding url="https://www.paypal.com/donate?token=-hvWBEXZQfp7oSFJz0TwT3QXYcjYuemZRPIOml3nrL-EhtiUPAwuVHS6DPN5cBat9wjqwYEtyW-K8zSS">Support us with Value 4 Value</podcast:funding>
+    </item>
+<item>
+      <title><![CDATA[Episode 272: "Is this Y'all?"]]></title>
+      <description>Podcasting 2.0 September 25th 2026 Episode 272 - "Is this Y'all?"
+&amp;nbsp;
+&amp;nbsp;
+
+00 - 🗄️ THE SCHEMA IS LIVE &amp;mdash; AND THEN THE AGGREGATORS PICKED A FIGHT
+&amp;lt;b&amp;gt;Dave has already told us this one i</description>
+      <link>https://www.podpage.com/podcasting-20/is-thos-yall/</link>
+      <guid isPermaLink="false">PC20-272</guid>
+      <pubDate>Fri, 25 Sep 2026 19:15:48 +0000</pubDate>
+      <itunes:subtitle><![CDATA[Episode 272: "Is this Y'all?"]]></itunes:subtitle>
+      
+      <itunes:author>Podcast Index LLC</itunes:author>
+      <author>Podcast Index LLC</author>
+      <itunes:image href="https://noagendaassets.com/enc/1684513486.722_pcifeedimage.png"/>
+      <itunes:explicit>No</itunes:explicit>
+      <itunes:keywords>podcasting,curry,podfather,technology,developers</itunes:keywords>
+      <enclosure url="https://op3.dev/e/mp3s.nashownotes.com/PC20-272-2026-09-25-Final.mp3" type="audio/mpeg" length="66036310"/>
+      <podcast:person group="cast" role="host" img="https://feeds.podcastindex.org/adam_avatar.jpg" href="http://curry.com">Adam Curry</podcast:person>
+      <podcast:person href="http://dave.sobr.org" img="https://feeds.podcastindex.org/dave_avatar.jpg" group="cast" role="host">Dave Jones</podcast:person>
+      <podcast:person href="https://www.truefans.fm/" img="https://cdn.masto.host/podcastindexsocial/accounts/avatars/000/003/709/original/081f4d3c40f34d24.jpeg" group="cast" role="guest">Sam Sethi</podcast:person>
+      <podcast:socialInteract protocol="activitypub" uri="https://podcastindex.social/@samsethi/117332894514693888" accountId="@adam" accountUrl="https://podcastindex.social/users/adam"/>
+      <itunes:duration>5501</itunes:duration>
+      <podcast:funding url="https://www.paypal.com/donate?token=-hvWBEXZQfp7oSFJz0TwT3QXYcjYuemZRPIOml3nrL-EhtiUPAwuVHS6DPN5cBat9wjqwYEtyW-K8zSS">Support us with Value 4 Value</podcast:funding>
+    </item>
+</channel>
+</rss>

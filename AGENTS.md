@@ -24,6 +24,7 @@ Ruff is enabled via CI (`.github/workflows/lint.yml` -> gh-automations `lint.yml
 - `metadatarr/resolve/providers/` — ~35 provider shims, one per source; self-register on import. Each maps a source's response into `ProviderMatch` with `ExternalIds`.
 - `metadatarr/resolve/entities.py` — `ProviderEntity`, `EntityRole`, entity-id allocation for relations/variants.
 - `metadatarr/resolve/mappings.py` + `metadatarr/data/mappings.toml` — curated cross-platform identity links; user file at `~/.config/metadatarr/mappings.toml` extends it.
+- `metadatarr/catalog/` — lookup, credits and person by external id: `base.py` (capability routing, per-provider timeout, failure isolation, in-memory TTL cache), `shapes.py` (item / person / credit), `roles.py` (role vocabulary and normaliser), `resolve.py` (resolve narrowed by ids), `sources/` (one module per provider that can answer, named after its resolver provider).
 - `metadatarr/resolve/_cache.py`, `_http_cache.py` — process-level result + HTTP caching (hits and misses both cached).
 - `metadatarr/resolve/title_parser.py`, `sidecar.py` — filename/title parsing and sidecar helpers.
 - `examples/` — one focused script per use case; `docs/` — getting-started, models, resolve, providers, recipes, physical-disc, troubleshooting, per-client deep dives.
