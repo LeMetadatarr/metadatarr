@@ -7,7 +7,7 @@ name = "metadatarr"
 dynamic = ["version"]
 description = "Pydantic-powered Python clients and cross-source resolver for media metadata (Servarr proxies, OpenLibrary, MusicBrainz, TMDB, TVmaze, AudioDB, Anna's Archive, Wikidata, Bandcamp, SoundCloud, YouTube, Metal Archives)"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 authors = [{ name = "JarbasAi", email = "jarbasai@mailfence.com" }]
 keywords = ["metadata", "servarr", "sonarr", "radarr", "lidarr", "musicbrainz", "openlibrary", "tmdb", "tvmaze", "pydantic"]
@@ -16,7 +16,14 @@ dependencies = [
     "pydantic>=2.0.0",
     "beautifulsoup4>=4.10.0",
     "tomli>=1.1.0; python_version < '3.11'",
-    "mediavocab>=0.1.0",
+    "mediavocab>=2.0.0a0",
+    "unblock_requests",
+    # Per-source query clients, extracted from this repo's in-line HTTP /
+    # client.py into dedicated packages (git deps until published).
+    "pytvmaze @ git+https://github.com/LeMetadatarr/pytvmaze@dev",
+    "pyaudiodb @ git+https://github.com/LeMetadatarr/pyaudiodb@dev",
+    "pytmdb @ git+https://github.com/LeMetadatarr/pytmdb@dev",
+    "pywikidata @ git+https://github.com/LeMetadatarr/pywikidata@dev",
     # First-party scrapers — bundled by default so users get a working
     # resolver out of the box without optional-extra juggling.
     "pyfanedit",
@@ -29,11 +36,12 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Topic :: Internet :: WWW/HTTP",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -41,21 +49,31 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/TigreGotico/metadatarr"
-Repository = "https://github.com/TigreGotico/metadatarr"
-Issues = "https://github.com/TigreGotico/metadatarr/issues"
+Homepage = "https://github.com/LeMetadatarr/metadatarr"
+Repository = "https://github.com/LeMetadatarr/metadatarr"
+Issues = "https://github.com/LeMetadatarr/metadatarr/issues"
 
 [project.optional-dependencies]
-test = ["pytest>=7"]
+test = ["pytest>=7", "httpx<1"]
+server = ["fastapi", "uvicorn[standard]", "jinja2", "python-multipart"]
+tag = ["guessit>=3", "mutagen>=1.45"]
+# xazam isn't on PyPI yet — git dep bridge, same pattern as pytvmaze/pyaudiodb/
+# pytmdb/pywikidata above. TODO: switch to PyPI floor-pin once xazam is published.
+identify = ["xazam @ git+https://github.com/LeMetadatarr/xazam@dev"]
+
+[project.scripts]
+metadatarr = "metadatarr.cli:main"
 
 [tool.setuptools.dynamic]
 version = { attr = "metadatarr.version.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["metadatarr*"]
 
 [tool.setuptools.package-data]
 "metadatarr.data" = ["*.toml"]
+"metadatarr.server" = ["templates/*", "templates/fragments/*", "static/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -63,12 +81,6 @@ addopts = "-q"
 
 [tool.coverage.run]
 source = ["metadatarr"]
-omit = [
-    # Resolve provider shims wrap external services / optional deps; their
-    # behaviour is integration-tested via the live `examples/` scripts. We
-    # measure coverage against the library core (clients + resolve framework).
-    "*/resolve/providers/*",
-]
 
 [tool.coverage.report]
 show_missing = true

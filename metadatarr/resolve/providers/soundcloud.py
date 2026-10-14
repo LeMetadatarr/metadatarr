@@ -20,10 +20,12 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
+import requests
+
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.soundcloud")
@@ -46,7 +48,7 @@ def _attr(obj, *names):
 class SoundCloudProvider(MetadataProvider):
     name = "soundcloud"
     media = {MediaType.MUSIC}
-    modality = {PlaybackModality.AUDIO}
+    playback_type = {PlaybackType.AUDIO}
 
     def __init__(self) -> None:
         try:
@@ -73,8 +75,11 @@ class SoundCloudProvider(MetadataProvider):
         query = f"{signals.artist} {signals.title}" if signals.artist else signals.title
         try:
             hits = list(self._client.search_tracks(query))
-        except Exception as exc:
-            LOG.warning("soundcloud search failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("soundcloud search failed query=%r: %s", query, exc)
+            return None
+        except Exception:
+            LOG.exception("soundcloud search unexpected error query=%r", query)
             return None
 
         if not hits:

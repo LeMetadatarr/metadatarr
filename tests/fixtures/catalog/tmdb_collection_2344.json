@@ -1,0 +1,18 @@
+{
+ "id": 2344,
+ "name": "The Matrix Collection",
+ "overview": "",
+ "poster_path": "/c.jpg",
+ "parts": [
+  {
+   "id": 604,
+   "title": "The Matrix Reloaded",
+   "release_date": "2003-05-15"
+  },
+  {
+   "id": 603,
+   "title": "The Matrix",
+   "release_date": "1999-03-31"
+  }
+ ]
+}

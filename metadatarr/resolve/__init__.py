@@ -13,6 +13,7 @@ Importing this module triggers registration of every built-in provider.
 """
 from __future__ import annotations
 
+from metadatarr.resolve._errors import ProviderError
 from metadatarr.resolve.base import (
     MetadataProvider,
     ProviderMatch,
@@ -20,11 +21,12 @@ from metadatarr.resolve.base import (
     ResolveResult,
     active_providers,
     all_providers,
+    candidates,
     consolidate,
     enrich,
     register,
     resolve,
-    search,
+    search,  # noqa: F401 — kept importable; deliberately dropped from __all__
 )
 from metadatarr.resolve.entities import (
     EntityKind,
@@ -42,10 +44,6 @@ from mediavocab.models import ExternalIds
 from mediavocab.text import ARTIST_MIN as ARTIST_FUZZY_MIN, TITLE_MIN as TITLE_FUZZY_MIN, YEAR_WINDOW as YEAR_TOLERANCE, fuzzy_ratio
 from mediavocab import MediaType
 from mediavocab.models.signals import RUNTIME_TOLERANCE_S, SignalConflict, Signals, compare_signals as compare, match_quality, merge_signals as merged, signal_hash
-
-# Activate disk-backed HTTP cache if METADATARR_HTTP_CACHE is set.
-from metadatarr.resolve import _http_cache as _http_cache  # noqa: F401
-_http_cache.setup()
 
 # Trigger built-in provider registration as a side effect of `from
 # metadatarr.resolve import *` or `import metadatarr.resolve`.
@@ -81,6 +79,7 @@ __all__ = [
     # providers / resolver
     "MetadataProvider",
     "ProviderMatch",
+    "ProviderError",
     "ResolutionConflict",
     "ResolveResult",
     "register",
@@ -89,5 +88,5 @@ __all__ = [
     "consolidate",
     "enrich",
     "resolve",
-    "search",
+    "candidates",
 ]

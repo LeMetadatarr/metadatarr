@@ -1,0 +1,246 @@
+[
+ {
+  "TmdbId": 1181769,
+  "ImdbId": "tt28686754",
+  "Title": "Apotemnofilia",
+  "Overview": "The premiere packs the theater while the leading lady Clara refuses to leave her dressing room, gripped by internal turmoil she must finally confront.",
+  "OriginalTitle": "Apotemnofilia",
+  "OriginalLanguage": "es",
+  "TitleSlug": "1181769",
+  "Runtime": 10,
+  "Popularity": 1.4347,
+  "Year": 2023,
+  "Premier": "2023-09-29T00:00:00Z",
+  "InCinema": null,
+  "PhysicalRelease": null,
+  "DigitalRelease": null,
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/HQamHQsOYoXsftfaBZg8Evh1mi.jpg"
+   },
+   {
+    "CoverType": "Fanart",
+    "Url": "https://image.tmdb.org/t/p/original/sy0OB9i2klzdARTQjBHL0lVskY5.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 3,
+    "Value": 5.2,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 3,
+    "Value": 5.2,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 47,
+    "Value": 6.2,
+    "Type": "User"
+   },
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": {
+    "Count": 1,
+    "Value": 7,
+    "Type": "User"
+   }
+  },
+  "Genres": [
+   "Horror"
+  ],
+  "Keywords": [],
+  "AlternativeTitles": [],
+  "Translations": [
+   {
+    "Title": "Apotemnofilia",
+    "Overview": "The premiere packs the theater while the leading lady Clara refuses to leave her dressing room, gripped by internal turmoil she must finally confront.",
+    "Language": "en-US"
+   },
+   {
+    "Title": "Apotemnofilia",
+    "Overview": "El estreno empaca el teatro mientras que la protagonista Clara se niega a salir de su camerino, agarrada por la agitación interna que finalmente debe enfrentar.",
+    "Language": "es-ES"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 814889,
+    "Title": "Never Let Go"
+   },
+   {
+    "TmdbId": 930600,
+    "Title": "The Deliverance"
+   },
+   {
+    "TmdbId": 1242937,
+    "Title": "The Dreadful"
+   },
+   {
+    "TmdbId": 772148,
+    "Title": "The House of Snails"
+   },
+   {
+    "TmdbId": 480100,
+    "Title": "Nightmare Cinema"
+   },
+   {
+    "TmdbId": 1299372,
+    "Title": "The Wailing"
+   },
+   {
+    "TmdbId": 1314829,
+    "Title": "Monkey’s Magic Merry Go Round"
+   },
+   {
+    "TmdbId": 1058710,
+    "Title": "Bloodline Killer"
+   },
+   {
+    "TmdbId": 1023313,
+    "Title": "The Exorcist"
+   },
+   {
+    "TmdbId": 862739,
+    "Title": "The Virgin of the Quarry Lake"
+   }
+  ],
+  "Credits": {
+   "Cast": [
+    {
+     "Name": "Lucía Azcoítia",
+     "Order": 0,
+     "Character": "Clara",
+     "TmdbId": 4342369,
+     "CreditId": "653b70d5bc2cb300aca2b399",
+     "Images": []
+    },
+    {
+     "Name": "Paqui Horcajo",
+     "Order": 1,
+     "Character": "La Representante",
+     "TmdbId": 1651931,
+     "CreditId": "653b70e8bc2cb300eafbea00",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/wIVvLaDNhAYm9X1Ps8pswKjmEwQ.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Martín el Zar",
+     "Order": 2,
+     "Character": "El Regidor",
+     "TmdbId": 4342370,
+     "CreditId": "653b70fdbc2cb300c97d7b93",
+     "Images": []
+    },
+    {
+     "Name": "Michael Collis",
+     "Order": 3,
+     "Character": "El Director",
+     "TmdbId": 4214132,
+     "CreditId": "653b7115cc9683012cf2f4ba",
+     "Images": []
+    }
+   ],
+   "Crew": [
+    {
+     "Name": "Jano Pita",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 4283946,
+     "CreditId": "650cb13b51a64e00c7d54b7f",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/z12q2SfKIRYzW3OYxvfB28SfYEW.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Jano Pita",
+     "Order": 1,
+     "Job": "Writer",
+     "Department": "Writing",
+     "TmdbId": 4283946,
+     "CreditId": "65ca59afe4b576017d17d133",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/z12q2SfKIRYzW3OYxvfB28SfYEW.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Clinton Uriarte",
+     "Order": 2,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 4345756,
+     "CreditId": "69ae9d4eeeeab37b8f45069e",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/zQ0BxfyOrwNr0Q11PHD9aJ1sfKy.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Manuel Galán",
+     "Order": 3,
+     "Job": "Director of Photography",
+     "Department": "Camera",
+     "TmdbId": 3767021,
+     "CreditId": "69d47d347de67d18b4edf3bf",
+     "Images": []
+    },
+    {
+     "Name": "Clara Ángel",
+     "Order": 4,
+     "Job": "Art Direction",
+     "Department": "Art",
+     "TmdbId": 5711571,
+     "CreditId": "69d47e12d40a22d05cf8a1ee",
+     "Images": []
+    },
+    {
+     "Name": "Laura Gantes",
+     "Order": 5,
+     "Job": "Sound",
+     "Department": "Sound",
+     "TmdbId": 2780352,
+     "CreditId": "69d47e214466e8a407f8a35e",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/1WxAdAEbLdMBi3KMC7iaaNHwSET.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Facundo Tosso",
+     "Order": 6,
+     "Job": "Editor",
+     "Department": "Editing",
+     "TmdbId": 3811881,
+     "CreditId": "69d47d42dded631800ca80c2",
+     "Images": []
+    }
+   ]
+  },
+  "Studio": "Video Gotic",
+  "YoutubeTrailerId": "",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ }
+]

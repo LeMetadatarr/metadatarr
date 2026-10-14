@@ -1,0 +1,267 @@
+[
+ {
+  "self": false,
+  "voice": false,
+  "_links": {
+   "show": {
+    "href": "https://api.tvmaze.com/shows/169",
+    "name": "Breaking Bad"
+   },
+   "character": {
+    "href": "https://api.tvmaze.com/characters/45529",
+    "name": "Walter White"
+   }
+  },
+  "_embedded": {
+   "show": {
+    "id": 169,
+    "url": "https://www.tvmaze.com/shows/169/breaking-bad",
+    "name": "Breaking Bad",
+    "type": "Scripted",
+    "language": "English",
+    "genres": [
+     "Drama",
+     "Crime",
+     "Thriller"
+    ],
+    "status": "Ended",
+    "runtime": 60,
+    "averageRuntime": 60,
+    "premiered": "2008-01-20",
+    "ended": "2019-10-11",
+    "officialSite": "http://www.amc.com/shows/breaking-bad",
+    "schedule": {
+     "time": "22:00",
+     "days": [
+      "Sunday"
+     ]
+    },
+    "rating": {
+     "average": 9.2
+    },
+    "weight": 100,
+    "network": {
+     "id": 20,
+     "name": "AMC",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": null
+    },
+    "webChannel": null,
+    "dvdCountry": null,
+    "externals": {
+     "tvrage": 18164,
+     "thetvdb": 81189,
+     "imdb": "tt0903747"
+    },
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/501/1253519.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/501/1253519.jpg"
+    },
+    "summary": "<p><b>Breaking Bad</b> follows protagonist Walter White, a chemistry teacher who lives in New Mexico with his wife and teenage son who has cerebral palsy. White is diagnosed with Stage III cancer and given a prognosis of two years left to live. With a new sense of fearlessness based on his medical prognosis, and a desire to secure his family's financial security, White chooses to enter a dangerous world of drugs and crime and ascends to power in this world. The series explores how a fatal diagnosis such as White's releases a typical man from the daily concerns and constraints of normal society and follows his transformation from mild family man to a kingpin of the drug trade.</p>",
+    "updated": 1769198028,
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/shows/169"
+     },
+     "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/2007806",
+      "name": "El Camino: A Breaking Bad Movie"
+     }
+    }
+   },
+   "character": {
+    "id": 45529,
+    "url": "https://www.tvmaze.com/characters/45529/breaking-bad-walter-white",
+    "name": "Walter White",
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/0/2404.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/0/2404.jpg"
+    },
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/characters/45529"
+     }
+    }
+   }
+  }
+ },
+ {
+  "self": false,
+  "voice": false,
+  "_links": {
+   "show": {
+    "href": "https://api.tvmaze.com/shows/568",
+    "name": "Malcolm in the Middle"
+   },
+   "character": {
+    "href": "https://api.tvmaze.com/characters/86111",
+    "name": "Hal"
+   }
+  },
+  "_embedded": {
+   "show": {
+    "id": 568,
+    "url": "https://www.tvmaze.com/shows/568/malcolm-in-the-middle",
+    "name": "Malcolm in the Middle",
+    "type": "Scripted",
+    "language": "English",
+    "genres": [
+     "Comedy"
+    ],
+    "status": "Ended",
+    "runtime": null,
+    "averageRuntime": 30,
+    "premiered": "2000-01-09",
+    "ended": "2006-05-14",
+    "officialSite": null,
+    "schedule": {
+     "time": "",
+     "days": []
+    },
+    "rating": {
+     "average": 7.8
+    },
+    "weight": 98,
+    "network": {
+     "id": 4,
+     "name": "FOX",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": "https://www.fox.com/"
+    },
+    "webChannel": null,
+    "dvdCountry": null,
+    "externals": {
+     "tvrage": 4355,
+     "thetvdb": 73838,
+     "imdb": "tt0212671"
+    },
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/549/1373492.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/549/1373492.jpg"
+    },
+    "summary": "<p>In the words of They Might Be Giants' rollicking Grammy-winning theme song, \"life is unfair.\" The inventive and wholly original sitcom <b>Malcolm in the Middle</b> has been honored with a Peabody Award and Emmys for directing and writing, but if life was fair, it would have earned an Emmy for Best Comedy Series, not to mention statuettes for its pitch-perfect cast. With his perpetual \"yes, me worry\" expression, Frankie Muniz instantly earns audience empathy as Malcolm, whose chances for a normal life are thwarted not only by his genius IQ, but also by his outrageously dysfunctional family: Lois, his obsessive, control-freak mother; Hal, his loving but ineffectual father; Francis, his eldest brother waging his own private war at military school; middle brother Reese, a delinquent savant; and Dewey, the put-upon youngest. As Malcolm observes at one point, \"This family may be rude, loud and gross, and have no shame whatsoever, but with them you know where you stand.\"</p>",
+    "updated": 1773354524,
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/shows/568"
+     },
+     "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/53434",
+      "name": "Graduation"
+     }
+    }
+   },
+   "character": {
+    "id": 86111,
+    "url": "https://www.tvmaze.com/characters/86111/malcolm-in-the-middle-hal",
+    "name": "Hal",
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/4/11769.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/4/11769.jpg"
+    },
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/characters/86111"
+     }
+    }
+   }
+  }
+ },
+ {
+  "self": false,
+  "voice": false,
+  "_links": {
+   "show": {
+    "href": "https://api.tvmaze.com/shows/1157",
+    "name": "North and South"
+   },
+   "character": {
+    "href": "https://api.tvmaze.com/characters/92005",
+    "name": "Col. Austin"
+   }
+  },
+  "_embedded": {
+   "show": {
+    "id": 1157,
+    "url": "https://www.tvmaze.com/shows/1157/north-and-south",
+    "name": "North and South",
+    "type": "Scripted",
+    "language": "English",
+    "genres": [
+     "Drama",
+     "War",
+     "History"
+    ],
+    "status": "Ended",
+    "runtime": null,
+    "averageRuntime": 91,
+    "premiered": "1985-11-03",
+    "ended": "1994-03-01",
+    "officialSite": null,
+    "schedule": {
+     "time": "19:00",
+     "days": [
+      "Monday",
+      "Tuesday",
+      "Sunday"
+     ]
+    },
+    "rating": {
+     "average": 8.2
+    },
+    "weight": 95,
+    "network": {
+     "id": 3,
+     "name": "ABC",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": "https://abc.com/"
+    },
+    "webChannel": null,
+    "dvdCountry": null,
+    "externals": {
+     "tvrage": 8911,
+     "thetvdb": 81645,
+     "imdb": "tt0088583"
+    },
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/6/17403.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/6/17403.jpg"
+    },
+    "summary": "<p>Patrick Swayze, Kirstie Alley and Lesley-Anne Down star in a 1985 miniseries based on John Jakes' novel about the Civil War and its effect on two families.</p>",
+    "updated": 1786571215,
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/shows/1157"
+     },
+     "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/106345",
+      "name": "Spring 1866 - Summer 1866"
+     }
+    }
+   },
+   "character": {
+    "id": 92005,
+    "url": "https://www.tvmaze.com/characters/92005/north-and-south-col-austin",
+    "name": "Col. Austin",
+    "image": null,
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/characters/92005"
+     }
+    }
+   }
+  }
+ }
+]

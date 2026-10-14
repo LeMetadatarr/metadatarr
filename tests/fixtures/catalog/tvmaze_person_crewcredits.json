@@ -1,0 +1,137 @@
+[
+ {
+  "type": "Executive Producer",
+  "_links": {
+   "show": {
+    "href": "https://api.tvmaze.com/shows/2743",
+    "name": "SuperMansion"
+   }
+  },
+  "_embedded": {
+   "show": {
+    "id": 2743,
+    "url": "https://www.tvmaze.com/shows/2743/supermansion",
+    "name": "SuperMansion",
+    "type": "Animation",
+    "language": "English",
+    "genres": [
+     "Comedy",
+     "Action",
+     "Science-Fiction"
+    ],
+    "status": "Ended",
+    "runtime": 22,
+    "averageRuntime": 22,
+    "premiered": "2015-10-08",
+    "ended": "2019-05-09",
+    "officialSite": "http://www.crackle.com/c/supermansion",
+    "schedule": {
+     "time": "08:00",
+     "days": [
+      "Monday"
+     ]
+    },
+    "rating": {
+     "average": 7.2
+    },
+    "weight": 80,
+    "network": null,
+    "webChannel": {
+     "id": 4,
+     "name": "Crackle",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": "https://www.crackle.com/"
+    },
+    "dvdCountry": null,
+    "externals": {
+     "tvrage": 48645,
+     "thetvdb": 300147,
+     "imdb": "tt4843640"
+    },
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/206/515192.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/206/515192.jpg"
+    },
+    "summary": "<p>In <b>SuperMansion</b>, a group of elderly superheroes, the League of Freedom, were once renowned throughout the world. Now under the leadership of Titanium Rex, they attempt to stay relevant in a world that has passed them by.</p>",
+    "updated": 1704795036,
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/shows/2743"
+     },
+     "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/1675356",
+      "name": "Bad Lex"
+     }
+    }
+   }
+  }
+ },
+ {
+  "type": "Creator",
+  "_links": {
+   "show": {
+    "href": "https://api.tvmaze.com/shows/2686",
+    "name": "Sneaky Pete"
+   }
+  },
+  "_embedded": {
+   "show": {
+    "id": 2686,
+    "url": "https://www.tvmaze.com/shows/2686/sneaky-pete",
+    "name": "Sneaky Pete",
+    "type": "Scripted",
+    "language": "English",
+    "genres": [
+     "Drama",
+     "Crime"
+    ],
+    "status": "Ended",
+    "runtime": null,
+    "averageRuntime": 49,
+    "premiered": "2015-08-07",
+    "ended": "2019-05-10",
+    "officialSite": "http://www.amazon.com/Sneaky-Pete-Season-1/dp/B013488XFS",
+    "schedule": {
+     "time": "",
+     "days": []
+    },
+    "rating": {
+     "average": 7.5
+    },
+    "weight": 98,
+    "network": null,
+    "webChannel": {
+     "id": 3,
+     "name": "Prime Video",
+     "country": null,
+     "officialSite": "https://www.primevideo.com"
+    },
+    "dvdCountry": null,
+    "externals": {
+     "tvrage": 47587,
+     "thetvdb": 300166,
+     "imdb": "tt5011816"
+    },
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/193/483552.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/193/483552.jpg"
+    },
+    "summary": "<p><b>Sneaky Pete</b> centers on a thirty-something con man who, upon leaving prison, takes cover from his past by assuming the identity of his cellmate. He begins working at his family run bail bond business where he secretly uses this as a cover to help catch bigger criminals than he ever was. He works alongside his beautiful cousin who is not too sure what his underlying motives are.</p>",
+    "updated": 1722098657,
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/shows/2686"
+     },
+     "previousepisode": {
+      "href": "https://api.tvmaze.com/episodes/1654011",
+      "name": "The Brooklyn Potash"
+     }
+    }
+   }
+  }
+ }
+]

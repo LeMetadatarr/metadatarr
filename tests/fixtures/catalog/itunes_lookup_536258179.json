@@ -1,0 +1,47 @@
+{
+ "resultCount": 1,
+ "results": [
+  {
+   "wrapperType": "track",
+   "kind": "podcast",
+   "artistId": 718704794,
+   "collectionId": 536258179,
+   "trackId": 536258179,
+   "artistName": "Night Vale Presents",
+   "collectionName": "Welcome to Night Vale",
+   "trackName": "Welcome to Night Vale",
+   "collectionCensoredName": "Welcome to Night Vale",
+   "trackCensoredName": "Welcome to Night Vale",
+   "artistViewUrl": "https://podcasts.apple.com/us/artist/night-vale-presents/718704794?uo=4",
+   "collectionViewUrl": "https://podcasts.apple.com/us/podcast/welcome-to-night-vale/id536258179?uo=4",
+   "feedUrl": "https://feeds.megaphone.fm/SBP4591212513",
+   "trackViewUrl": "https://podcasts.apple.com/us/podcast/welcome-to-night-vale/id536258179?uo=4",
+   "artworkUrl30": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/c2/4a/51/c24a5124-d015-8ca7-27f4-3985a345f5b0/mza_10525284149020137113.jpg/30x30bb.jpg",
+   "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/c2/4a/51/c24a5124-d015-8ca7-27f4-3985a345f5b0/mza_10525284149020137113.jpg/60x60bb.jpg",
+   "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/c2/4a/51/c24a5124-d015-8ca7-27f4-3985a345f5b0/mza_10525284149020137113.jpg/100x100bb.jpg",
+   "collectionPrice": 0.0,
+   "trackPrice": 0.0,
+   "collectionHdPrice": 0,
+   "releaseDate": "2026-10-12T18:35:00Z",
+   "collectionExplicitness": "notExplicit",
+   "trackExplicitness": "cleaned",
+   "trackCount": 382,
+   "trackTimeMillis": 666,
+   "country": "USA",
+   "currency": "USD",
+   "primaryGenreName": "Science Fiction",
+   "contentAdvisoryRating": "Clean",
+   "artworkUrl600": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/c2/4a/51/c24a5124-d015-8ca7-27f4-3985a345f5b0/mza_10525284149020137113.jpg/600x600bb.jpg",
+   "genreIds": [
+    "1485",
+    "26",
+    "1483"
+   ],
+   "genres": [
+    "Science Fiction",
+    "Podcasts",
+    "Fiction"
+   ]
+  }
+ ]
+}
