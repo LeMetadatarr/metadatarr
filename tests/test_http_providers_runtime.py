@@ -8,6 +8,7 @@ from mediavocab import MediaType
 from mediavocab.models.signals import Signals
 
 from metadatarr.resolve.providers import anilist, jikan, librivox, podcast_index
+from metadatarr.resolve.base import consolidate
 
 FIXTURES = Path(__file__).parent / "fixtures" / "catalog"
 
@@ -219,3 +220,16 @@ def test_providers_import_and_run_when_httpx_is_missing_at_import_time():
                          text=True, timeout=120)
     assert out.returncode == 0, out.stderr
     assert out.stdout.strip() == "ok"
+
+
+def test_librivox_long_title_survives_consolidation(monkeypatch):
+    book = {"id": "381", "title": "Frankenstein, or The Modern Prometheus",
+            "language": "English", "copyright_year": "1818",
+            "authors": [{"id": "783", "first_name": "Mary", "last_name": "Shelley"}]}
+    _stub(monkeypatch, librivox, {"books": [book]})
+    query = Signals(title="Frankenstein", medium=MediaType.AUDIOBOOK)
+    m = librivox.LibriVoxProvider().lookup(query)
+    result = consolidate([m], query)
+    assert [a.provider for a in result.accepted] == ["librivox"]
+    assert result.dropped == []
+    assert result.external_ids.librivox_id == 381
