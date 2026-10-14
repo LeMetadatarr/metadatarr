@@ -6,6 +6,7 @@ API reference: https://librivox.org/api/info
 from __future__ import annotations
 
 import logging
+import re
 from typing import Optional
 
 from mediavocab import MediaType, PlaybackType
@@ -19,6 +20,22 @@ LOG = logging.getLogger("metadatarr.resolve.providers.librivox")
 _SESSION = make_session()
 
 _API = "https://librivox.org/api/feed/audiobooks/"  # trailing slash required by LibriVox
+
+
+_SUBTITLE = re.compile(r"\s*(?:,\s+or\s+|:\s+|\s+-\s+|;\s+)", re.IGNORECASE)
+
+
+def _headline(title: str, query: str) -> str:
+    """The catalogue title without its subtitle when the query asked for the short form.
+
+    LibriVox files books under the long title ("Frankenstein, or The Modern
+    Prometheus"); consolidation compares titles fuzzily and drops a match
+    whose title is that much longer than the one asked for.
+    """
+    head = _SUBTITLE.split(title, maxsplit=1)[0]
+    if head and head != title and head.casefold() == query.strip().casefold():
+        return head
+    return title
 
 
 class LibriVoxProvider(MetadataProvider):
@@ -100,7 +117,7 @@ class LibriVoxProvider(MetadataProvider):
             provider=self.name,
             confidence=0.80,
             signals=Signals(
-                title=top.get("title") or signals.title,
+                title=_headline(top.get("title") or signals.title, signals.title),
                 year=year,
                 language=top.get("language"),
                 medium=MediaType.AUDIOBOOK,
