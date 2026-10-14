@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.23.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.23.0a1) (2026-10-14)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.22.0a1...0.23.0a1)
+
+**Merged pull requests:**
+
+- feat: lookup, credits and person by external id under /api/v1 [\#80](https://github.com/LeMetadatarr/metadatarr/pull/80) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.22.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.22.0a1) (2026-10-11)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.21.0a1...0.22.0a1)
