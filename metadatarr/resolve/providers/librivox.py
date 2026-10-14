@@ -13,13 +13,10 @@ from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-
-try:
-    import httpx
-except ImportError:  # pragma: no cover
-    httpx = None  # type: ignore[assignment]
+from metadatarr.transport import discard_cached, make_session
 
 LOG = logging.getLogger("metadatarr.resolve.providers.librivox")
+_SESSION = make_session()
 
 _API = "https://librivox.org/api/feed/audiobooks/"  # trailing slash required by LibriVox
 
@@ -39,9 +36,6 @@ class LibriVoxProvider(MetadataProvider):
             return None
         if signals.medium and signals.medium != MediaType.AUDIOBOOK:
             return None
-        if httpx is None:
-            LOG.warning("httpx not installed — librivox provider unavailable")
-            return None
 
         # The LibriVox API returns HTTP 500 when ``title=^X`` and
         # ``author=Y`` are passed together. Try title-only first; only
@@ -54,13 +48,19 @@ class LibriVoxProvider(MetadataProvider):
         }
 
         def _query(params):
+            resp = None
             try:
-                resp = httpx.get(_API, params=params, timeout=10)
+                resp = _SESSION.get(_API, params=params, timeout=10)
                 resp.raise_for_status()
-                return resp.json()
+                data = resp.json()
             except Exception as exc:
                 LOG.warning("librivox lookup failed: %s", exc)
+                if resp is not None:
+                    discard_cached(_SESSION, resp)
                 return {}
+            if not data.get("books"):
+                discard_cached(_SESSION, resp)
+            return data
 
         data = _query(base_params)
         if not data.get("books") and signals.artist:

@@ -15,13 +15,10 @@ from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-
-try:
-    import httpx
-except ImportError:  # pragma: no cover
-    httpx = None  # type: ignore[assignment]
+from metadatarr.transport import discard_cached, make_session
 
 LOG = logging.getLogger("metadatarr.resolve.providers.jikan")
+_SESSION = make_session()
 
 _BASE = "https://api.jikan.moe/v4"
 
@@ -54,12 +51,10 @@ class JikanAnimeProvider(MetadataProvider):
             return None
         if not self.matches(signals):
             return None
-        if httpx is None:
-            LOG.warning("httpx not installed — jikan_anime provider unavailable")
-            return None
 
+        resp = None
         try:
-            resp = httpx.get(
+            resp = _SESSION.get(
                 f"{_BASE}/anime",
                 params={"q": signals.title, "limit": 5},
                 timeout=10,
@@ -68,9 +63,12 @@ class JikanAnimeProvider(MetadataProvider):
             items = resp.json().get("data") or []
         except Exception as exc:
             LOG.warning("jikan_anime lookup failed: %s", exc)
+            if resp is not None:
+                discard_cached(_SESSION, resp)
             return None
 
         if not items:
+            discard_cached(_SESSION, resp)
             return None
 
         # Year-filter when we have a hint
@@ -126,12 +124,10 @@ class JikanMangaProvider(MetadataProvider):
             return None
         if not self.matches(signals):
             return None
-        if httpx is None:
-            LOG.warning("httpx not installed — jikan_manga provider unavailable")
-            return None
 
+        resp = None
         try:
-            resp = httpx.get(
+            resp = _SESSION.get(
                 f"{_BASE}/manga",
                 params={"q": signals.title, "limit": 5},
                 timeout=10,
@@ -140,9 +136,12 @@ class JikanMangaProvider(MetadataProvider):
             items = resp.json().get("data") or []
         except Exception as exc:
             LOG.warning("jikan_manga lookup failed: %s", exc)
+            if resp is not None:
+                discard_cached(_SESSION, resp)
             return None
 
         if not items:
+            discard_cached(_SESSION, resp)
             return None
 
         if signals.year is not None:

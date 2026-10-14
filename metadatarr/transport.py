@@ -44,10 +44,15 @@ from urllib.parse import urlsplit
 import requests
 import requests.adapters
 
+from metadatarr.version import __version__
+
 LOG = logging.getLogger("metadatarr.transport")
 
 _DEFAULT_CACHE_DIR = Path.home() / ".cache" / "metadatarr" / "http"
 _DEFAULT_TTL = 86400
+
+# Sent by every session unless a call overrides it; never carries an email.
+USER_AGENT = f"metadatarr/{__version__} (+https://github.com/LeMetadatarr/metadatarr)"
 
 # True inside :func:`bypass_cache`: cache reads are skipped and fresh results
 # are written back. A context variable, so it follows a request into the
@@ -205,6 +210,12 @@ class DiskCache:
         LOG.debug("http_cache HIT  %s", url)
         return _make_response(data)
 
+    def discard(self, method: str, url: str, body: Optional[bytes]) -> None:
+        try:
+            self._path(_cache_key(method, url, body)).unlink()
+        except OSError:
+            pass
+
     def store(self, method: str, url: str, body: Optional[bytes],
               response: requests.Response) -> None:
         path = self._path(_cache_key(method, url, body))
@@ -292,9 +303,22 @@ def make_session(rate_limits: Optional[Dict[str, float]] = None) -> requests.Ses
 
     adapter = CachingRateLimitedAdapter(_GLOBAL_LIMITER, _cache_from_env())
     session = requests.Session()
+    session.headers["User-Agent"] = USER_AGENT
     session.mount("http://", adapter)
     session.mount("https://", adapter)
     return session
+
+
+def discard_cached(session: requests.Session, response: requests.Response) -> None:
+    """Drop the disk-cache entry behind *response*.
+
+    A provider calls this when a ``200`` answer parsed to nothing usable, so an
+    empty or malformed body does not hide a later good answer for the whole TTL.
+    """
+    adapter = session.get_adapter(response.url)
+    cache = getattr(adapter, "_cache", None)
+    if cache is not None:
+        cache.discard("GET", response.url, None)
 
 
 # ---------------------------------------------------------------------------
