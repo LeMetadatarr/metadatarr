@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.23.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.23.1a1) (2026-10-14)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.23.0a1...0.23.1a1)
+
+**Merged pull requests:**
+
+- fix\(resolve\): send AniList, Jikan, Apple Podcasts and LibriVox requests through the shared transport [\#82](https://github.com/LeMetadatarr/metadatarr/pull/82) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.23.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.23.0a1) (2026-10-14)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.22.0a1...0.23.0a1)
