@@ -35,6 +35,9 @@ All optional — every keyless provider works out of the box.
 | `METADATARR_RATE_LIMIT_BURST` | requests allowed at once before the limit applies (default: the per-minute rate) |
 | `METADATARR_AUDIO_ROOTS` | directories (separated by `:`) that `/api/v1/identify/audio?path=` may read; unset = uploads only |
 | `METADATARR_MAX_UPLOAD_BYTES` | largest audio upload accepted (default 50 MiB) |
+| `METADATARR_CATALOG_CACHE_TTL` | seconds the lookup, credits and person answers are kept in memory (default 3600); also their `max-age` |
+| `METADATARR_CATALOG_CACHE_SIZE` | most answers kept in that cache (default 1000; `0` = no cache) |
+| `METADATARR_CATALOG_TIMEOUT` | seconds each provider gets to answer a lookup, credits or person question (default 10) |
 
 Set them in `deploy/docker-compose.yml` (commented placeholders are there)
 or via `docker run -e ...`.
@@ -57,7 +60,10 @@ paths.
 
 | Route | Purpose |
 | --- | --- |
-| `POST /api/v1/resolve` | resolve one `Signals` bag |
+| `POST /api/v1/resolve` | resolve one `Signals` bag; also takes `ids` (scheme to value) and `kind`, narrows a title resolve by them, and resolves by ids alone (see [catalog.md](catalog.md#resolving-with-ids)) |
+| `GET /api/v1/lookup?scheme=…&value=…&kind=…` | an item's details with its children one level down |
+| `GET /api/v1/credits?scheme=…&value=…&kind=…` | the people credited on an item, with roles from a fixed vocabulary |
+| `GET /api/v1/person?scheme=…&value=…` | a person and their filmography |
 | `GET /api/v1/resolve?title=…&year=…&medium=…` | the same from query parameters named after `Signals` fields; answers `304` to a matching `If-None-Match` |
 | `POST /api/v1/resolve/batch` | `{"items": [Signals, …]}`, at most 100; results come back in request order, each `{"index", "ok": true, "result": {…}, "error": null}` or `{"index", "ok": false, "result": null, "error": "…"}`; costs one rate-limit token per item |
 | `POST /api/v1/candidates` | every provider's match, ranked, without consolidation |
@@ -69,7 +75,8 @@ Lookup responses carry an `ETag` and `Cache-Control: max-age` equal to the
 provider cache TTL (`private` when API keys are on). A result produced while
 a provider failed is sent with `no-cache`. Add `?refresh=1` to skip the
 provider and HTTP caches for one request; the fresh result replaces the
-cached one.
+cached one. The lookup, credits and person routes have their own in-memory
+cache and error codes, described in [catalog.md](catalog.md).
 
 ## Access control
 

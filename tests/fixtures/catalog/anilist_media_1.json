@@ -1,0 +1,249 @@
+{
+ "data": {
+  "Media": {
+   "id": 1,
+   "idMal": 1,
+   "type": "ANIME",
+   "format": "TV",
+   "status": "FINISHED",
+   "episodes": 26,
+   "duration": 24,
+   "seasonYear": 1998,
+   "title": {
+    "romaji": "Cowboy Bebop",
+    "english": "Cowboy Bebop",
+    "native": "カウボーイビバップ"
+   },
+   "startDate": {
+    "year": 1998,
+    "month": 4,
+    "day": 3
+   },
+   "description": "Enter a world in the distant future, where Bounty Hunters roam the solar system. Spike and Jet, bounty hunting partners, set out on journeys in an ever struggling effort to win bounty rewards to survive.<br><br>\nWhile traveling, they meet up with other very interesting people. Could Faye, the beautiful and ridiculously poor gambler, Edward, the computer genius, and Ein, the engineered dog be a good addition to the group?",
+   "coverImage": {
+    "large": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx1-GCsPm7waJ4kS.png"
+   },
+   "characters": {
+    "edges": [
+     {
+      "role": "MAIN",
+      "node": {
+       "id": 1,
+       "name": {
+        "full": "Spike Spiegel"
+       }
+      },
+      "voiceActors": [
+       {
+        "id": 95011,
+        "name": {
+         "full": "Kouichi Yamadera",
+         "native": "山寺宏一",
+         "alternative": [
+          "Kohichi Yamadera‚ Yama-chan"
+         ]
+        },
+        "image": {
+         "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n95011-2RfLzncNyvbR.png"
+        },
+        "languageV2": "Japanese"
+       }
+      ]
+     },
+     {
+      "role": "MAIN",
+      "node": {
+       "id": 2,
+       "name": {
+        "full": "Faye Valentine"
+       }
+      },
+      "voiceActors": [
+       {
+        "id": 95014,
+        "name": {
+         "full": "Megumi Hayashibara",
+         "native": "林原めぐみ",
+         "alternative": [
+          "MEGUMI",
+          "食料大臣",
+          "閣下",
+          "めぐさん"
+         ]
+        },
+        "image": {
+         "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n95014-tFYQYYhlVOF0.png"
+        },
+        "languageV2": "Japanese"
+       }
+      ]
+     },
+     {
+      "role": "MAIN",
+      "node": {
+       "id": 3,
+       "name": {
+        "full": "Jet Black"
+       }
+      },
+      "voiceActors": [
+       {
+        "id": 95357,
+        "name": {
+         "full": "Unshou Ishizuka",
+         "native": "石塚運昇",
+         "alternative": []
+        },
+        "image": {
+         "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n95357-umndcceko65h.png"
+        },
+        "languageV2": "Japanese"
+       }
+      ]
+     },
+     {
+      "role": "MAIN",
+      "node": {
+       "id": 16,
+       "name": {
+        "full": "Edward Wong Hau Pepelu Tivrusky IV"
+       }
+      },
+      "voiceActors": [
+       {
+        "id": 95658,
+        "name": {
+         "full": "Aoi Tada",
+         "native": "多田葵",
+         "alternative": []
+        },
+        "image": {
+         "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n95658-paHKYOWkhoOd.png"
+        },
+        "languageV2": "Japanese"
+       }
+      ]
+     }
+    ]
+   },
+   "staff": {
+    "edges": [
+     {
+      "role": "Original Creator",
+      "node": {
+       "id": 97197,
+       "name": {
+        "full": "Hajime Yatate",
+        "native": "矢立肇",
+        "alternative": []
+       },
+       "image": {
+        "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n97197-6NsKNt4EPoul.jpg"
+       }
+      }
+     },
+     {
+      "role": "Director",
+      "node": {
+       "id": 97009,
+       "name": {
+        "full": "Shinichirou Watanabe",
+        "native": "渡辺信一郎",
+        "alternative": []
+       },
+       "image": {
+        "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n97009-4K1Wc7JG9iLR.png"
+       }
+      }
+     },
+     {
+      "role": "Series Composition",
+      "node": {
+       "id": 97334,
+       "name": {
+        "full": "Keiko Nobumoto",
+        "native": "信本敬子",
+        "alternative": []
+       },
+       "image": {
+        "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n97334-ewqQWYWhU3wm.png"
+       }
+      }
+     },
+     {
+      "role": "Literary Arts",
+      "node": {
+       "id": 143033,
+       "name": {
+        "full": "Akira Toba",
+        "native": "鳥羽聡",
+        "alternative": []
+       },
+       "image": {
+        "large": "https://s4.anilist.co/file/anilistcdn/staff/large/default.jpg"
+       }
+      }
+     },
+     {
+      "role": "Character Design",
+      "node": {
+       "id": 103531,
+       "name": {
+        "full": "Toshihiro Kawamoto",
+        "native": "川元利浩",
+        "alternative": [
+         "Yoshiki Toki (土岐義芸)"
+        ]
+       },
+       "image": {
+        "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n103531-vNFYQvYyUFs8.png"
+       }
+      }
+     },
+     {
+      "role": "Mechanical Design",
+      "node": {
+       "id": 106476,
+       "name": {
+        "full": "Kimitoshi Yamane",
+        "native": "山根公利",
+        "alternative": []
+       },
+       "image": {
+        "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n106476-pzrMSb7jlA04.png"
+       }
+      }
+     }
+    ]
+   },
+   "studios": {
+    "edges": [
+     {
+      "isMain": true,
+      "node": {
+       "id": 14,
+       "name": "Sunrise",
+       "isAnimationStudio": true
+      }
+     },
+     {
+      "isMain": false,
+      "node": {
+       "id": 23,
+       "name": "Bandai Visual",
+       "isAnimationStudio": false
+      }
+     },
+     {
+      "isMain": false,
+      "node": {
+       "id": 233,
+       "name": "Bandai Entertainment",
+       "isAnimationStudio": false
+      }
+     }
+    ]
+   }
+  }
+ }
+}

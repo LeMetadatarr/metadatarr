@@ -7,8 +7,14 @@ own :class:`~metadatarr.resolve.base.ResolveResult` /
 :class:`~metadatarr.resolve.base.ProviderMatch`.
 
 Every route lives under ``/api/v1``. The routes that predate versioning are
-also served at their unversioned paths (``/resolve``, ``/healthz``, ...) as
-aliases of the same handlers, hidden from the OpenAPI schema.
+also served at their unversioned paths (``/resolve``, ``/healthz``, ...),
+hidden from the OpenAPI schema. ``POST /resolve`` keeps its original request
+model there; under ``/api/v1`` it also takes external ids.
+
+The catalogue routes (``/api/v1/lookup``, ``/api/v1/credits``,
+``/api/v1/person``) answer by identifier through :mod:`metadatarr.catalog`.
+A question no available provider can answer is ``501``, an identifier no
+catalogue knows is ``404``, and every asked provider failing is ``502``.
 """
 from __future__ import annotations
 
@@ -48,6 +54,8 @@ from metadatarr.resolve.base import (
     enrich as run_enrich,
     resolve as run_resolve,
 )
+from metadatarr import catalog
+from metadatarr.catalog import resolve as id_resolve
 from metadatarr.library import LocalMediaFile, _SXXEXX_RE, extract_embedded_ids, extract_signals
 from metadatarr.server.config import ServerConfig
 from metadatarr.server.models import (
@@ -57,6 +65,7 @@ from metadatarr.server.models import (
     BatchResolveResponse,
     EnrichRequest,
     HealthResponse,
+    IdResolveRequest,
     ProviderInfo,
     plugin_infos,
     ProvidersResponse,
@@ -129,9 +138,9 @@ def _finite(value: Any) -> Any:
 
 
 def _cached_response(request: Request, payload: Any, *, config: ServerConfig,
-                     degraded: bool = False) -> Response:
+                     degraded: bool = False, max_age: Optional[int] = None) -> Response:
     """JSON response carrying an ``ETag`` and a ``Cache-Control`` lifetime
-    equal to the provider cache TTL.
+    equal to the provider cache TTL (or ``max_age`` when given).
 
     A result produced while a provider failed (``degraded``) is sent with
     ``no-cache`` so clients revalidate it. A ``GET`` whose
@@ -141,7 +150,8 @@ def _cached_response(request: Request, payload: Any, *, config: ServerConfig,
                       ensure_ascii=False, allow_nan=False).encode("utf-8")
     etag = _etag(body)
     scope = "private" if config.auth_enabled else "public"
-    cache_control = "no-cache" if degraded else f"{scope}, max-age={_max_age()}"
+    age = _max_age() if max_age is None else max_age
+    cache_control = "no-cache" if degraded or age <= 0 else f"{scope}, max-age={age}"
     headers = {"ETag": etag, "Cache-Control": cache_control}
     inm = request.headers.get("if-none-match")
     if request.method == "GET" and inm and _etag_matches(inm, etag):
@@ -175,6 +185,17 @@ def _charge_batch(request: Request, items: int) -> None:
             headers={"Retry-After": str(max(1, math.ceil(retry)))})
 
 
+def _error(status: int, error: str, **fields: Any) -> JSONResponse:
+    """A JSON error answer that clients and intermediaries must not cache."""
+    return JSONResponse(_finite(jsonable_encoder({"error": error, **fields})), status_code=status,
+                        headers={"Cache-Control": "no-store"})
+
+
+def _catalog_max_age() -> int:
+    store = catalog.base.cache()
+    return int(store.ttl) if store.max_entries > 0 else 0
+
+
 def _validation_message(exc: ValidationError) -> str:
     parts = []
     for err in exc.errors():
@@ -200,8 +221,10 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
         with resolves_lock:
             resolves_total += n
 
-    # ``shared`` holds the routes that also answer at their unversioned path.
+    # ``shared`` holds the routes that also answer at their unversioned path;
+    # ``legacy`` the unversioned routes whose versioned form differs.
     shared = APIRouter()
+    legacy = APIRouter()
     v1 = APIRouter()
 
     @shared.get("/healthz", response_model=HealthResponse)
@@ -243,6 +266,7 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
                 media=sorted(getattr(m, "value", str(m)) for m in (p.media or set())),
                 modality=sorted(getattr(m, "value", str(m)) for m in (p.playback_type or set())),
                 genre_filter=sorted(p.genre_filter or set()),
+                capabilities=catalog.capabilities_of(name),
             ))
         return ProvidersResponse(
             total=len(infos),
@@ -261,13 +285,96 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
             raise HTTPException(
                 status_code=500, detail="internal error during resolve") from None
 
-    @shared.post("/resolve", response_model=ResolveResult)
+    @legacy.post("/resolve", response_model=ResolveResult)
     def resolve_endpoint(request: Request, body: ResolveRequest,
                          refresh: bool = False) -> Response:
         payload = body.model_dump(exclude={"max_workers"})
         result = _resolve(Signals(**payload), body.max_workers, refresh)
         return _cached_response(request, result, config=config,
                                 degraded=bool(result.provider_errors))
+
+    @v1.post("/resolve")
+    def resolve_ids_endpoint(request: Request, body: IdResolveRequest,
+                             refresh: bool = False) -> Response:
+        """Resolve a title, a title narrowed by external ids, or ids alone.
+
+        The answer is the ``ResolveResult`` of the unversioned route plus
+        ``match`` (``item``, ``confidence``, ``source``, ``credits``,
+        ``id_conflicts``, in the catalogue shapes), ``providers`` (those that
+        contributed) and ``errors`` (those that failed). Ids that no provider
+        can look up, with no title, are ``501``; ids no catalogue knows, with
+        no title, are ``404``."""
+        ids = {k.strip().lower(): v.strip() for k, v in body.ids.items() if k.strip() and v and v.strip()}
+        if not ids and not body.title:
+            return _error(422, "invalid request", message="give a title or at least one id")
+        signals = Signals(**body.model_dump(exclude={"max_workers", "ids", "kind"}))
+        _count()
+        try:
+            with bypass_cache(refresh):
+                out = id_resolve.resolve(signals, ids, (body.kind or "").strip().lower() or None,
+                                         max_workers=body.max_workers, refresh=refresh)
+        except catalog.InvalidId as e:
+            return _error(422, "invalid id", message=str(e))
+        except ValueError as e:
+            return _error(422, "invalid request", message=str(e))
+        if not out.found and not body.title:
+            if out.unsupported and not out.errors and len(out.unsupported) == len(ids):
+                return _error(501, "not supported", provider=None,
+                              message=f"no available provider looks up {', '.join(out.unsupported)} ids")
+            if out.errors and not out.providers:
+                return _error(502, "upstream failed", errors=out.errors, unsupported=out.unsupported)
+            return _error(404, "not found", errors=out.errors, unsupported=out.unsupported)
+        payload = {**jsonable_encoder(out.result), "match": out.match, "providers": out.providers,
+                   "errors": out.errors, "unsupported": out.unsupported}
+        return _cached_response(request, payload, config=config,
+                                degraded=bool(out.errors or out.result.provider_errors))
+
+    def _catalog(request: Request, method: str, scheme: str, value: str, kind: Optional[str],
+                 provider: Optional[str], refresh: bool) -> Response:
+        try:
+            answer = catalog.ask(method, scheme, value, kind, provider=provider or None, refresh=refresh)
+        except catalog.NotSupported as e:
+            return _error(501, "not supported", provider=e.provider, message=str(e))
+        except catalog.InvalidId as e:
+            return _error(422, "invalid id", message=str(e))
+        except ValueError as e:
+            return _error(422, "invalid request", message=str(e))
+        if answer.value is None:
+            if answer.errors and len(answer.errors) == len(answer.asked):
+                return _error(502, "upstream failed", providers=answer.asked, errors=answer.errors)
+            return _error(404, "not found", providers=answer.asked, errors=answer.errors)
+        value = answer.value
+        if method == "lookup":
+            body: Dict[str, Any] = {"item": value}
+        elif method == "credits":
+            body = {"credits": value}
+        else:
+            body = {"person": value.person, "credits": value.credits}
+        body.update(providers=answer.providers, errors=answer.errors, truncated=answer.truncated)
+        return _cached_response(request, body, config=config, degraded=bool(answer.errors),
+                                max_age=_catalog_max_age())
+
+    @v1.get("/lookup")
+    def lookup_endpoint(request: Request, scheme: str, value: str, kind: Optional[str] = None,
+                        provider: Optional[str] = None, refresh: bool = False) -> Response:
+        """An item's details with its children one level down (series to
+        seasons, season to episodes, show to episodes, artist to albums,
+        album to tracks, author to books, audiobook to chapters, collection
+        to movies)."""
+        return _catalog(request, "lookup", scheme, value, kind, provider, refresh)
+
+    @v1.get("/credits")
+    def credits_endpoint(request: Request, scheme: str, value: str, kind: Optional[str] = None,
+                         provider: Optional[str] = None, refresh: bool = False) -> Response:
+        """The people, groups and companies credited on an item, each with a
+        role from the published vocabulary."""
+        return _catalog(request, "credits", scheme, value, kind, provider, refresh)
+
+    @v1.get("/person")
+    def person_endpoint(request: Request, scheme: str, value: str, provider: Optional[str] = None,
+                        refresh: bool = False) -> Response:
+        """A person and their filmography: credits whose ``item`` is set."""
+        return _catalog(request, "person", scheme, value, None, provider, refresh)
 
     @v1.get("/resolve", response_model=ResolveResult)
     def resolve_get_endpoint(request: Request, refresh: bool = False,
@@ -448,3 +555,4 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
     app.include_router(shared, prefix=API_PREFIX)
     app.include_router(v1, prefix=API_PREFIX)
     app.include_router(shared, include_in_schema=False)
+    app.include_router(legacy, include_in_schema=False)

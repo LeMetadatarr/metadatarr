@@ -1,0 +1,26 @@
+{
+ "id": 3572,
+ "season_number": 1,
+ "name": "Season 1",
+ "air_date": "2008-01-20",
+ "overview": "",
+ "episodes": [
+  {
+   "id": 62085,
+   "name": "Pilot",
+   "episode_number": 1,
+   "season_number": 1,
+   "air_date": "2008-01-20",
+   "runtime": 59,
+   "still_path": "/e1.jpg"
+  },
+  {
+   "id": 62086,
+   "name": "Cat's in the Bag...",
+   "episode_number": 2,
+   "season_number": 1,
+   "air_date": "2008-01-27",
+   "runtime": 49
+  }
+ ]
+}

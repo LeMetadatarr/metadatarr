@@ -1,0 +1,155 @@
+{
+ "data": {
+  "Staff": {
+   "id": 95011,
+   "name": {
+    "full": "Kouichi Yamadera",
+    "native": "山寺宏一",
+    "alternative": [
+     "Kohichi Yamadera‚ Yama-chan"
+    ]
+   },
+   "image": {
+    "large": "https://s4.anilist.co/file/anilistcdn/staff/large/n95011-2RfLzncNyvbR.png"
+   },
+   "dateOfBirth": {
+    "year": 1961,
+    "month": 6,
+    "day": 17
+   },
+   "dateOfDeath": {
+    "year": null,
+    "month": null,
+    "day": null
+   },
+   "homeTown": "Shiogama, Miyagi Prefecture, Japan",
+   "description": "__Height:__ 176cm (5'9)\n\nA Japanese actor, voice actor, singer and narrator from Shiogama, Miyagi Prefecture. He graduated from Tohoku Gakuin University's economics school and is currently affiliated with Across Entertainment.\n\nHe was the manager of the Tagajou Senior High School basketball team bef",
+   "languageV2": "Japanese",
+   "characterMedia": {
+    "edges": [
+     {
+      "characterRole": "SUPPORTING",
+      "node": {
+       "id": 213657,
+       "idMal": 64503,
+       "type": "ANIME",
+       "format": "TV",
+       "title": {
+        "romaji": "Yozakura-san Chi no Daisakusen 2nd Season Part 2",
+        "english": "Mission: Yozakura Family Season 2 Part 2"
+       },
+       "startDate": {
+        "year": 2026
+       }
+      },
+      "characters": [
+       {
+        "name": {
+         "full": "Momo Yozakura"
+        }
+       }
+      ]
+     },
+     {
+      "characterRole": "MAIN",
+      "node": {
+       "id": 206814,
+       "idMal": 63367,
+       "type": "ANIME",
+       "format": "TV",
+       "title": {
+        "romaji": "Dragon Ball Super: Beerus",
+        "english": "Dragon Ball Super: Beerus"
+       },
+       "startDate": {
+        "year": 2026
+       }
+      },
+      "characters": [
+       {
+        "name": {
+         "full": "Beerus"
+        }
+       }
+      ]
+     },
+     {
+      "characterRole": "SUPPORTING",
+      "node": {
+       "id": 209872,
+       "idMal": 63801,
+       "type": "ANIME",
+       "format": "TV",
+       "title": {
+        "romaji": "Ranma 1/2 (2024) 3rd Season",
+        "english": "Ranma1/2 (2024) Season 3"
+       },
+       "startDate": {
+        "year": 2026
+       }
+      },
+      "characters": [
+       {
+        "name": {
+         "full": "Ryouga Hibiki"
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "staffMedia": {
+    "edges": [
+     {
+      "staffRole": "Sound Effects",
+      "node": {
+       "id": 199371,
+       "idMal": null,
+       "type": "ANIME",
+       "format": "SPECIAL",
+       "title": {
+        "romaji": "Shinya Ramen no Yuuwaku: SUNTORY Karada wo Omou All-Free CM",
+        "english": null
+       },
+       "startDate": {
+        "year": 2025
+       }
+      }
+     },
+     {
+      "staffRole": "Insert Song Performance (\"Change! Shinkalion\")",
+      "node": {
+       "id": 110131,
+       "idMal": 39967,
+       "type": "ANIME",
+       "format": "MOVIE",
+       "title": {
+        "romaji": "Shinkansen Henkei Robo Shinkalion THE ANIMATION: Mirai kara Kita Shinsoku no ALFA-X",
+        "english": null
+       },
+       "startDate": {
+        "year": 2019
+       }
+      }
+     },
+     {
+      "staffRole": "Insert Song Performance (eps 13, 14, 19, 23, 35, 53, 54)",
+      "node": {
+       "id": 100620,
+       "idMal": 36531,
+       "type": "ANIME",
+       "format": "TV",
+       "title": {
+        "romaji": "Shinkansen Henkei Robo Shinkalion THE ANIMATION",
+        "english": null
+       },
+       "startDate": {
+        "year": 2018
+       }
+      }
+     }
+    ]
+   }
+  }
+ }
+}

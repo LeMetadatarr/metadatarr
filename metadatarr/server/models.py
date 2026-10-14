@@ -33,6 +33,16 @@ class ResolveRequest(Signals):
 MAX_BATCH_ITEMS = 100
 
 
+class IdResolveRequest(ResolveRequest):
+    """A resolve request that may carry external ids: ``ids`` maps a scheme
+    (``tmdb``, ``imdb``, ``tvdb``, ``musicbrainz``, ...) to a value, and
+    ``kind`` names the item kind the ids belong to (``movie``, ``series``,
+    ``album``, ...). Either a title or at least one id is required."""
+
+    ids: Dict[str, str] = Field(default_factory=dict, max_length=20)
+    kind: Optional[str] = Field(default=None, max_length=32)
+
+
 class BatchResolveRequest(BaseModel):
     """Up to :data:`MAX_BATCH_ITEMS` signal bags, each resolved on its own.
 
@@ -124,6 +134,11 @@ class ProviderInfo(BaseModel):
     media: List[str] = Field(default_factory=list)
     modality: List[str] = Field(default_factory=list)
     genre_filter: List[str] = Field(default_factory=list)
+    capabilities: Dict[str, Any] = Field(default_factory=dict)
+    """What the provider answers by identifier: ``lookup`` and ``credits``
+    map an item kind to the schemes they take, ``children`` lists the kinds
+    whose lookup carries children, ``person`` lists the schemes a person
+    question takes. Empty tables mean the provider answers none of them."""
 
 
 class AudioIdentifyResponse(BaseModel):
