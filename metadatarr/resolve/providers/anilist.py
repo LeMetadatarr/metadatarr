@@ -14,13 +14,11 @@ from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-
-try:
-    import httpx
-except ImportError:  # pragma: no cover
-    httpx = None  # type: ignore[assignment]
+from metadatarr.catalog._http import ANILIST_INTERVAL
+from metadatarr.transport import make_session
 
 LOG = logging.getLogger("metadatarr.resolve.providers.anilist")
+_SESSION = make_session({"graphql.anilist.co": ANILIST_INTERVAL})
 
 _URL = "https://graphql.anilist.co"
 
@@ -82,9 +80,6 @@ class AniListProvider(MetadataProvider):
             return None
         if not self.matches(signals):
             return None
-        if httpx is None:
-            LOG.warning("httpx not installed — anilist provider unavailable")
-            return None
 
         is_manga = (
             signals.medium == MediaType.COMIC
@@ -93,7 +88,7 @@ class AniListProvider(MetadataProvider):
         media_type = "MANGA" if is_manga else "ANIME"
 
         try:
-            resp = httpx.post(
+            resp = _SESSION.post(
                 _URL,
                 json={"query": _QUERY, "variables": {"search": signals.title, "type": media_type}},
                 timeout=10,
