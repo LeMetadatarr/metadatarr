@@ -143,6 +143,25 @@ a non-`KNOWN_GENRES` genre string, so a stray literal fails CI.
 - `enrich(external_ids) -> ExternalIds | None`: given IDs, derive *more* IDs
   without a free-text search (ID-keyed lookups). Return only the enrichment
   the framework merges it first-writer-wins. Default `None`.
+- `search_kinds` and `search(kind, signals) -> List[SearchCandidate]`: answer
+  searches by name for kinds outside the media kinds, such as `performer`,
+  `studio` or `scene`. A candidates request with such a `kind` reaches only
+  the providers that list it in `search_kinds`, and only those whose routing
+  axes pass (a provider with a `genre_filter` answers only when the caller
+  sends that genre). `signals.title` is the name to search. Each
+  `SearchCandidate` carries `kind` (the kind asked for), `title`, `year`
+  (`None` for people and companies), `ids` (`{scheme: value}` in the
+  provider's own scheme names), `poster`, `overview`, `aliases`, `medium` and
+  `attributes` when known. The default `search` returns `lookup_candidates` as search
+  candidates, which is enough when the provider's title search already
+  returns that kind; override it for anything else.
+
+A relation entity (`ProviderEntity`) and a `SearchCandidate` both take
+`attributes`: what the source states about the entity, keyed by attribute name
+(`gender`, `ethnicity`, `orientation`, ...), values lower-case with
+underscores. Leave out what the source does not state. When two providers name
+the same entity, consolidation keeps the first provider's value for each key
+and adds the keys only the second one states.
 
 All overrides follow the same never-raise contract as `lookup()`.
 

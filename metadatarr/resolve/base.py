@@ -19,7 +19,7 @@ from __future__ import annotations
 import contextvars
 import warnings
 from abc import ABC, abstractmethod
-from typing import ClassVar, Dict, List, Optional, Set, Tuple
+from typing import Any, ClassVar, Dict, FrozenSet, List, Optional, Set, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -47,6 +47,64 @@ class ProviderMatch(BaseModel):
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
     relations: Dict[EntityRole, List[ProviderEntity]] = Field(default_factory=dict)
     variants: List[ProviderEntity] = Field(default_factory=list)
+
+
+class SearchCandidate(BaseModel):
+    """One provider's answer to a search for something of a named kind.
+
+    ``kind`` is the kind the caller asked for (``scene``, ``performer``,
+    ``studio``, ...) and ``title`` the item's title or the entity's name.
+    ``ids`` maps the provider's id schemes to values. ``poster``,
+    ``overview`` and ``aliases`` are filled when the provider knows them;
+    ``year`` stays ``None`` for entities that have none, such as people.
+    ``attributes`` is what the provider states about the entity, as on
+    :class:`ProviderEntity`.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    provider: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    kind: str
+    title: str
+    year: Optional[int] = None
+    ids: Dict[str, str] = Field(default_factory=dict)
+    poster: Optional[str] = None
+    overview: Optional[str] = None
+    aliases: List[str] = Field(default_factory=list)
+    medium: Optional[str] = None
+    attributes: Dict[str, str] = Field(default_factory=dict)
+
+    @classmethod
+    def from_match(cls, match: "ProviderMatch", kind: str) -> "SearchCandidate":
+        """The search-candidate view of a title match: its ids flattened
+        (``extra`` keys alongside the typed fields), its medium as a string."""
+        return cls(
+            provider=match.provider,
+            confidence=match.confidence,
+            kind=kind,
+            title=match.signals.title or "",
+            year=match.signals.year,
+            ids=flat_ids(match.external_ids),
+            medium=getattr(match.signals.medium, "value", match.signals.medium),
+        )
+
+
+class KindedProviderMatch(ProviderMatch, SearchCandidate):
+    """A title match answered for a media ``kind``: the full
+    :class:`ProviderMatch` plus the :class:`SearchCandidate` fields."""
+
+
+def flat_ids(external_ids: ExternalIds) -> Dict[str, str]:
+    """``{scheme: value}`` from an :class:`ExternalIds`: every set scalar
+    field plus every ``extra`` entry, values as strings."""
+    out: Dict[str, str] = {}
+    dumped: Dict[str, Any] = external_ids.model_dump(exclude_none=True)
+    extra = dumped.pop("extra", None) or {}
+    for key, value in [*dumped.items(), *extra.items()]:
+        if isinstance(value, (str, int, float)) and not isinstance(value, bool) and str(value).strip():
+            out[key] = str(value)
+    return out
 
 
 class ResolutionConflict(BaseModel):
@@ -121,6 +179,11 @@ class MetadataProvider(ABC):
     media: ClassVar[Set[MediaType]] = set()
     playback_type: ClassVar[Set[PlaybackType]] = set()
     genre_filter: ClassVar[Set[str]] = set()
+    #: Kinds this provider answers a search by name for, beyond the title
+    #: fan-out every routed provider takes part in (``performer``,
+    #: ``studio``, ``scene``, ...). A candidates request for a kind outside
+    #: the media kinds reaches only the providers that list it here.
+    search_kinds: ClassVar[FrozenSet[str]] = frozenset()
 
     @abstractmethod
     def is_available(self) -> bool:
@@ -152,6 +215,17 @@ class MetadataProvider(ABC):
         """
         match = self.lookup(signals)
         return [match] if match is not None else []
+
+    def search(self, kind: str, signals: Signals) -> List[SearchCandidate]:
+        """Candidates of ``kind`` whose name or title is ``signals.title``,
+        highest confidence first.
+
+        Called only for kinds in :attr:`search_kinds`. The default answers
+        with :meth:`lookup_candidates` seen as search candidates, which suits
+        a provider whose title search already returns that kind. Override it
+        for kinds a title lookup does not cover, such as people.
+        """
+        return [SearchCandidate.from_match(m, kind) for m in self.lookup_candidates(signals)]
 
     def list_variants(self, external_ids: ExternalIds,
                       signals: Optional[Signals] = None) -> List[ProviderEntity]:
@@ -277,6 +351,7 @@ def _aggregate_relations(
                     bucket.append(ent)
                 else:
                     existing.external_ids = existing.external_ids.merge(ent.external_ids)
+                    existing.attributes = {**ent.attributes, **existing.attributes}
                     if ent.name and ent.name != existing.name:
                         existing.merge_alias(ent.name)
     return out
@@ -478,6 +553,46 @@ def candidates(signals: Signals, *, max_workers: int = 8,
         matches.extend(batch)
     matches.sort(key=lambda m: m.confidence, reverse=True)
     return matches
+
+
+def _gather_kind(provider: "MetadataProvider", kind: str, signals: Signals,
+                 sink: Optional[List[ProviderError]] = None) -> List[SearchCandidate]:
+    """Internal: one provider's search candidates of ``kind``. The default
+    :meth:`MetadataProvider.search` goes through the cached title path; an
+    override is called directly. A raising provider is trapped like in
+    :func:`_gather_candidates`."""
+    if type(provider).search is MetadataProvider.search:
+        rows = [SearchCandidate.from_match(m, kind) for m in _gather_candidates(provider, signals, sink)]
+    else:
+        rows = []
+        with trap(provider.name, "search", sink):
+            rows = provider.search(kind, signals) or []
+    return [r for r in rows if r.kind == kind]
+
+
+def kind_candidates(kind: str, signals: Signals, *, max_workers: int = 8,
+                    sink: Optional[List[ProviderError]] = None,
+                    deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE,
+                    ) -> List[SearchCandidate]:
+    """Fan a search for ``kind`` out to the providers that declare it.
+
+    Only available providers listing ``kind`` in
+    :attr:`MetadataProvider.search_kinds` are asked, and each still passes
+    its three-axis routing against ``signals`` (a provider gated on a
+    content genre answers only when the caller sent that genre). The union
+    comes back sorted by confidence, ties in provider order, like
+    :func:`candidates`.
+    """
+    providers = [p for p in _routed(active_providers(medium=signals.medium), signals)
+                 if kind in p.search_kinds]
+    rows: List[SearchCandidate] = []
+    for batch in _run_pool(providers,
+                           lambda p: _gather_kind(p, kind, signals, sink),
+                           max_workers,
+                           deadline=deadline, sink=sink, stage="search"):
+        rows.extend(batch)
+    rows.sort(key=lambda r: r.confidence, reverse=True)
+    return rows
 
 
 def search(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:

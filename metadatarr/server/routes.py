@@ -26,7 +26,7 @@ import math
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 # Safe at module level: this module is only ever imported by
 # metadatarr.server.app.create_app(), which calls _require_fastapi() first.
@@ -47,15 +47,19 @@ from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 
 from metadatarr.resolve.base import (
+    KindedProviderMatch,
     ProviderMatch,
     ResolveResult,
+    SearchCandidate,
     all_providers,
     candidates as run_candidates,
+    kind_candidates,
     enrich as run_enrich,
     resolve as run_resolve,
 )
 from metadatarr import catalog
 from metadatarr.catalog import resolve as id_resolve
+from metadatarr.catalog.resolve import _KIND_MEDIUM as KIND_MEDIUM
 from metadatarr.library import LocalMediaFile, _SXXEXX_RE, extract_embedded_ids, extract_signals
 from metadatarr.server.config import ServerConfig
 from metadatarr.server.models import (
@@ -63,6 +67,7 @@ from metadatarr.server.models import (
     BatchItemResult,
     BatchResolveRequest,
     BatchResolveResponse,
+    CandidatesRequest,
     EnrichRequest,
     HealthResponse,
     IdResolveRequest,
@@ -266,7 +271,8 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
                 media=sorted(getattr(m, "value", str(m)) for m in (p.media or set())),
                 modality=sorted(getattr(m, "value", str(m)) for m in (p.playback_type or set())),
                 genre_filter=sorted(p.genre_filter or set()),
-                capabilities=catalog.capabilities_of(name),
+                capabilities={**catalog.capabilities_of(name),
+                              "search_kinds": sorted(p.search_kinds or ())},
             ))
         return ProvidersResponse(
             total=len(infos),
@@ -436,10 +442,32 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
         return _cached_response(request, BatchResolveResponse(results=results),
                                 config=config, degraded=degraded)
 
-    @shared.post("/candidates", response_model=List[ProviderMatch])
-    def candidates_endpoint(request: Request, body: ResolveRequest,
+    @shared.post("/candidates", response_model=List[Union[ProviderMatch, KindedProviderMatch, SearchCandidate]])
+    def candidates_endpoint(request: Request, body: CandidatesRequest,
                             refresh: bool = False) -> Response:
-        payload = body.model_dump(exclude={"max_workers"})
+        """Every provider's candidates, ranked, without consolidation.
+
+        Without ``kind`` the rows are the providers' matches. With a media
+        ``kind`` (``movie``, ``series``, ...) they are the same matches, the
+        medium defaulting to the kind's, each also carrying the
+        search-candidate fields (``kind``, ``title``, ``year``, ``ids``,
+        ``poster``, ``overview``, ``aliases``, ``medium``). With any other
+        ``kind`` (``performer``, ``studio``, ``scene``, ...) only providers
+        whose ``search_kinds`` list it answer, and each row is a search
+        candidate; no such provider is an empty list."""
+        kind = (body.kind or "").strip().lower() or None
+        payload = body.model_dump(exclude={"max_workers", "kind"})
+        if kind and kind not in KIND_MEDIUM:
+            try:
+                with bypass_cache(refresh):
+                    rows = kind_candidates(kind, Signals(**payload), max_workers=body.max_workers)
+            except Exception:  # pragma: no cover - defensive
+                LOG.exception("candidates failed")
+                raise HTTPException(
+                    status_code=500, detail="internal error during candidates") from None
+            return _cached_response(request, rows, config=config)
+        if kind and not payload.get("medium"):
+            payload["medium"] = KIND_MEDIUM[kind]
         signals = Signals(**payload)
         try:
             with bypass_cache(refresh):
@@ -448,6 +476,10 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
             LOG.exception("candidates failed")
             raise HTTPException(
                 status_code=500, detail="internal error during candidates") from None
+        if kind:
+            return _cached_response(request, [
+                {**jsonable_encoder(m), **jsonable_encoder(SearchCandidate.from_match(m, kind))}
+                for m in matches], config=config)
         return _cached_response(request, matches, config=config)
 
     @v1.post("/identify/video", response_model=VideoIdentifyResponse)
