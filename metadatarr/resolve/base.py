@@ -661,11 +661,14 @@ _VARIANT_ID_FIELDS: Tuple[str, ...] = (
 def _variant_key(ent: ProviderEntity) -> object:
     """Identity key for deduplicating :class:`ProviderEntity` variants.
 
-    Keys by the first populated field of :data:`_VARIANT_ID_FIELDS` (the
+    A fan edit is keyed by its page address (``fanedit_url``), which every
+    IFDB listing carries and no two edits share. Otherwise keys by the first populated field of :data:`_VARIANT_ID_FIELDS` (the
     work/release-identity ladder). If none of those is set but some other
     external id is populated, keys by the first populated field in the
-    model's declared field order instead of collapsing to name. Only when
-    the entity carries no external ids at all does this fall back to the
+    model's declared field order instead of collapsing to name;
+    ``derived_from_imdb`` names the work a variant is derived from, shared by
+    all its variants, so it never keys one. Only when the entity carries no
+    other external ids does this fall back to the
     normalized name, reusing the same normalization
     :func:`metadatarr.resolve.entities.allocate_entity_id` uses for its
     name-seeded path.
@@ -675,12 +678,15 @@ def _variant_key(ent: ProviderEntity) -> object:
     not this key's.
     """
     ids = ent.external_ids
+    url = (ids.extra or {}).get("fanedit_url")
+    if url:
+        return ("fanedit_url", url)
     for field_name in _VARIANT_ID_FIELDS:
         value = getattr(ids, field_name, None)
         if value is not None:
             return (field_name, value)
     for field_name in type(ids).model_fields:
-        if field_name == "extra":
+        if field_name in ("extra", "derived_from_imdb"):
             continue
         value = getattr(ids, field_name, None)
         if value is not None:

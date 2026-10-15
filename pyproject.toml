@@ -26,7 +26,7 @@ dependencies = [
     "pywikidata @ git+https://github.com/LeMetadatarr/pywikidata@dev",
     # First-party scrapers — bundled by default so users get a working
     # resolver out of the box without optional-extra juggling.
-    "pyfanedit",
+    "pyfanedit>=0.3.1a1",
     "pymetal>=1.0.0a1",
     "tutubo>=0.1.0",
     "py_bandcamp",

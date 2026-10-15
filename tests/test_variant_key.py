@@ -1,6 +1,8 @@
 """Identity rules for deduplicating resolved variants."""
 from typing import List, Optional
 
+import pytest
+
 from metadatarr.resolve import (
     EntityRole,
     ExternalIds,
@@ -12,7 +14,16 @@ from metadatarr.resolve import (
     register,
     resolve,
 )
+from metadatarr.resolve import base as resolve_base
 from metadatarr.resolve.base import _variant_key
+
+
+@pytest.fixture
+def registry(monkeypatch):
+    """An empty provider registry for a test that registers its own providers: no
+    real provider (pyfanedit searches fanedit.org) runs, and the registry is
+    restored afterwards."""
+    monkeypatch.setattr(resolve_base, "_REGISTRY", {})
 
 
 def _variant(name: str, **ids) -> ProviderEntity:
@@ -31,6 +42,24 @@ def test_same_mb_release_different_names_dedupe():
     assert _variant_key(a) == _variant_key(b)
 
 
+def test_fan_edits_of_one_film_are_not_keyed_by_the_film():
+    a = _variant("Alien: FanFix", derived_from_imdb="tt0078748")
+    b = _variant("Alien: TV Cut", derived_from_imdb="tt0078748")
+    assert _variant_key(a) != _variant_key(b)
+    assert _variant_key(a) == ("name", _variant_key(a)[1])
+
+
+def test_fan_edits_sharing_a_title_are_told_apart_by_their_page():
+    a = ProviderEntity(role=EntityRole.OTHER, name="Alien: Special",
+                       external_ids=ExternalIds(derived_from_imdb="tt0078748",
+                                                extra={"fanedit_url": "https://fanedit.org/a/", "faneditor": "One"}))
+    b = ProviderEntity(role=EntityRole.OTHER, name="Alien: Special",
+                       external_ids=ExternalIds(derived_from_imdb="tt0078748",
+                                                extra={"fanedit_url": "https://fanedit.org/b/", "faneditor": "Two"}))
+    assert _variant_key(a) != _variant_key(b)
+    assert _variant_key(a) == _variant_key(a.model_copy(deep=True))
+
+
 def test_no_ids_falls_back_to_normalized_name_case_insensitive():
     a = _variant("Director's Cut")
     b = _variant("  DIRECTOR'S   cut ")
@@ -38,7 +67,7 @@ def test_no_ids_falls_back_to_normalized_name_case_insensitive():
     assert _variant_key(a) == ("name", _variant_key(a)[1])
 
 
-def test_seeded_variants_dedupe_against_fan_out_results():
+def test_seeded_variants_dedupe_against_fan_out_results(registry):
     seeded = _variant("Fan Edit", fanedit_id=1)
 
     class _SeededMatchProvider(MetadataProvider):

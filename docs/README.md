@@ -58,6 +58,7 @@ If you've never used metadatarr before, read in this order:
    consolidation, identity mappings, and writing custom providers.
 3a. **[Provider catalogue](providers.md)**: every built-in provider, its media coverage, and its caveats.
 3b. **[Lookup by identifier](catalog.md)**: an item with its children, its credits, and a person with their filmography, by external id; resolving with ids.
+3c. **[Extras and variants](extras-and-variants.md)**: the trailers, featurettes and music videos of an item, and the fan edits of a work, by external id.
 4. **[Models reference](models.md)**: every Pydantic model, every field, where it comes from.
 5. **[Recipes](recipes.md)**: cross-provider workflows: ISBN-to-cover, dedup, fallback chains, async wrappers, caching.
 6. **[Troubleshooting](troubleshooting.md)**: empty results, rate limiting, mirror outages, validation errors.

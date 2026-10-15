@@ -12,7 +12,8 @@ hidden from the OpenAPI schema. ``POST /resolve`` keeps its original request
 model there; under ``/api/v1`` it also takes external ids.
 
 The catalogue routes (``/api/v1/lookup``, ``/api/v1/credits``,
-``/api/v1/person``) answer by identifier through :mod:`metadatarr.catalog`.
+``/api/v1/person``, ``/api/v1/extras``, ``/api/v1/variants``) answer by
+identifier through :mod:`metadatarr.catalog`.
 A question no available provider can answer is ``501``, an identifier no
 catalogue knows is ``404``, and every asked provider failing is ``502``.
 """
@@ -336,9 +337,20 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
                                 degraded=bool(out.errors or out.result.provider_errors))
 
     def _catalog(request: Request, method: str, scheme: str, value: str, kind: Optional[str],
-                 provider: Optional[str], refresh: bool) -> Response:
+                 provider: Optional[str], refresh: bool, title: Optional[str] = None,
+                 year: Optional[int] = None) -> Response:
+        if len((title or "").strip()) > catalog.base.MAX_VALUE_LENGTH:
+            return _error(422, "invalid request",
+                          message=f"title is longer than {catalog.base.MAX_VALUE_LENGTH} characters")
         try:
-            answer = catalog.ask(method, scheme, value, kind, provider=provider or None, refresh=refresh)
+            if method == "variants" and not (title or "").strip():
+                found = _title_of(scheme, value, kind, provider or None, refresh)
+                if isinstance(found, Response):
+                    return found
+                title, found_year = found
+                year = year or found_year
+            answer = catalog.ask(method, scheme, value, kind, provider=provider or None, refresh=refresh,
+                                 title=title, year=year)
         except catalog.NotSupported as e:
             return _error(501, "not supported", provider=e.provider, message=str(e))
         except catalog.InvalidId as e:
@@ -354,11 +366,31 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
             body: Dict[str, Any] = {"item": value}
         elif method == "credits":
             body = {"credits": value}
+        elif method == "extras":
+            body = {"provider": answer.providers[0], "extras": value}
+        elif method == "variants":
+            body = {"variants": value}
         else:
             body = {"person": value.person, "credits": value.credits}
         body.update(providers=answer.providers, errors=answer.errors, truncated=answer.truncated)
         return _cached_response(request, body, config=config, degraded=bool(answer.errors),
                                 max_age=_catalog_max_age())
+
+    def _title_of(scheme: str, value: str, kind: Optional[str], provider: Optional[str], refresh: bool):
+        """``(title, year)`` of the work a variants question names by id alone,
+        or the error answer: 501 when no provider can answer variants or look
+        the id up, 404 when no catalogue knows it, 502 when every one failed."""
+        scheme, value, kind = catalog.base.check_request("variants", scheme, value, kind)
+        catalog.base.capable_sources("variants", scheme, kind, provider)
+        try:
+            found = catalog.ask("lookup", scheme, value, kind, refresh=refresh, children=False)
+        except catalog.NotSupported as e:
+            return _error(501, "not supported", provider=None, message=f"title is required: {e}")
+        if found.value is None:
+            if found.errors and len(found.errors) == len(found.asked):
+                return _error(502, "upstream failed", providers=found.asked, errors=found.errors)
+            return _error(404, "not found", providers=found.asked, errors=found.errors)
+        return found.value.title, found.value.year
 
     @v1.get("/lookup")
     def lookup_endpoint(request: Request, scheme: str, value: str, kind: Optional[str] = None,
@@ -381,6 +413,24 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
                         refresh: bool = False) -> Response:
         """A person and their filmography: credits whose ``item`` is set."""
         return _catalog(request, "person", scheme, value, None, provider, refresh)
+
+    @v1.get("/extras")
+    def extras_endpoint(request: Request, scheme: str, value: str, kind: Optional[str] = None,
+                        provider: Optional[str] = None, refresh: bool = False) -> Response:
+        """The videos that belong to an item (trailers, teasers, featurettes,
+        behind the scenes, music videos), each with its type, site, key,
+        address, language, resolution and date; ``provider`` names the
+        catalogue that listed them."""
+        return _catalog(request, "extras", scheme, value, kind, provider, refresh)
+
+    @v1.get("/variants")
+    def variants_endpoint(request: Request, scheme: str, value: str, kind: Optional[str] = None,
+                          title: Optional[str] = None, year: Optional[int] = None,
+                          provider: Optional[str] = None, refresh: bool = False) -> Response:
+        """The fan edits of a work, each an item with ``extra.variant`` and,
+        when the catalogue gives one, ``ext_ids.ifdb``. The work is searched
+        by ``title``; without one, its title is looked up by its id."""
+        return _catalog(request, "variants", scheme, value, kind, provider, refresh, title, year)
 
     @v1.get("/resolve", response_model=ResolveResult)
     def resolve_get_endpoint(request: Request, refresh: bool = False,
