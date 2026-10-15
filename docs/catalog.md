@@ -113,7 +113,9 @@ their own. The table and the mapping are in `metadatarr.catalog.roles`.
 `GET /api/v1/providers` lists, for every provider, a `capabilities` object:
 `lookup` and `credits` map an item kind to the schemes they take, `children`
 lists the kinds whose lookup carries children, and `person` lists the schemes
-a person question takes. Empty tables mean the provider answers none of them.
+a person question takes. `extras` and `variants` map a kind to the schemes of
+the routes in [Extras and variants](extras-and-variants.md). Empty tables
+mean the provider answers none of them.
 
 | Provider | Lookup (and children) | Credits | Person |
 | --- | --- | --- | --- |

@@ -8,6 +8,9 @@ Sonarr's proxy gives a season no identifier of its own, so a season is named
 tracks come from one of its releases: an official release with the track
 count most official releases share, the earliest of those. Track positions
 count on across discs; the disc and the place on it are in ``extra``.
+
+Radarr's proxy names one trailer of a movie, a YouTube video id; that trailer
+is the movie's extras when TMDB, which lists every video, is not available.
 """
 from __future__ import annotations
 
@@ -17,8 +20,8 @@ from typing import List, Optional
 from metadatarr.catalog import _http
 from metadatarr.catalog.base import CatalogSource, register_source
 from metadatarr.catalog.roles import normalise_role
-from metadatarr.catalog.shapes import Credit, Item, Person, iso_date, merge_credits, year_of
-from metadatarr.catalog.sources._util import as_int, ids, image, minutes, plain_text
+from metadatarr.catalog.shapes import Credit, Extra, Item, Person, iso_date, merge_credits, year_of
+from metadatarr.catalog.sources._util import as_int, ids, image, minutes, plain_text, video_url
 
 RADARR = "https://radarrapi.servarr.com/v1"
 SONARR = "https://skyhook.sonarr.tv/v1/tvdb"
@@ -78,6 +81,7 @@ class SkyhookSource(CatalogSource):
                     "season": ("tvdb",), "artist": ("musicbrainz",), "album": ("musicbrainz",)}
     children_kinds = frozenset({"collection", "series", "season", "artist", "album"})
     credits_kinds = {"movie": ("tmdb", "imdb"), "series": ("tvdb",)}
+    extras_kinds = {"movie": ("tmdb", "imdb")}
 
     # -- movies ---------------------------------------------------------------
 
@@ -237,6 +241,17 @@ class SkyhookSource(CatalogSource):
             al = _http.get_json(f"{LIDARR}/album/{value}", timeout=timeout)
             return self._album(al, children) if isinstance(al, dict) and al.get("id") else None
         return None
+
+    def extras(self, scheme, value, kind, *, timeout):
+        m = self._get_movie(scheme, value, timeout) if kind == "movie" else None
+        if not m:
+            return None
+        key = (m.get("YouTubeTrailerId") or m.get("YoutubeTrailerId") or "").strip()
+        if not key:
+            return []
+        title = " ".join(p for p in (m.get("Title") or "", f"({m['Year']})" if m.get("Year") else "", "Trailer") if p)
+        return [Extra(type="trailer", type_raw="YouTubeTrailerId", title=title, site="youtube", key=key,
+                      url=video_url("youtube", key))]
 
     def credits(self, scheme, value, kind, *, timeout):
         if kind == "movie":

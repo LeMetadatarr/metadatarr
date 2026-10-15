@@ -12,6 +12,9 @@ the providers that contributed and the providers that failed.
 - Otherwise, with a title, the title resolve runs and every candidate that
   carries one of the given ids with a different value is dropped; a candidate
   that carries one with the same value is raised to at least 0.95.
+- With ``include_variants``, variants are collected either way: for an item
+  found by id, under its catalogue title. A provider that fails to list them
+  is in ``errors``.
 """
 from __future__ import annotations
 
@@ -156,6 +159,9 @@ def resolve(signals: Signals, ids: Dict[str, str], kind: Optional[str] = None, *
                                     external_ids=native)])
         out.match = {"item": item, "confidence": round(confidence, 4), "source": out.providers[0], "credits": [],
                      "id_conflicts": clashes}
+        if signals.include_variants:
+            add_variants(out.result, found.model_copy(update={"include_variants": True}), max_workers=max_workers)
+            out.errors.extend(out.result.provider_errors)
         return out
     if not signals.title:
         return out
