@@ -1,11 +1,13 @@
 # SPDX-License-Identifier: Apache-2.0
 """TMDB, available when ``TMDB_API_KEY`` is set in metadatarr's environment:
 movies, collections, series with seasons, seasons with episodes, cast and crew,
-and people with their combined filmography.
+people with their combined filmography, and the videos of a movie, a series or
+a season (trailers, teasers, featurettes, behind the scenes, clips, bloopers).
 
 TMDB gives a season no identifier of its own that its API can be asked by, so
 a season is named ``<series tmdb id>/<season number>`` under the ``tmdb``
-scheme. An IMDb id is translated through TMDB's ``find`` endpoint."""
+scheme. An IMDb id, and for extras a TVDB id, is translated through TMDB's
+``find`` endpoint."""
 from __future__ import annotations
 
 import os
@@ -14,8 +16,9 @@ from typing import List, Optional
 from metadatarr.catalog import _http
 from metadatarr.catalog.base import CatalogSource, register_source
 from metadatarr.catalog.roles import normalise_role
-from metadatarr.catalog.shapes import Credit, Item, Person, PersonDetails, iso_date, merge_credits, year_of
-from metadatarr.catalog.sources._util import as_int, ids, minutes, plain_text
+from metadatarr.catalog.shapes import (Credit, Extra, Item, Person, PersonDetails, extra_type, iso_date,
+                                       merge_credits, year_of)
+from metadatarr.catalog.sources._util import as_int, ids, minutes, plain_text, video_url
 
 API = "https://api.themoviedb.org/3"
 IMAGES = "https://image.tmdb.org/t/p/original"
@@ -97,6 +100,17 @@ def _cast_and_crew(block: dict) -> List[Credit]:
     return out
 
 
+def _extra(v: dict) -> Extra:
+    site = (v.get("site") or "").strip().lower()
+    return Extra(
+        type=extra_type(v.get("type")), type_raw=v.get("type") or "", title=v.get("name") or "",
+        site=site, key=v.get("key") or "", url=video_url(site, v.get("key") or ""),
+        language=v.get("iso_639_1") or "", country=v.get("iso_3166_1") or "",
+        official=v.get("official") if isinstance(v.get("official"), bool) else None,
+        resolution=as_int(v.get("size")), published=iso_date(v.get("published_at")),
+    )
+
+
 class TMDBSource(CatalogSource):
     name = "tmdb"
     priority = 20
@@ -105,6 +119,8 @@ class TMDBSource(CatalogSource):
     children_kinds = frozenset({"collection", "series", "season"})
     credits_kinds = {"movie": ("tmdb", "imdb"), "series": ("tmdb", "imdb")}
     person_schemes = ("tmdb", "imdb")
+    extras_kinds = {"movie": ("tmdb", "imdb"), "series": ("tmdb", "imdb", "tvdb"), "season": ("tmdb", "tvdb")}
+    method_priority = {"extras": 5}
 
     def _get(self, path: str, timeout: float, **params) -> Optional[dict]:
         key = os.environ.get("TMDB_API_KEY", "")
@@ -114,7 +130,8 @@ class TMDBSource(CatalogSource):
     def _id(self, scheme: str, value: str, kind: str, timeout: float) -> Optional[str]:
         if scheme == "tmdb":
             return value if value.isdigit() else None
-        found = self._get(f"/find/{value}", timeout, external_source="imdb_id") or {}
+        source = "tvdb_id" if scheme == "tvdb" else "imdb_id"
+        found = self._get(f"/find/{value}", timeout, external_source=source) or {}
         bucket = {"movie": "movie_results", "series": "tv_results", "person": "person_results"}[kind]
         hit = next(iter(found.get(bucket) or []), None)
         return str(hit["id"]) if hit and hit.get("id") else None
@@ -178,6 +195,19 @@ class TMDBSource(CatalogSource):
         out += [Credit(person=Person(name=c["name"], kind="company", ext_ids=ids(tmdb=c.get("id"))), role="studio")
                 for c in companies if c.get("name")]
         return merge_credits(out)
+
+    def extras(self, scheme, value, kind, *, timeout):
+        if kind == "season":
+            series, _, number = value.partition("/")
+            series_id = self._id(scheme, series, "series", timeout)
+            path = f"/tv/{series_id}/season/{number}/videos" if series_id and number.isdigit() else None
+        else:
+            tmdb_id = self._id(scheme, value, kind, timeout)
+            path = f"/{'movie' if kind == 'movie' else 'tv'}/{tmdb_id}/videos" if tmdb_id else None
+        data = self._get(path, timeout) if path else None
+        if data is None:
+            return None
+        return [_extra(v) for v in data.get("results") or [] if isinstance(v, dict) and v.get("key")]
 
     def person(self, scheme, value, *, timeout):
         tmdb_id = self._id(scheme, value, "person", timeout)

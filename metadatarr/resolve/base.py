@@ -549,8 +549,10 @@ def _variant_key(ent: ProviderEntity) -> object:
     Keys by the first populated field of :data:`_VARIANT_ID_FIELDS` (the
     work/release-identity ladder). If none of those is set but some other
     external id is populated, keys by the first populated field in the
-    model's declared field order instead of collapsing to name. Only when
-    the entity carries no external ids at all does this fall back to the
+    model's declared field order instead of collapsing to name;
+    ``derived_from_imdb`` names the work a variant is derived from, shared by
+    all its variants, so it never keys one. Only when the entity carries no
+    other external ids does this fall back to the
     normalized name, reusing the same normalization
     :func:`metadatarr.resolve.entities.allocate_entity_id` uses for its
     name-seeded path.
@@ -565,7 +567,7 @@ def _variant_key(ent: ProviderEntity) -> object:
         if value is not None:
             return (field_name, value)
     for field_name in type(ids).model_fields:
-        if field_name == "extra":
+        if field_name in ("extra", "derived_from_imdb"):
             continue
         value = getattr(ids, field_name, None)
         if value is not None:

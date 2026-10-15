@@ -31,6 +31,13 @@ def test_same_mb_release_different_names_dedupe():
     assert _variant_key(a) == _variant_key(b)
 
 
+def test_fan_edits_of_one_film_are_not_keyed_by_the_film():
+    a = _variant("Alien: FanFix", derived_from_imdb="tt0078748")
+    b = _variant("Alien: TV Cut", derived_from_imdb="tt0078748")
+    assert _variant_key(a) != _variant_key(b)
+    assert _variant_key(a) == ("name", _variant_key(a)[1])
+
+
 def test_no_ids_falls_back_to_normalized_name_case_insensitive():
     a = _variant("Director's Cut")
     b = _variant("  DIRECTOR'S   cut ")

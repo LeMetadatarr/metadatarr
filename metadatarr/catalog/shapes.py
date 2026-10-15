@@ -12,6 +12,10 @@ field, so a client stores an answer without translating it:
   ``country``, ``bio``, ``extra``.
 - :class:`Credit`: ``person``, ``role`` (see :mod:`metadatarr.catalog.roles`),
   ``character``, ``position``, ``note`` and, in a filmography, ``item``.
+- :class:`Extra`: a video that belongs to an item (a trailer, a featurette, a
+  music video): ``type`` (see :data:`EXTRA_TYPES`), ``type_raw``, ``title``,
+  ``site``, ``key``, ``url``, ``language``, ``country``, ``official``,
+  ``resolution``, ``runtime_s``, ``published``.
 """
 from __future__ import annotations
 
@@ -65,6 +69,47 @@ class Credit(BaseModel):
     position: Optional[int] = None
     note: str = ""
     item: Optional[Item] = None
+
+
+#: The types an extra is given, the arrkit apps' vocabulary.
+EXTRA_TYPES = ("trailer", "teaser", "behind-the-scenes", "making-of", "featurette", "deleted-scene", "interview",
+               "clip", "scene", "short", "music-video", "live-session", "other")
+
+#: A provider's own word for a type of extra that is not the vocabulary's word spelt another way.
+_EXTRA_WORDS = {"live performance": "live-session"}
+
+
+def extra_type(word: Optional[str]) -> str:
+    """The vocabulary's type for a provider's word, read without case, spaces
+    or underscores ("Behind the Scenes" is ``behind-the-scenes``); ``other``
+    for a word it has no type for (TMDB's "Bloopers" and "Opening Credits")."""
+    w = " ".join((word or "").strip().lower().replace("-", " ").replace("_", " ").split())
+    if w.replace(" ", "-") in EXTRA_TYPES:
+        return w.replace(" ", "-")
+    return _EXTRA_WORDS.get(w, "other")
+
+
+class Extra(BaseModel):
+    """A video that belongs to an item. ``site`` and ``key`` name it on its site
+    (``youtube`` and the video id), ``official`` is whether the catalogue marks
+    it as the studio's or label's own (``None`` when it does not say),
+    ``resolution`` the height the site offers it in, ``runtime_s`` its length
+    in seconds and ``published`` the ISO date it appeared."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    type: str
+    type_raw: str = ""
+    title: str = ""
+    site: str = ""
+    key: str = ""
+    url: str = ""
+    language: str = ""
+    country: str = ""
+    official: Optional[bool] = None
+    resolution: Optional[int] = None
+    runtime_s: Optional[float] = None
+    published: Optional[str] = None
 
 
 class PersonDetails(BaseModel):

@@ -126,14 +126,48 @@ def test_list_variants_empty_when_unavailable():
     assert provider.list_variants(ExternalIds(), None) == []
 
 
-def test_list_variants_empty_on_client_error():
+def test_list_variants_raises_on_client_error():
+    """A failed fanedit.org search is not "no fan edits": it raises, so the
+    resolver records it in provider_errors."""
     provider = PyfaneditProvider.__new__(PyfaneditProvider)
     provider._available = True
     mock_client = MagicMock()
     mock_client.search_by_original_title.side_effect = RuntimeError("network error")
     provider._client = mock_client
-    result = provider.list_variants(ExternalIds(), Signals(title="Alien"))
-    assert result == []
+    with pytest.raises(RuntimeError, match="network error"):
+        provider.list_variants(ExternalIds(), Signals(title="Alien"))
+
+
+def test_failed_search_lands_in_provider_errors(monkeypatch):
+    from metadatarr.resolve import base as resolve_base
+
+    provider = PyfaneditProvider.__new__(PyfaneditProvider)
+    provider._available = True
+    provider._client = MagicMock()
+    provider._client.search_by_original_title.side_effect = RuntimeError("fanedit.org answered HTTP 503")
+    monkeypatch.setattr(resolve_base, "_REGISTRY", {"pyfanedit": provider})
+    result = resolve_base.ResolveResult(signals=Signals(title="Alien", medium=MediaType.MOVIE))
+    resolve_base.add_variants(result, Signals(title="Alien", medium=MediaType.MOVIE, include_variants=True))
+    assert result.variants == []
+    assert [(e.provider, e.stage, e.error_type) for e in result.provider_errors] == [
+        ("pyfanedit", "variants", "RuntimeError")]
+
+
+def test_list_variants_carries_the_listing_fields():
+    from pyfanedit.models import FaneditSummary
+
+    summary = FaneditSummary(title="Alien: FanFix", url="https://fanedit.org/alien-fanfix/", fanedit_type="FanFix",
+                             original_title="Alien", faneditor="Placeholder Editor", release_date="2010-01-02",
+                             running_time="1h 45m", synopsis="A placeholder.", cover_url="https://fanedit.org/c.jpg")
+    entity, = _provider_with_mock([summary]).list_variants(ExternalIds(), Signals(title="Alien"))
+    extra = entity.external_ids.extra
+    assert {k: extra[k] for k in ("faneditor", "fanedit_release_date", "running_time", "synopsis", "cover_url",
+                                  "edit_name", "fanedit_url")} == {
+        "faneditor": "Placeholder Editor", "fanedit_release_date": "2010-01-02", "running_time": "1h 45m",
+        "synopsis": "A placeholder.", "cover_url": "https://fanedit.org/c.jpg", "edit_name": "FanFix",
+        "fanedit_url": "https://fanedit.org/alien-fanfix/"}
+    assert entity.image_url == "https://fanedit.org/c.jpg"
+    assert "available_in" not in extra and "release_information" not in extra
 
 
 # ---------------------------------------------------------------------------
