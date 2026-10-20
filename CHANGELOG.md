@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.0a1) (2026-10-20)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.24.0a1...0.25.0a1)
+
+**Merged pull requests:**
+
+- feat\(catalog\): extras and variants routes [\#86](https://github.com/LeMetadatarr/metadatarr/pull/86) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.24.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.24.0a1) (2026-10-20)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.23.2a1...0.24.0a1)
