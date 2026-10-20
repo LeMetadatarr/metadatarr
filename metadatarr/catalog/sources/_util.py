@@ -50,3 +50,24 @@ def minutes(value: Any, unit: float = 1.0) -> Optional[float]:
 def ids(**pairs: Any) -> dict:
     """``{scheme: str(value)}`` for the pairs whose value is set."""
     return {k: str(v) for k, v in pairs.items() if v not in (None, "", 0)}
+
+
+_VIDEO_PAGES = {"youtube": "https://www.youtube.com/watch?v={}", "vimeo": "https://vimeo.com/{}"}
+_YOUTUBE = re.compile(r"^https?://(?:(?:www|m|music)\.)?(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/)|youtu\.be/)"
+                      r"([A-Za-z0-9_-]{6,})")
+_VIMEO = re.compile(r"^https?://(?:www\.|player\.)?vimeo\.com/(?:video/)?(\d+)")
+
+
+def video_url(site: str, key: str) -> str:
+    """The page of a video named by its site and key, or ``""`` for a site this does not know."""
+    page = _VIDEO_PAGES.get((site or "").strip().lower())
+    return page.format(key) if page and key else ""
+
+
+def video_site_key(url: str) -> "tuple[str, str]":
+    """``(site, key)`` of a YouTube or Vimeo address, ``("", "")`` for any other."""
+    for site, pattern in (("youtube", _YOUTUBE), ("vimeo", _VIMEO)):
+        m = pattern.match((url or "").strip())
+        if m:
+            return site, m.group(1)
+    return "", ""

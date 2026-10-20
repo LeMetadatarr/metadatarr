@@ -13,11 +13,12 @@ import os
 from typing import Optional
 
 import pytest
+from unittest.mock import patch
 
 fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
-from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register  # noqa: E402
+from metadatarr.resolve.base import _REGISTRY, MetadataProvider, ProviderMatch, register  # noqa: E402
 from metadatarr.server.app import create_app  # noqa: E402
 from metadatarr.version import __version__  # noqa: E402
 from mediavocab import MediaType  # noqa: E402
@@ -43,8 +44,9 @@ class _StubMovieProvider(MetadataProvider):
 
 @pytest.fixture(scope="module", autouse=True)
 def _register_stub_provider():
-    register(_StubMovieProvider())
-    yield
+    with patch.dict(_REGISTRY):
+        register(_StubMovieProvider())
+        yield
 
 
 @pytest.fixture()

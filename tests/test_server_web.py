@@ -13,11 +13,12 @@ import os
 from typing import Optional
 
 import pytest
+from unittest.mock import patch
 
 fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
-from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register  # noqa: E402
+from metadatarr.resolve.base import _REGISTRY, MetadataProvider, ProviderMatch, register  # noqa: E402
 from metadatarr.server.app import create_app  # noqa: E402
 from metadatarr.version import __version__  # noqa: E402
 from mediavocab import MediaType  # noqa: E402
@@ -105,11 +106,12 @@ class _ConflictingProvider(MetadataProvider):
 
 @pytest.fixture(scope="module", autouse=True)
 def _register_stub_providers():
-    register(_LowConfidenceProvider())
-    register(_HighConfidenceProvider())
-    register(_RaisingProvider())
-    register(_ConflictingProvider())
-    yield
+    with patch.dict(_REGISTRY):
+        register(_LowConfidenceProvider())
+        register(_HighConfidenceProvider())
+        register(_RaisingProvider())
+        register(_ConflictingProvider())
+        yield
 
 
 @pytest.fixture()

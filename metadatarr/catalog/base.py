@@ -3,7 +3,9 @@
 
 A catalogue source answers questions keyed by an identifier: the details of
 an item with its children one level down (``lookup``), the people credited on
-it (``credits``) and a person with their filmography (``person``). Each source
+it (``credits``), a person with their filmography (``person``), the videos that
+belong to an item (``extras``) and the other versions of a work that are not
+the studio's, such as fan edits (``variants``). Each source
 declares, per question, which item kinds and identifier schemes it can answer;
 that declaration is what ``GET /providers`` reports as ``capabilities`` and
 what the dispatcher routes on.
@@ -11,7 +13,9 @@ what the dispatcher routes on.
 A source carries the name of the resolver provider it belongs to and is
 available exactly when that provider is (TMDB, for instance, needs
 ``TMDB_API_KEY``). The dispatcher asks the capable sources in priority order:
-the first one that knows the identifier answers. A source that fails or runs
+the first one that knows the identifier answers; a source may rank itself
+differently for one question (TMDB lists more extras than the Servarr proxy's
+single trailer, so it is asked first for those). A source that fails or runs
 past its timeout is recorded in the answer's ``errors`` and the next one is
 asked, so one failing catalogue never fails a request.
 
@@ -40,7 +44,7 @@ from metadatarr.transport import bypass_cache
 
 LOG = logging.getLogger("metadatarr.catalog")
 
-METHODS = ("lookup", "credits", "person")
+METHODS = ("lookup", "credits", "person", "extras", "variants")
 
 #: Item kinds the catalogue routes know.
 KINDS = ("movie", "collection", "series", "season", "episode", "artist", "album", "track",
@@ -57,7 +61,7 @@ DEFAULT_KIND = {"tmdb": "movie", "imdb": "movie", "tvdb": "series", "tvmaze": "s
 
 #: Schemes whose ids are positive integers, with the largest id each catalogue can hold.
 NUMERIC_SCHEMES = {"tmdb": 2**31 - 1, "tvdb": 2**31 - 1, "tvmaze": 2**31 - 1, "anilist": 2**31 - 1,
-                   "mal": 2**31 - 1, "librivox": 2**31 - 1, "apple_podcasts": 2**63 - 1}
+                   "mal": 2**31 - 1, "librivox": 2**31 - 1, "apple_podcasts": 2**63 - 1, "discogs": 2**31 - 1}
 #: Kinds named ``<series id>/<season number>`` in these schemes.
 COMPOSITE_KINDS = {"season"}
 
@@ -101,6 +105,12 @@ class CatalogSource:
     credits_kinds: ClassVar[Dict[str, Tuple[str, ...]]] = {}
     #: schemes a person question takes
     person_schemes: ClassVar[Tuple[str, ...]] = ()
+    #: kind -> schemes an extras question takes
+    extras_kinds: ClassVar[Dict[str, Tuple[str, ...]]] = {}
+    #: kind -> schemes a variants question takes
+    variants_kinds: ClassVar[Dict[str, Tuple[str, ...]]] = {}
+    #: method -> priority, where the source ranks differently for that question
+    method_priority: ClassVar[Dict[str, int]] = {}
     #: when the caller names no kind, the source is given ``kind=None`` and
     #: answers with the kind the catalogue records (AniList: movie or series)
     infers_kind: ClassVar[bool] = False
@@ -117,13 +127,19 @@ class CatalogSource:
             "children": sorted(self.children_kinds),
             "credits": {k: list(s) for k, s in sorted(self.credits_kinds.items())},
             "person": list(self.person_schemes),
+            "extras": {k: list(s) for k, s in sorted(self.extras_kinds.items())},
+            "variants": {k: list(s) for k, s in sorted(self.variants_kinds.items())},
         }
 
     def can(self, method: str, scheme: str, kind: Optional[str]) -> bool:
         if method == "person":
             return scheme in self.person_schemes
-        table = self.lookup_kinds if method == "lookup" else self.credits_kinds
+        table = {"lookup": self.lookup_kinds, "credits": self.credits_kinds, "extras": self.extras_kinds,
+                 "variants": self.variants_kinds}[method]
         return scheme in table.get(kind or "", ())
+
+    def rank(self, method: str) -> int:
+        return self.method_priority.get(method, self.priority)
 
     def lookup(self, scheme: str, value: str, kind: str, *, children: bool, timeout: float):
         raise NotImplementedError
@@ -132,6 +148,16 @@ class CatalogSource:
         raise NotImplementedError
 
     def person(self, scheme: str, value: str, *, timeout: float):
+        raise NotImplementedError
+
+    def extras(self, scheme: str, value: str, kind: str, *, timeout: float):
+        """A list of :class:`~metadatarr.catalog.shapes.Extra`, empty when the
+        item has none; ``None`` when the catalogue does not know the item."""
+        raise NotImplementedError
+
+    def variants(self, scheme: str, value: str, kind: str, *, title: str, year: Optional[int], timeout: float):
+        """A list of :class:`~metadatarr.catalog.shapes.Item` with ``extra.variant``
+        for the work named ``title``, empty when the catalogue lists none."""
         raise NotImplementedError
 
 
@@ -153,7 +179,7 @@ def capabilities_of(provider_name: str) -> Dict[str, Any]:
     """The capability table of a provider; empty tables when it has no catalogue source."""
     source = _SOURCES.get(provider_name)
     if source is None:
-        return {"lookup": {}, "children": [], "credits": {}, "person": []}
+        return {"lookup": {}, "children": [], "credits": {}, "person": [], "extras": {}, "variants": {}}
     return source.capabilities()
 
 
@@ -320,9 +346,9 @@ def check_request(method: str, scheme: str, value: str, kind: Optional[str]) -> 
     if scheme in NUMERIC_SCHEMES:
         composite = method != "person" and kind in COMPOSITE_KINDS and scheme in ("tmdb", "tvdb")
         head, _, season = value.partition("/") if composite else (value, "", "")
-        valid = head.isdigit() and 0 < int(head) <= NUMERIC_SCHEMES[scheme]
+        valid = head.isascii() and head.isdigit() and 0 < int(head) <= NUMERIC_SCHEMES[scheme]
         if composite:
-            valid = valid and season.isdigit()
+            valid = valid and season.isascii() and season.isdigit()
         if not valid:
             raise InvalidId(f"{value!r} is not a valid {scheme} id")
     return scheme, value, None if method == "person" else kind
@@ -341,7 +367,7 @@ def capable_sources(method: str, scheme: str, kind: Optional[str],
             raise NotSupported(f"provider {provider!r} is not available (missing configuration)", provider)
         return [source]
     candidates = [s for s in _SOURCES.values() if s.can(method, scheme, kind)]
-    usable = sorted((s for s in candidates if s.available()), key=lambda s: (s.priority, s.name))
+    usable = sorted((s for s in candidates if s.available()), key=lambda s: (s.rank(method), s.name))
     if not usable:
         what = f"{method} of {kind} by {scheme}" if kind else f"{method} by {scheme}"
         if candidates:
@@ -352,8 +378,11 @@ def capable_sources(method: str, scheme: str, kind: Optional[str],
 
 
 def ask(method: str, scheme: str, value: str, kind: Optional[str] = None, *,
-        provider: Optional[str] = None, refresh: bool = False, children: bool = True) -> Answer:
-    """Ask the capable sources ``method`` about ``scheme:value``.
+        provider: Optional[str] = None, refresh: bool = False, children: bool = True,
+        title: Optional[str] = None, year: Optional[int] = None) -> Answer:
+    """Ask the capable sources ``method`` about ``scheme:value``. ``title`` and
+    ``year`` name the work for ``variants``, which a catalogue of variants
+    searches by title.
 
     Raises :class:`ValueError` for a malformed question and
     :class:`NotSupported` when no available source can answer it."""
@@ -362,7 +391,10 @@ def ask(method: str, scheme: str, value: str, kind: Optional[str] = None, *,
     explicit = bool((kind or "").strip())
     scheme, value, kind = check_request(method, scheme, value, kind)
     sources = capable_sources(method, scheme, kind, provider)
-    key = (method, provider, scheme, value, kind, explicit, children)
+    if method == "variants" and not (title or "").strip():
+        raise ValueError("title is required for variants")
+    work = ((title or "").strip(), year)
+    key = (method, provider, scheme, value, kind, explicit, children, work)
     store = cache()
     if not refresh:
         hit, cached = store.get(key)
@@ -375,7 +407,7 @@ def ask(method: str, scheme: str, value: str, kind: Optional[str] = None, *,
     token, failures_token = _TRUNCATED.set(holder), _FAILURES.set(failures)
     try:
         _ask_sources(method, scheme, value, kind, explicit, sources, children, refresh, seconds, answer, holder,
-                     failures)
+                     failures, work)
     finally:
         _TRUNCATED.reset(token)
         _FAILURES.reset(failures_token)
@@ -391,7 +423,7 @@ def _error(source: str, stage: str, e: BaseException) -> ProviderError:
 
 
 def _ask_sources(method, scheme, value, kind, explicit, sources, children, refresh, seconds, answer, holder,
-                 failures):
+                 failures, work=("", None)):
     with bypass_cache(refresh):
         for source in sources:
             answer.asked.append(source.name)
@@ -402,6 +434,11 @@ def _ask_sources(method, scheme, value, kind, explicit, sources, children, refre
                 call = lambda s=source: s.lookup(scheme, value, given, children=children, timeout=seconds)  # noqa: E731
             elif method == "credits":
                 call = lambda s=source: s.credits(scheme, value, given, timeout=seconds)  # noqa: E731
+            elif method == "extras":
+                call = lambda s=source: s.extras(scheme, value, given, timeout=seconds)  # noqa: E731
+            elif method == "variants":
+                call = lambda s=source: s.variants(scheme, value, given, title=work[0], year=work[1],  # noqa: E731
+                                                   timeout=seconds)
             else:
                 call = lambda s=source: s.person(scheme, value, timeout=seconds)  # noqa: E731
             try:

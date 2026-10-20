@@ -401,7 +401,7 @@ extra is `[test]`.
 | `youtube_music` | YouTube Music | music | AUDIO | `tutubo` core dep, browseId entity records |
 | `youtube` | YouTube | movie / episodic_series / podcast / generic | universal | `tutubo` core dep, channel IDs only, refuses `MUSIC` |
 | `metal_archives` | Encyclopaedia Metallum | music | AUDIO | `pymetal` core dep |
-| `pyfanedit` | fanedit.org / IFDB | movie | VIDEO | variant-only: `lookup()` returns `None`, `list_variants()` calls `FaneditClient.search_by_original_title()`: `metadatarr/resolve/providers/pyfanedit.py:41` |
+| `pyfanedit` | fanedit.org / IFDB | movie | VIDEO | variant-only: `lookup()` returns `None`, `list_variants()` calls `FaneditClient.search_by_original_title()` and raises when it fails, so a failed search is in `provider_errors`: `metadatarr/resolve/providers/pyfanedit.py` |
 
 | Name | Source | Media | Modality | Notes |
 |---|---|---|---|---|

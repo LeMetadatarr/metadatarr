@@ -3,9 +3,11 @@
 from metadatarr.catalog.sources import (  # noqa: F401
     anilist,
     apple_podcasts,
+    discogs,
     librivox,
     musicbrainz,
     openlibrary,
+    pyfanedit,
     skyhook,
     tmdb,
     tvmaze,

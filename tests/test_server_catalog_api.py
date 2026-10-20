@@ -177,12 +177,13 @@ def test_catalogue_routes_are_versioned_only():
 def test_providers_list_capabilities_for_every_provider():
     for path in ("/api/v1/providers", "/providers"):
         infos = {p["name"]: p for p in client().get(path).json()["providers"]}
-        assert all(set(p["capabilities"]) == {"lookup", "children", "credits", "person", "search_kinds"} for p in infos.values())
+        assert all(set(p["capabilities"]) == {"lookup", "children", "credits", "person", "extras", "variants",
+                                              "search_kinds"} for p in infos.values())
         sky = infos["skyhook"]["capabilities"]
         assert sky["lookup"]["movie"] == ["tmdb", "imdb"] and "series" in sky["children"]
         assert infos["musicbrainz"]["capabilities"]["person"] == ["musicbrainz"]
         assert infos["bandcamp"]["capabilities"] == {"lookup": {}, "children": [], "credits": {}, "person": [],
-                                                     "search_kinds": []}
+                                                     "extras": {}, "variants": {}, "search_kinds": []}
 
 
 def test_capabilities_match_what_the_dispatcher_routes():
