@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.24.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.24.0a1) (2026-10-20)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.23.2a1...0.24.0a1)
+
+**Merged pull requests:**
+
+- feat\(candidates\): search by kind through providers that declare it [\#87](https://github.com/LeMetadatarr/metadatarr/pull/87) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.23.2a1](https://github.com/LeMetadatarr/metadatarr/tree/0.23.2a1) (2026-10-14)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.23.1a1...0.23.2a1)
