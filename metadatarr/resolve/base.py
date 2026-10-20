@@ -661,9 +661,12 @@ _VARIANT_ID_FIELDS: Tuple[str, ...] = (
 def _variant_key(ent: ProviderEntity) -> object:
     """Identity key for deduplicating :class:`ProviderEntity` variants.
 
-    A fan edit is keyed by its page address (``fanedit_url``), which every
-    IFDB listing carries and no two edits share. Otherwise keys by the first populated field of :data:`_VARIANT_ID_FIELDS` (the
-    work/release-identity ladder). If none of those is set but some other
+    A fan edit with no ``fanedit_id`` is keyed by its page address
+    (``fanedit_url``), which every IFDB listing carries and no two edits share;
+    one with a ``fanedit_id`` is keyed by that, so two records of one edit merge
+    whether or not both carry the page address. Otherwise keys by the first
+    populated field of :data:`_VARIANT_ID_FIELDS` (the work/release-identity
+    ladder). If none of those is set but some other
     external id is populated, keys by the first populated field in the
     model's declared field order instead of collapsing to name;
     ``derived_from_imdb`` names the work a variant is derived from, shared by
@@ -679,7 +682,7 @@ def _variant_key(ent: ProviderEntity) -> object:
     """
     ids = ent.external_ids
     url = (ids.extra or {}).get("fanedit_url")
-    if url:
+    if url and ids.fanedit_id is None:
         return ("fanedit_url", url)
     for field_name in _VARIANT_ID_FIELDS:
         value = getattr(ids, field_name, None)

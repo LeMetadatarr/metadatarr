@@ -25,7 +25,8 @@ _CLOCK = re.compile(r"^([0-9]{1,3}):([0-5][0-9])(?::[0-5][0-9])?$")
 _PLAIN = re.compile(r"^[0-9]{1,4}(?:[.,][0-9]{1,3})?$")
 _HOURS = re.compile(rf"(?<![0-9.,])({_NUMBER})\s*h(?:ours?|rs?)?(?![a-z])")
 _MINUTES = re.compile(r"(?<![0-9.,])([0-9]{1,4})\s*m(?:in(?:ute)?s?)?(?![a-z])")
-_AFTER_HOURS = re.compile(r"^[\s,]*(?:and\s+)?([0-5]?[0-9])(?:\s*m(?:in(?:ute)?s?)?)?(?![0-9a-z])")
+_AFTER_HOURS = re.compile(r"^[\s,.]*(?:and\s+)?([0-5]?[0-9])"
+                          r"(?:\s*m(?:in(?:ute)?s?)?\.?(?:\s*[0-5]?[0-9]\s*s(?:ec(?:ond)?s?)?\.?)?)?(?![0-9a-z])")
 _ISO_DATE = re.compile(r"^([0-9]{4})(?:-([0-9]{2})(?:-([0-9]{2}))?)?(?![0-9])")
 _MONTH_YEAR = re.compile(r"^([a-z]+)\.?\s+([0-9]{4})$")
 _MONTHS = {name: number for number, names in enumerate(

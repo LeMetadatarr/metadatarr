@@ -438,3 +438,9 @@ def test_a_client_year_survives_the_title_lookup(replay, ifdb):
 def test_a_discogs_id_must_be_ascii_digits(replay, value):
     r = client().get("/api/v1/extras", params={"scheme": "discogs", "value": value, "kind": "album"})
     assert r.status_code == 422, r.text
+
+
+@pytest.mark.parametrize("value", ["1396/\u00b2", "1396/1\u00b2", "1396/-1", "1396/", "1396/1/2"])
+def test_a_season_number_must_be_ascii_digits(replay, value):
+    r = client().get("/api/v1/extras", params={"scheme": "tmdb", "value": value, "kind": "season"})
+    assert r.status_code == 422, r.text

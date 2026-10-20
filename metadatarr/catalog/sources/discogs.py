@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 """Discogs: the videos listed on a release, as the album's extras. No key is
 needed; with ``DISCOGS_TOKEN`` set the requests carry it, as the resolver's
-Discogs client does, and share that client's pacing (25 requests a minute
-without a token, 60 with one).
+Discogs client does. The shared transport spaces requests to api.discogs.com
+one second apart (60 a minute), with or without a token.
 
 Discogs gives a release's videos no type; they are the videos collectors link
 to the record (mostly its tracks on YouTube), so each is a ``music-video``
