@@ -279,6 +279,10 @@ class ProviderEntity(BaseModel):
     …); ``kind`` is the structural ``mediavocab.EntityKind`` of the
     underlying entity (PERSON / GROUP / ORGANISATION / …) and
     auto-derives from ``role.to_mediavocab_kind()`` when omitted.
+    ``attributes`` holds what the provider states about the entity, keyed
+    by attribute name (``gender``, ``ethnicity``, ``orientation``, ...),
+    values lower-case with underscores; an attribute the provider does not
+    state is absent.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -288,6 +292,7 @@ class ProviderEntity(BaseModel):
     name: str
     image_url: Optional[str] = None
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
+    attributes: Dict[str, str] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def _validate_kind_matches_role(self) -> "ProviderEntity":

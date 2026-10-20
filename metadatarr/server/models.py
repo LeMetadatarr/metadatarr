@@ -30,6 +30,18 @@ class ResolveRequest(Signals):
     max_workers: int = Field(default=8, ge=1, le=32)
 
 
+class CandidatesRequest(ResolveRequest):
+    """A candidates request: a ``Signals`` bag plus an optional ``kind``.
+
+    A media kind (``movie``, ``series``, ``album``, ...) runs the title
+    fan-out with that kind's medium unless ``medium`` is given. Any other
+    kind (``performer``, ``studio``, ``scene``, ...) asks only the providers
+    whose ``search_kinds`` list it, with ``title`` as the name to search.
+    """
+
+    kind: Optional[str] = Field(default=None, max_length=32)
+
+
 MAX_BATCH_ITEMS = 100
 
 
@@ -138,7 +150,9 @@ class ProviderInfo(BaseModel):
     """What the provider answers by identifier: ``lookup`` and ``credits``
     map an item kind to the schemes they take, ``children`` lists the kinds
     whose lookup carries children, ``person`` lists the schemes a person
-    question takes. Empty tables mean the provider answers none of them."""
+    question takes. Empty tables mean the provider answers none of them.
+    ``search_kinds`` lists the kinds it answers a candidates search for by
+    name (``performer``, ``studio``, ``scene``, ...)."""
 
 
 class AudioIdentifyResponse(BaseModel):

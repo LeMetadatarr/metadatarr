@@ -19,11 +19,13 @@ from metadatarr.resolve.base import (
     ProviderMatch,
     ResolutionConflict,
     ResolveResult,
+    SearchCandidate,
     active_providers,
     all_providers,
     candidates,
     consolidate,
     enrich,
+    kind_candidates,
     register,
     resolve,
     search,  # noqa: F401 — kept importable; deliberately dropped from __all__
@@ -89,4 +91,6 @@ __all__ = [
     "enrich",
     "resolve",
     "candidates",
+    "SearchCandidate",
+    "kind_candidates",
 ]

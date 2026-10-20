@@ -114,6 +114,9 @@ their own. The table and the mapping are in `metadatarr.catalog.roles`.
 `lookup` and `credits` map an item kind to the schemes they take, `children`
 lists the kinds whose lookup carries children, and `person` lists the schemes
 a person question takes. Empty tables mean the provider answers none of them.
+`search_kinds` lists the kinds the provider answers a candidates search for by
+name (see [deploy.md](deploy.md#searching-by-kind)); it is empty for the
+built-in providers, which answer the title search of every media kind.
 
 | Provider | Lookup (and children) | Credits | Person |
 | --- | --- | --- | --- |

@@ -532,6 +532,12 @@ for m in candidates(Signals(title="Inception", medium=MediaType.MOVIE))[:5]:
     print(m.provider, m.confidence, m.external_ids.tmdb_movie)
 ```
 
+`kind_candidates(kind, signals)` is the search for kinds outside the media
+kinds (`performer`, `studio`, `scene`, ...): it asks only the providers that
+list `kind` in their `search_kinds` and returns `SearchCandidate` rows ranked
+by confidence. The candidates route uses it for those kinds (see
+[deploy.md](deploy.md#searching-by-kind)).
+
 `resolve()` is exactly `consolidate(candidates(signals), signals)`. `search()`
 is a thin alias for `candidates()`, prefer `candidates()`, which names its return
 value (ranked candidate matches) more clearly.

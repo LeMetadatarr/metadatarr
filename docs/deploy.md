@@ -66,10 +66,40 @@ paths.
 | `GET /api/v1/person?scheme=…&value=…` | a person and their filmography |
 | `GET /api/v1/resolve?title=…&year=…&medium=…` | the same from query parameters named after `Signals` fields; answers `304` to a matching `If-None-Match` |
 | `POST /api/v1/resolve/batch` | `{"items": [Signals, …]}`, at most 100; results come back in request order, each `{"index", "ok": true, "result": {…}, "error": null}` or `{"index", "ok": false, "result": null, "error": "…"}`; costs one rate-limit token per item |
-| `POST /api/v1/candidates` | every provider's match, ranked, without consolidation |
+| `POST /api/v1/candidates` | every provider's match, ranked, without consolidation; takes a `kind` (see [Searching by kind](#searching-by-kind)) |
 | `POST /api/v1/enrich` | derive more ids from the ids given |
 | `POST /api/v1/identify/video` | `{"filename", "duration"?, "size"?, "hints"?}`: parse the file name as a library scan would (only its last path component; the server opens nothing), fill `runtime` from `duration` (seconds), apply `hints` (`Signals` fields), then resolve |
 | `POST /api/v1/identify/audio` | audio fingerprint, then resolve: a multipart `file` upload, or `?path=` naming a file under `METADATARR_AUDIO_ROOTS` (any other path is refused with `403`) |
+
+### Searching by kind
+
+`POST /api/v1/candidates` takes an optional `kind` beside the `Signals`
+fields. A media kind (`movie`, `collection`, `series`, `season`, `episode`,
+`artist`, `album`, `track`, `author`, `book`, `show`, `audiobook`,
+`chapter`) runs the usual title search with that kind's medium, unless the
+request names a `medium`. Any other kind, such as `performer`, `studio` or
+`scene`, asks only the providers whose `search_kinds` capability lists it,
+with `title` as the name to search; a kind no provider lists answers `[]`.
+Providers gated on a content genre answer only when `content_genres` carries
+that genre.
+
+```json
+{"title": "Some Name", "kind": "performer", "content_genres": ["…"]}
+```
+
+Every row of a request with a `kind` carries the search-candidate fields:
+
+```json
+[{"provider": "…", "confidence": 0.85, "kind": "performer", "title": "Some Name",
+  "year": null, "ids": {"<scheme>": "<value>"}, "poster": "https://…",
+  "overview": null, "aliases": ["S. Name"], "medium": "…",
+  "attributes": {"gender": "…"}}]
+```
+
+For a media kind the rows are the providers' matches (`signals`,
+`external_ids`, `relations`, `variants`) with those fields added; `ids`
+flattens `external_ids`, its `extra` keys included. A request without `kind`
+answers exactly as before. Rows are ranked by `confidence`.
 
 Lookup responses carry an `ETag` and `Cache-Control: max-age` equal to the
 provider cache TTL (`private` when API keys are on). A result produced while
