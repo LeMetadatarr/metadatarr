@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.1a1) (2026-10-21)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.0a1...0.25.1a1)
+
+**Merged pull requests:**
+
+- fix: close the non-blocking review items of \#86 and \#87 [\#90](https://github.com/LeMetadatarr/metadatarr/pull/90) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.25.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.0a1) (2026-10-20)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.24.0a1...0.25.0a1)
