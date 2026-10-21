@@ -285,7 +285,8 @@ def test_musicbrainz_person_is_a_group_with_release_groups(replay):
 
 
 def test_musicbrainz_refuses_a_value_that_is_not_an_mbid_without_a_request(replay):
-    assert catalog.ask("lookup", "musicbrainz", "not-an-id", "track").value is None
+    with pytest.raises(catalog.InvalidId):
+        catalog.ask("lookup", "musicbrainz", "not-an-id", "track")
     assert replay.calls == []
 
 

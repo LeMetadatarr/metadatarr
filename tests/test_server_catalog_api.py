@@ -118,7 +118,7 @@ def test_unknown_id_is_404_and_not_cacheable(replay):
 
 @pytest.mark.parametrize("path,params,provider", [
     ("/api/v1/lookup", {"scheme": "tmdb", "value": "603", "kind": "track"}, None),
-    ("/api/v1/credits", {"scheme": "musicbrainz", "value": "x", "kind": "artist"}, None),
+    ("/api/v1/credits", {"scheme": "musicbrainz", "value": "a74b1b7f-71a5-4011-9441-d0b5e4122711", "kind": "artist"}, None),
     ("/api/v1/person", {"scheme": "tvdb", "value": "1"}, None),
     ("/api/v1/person", {"scheme": "tmdb", "value": "1"}, None),  # TMDB without its key
     ("/api/v1/lookup", {"scheme": "tmdb", "value": "603", "kind": "movie", "provider": "bandcamp"}, "bandcamp"),
@@ -452,3 +452,23 @@ def test_an_imdb_person_id_is_validated_before_it_reaches_a_provider(replay):
     for value in ("nm0000206/../..", "tt0133093", "nm1"):
         r = client().get("/api/v1/person", params={"scheme": "imdb", "value": value})
         assert r.status_code == 422, (value, r.text)
+
+
+MBID = "a74b1b7f-71a5-4011-9441-d0b5e4122711"
+BAD_MBIDS = ["../..", "a/../b", "x#f", "%2e%2e/%2e%2e", "..%2f", "a\\b", "a\r\nb", "a b", "1", "tt0133093",
+             MBID + "/../..", MBID[:-1], MBID + "0", MBID.replace("a", "g", 1), "١" * 8 + MBID[8:],
+             MBID.replace("-", "")]
+
+
+@pytest.mark.parametrize("value", BAD_MBIDS)
+@pytest.mark.parametrize("route,kind", [("lookup", "artist"), ("lookup", "album"), ("lookup", "track"),
+                                        ("credits", "album"), ("credits", "track"), ("extras", "album"),
+                                        ("variants", "album"), ("person", None)])
+def test_a_musicbrainz_id_that_is_not_a_uuid_is_refused_before_any_upstream_call(replay, route, kind, value):
+    params = {"scheme": "musicbrainz", "value": value}
+    if kind:
+        params["kind"] = kind
+    r = client().get(f"/api/v1/{route}", params=params)
+    assert r.status_code == 422, r.text
+    assert replay.calls == []
+
