@@ -65,6 +65,9 @@ NUMERIC_SCHEMES = {"tmdb": 2**31 - 1, "tvdb": 2**31 - 1, "tvmaze": 2**31 - 1, "a
 #: Kinds named ``<series id>/<season number>`` in these schemes.
 COMPOSITE_KINDS = {"season"}
 
+#: A MusicBrainz id: a UUID, ASCII hex only.
+_MBID = re.compile(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
+
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_CACHE_TTL = 3600
 DEFAULT_CACHE_SIZE = 1000
@@ -344,6 +347,8 @@ def check_request(method: str, scheme: str, value: str, kind: Optional[str]) -> 
         if kind not in KINDS:
             raise ValueError(f"unknown kind {kind!r}; one of {', '.join(KINDS)}")
     if scheme == "imdb" and not re.fullmatch(("nm" if method == "person" else "tt") + "[0-9]{7,10}", value):
+        raise InvalidId(f"{value!r} is not a valid {scheme} id")
+    if scheme == "musicbrainz" and not _MBID.fullmatch(value):
         raise InvalidId(f"{value!r} is not a valid {scheme} id")
     if scheme in NUMERIC_SCHEMES:
         composite = method != "person" and kind in COMPOSITE_KINDS and scheme in ("tmdb", "tvdb")

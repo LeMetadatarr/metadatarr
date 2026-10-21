@@ -128,7 +128,7 @@ def test_discogs_release_videos_are_album_extras(replay):
 @pytest.mark.parametrize("params,provider", [
     ({"scheme": "tvdb", "value": "81189", "kind": "series"}, None),        # TMDB without its key
     ({"scheme": "tmdb", "value": "1396/1", "kind": "season"}, None),
-    ({"scheme": "musicbrainz", "value": "x", "kind": "album"}, None),
+    ({"scheme": "musicbrainz", "value": "a74b1b7f-71a5-4011-9441-d0b5e4122711", "kind": "album"}, None),
     ({"scheme": "tmdb", "value": "603", "kind": "movie", "provider": "tmdb"}, "tmdb"),
     ({"scheme": "tmdb", "value": "603", "kind": "movie", "provider": "tvmaze"}, "tvmaze"),
 ])
