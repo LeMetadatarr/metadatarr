@@ -204,7 +204,8 @@ def test_resolve_include_variants_populates_variants():
     ("1h45", 105.0), ("1 h 30", 90.0), ("1,5h", 90.0), ("1.5h", 90.0), ("1,5 hours", 90.0), ("24:00", 1440.0),
     ("1h 75", 60.0), ("24h", 1440.0), ("1440", 1440.0), ("1440 min", 1440.0), ("1200 minutes", 1200.0),
     ("105 minutes (1h45)", 105.0), ("1h45 (105 min)", 105.0), ("90m / 1h30m", 90.0), ("1h 45m (105 min)", 105.0),
-    ("1 hour and 52 minutes", 112.0),
+    ("1 hour and 52 minutes", 112.0), ("1 hr. 45 min.", 105.0), ("1 h. 45 m.", 105.0), ("1h45m30s", 105.0),
+    ("1 hr 45 min 30 sec", 105.0),
 ])
 def test_runtime_minutes_reads_every_ifdb_spelling(text, minutes):
     from metadatarr.catalog.sources.pyfanedit import runtime_minutes

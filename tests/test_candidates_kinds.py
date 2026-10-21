@@ -267,3 +267,17 @@ def test_kind_rows_are_sorted_by_confidence(monkeypatch):
     rows = _post({"title": "Placeholder Scene", "kind": "scene"})
     cache().clear()
     assert [r["confidence"] for r in rows] == [0.95, 0.5, 0.4]
+
+
+def test_a_kind_search_without_a_title_asks_nobody(fakes):
+    people, _, _ = fakes
+    assert _post({"kind": "performer", "content_genres": [GENRE]}) == []
+    assert _post({"title": "  ", "kind": "performer", "content_genres": [GENRE]}) == []
+    assert people.asked == []
+
+
+def test_a_kind_search_every_provider_failed_is_not_stored(fakes):
+    client = TestClient(create_app(ServerConfig()))
+    resp = client.post("/api/v1/candidates", json={"title": "boom", "kind": "studio", "content_genres": [GENRE]})
+    assert resp.status_code == 200 and resp.json() == []
+    assert resp.headers["cache-control"] == "no-store"

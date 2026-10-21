@@ -343,6 +343,8 @@ def check_request(method: str, scheme: str, value: str, kind: Optional[str]) -> 
             raise ValueError(f"kind is required for scheme {scheme!r}")
         if kind not in KINDS:
             raise ValueError(f"unknown kind {kind!r}; one of {', '.join(KINDS)}")
+    if scheme == "imdb" and not re.fullmatch(("nm" if method == "person" else "tt") + "[0-9]{7,10}", value):
+        raise InvalidId(f"{value!r} is not a valid {scheme} id")
     if scheme in NUMERIC_SCHEMES:
         composite = method != "person" and kind in COMPOSITE_KINDS and scheme in ("tmdb", "tvdb")
         head, _, season = value.partition("/") if composite else (value, "", "")

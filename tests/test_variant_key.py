@@ -107,3 +107,10 @@ def test_seeded_variants_dedupe_against_fan_out_results(registry):
     result = resolve(signals)
 
     assert len(result.variants) == 1
+
+
+def test_two_records_of_one_fan_edit_merge_whether_or_not_both_carry_the_page():
+    a = _variant("Alien: Special", fanedit_id="1234")
+    b = ProviderEntity(role=EntityRole.OTHER, name="Alien: Special",
+                       external_ids=ExternalIds(fanedit_id="1234", extra={"fanedit_url": "https://fanedit.org/a/"}))
+    assert _variant_key(a) == _variant_key(b) == ("fanedit_id", 1234)

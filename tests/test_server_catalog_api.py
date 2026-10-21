@@ -437,3 +437,18 @@ def test_a_429_fails_the_page_and_its_retry_after_is_honoured(replay, monkeypatc
     now[0] += 31
     assert c.get("/api/v1/credits", params={"scheme": "anilist", "value": "1"}).status_code == 200
     assert calls[2:] == [1, 2]
+
+
+@pytest.mark.parametrize("route", ["lookup", "credits"])
+@pytest.mark.parametrize("value", ["tt0133093/../..", "../..", "tt133", "tt01330930000", "0133093", "tt013309\u0663",
+                                   "nm0000206"])
+def test_an_imdb_title_id_is_validated_before_it_reaches_a_provider(replay, route, value):
+    r = client().get(f"/api/v1/{route}", params={"scheme": "imdb", "value": value, "kind": "movie"})
+    assert r.status_code == 422, r.text
+    assert replay.calls == []
+
+
+def test_an_imdb_person_id_is_validated_before_it_reaches_a_provider(replay):
+    for value in ("nm0000206/../..", "tt0133093", "nm1"):
+        r = client().get("/api/v1/person", params={"scheme": "imdb", "value": value})
+        assert r.status_code == 422, (value, r.text)

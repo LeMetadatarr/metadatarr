@@ -61,6 +61,7 @@ from metadatarr.resolve.base import (
 from metadatarr import catalog
 from metadatarr.catalog import resolve as id_resolve
 from metadatarr.catalog.resolve import _KIND_MEDIUM as KIND_MEDIUM
+from metadatarr.resolve._errors import ProviderError
 from metadatarr.library import LocalMediaFile, _SXXEXX_RE, extract_embedded_ids, extract_signals
 from metadatarr.server.config import ServerConfig
 from metadatarr.server.models import (
@@ -508,14 +509,20 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
         kind = (body.kind or "").strip().lower() or None
         payload = body.model_dump(exclude={"max_workers", "kind"})
         if kind and kind not in KIND_MEDIUM:
+            if not (payload.get("title") or "").strip():
+                return _cached_response(request, [], config=config)
+            errors: List[ProviderError] = []
             try:
                 with bypass_cache(refresh):
-                    rows = kind_candidates(kind, Signals(**payload), max_workers=body.max_workers)
+                    rows = kind_candidates(kind, Signals(**payload), max_workers=body.max_workers, sink=errors)
             except Exception:  # pragma: no cover - defensive
                 LOG.exception("candidates failed")
                 raise HTTPException(
                     status_code=500, detail="internal error during candidates") from None
-            return _cached_response(request, rows, config=config)
+            response = _cached_response(request, rows, config=config, degraded=bool(errors))
+            if errors and not rows:
+                response.headers["Cache-Control"] = "no-store"
+            return response
         if kind and not payload.get("medium"):
             payload["medium"] = KIND_MEDIUM[kind]
         signals = Signals(**payload)
