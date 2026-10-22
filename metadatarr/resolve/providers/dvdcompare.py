@@ -148,7 +148,7 @@ class DVDCompareProvider(MetadataProvider):
         return _match_to_provider(signals, best)
 
     def enrich(self, external_ids: ExternalIds,
-               signals: Optional[Signals] = None) -> Optional[ProviderMatch]:
+               signals: Optional[Signals] = None) -> Optional[ExternalIds]:
         """Fetch the full DVDCompare edition page when we already have the id."""
         fid = external_ids.dvdcompare_id
         if not fid:
@@ -158,7 +158,7 @@ class DVDCompareProvider(MetadataProvider):
                 return None
             try:
                 top = self._client.get_edition(url)  # takes a URL string
-            except requests.RequestException as exc:
+            except (requests.RequestException, ValueError) as exc:
                 LOG.warning("dvdcompare enrich by url failed url=%r: %s", url, exc)
                 return None
             except Exception:
@@ -177,15 +177,6 @@ class DVDCompareProvider(MetadataProvider):
         if top is None:
             return None
 
-        variant_kind = _infer_variant(top.version)
-        cand_signals = Signals(
-            title=top.title,
-            medium=(signals.medium if signals else None) or MediaType.MOVIE,
-            picture_format=_infer_picture_format(top.version, top.disc_format),
-            variant_kind=variant_kind,
-            edition=top.version,
-        )
-
         extra: dict = {}
         if top.url:
             extra["dvdcompare_url"] = top.url
@@ -199,15 +190,10 @@ class DVDCompareProvider(MetadataProvider):
                 for cr in top.cut_runtimes
             ]
 
-        return ProviderMatch(
-            provider=self.name,
-            confidence=0.90,  # direct ID lookup — high confidence
-            signals=cand_signals,
-            external_ids=ExternalIds(
-                imdb=top.imdb_id,
-                dvdcompare_id=top.dvdcompare_id,
-                extra=extra,
-            ),
+        return ExternalIds(
+            imdb=top.imdb_id,
+            dvdcompare_id=top.dvdcompare_id,
+            extra=extra,
         )
 
 

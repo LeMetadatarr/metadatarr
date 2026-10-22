@@ -207,7 +207,7 @@ class MappingStore:
             val = getattr(external_ids, fname, None)
             if val is not None:
                 probe[fname] = str(val)
-        probe.update(external_ids.extra)
+        probe.update((k, v) for k, v in external_ids.extra.items() if isinstance(v, str))
 
         entry = self.lookup(role, probe)
         if entry is None or entry.score < min_score:

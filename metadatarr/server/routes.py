@@ -59,6 +59,7 @@ from metadatarr.resolve.base import (
     resolve as run_resolve,
 )
 from metadatarr import catalog
+from metadatarr.client import check_dvdcompare_url
 from metadatarr.catalog import resolve as id_resolve
 from metadatarr.catalog.resolve import _KIND_MEDIUM as KIND_MEDIUM
 from metadatarr.resolve._errors import ProviderError
@@ -622,6 +623,12 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
             medium = MediaType(body.medium) if body.medium else None
         except ValueError as e:
             raise HTTPException(status_code=422, detail=f"invalid medium: {e}") from None
+        dvd_url = (body.external_ids.extra or {}).get("dvdcompare_url")
+        if dvd_url not in (None, ""):
+            try:
+                check_dvdcompare_url(dvd_url)
+            except ValueError as e:
+                return _error(422, "invalid id", message=str(e))
         try:
             catalog.base.check_external_ids(body.external_ids)
         except catalog.InvalidId as e:
