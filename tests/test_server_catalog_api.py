@@ -4,6 +4,7 @@ id-aware POST /api/v1/resolve and the provider capabilities. Offline: the
 real sources answer from recorded fixtures, the resolver from stubs."""
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Optional
 
 import pytest
@@ -472,3 +473,81 @@ def test_a_musicbrainz_id_that_is_not_a_uuid_is_refused_before_any_upstream_call
     assert r.status_code == 422, r.text
     assert replay.calls == []
 
+
+
+# -- enrich ids ----------------------------------------------------------------------
+
+ENRICH_ROUTES = ["/api/v1/enrich", "/enrich"]
+BAD_ENRICH_IDS = {
+    "musicbrainz_artist": BAD_MBIDS,
+    "musicbrainz_release_group": BAD_MBIDS,
+    "musicbrainz_recording": ["../..", MBID + "/../..", "%2e%2e%2f", MBID + "\x00", MBID.upper() + "0", MBID + "\n"],
+    "musicbrainz_release": ["../..", "a" * 5000],
+    "musicbrainz_work": ["../..", "\x00"],
+    "musicbrainz_label": ["../..", "١" * 8 + MBID[8:]],
+    "isbn_10": ["../..", "123", "١٢٣٤٥٦٧٨٩٠", "012345678\x00", "%2e%2e%2f", "9" * 4000, "0306406152/x"],
+    "isbn_13": ["../..", "123", "٩٧٨٠٣٠٦٤٠٦١٥٧", "978030640615\x00", "9" * 4000, "978030640615"],
+    "olid": ["../..", "OL1A/../..", "%2e%2e%2f", "OL١A", "OL1A\x00", "OL" + "9" * 4000 + "W", "OL1", "ol1a", "OLA", "OL1Z", "OL45883W\n"],
+    "dvdcompare_id": ["../..", "16880/../..", "%2f", "١٦٨٨٠", "16880\x00", "9" * 4000, "1.5", "-1", "16880\n"],
+}
+
+
+@pytest.fixture
+def enriched(monkeypatch):
+    calls = []
+
+    def fake(external_ids, **kwargs):
+        calls.append(external_ids)
+        return external_ids
+
+    monkeypatch.setattr("metadatarr.server.routes.run_enrich", fake)
+    return calls
+
+
+@pytest.mark.parametrize("route", ENRICH_ROUTES)
+@pytest.mark.parametrize("field,value", [(f, v) for f, vs in BAD_ENRICH_IDS.items() for v in vs])
+def test_an_enrich_id_its_scheme_cannot_hold_is_refused_before_any_provider(enriched, route, field, value):
+    r = client().post(route, json={"external_ids": {field: value}})
+    assert r.status_code == 422, r.text
+    assert r.json()["error"] == "invalid id"
+    assert r.headers["cache-control"] == "no-store"
+    assert enriched == []
+
+
+@pytest.mark.parametrize("route", ENRICH_ROUTES)
+@pytest.mark.parametrize("ids", [
+    {"musicbrainz_artist": MBID, "musicbrainz_release_group": MBID, "musicbrainz_recording": MBID},
+    {"isbn_10": "0-306-40615-2"}, {"isbn_10": "080442957X"}, {"isbn_13": "978-0-306-40615-7"},
+    {"olid": "OL45883W"}, {"olid": "OL26320A"}, {"dvdcompare_id": "16880"},
+    {"musicbrainz_artist": "", "isbn_13": "", "olid": "", "dvdcompare_id": ""},
+])
+def test_enrich_forwards_well_formed_ids(enriched, route, ids):
+    r = client().post(route, json={"external_ids": ids})
+    assert r.status_code == 200, r.text
+    assert len(enriched) == 1
+
+
+@pytest.mark.parametrize("route", ENRICH_ROUTES)
+@pytest.mark.parametrize("field", ["isbn_10", "isbn_13"])
+def test_enrich_forwards_an_isbn_with_a_trailing_newline_normalised(enriched, route, field):
+    isbn = "080442957X" if field == "isbn_10" else "9780306406157"
+    r = client().post(route, json={"external_ids": {field: isbn + "\n"}})
+    assert r.status_code == 200, r.text
+    assert getattr(enriched[0], field) == isbn
+
+
+@pytest.mark.parametrize("field,value", [("isbn_10", "080442957X\n"), ("isbn_13", "9780306406157\n"),
+                                         ("isbn_13", "978030640615")])
+def test_check_external_ids_refuses_an_isbn_the_model_would_not_have_normalised(field, value):
+    with pytest.raises(catalog.InvalidId):
+        catalog_base.check_external_ids(SimpleNamespace(**{field: value}))
+
+
+@pytest.mark.parametrize("route", ENRICH_ROUTES)
+def test_enrich_accepts_an_uppercase_musicbrainz_uuid_as_the_resolve_route_does(enriched, replay, route):
+    upper = MBID.upper()
+    r = client().post(route, json={"external_ids": {"musicbrainz_artist": upper}})
+    assert r.status_code == 200, r.text
+    assert enriched[0].musicbrainz_artist == upper
+    resolved = client().post("/api/v1/resolve", json={"ids": {"musicbrainz": upper}, "kind": "artist"})
+    assert resolved.status_code != 422, resolved.text

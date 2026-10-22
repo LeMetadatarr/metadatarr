@@ -68,6 +68,16 @@ COMPOSITE_KINDS = {"season"}
 #: A MusicBrainz id: a UUID, ASCII hex only.
 _MBID = re.compile(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
 
+#: ExternalIds fields holding a MusicBrainz id.
+_MBID_FIELDS = ("musicbrainz_recording", "musicbrainz_release", "musicbrainz_release_group", "musicbrainz_work",
+                "musicbrainz_artist", "musicbrainz_label")
+_ISBN = re.compile(r"[0-9]{9}[0-9Xx]|[0-9]{13}")
+#: An Open Library id: ``OL`` digits and the record type (author, edition, work). Stricter than the
+#: catalogue source (upper case, at most 12 digits) because the resolve route does not validate olid.
+_OLID = re.compile(r"OL[0-9]{1,12}[AMW]")
+#: A DVDCompare film id.
+_DVDCOMPARE_ID = re.compile(r"[0-9]{1,12}")
+
 DEFAULT_TIMEOUT = 10.0
 DEFAULT_CACHE_TTL = 3600
 DEFAULT_CACHE_SIZE = 1000
@@ -359,6 +369,21 @@ def check_request(method: str, scheme: str, value: str, kind: Optional[str]) -> 
         if not valid:
             raise InvalidId(f"{value!r} is not a valid {scheme} id")
     return scheme, value, None if method == "person" else kind
+
+
+def check_external_ids(ids: Any) -> None:
+    """:class:`InvalidId` when a musicbrainz, isbn, olid or dvdcompare field of ``ids``
+    (an ExternalIds) is set to something its scheme cannot hold. An empty field is unset."""
+    checks = [(name, _MBID, "musicbrainz") for name in _MBID_FIELDS]
+    checks += [("olid", _OLID, "openlibrary"), ("dvdcompare_id", _DVDCOMPARE_ID, "dvdcompare")]
+    for name, pattern, scheme in checks:
+        value = getattr(ids, name, None)
+        if value and not pattern.fullmatch(value):
+            raise InvalidId(f"{value!r} is not a valid {scheme} id")
+    for name in ("isbn_10", "isbn_13"):
+        value = getattr(ids, name, None)
+        if value and not _ISBN.fullmatch(value.replace("-", "")):
+            raise InvalidId(f"{value!r} is not a valid isbn id")
 
 
 def capable_sources(method: str, scheme: str, kind: Optional[str],
