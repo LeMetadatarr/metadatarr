@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.4a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.4a1) (2026-10-22)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.3a1...0.25.4a1)
+
+**Merged pull requests:**
+
+- fix: fetch dvdcompare\_url only from https://www.dvdcompare.net [\#95](https://github.com/LeMetadatarr/metadatarr/pull/95) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
+
 ## [0.25.3a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.3a1) (2026-10-22)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.2a1...0.25.3a1)
