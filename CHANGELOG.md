@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.3a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.3a1) (2026-10-22)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.2a1...0.25.3a1)
+
+**Merged pull requests:**
+
+- fix: validate musicbrainz, isbn, olid and dvdcompare ids on the enrich routes [\#94](https://github.com/LeMetadatarr/metadatarr/pull/94) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.25.2a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.2a1) (2026-10-21)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.1a1...0.25.2a1)
