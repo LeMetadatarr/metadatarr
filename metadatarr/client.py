@@ -1,7 +1,10 @@
 import logging
 import os
 import re
-from typing import Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
+from urllib.parse import urljoin, urlsplit
+
+import requests
 
 from .version import __version__
 from .transport import make_session
@@ -768,6 +771,23 @@ class BlurayComClient:
 # ---------------------------------------------------------------------------
 
 _DVDCOMPARE_BASE = "https://www.dvdcompare.net"
+_DVDCOMPARE_HOST = "www.dvdcompare.net"
+_DVDCOMPARE_MAX_REDIRECTS = 5
+
+
+def check_dvdcompare_url(url: Any) -> str:
+    """Return *url* unchanged when it addresses ``https://www.dvdcompare.net``.
+
+    Raises :class:`ValueError` for anything else: another scheme, host or port,
+    userinfo, backslashes, whitespace, control or non-ASCII characters.
+    """
+    if (not isinstance(url, str) or not url.isascii() or not url.isprintable()
+            or " " in url or "\\" in url):
+        raise ValueError("dvdcompare_url must be an https://www.dvdcompare.net URL")
+    parts = urlsplit(url)
+    if parts.scheme != "https" or parts.netloc not in (_DVDCOMPARE_HOST, f"{_DVDCOMPARE_HOST}:443"):
+        raise ValueError("dvdcompare_url must be an https://www.dvdcompare.net URL")
+    return url
 
 
 class DVDCompareClient:
@@ -786,7 +806,17 @@ class DVDCompareClient:
         self._timeout = timeout
 
     def _get_html(self, url: str, params: Optional[Dict] = None) -> BeautifulSoup:
-        resp = self._session.get(url, params=params, timeout=self._timeout)
+        url = check_dvdcompare_url(url)
+        for _ in range(_DVDCOMPARE_MAX_REDIRECTS + 1):
+            resp = self._session.get(url, params=params, timeout=self._timeout,
+                                     allow_redirects=False)
+            location = resp.headers.get("Location") if 300 <= resp.status_code < 400 else None
+            if not location:
+                break
+            url = check_dvdcompare_url(urljoin(url, location))
+            params = None
+        else:
+            raise requests.TooManyRedirects(f"more than {_DVDCOMPARE_MAX_REDIRECTS} redirects")
         resp.raise_for_status()
         return BeautifulSoup(resp.text, "html.parser")
 
@@ -800,7 +830,10 @@ class DVDCompareClient:
             f"{_DVDCOMPARE_BASE}/comparisons/search.php",
             data={"param": title, "searchtype": "text"},
             timeout=self._timeout,
+            allow_redirects=False,
         )
+        if 300 <= resp.status_code < 400:
+            raise requests.HTTPError(f"dvdcompare search answered with a redirect ({resp.status_code})")
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
         results: List[DVDCompareEdition] = []
