@@ -623,6 +623,10 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
         except ValueError as e:
             raise HTTPException(status_code=422, detail=f"invalid medium: {e}") from None
         try:
+            catalog.base.check_external_ids(body.external_ids)
+        except catalog.InvalidId as e:
+            return _error(422, "invalid id", message=str(e))
+        try:
             with bypass_cache(refresh):
                 ids = run_enrich(
                     body.external_ids,
