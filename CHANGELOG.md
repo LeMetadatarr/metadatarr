@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.5a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.5a1) (2026-10-23)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.4a1...0.25.5a1)
+
+**Merged pull requests:**
+
+- fix: fetch bandcamp and soundcloud URL keys only from public https hosts [\#98](https://github.com/LeMetadatarr/metadatarr/pull/98) ([openvoiceos-bot](https://github.com/openvoiceos-bot))
+
 ## [0.25.4a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.4a1) (2026-10-22)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.3a1...0.25.4a1)
