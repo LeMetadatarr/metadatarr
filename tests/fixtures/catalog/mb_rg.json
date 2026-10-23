@@ -1,0 +1,75 @@
+{
+ "first-release-date": "1997-05-21",
+ "secondary-type-ids": [],
+ "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+ "id": "b1392450-e666-3926-a536-22c65f834433",
+ "releases": [
+  {
+   "disambiguation": "",
+   "title": "OK Computer",
+   "barcode": "724385522949",
+   "quality": "normal",
+   "id": "fba5f8fe-c6c8-4511-8562-c9febf482674",
+   "release-events": [
+    {
+     "area": {
+      "sort-name": "United Kingdom",
+      "iso-3166-1-codes": [
+       "GB"
+      ],
+      "disambiguation": "",
+      "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+      "type-id": null,
+      "name": "United Kingdom",
+      "type": null
+     },
+     "date": "1997-06-16"
+    }
+   ],
+   "artist-credit": [
+    {
+     "joinphrase": "",
+     "name": "Radiohead",
+     "artist": {
+      "sort-name": "Radiohead",
+      "country": "GB",
+      "disambiguation": "",
+      "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+      "name": "Radiohead",
+      "type": "Group"
+     }
+    }
+   ],
+   "date": "1997-06-16",
+   "text-representation": {
+    "script": "Latn",
+    "language": "eng"
+   },
+   "packaging": "Cassette Case",
+   "packaging-id": "c70b737a-0114-39a9-88f7-82843e54f906",
+   "status": "Official",
+   "country": "GB",
+   "status-id": "4e304316-386d-3409-af2e-78857eec5cfe"
+  }
+ ],
+ "artist-credit": [
+  {
+   "name": "Radiohead",
+   "joinphrase": "",
+   "artist": {
+    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+    "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+    "type": "Group",
+    "name": "Radiohead",
+    "sort-name": "Radiohead",
+    "country": "GB",
+    "disambiguation": ""
+   }
+  }
+ ],
+ "disambiguation": "",
+ "secondary-types": [],
+ "title": "OK Computer",
+ "primary-type": "Album"
+}

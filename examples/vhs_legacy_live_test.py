@@ -13,7 +13,7 @@ import sys
 from typing import List, Dict, Any
 
 from tutubo import search_yt, classify_video_dict, parse_title
-from metadatarr import signals_from_title
+from metadatarr.resolve.title_parser import signals_from_title
 
 # ---------------------------------------------------------------------------
 # Fixtures — VHS-legacy-style titles captured from a live run.

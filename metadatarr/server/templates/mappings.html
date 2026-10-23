@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}metadatarr — Mappings{% endblock %}
+{% block heading %}Mappings{% endblock %}
+{% block content %}
+<div class="card">
+  <p class="note">Read-only view. Mappings are merged at import time from the shipped defaults plus an optional user overlay — edit the overlay file directly and restart the server to pick up changes.</p>
+  <div class="kv">shipped: <code>{{ shipped_path }}</code></div>
+  <div class="kv">overlay: <code>{{ overlay_path }}</code>{% if not overlay_exists %} (not present){% endif %}</div>
+</div>
+{% for role, entries in mappings.items() %}
+<div class="card">
+  <p class="section-title">{{ role }} ({{ entries | length }})</p>
+  {% if entries %}
+  <div class="scroll-x">
+    <table class="table">
+      <thead><tr><th>from</th><th>to</th></tr></thead>
+      <tbody>
+        {% for k, v in entries %}
+        <tr><td class="kv">{{ k }}</td><td class="kv">{{ v }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No mappings for this role.</div>
+  {% endif %}
+</div>
+{% endfor %}
+{% endblock %}

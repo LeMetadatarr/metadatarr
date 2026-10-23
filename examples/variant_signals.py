@@ -52,13 +52,14 @@ def story_b_regional_pressing() -> None:
     print("\n=== B: Japanese bonus-tracks edition vs US standard ===")
 
     # The Japanese edition adds bonus tracks; mediavocab spec §4.2 excludes
-    # BONUS_TRACKS from VariantKind, so we use DELUXE (the closest first-class
-    # value) plus an `edition` note describing the specifics.
+    # BONUS_TRACKS from VariantKind, so we use OTHER (DELUXE is ReleasePackaging
+    # in mediavocab 1.0 — a Release-layer concept, not a Work variant)
+    # plus an `edition` note describing the specifics.
     jp_edition = Signals(
         title="OK Computer",
         artist="Radiohead",
         medium=MediaType.MUSIC,
-        variant_kind=VariantKind.DELUXE,
+        variant_kind=VariantKind.OTHER,
         region="JP",
         edition="Japanese edition (bonus tracks)",
         source_format="CD",

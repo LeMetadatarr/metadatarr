@@ -1,0 +1,963 @@
+{
+ "title": "Airbag",
+ "first-release-date": "1997-05-21",
+ "artist-credit": [
+  {
+   "name": "Radiohead",
+   "joinphrase": "",
+   "artist": {
+    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+    "sort-name": "Radiohead",
+    "type": "Group",
+    "name": "Radiohead",
+    "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+    "disambiguation": "",
+    "country": "GB"
+   }
+  }
+ ],
+ "length": 284400,
+ "video": false,
+ "disambiguation": "",
+ "relations": [
+  {
+   "source-credit": "",
+   "attributes": [],
+   "type": "conductor",
+   "direction": "backward",
+   "target-type": "artist",
+   "ended": true,
+   "attribute-ids": {},
+   "attribute-values": {},
+   "type-id": "234670ce-5f22-4fd0-921b-ef1662695c5d",
+   "artist": {
+    "name": "Nick Ingman",
+    "id": "32111fcd-2338-472a-892b-4b329549e3ba",
+    "disambiguation": "",
+    "country": "GB",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "sort-name": "Ingman, Nick",
+    "type": "Person"
+   },
+   "begin": "1996-07",
+   "target-credit": "",
+   "end": "1997-03"
+  },
+  {
+   "source-credit": "",
+   "attributes": [],
+   "type": "editor",
+   "direction": "backward",
+   "ended": false,
+   "attribute-ids": {},
+   "target-type": "artist",
+   "attribute-values": {},
+   "end": null,
+   "target-credit": "",
+   "begin": null,
+   "type-id": "40dff87a-e475-4aa6-b615-9935b564d756",
+   "artist": {
+    "disambiguation": "English record producer",
+    "id": "52de022d-5401-427f-8301-ff1b8be11a7a",
+    "name": "Nigel Godrich",
+    "country": "GB",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "type": "Person",
+    "sort-name": "Godrich, Nigel"
+   }
+  },
+  {
+   "attributes": [
+    "assistant"
+   ],
+   "source-credit": "",
+   "direction": "backward",
+   "type": "engineer",
+   "attribute-values": {},
+   "ended": false,
+   "attribute-ids": {
+    "assistant": "8c4196b1-7053-4b16-921a-f22b2898ed44"
+   },
+   "target-type": "artist",
+   "end": null,
+   "target-credit": "",
+   "begin": null,
+   "type-id": "5dcc52af-7064-4051-8d62-7d80f4c3c907",
+   "artist": {
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "type": "Person",
+    "sort-name": "Bailey, Jon",
+    "disambiguation": "engineer",
+    "id": "ecb6f2a6-32ba-4057-b7af-4ca1b35aeb9e",
+    "name": "Jon Bailey",
+    "country": "GB"
+   }
+  },
+  {
+   "end": null,
+   "target-credit": "",
+   "begin": null,
+   "type-id": "5dcc52af-7064-4051-8d62-7d80f4c3c907",
+   "artist": {
+    "country": "GB",
+    "disambiguation": "engineer",
+    "id": "b796507a-7c0f-41fb-b877-1e68c650568d",
+    "name": "Gerard Navarro",
+    "type": "Person",
+    "sort-name": "Navarro, Gerard",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+   },
+   "ended": false,
+   "attribute-ids": {
+    "assistant": "8c4196b1-7053-4b16-921a-f22b2898ed44"
+   },
+   "target-type": "artist",
+   "attribute-values": {},
+   "type": "engineer",
+   "direction": "backward",
+   "source-credit": "",
+   "attributes": [
+    "assistant"
+   ]
+  },
+  {
+   "direction": "backward",
+   "type": "engineer",
+   "attributes": [
+    "assistant"
+   ],
+   "source-credit": "",
+   "target-credit": "",
+   "end": null,
+   "artist": {
+    "sort-name": "Scard, Chris",
+    "type": "Person",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "country": "GB",
+    "name": "Chris Scard",
+    "id": "a77fa7aa-44b1-48a6-8f68-450e80fbc87f",
+    "disambiguation": ""
+   },
+   "type-id": "5dcc52af-7064-4051-8d62-7d80f4c3c907",
+   "begin": null,
+   "attribute-values": {},
+   "attribute-ids": {
+    "assistant": "8c4196b1-7053-4b16-921a-f22b2898ed44"
+   },
+   "ended": false,
+   "target-type": "artist"
+  },
+  {
+   "source-credit": "",
+   "attributes": [
+    "percussion"
+   ],
+   "type": "instrument",
+   "direction": "backward",
+   "attribute-ids": {
+    "percussion": "8e9abdf1-0afc-4544-b201-c6fa768d01f4"
+   },
+   "ended": true,
+   "target-type": "artist",
+   "attribute-credits": {},
+   "attribute-values": {},
+   "target-credit": "",
+   "end": "1997-03",
+   "artist": {
+    "type": "Person",
+    "sort-name": "Greenwood, Colin",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "country": "GB",
+    "disambiguation": "English bassist in Radiohead",
+    "id": "f23074f4-2c06-477a-bf1d-12fa66e087ee",
+    "name": "Colin Greenwood"
+   },
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "begin": "1996-07"
+  },
+  {
+   "ended": true,
+   "attribute-ids": {
+    "bass guitar": "17f9f065-2312-4a24-8309-6f6dd63e2e33"
+   },
+   "target-type": "artist",
+   "attribute-credits": {},
+   "attribute-values": {},
+   "end": "1997-03",
+   "target-credit": "",
+   "begin": "1996-07",
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "artist": {
+    "id": "f23074f4-2c06-477a-bf1d-12fa66e087ee",
+    "name": "Colin Greenwood",
+    "disambiguation": "English bassist in Radiohead",
+    "country": "GB",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "type": "Person",
+    "sort-name": "Greenwood, Colin"
+   },
+   "source-credit": "",
+   "attributes": [
+    "bass guitar"
+   ],
+   "type": "instrument",
+   "direction": "backward"
+  },
+  {
+   "end": "1997-03",
+   "target-credit": "",
+   "begin": "1996-07",
+   "artist": {
+    "disambiguation": "English bassist in Radiohead",
+    "id": "f23074f4-2c06-477a-bf1d-12fa66e087ee",
+    "name": "Colin Greenwood",
+    "country": "GB",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "type": "Person",
+    "sort-name": "Greenwood, Colin"
+   },
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "attribute-credits": {},
+   "attribute-values": {},
+   "ended": true,
+   "attribute-ids": {
+    "bass synthesizer": "e6571d23-5d79-4216-99d6-06e14e737da1"
+   },
+   "target-type": "artist",
+   "direction": "backward",
+   "type": "instrument",
+   "attributes": [
+    "bass synthesizer"
+   ],
+   "source-credit": ""
+  },
+  {
+   "attributes": [
+    "mellotron"
+   ],
+   "source-credit": "",
+   "direction": "backward",
+   "type": "instrument",
+   "attribute-values": {},
+   "attribute-credits": {},
+   "target-type": "artist",
+   "attribute-ids": {
+    "mellotron": "3715ab17-124b-4011-b324-d2bb2cd46f6b"
+   },
+   "ended": true,
+   "begin": "1996-07",
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "artist": {
+    "id": "e9fcfbbf-1743-4f73-8744-ada8da7394ea",
+    "name": "Jonny Greenwood",
+    "disambiguation": "English musician and score composer",
+    "country": "GB",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "type": "Person",
+    "sort-name": "Greenwood, Jonny"
+   },
+   "end": "1997-03",
+   "target-credit": ""
+  },
+  {
+   "artist": {
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "sort-name": "Greenwood, Jonny",
+    "type": "Person",
+    "disambiguation": "English musician and score composer",
+    "name": "Jonny Greenwood",
+    "id": "e9fcfbbf-1743-4f73-8744-ada8da7394ea",
+    "country": "GB"
+   },
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "begin": "1996-07",
+   "target-credit": "",
+   "end": "1997-03",
+   "attribute-values": {},
+   "attribute-credits": {},
+   "target-type": "artist",
+   "ended": true,
+   "attribute-ids": {
+    "organ": "55a37f4f-39a4-45a7-851d-586569985519"
+   },
+   "direction": "backward",
+   "type": "instrument",
+   "attributes": [
+    "organ"
+   ],
+   "source-credit": ""
+  },
+  {
+   "attributes": [
+    "piano"
+   ],
+   "source-credit": "",
+   "direction": "backward",
+   "type": "instrument",
+   "attribute-credits": {},
+   "attribute-values": {},
+   "attribute-ids": {
+    "piano": "b3eac5f9-7859-4416-ac39-7154e2e8d348"
+   },
+   "ended": true,
+   "target-type": "artist",
+   "target-credit": "",
+   "end": "1997-03",
+   "artist": {
+    "country": "GB",
+    "disambiguation": "English musician and score composer",
+    "name": "Jonny Greenwood",
+    "id": "e9fcfbbf-1743-4f73-8744-ada8da7394ea",
+    "sort-name": "Greenwood, Jonny",
+    "type": "Person",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+   },
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "begin": "1996-07"
+  },
+  {
+   "direction": "backward",
+   "type": "instrument",
+   "attributes": [
+    "glockenspiel"
+   ],
+   "source-credit": "",
+   "target-credit": "",
+   "end": "1997-03",
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "artist": {
+    "country": "GB",
+    "id": "e9fcfbbf-1743-4f73-8744-ada8da7394ea",
+    "name": "Jonny Greenwood",
+    "disambiguation": "English musician and score composer",
+    "type": "Person",
+    "sort-name": "Greenwood, Jonny",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+   },
+   "begin": "1996-07",
+   "attribute-credits": {},
+   "attribute-values": {},
+   "ended": true,
+   "attribute-ids": {
+    "glockenspiel": "340b8043-e3c4-443e-afb8-7fce24fe0ce4"
+   },
+   "target-type": "artist"
+  },
+  {
+   "target-type": "artist",
+   "ended": true,
+   "attribute-ids": {
+    "guitar": "63021302-86cd-4aee-80df-2270d54f4978"
+   },
+   "attribute-values": {},
+   "attribute-credits": {},
+   "begin": "1996-07",
+   "artist": {
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "sort-name": "Greenwood, Jonny",
+    "type": "Person",
+    "disambiguation": "English musician and score composer",
+    "name": "Jonny Greenwood",
+    "id": "e9fcfbbf-1743-4f73-8744-ada8da7394ea",
+    "country": "GB"
+   },
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "end": "1997-03",
+   "target-credit": "",
+   "source-credit": "",
+   "attributes": [
+    "guitar"
+   ],
+   "type": "instrument",
+   "direction": "backward"
+  },
+  {
+   "type": "instrument",
+   "direction": "backward",
+   "source-credit": "",
+   "attributes": [
+    "keyboard"
+   ],
+   "begin": "1996-07",
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "artist": {
+    "disambiguation": "English musician and score composer",
+    "id": "e9fcfbbf-1743-4f73-8744-ada8da7394ea",
+    "name": "Jonny Greenwood",
+    "country": "GB",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "type": "Person",
+    "sort-name": "Greenwood, Jonny"
+   },
+   "end": "1997-03",
+   "target-credit": "",
+   "target-type": "artist",
+   "attribute-ids": {
+    "keyboard": "95b0c3d2-9606-4ef5-a019-9b7437f3adda"
+   },
+   "ended": true,
+   "attribute-values": {},
+   "attribute-credits": {}
+  },
+  {
+   "source-credit": "",
+   "attributes": [
+    "percussion"
+   ],
+   "type": "instrument",
+   "direction": "backward",
+   "attribute-ids": {
+    "percussion": "8e9abdf1-0afc-4544-b201-c6fa768d01f4"
+   },
+   "ended": true,
+   "target-type": "artist",
+   "attribute-credits": {},
+   "attribute-values": {},
+   "end": "1997-03",
+   "target-credit": "",
+   "begin": "1996-07",
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "artist": {
+    "country": "GB",
+    "disambiguation": "guitarist & songwriter in Radiohead",
+    "id": "309d9809-cf74-493a-b56b-1378258f20fd",
+    "name": "Ed O’Brien",
+    "type": "Person",
+    "sort-name": "O’Brien, Ed",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+   }
+  },
+  {
+   "artist": {
+    "country": "GB",
+    "name": "Ed O’Brien",
+    "id": "309d9809-cf74-493a-b56b-1378258f20fd",
+    "disambiguation": "guitarist & songwriter in Radiohead",
+    "sort-name": "O’Brien, Ed",
+    "type": "Person",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+   },
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "begin": "1996-07",
+   "target-credit": "",
+   "end": "1997-03",
+   "target-type": "artist",
+   "ended": true,
+   "attribute-ids": {
+    "guitar": "63021302-86cd-4aee-80df-2270d54f4978"
+   },
+   "attribute-values": {},
+   "attribute-credits": {},
+   "type": "instrument",
+   "direction": "backward",
+   "source-credit": "",
+   "attributes": [
+    "guitar"
+   ]
+  },
+  {
+   "type": "instrument",
+   "direction": "backward",
+   "source-credit": "",
+   "attributes": [
+    "effects"
+   ],
+   "target-credit": "",
+   "end": "1997-03",
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "artist": {
+    "country": "GB",
+    "name": "Ed O’Brien",
+    "id": "309d9809-cf74-493a-b56b-1378258f20fd",
+    "disambiguation": "guitarist & songwriter in Radiohead",
+    "sort-name": "O’Brien, Ed",
+    "type": "Person",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+   },
+   "begin": "1996-07",
+   "ended": true,
+   "attribute-ids": {
+    "effects": "2706e403-bdef-47d8-9492-6f3ff4f78a0b"
+   },
+   "target-type": "artist",
+   "attribute-credits": {},
+   "attribute-values": {}
+  },
+  {
+   "source-credit": "",
+   "attributes": [
+    "percussion"
+   ],
+   "type": "instrument",
+   "direction": "backward",
+   "target-type": "artist",
+   "ended": true,
+   "attribute-ids": {
+    "percussion": "8e9abdf1-0afc-4544-b201-c6fa768d01f4"
+   },
+   "attribute-values": {},
+   "attribute-credits": {},
+   "begin": "1996-07",
+   "artist": {
+    "disambiguation": "drummer in Radiohead",
+    "name": "Philip Selway",
+    "id": "4ab74d13-d1eb-4895-b874-6da5d8b1aac3",
+    "country": "GB",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "sort-name": "Selway, Philip",
+    "type": "Person"
+   },
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "end": "1997-03",
+   "target-credit": ""
+  },
+  {
+   "attribute-values": {},
+   "attribute-credits": {},
+   "target-type": "artist",
+   "attribute-ids": {
+    "drums (drum set)": "12092505-6ee1-46af-a15a-b5b468b6b155"
+   },
+   "ended": true,
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "artist": {
+    "country": "GB",
+    "name": "Philip Selway",
+    "id": "4ab74d13-d1eb-4895-b874-6da5d8b1aac3",
+    "disambiguation": "drummer in Radiohead",
+    "sort-name": "Selway, Philip",
+    "type": "Person",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+   },
+   "begin": "1996-07",
+   "target-credit": "",
+   "end": "1997-03",
+   "attributes": [
+    "drums (drum set)"
+   ],
+   "source-credit": "",
+   "direction": "backward",
+   "type": "instrument"
+  },
+  {
+   "end": "1997-03",
+   "target-credit": "",
+   "begin": "1996-07",
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461",
+   "artist": {
+    "type": "Person",
+    "sort-name": "Yorke, Thom",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "country": "GB",
+    "id": "8ed2e0b3-aa4c-4e13-bec3-dc7393ed4d6b",
+    "name": "Thom Yorke",
+    "disambiguation": ""
+   },
+   "attribute-credits": {},
+   "attribute-values": {},
+   "ended": true,
+   "attribute-ids": {
+    "piano": "b3eac5f9-7859-4416-ac39-7154e2e8d348"
+   },
+   "target-type": "artist",
+   "direction": "backward",
+   "type": "instrument",
+   "attributes": [
+    "piano"
+   ],
+   "source-credit": ""
+  },
+  {
+   "attributes": [
+    "guitar"
+   ],
+   "source-credit": "",
+   "direction": "backward",
+   "type": "instrument",
+   "attribute-credits": {},
+   "attribute-values": {},
+   "attribute-ids": {
+    "guitar": "63021302-86cd-4aee-80df-2270d54f4978"
+   },
+   "ended": true,
+   "target-type": "artist",
+   "end": "1997-03",
+   "target-credit": "",
+   "begin": "1996-07",
+   "artist": {
+    "disambiguation": "",
+    "name": "Thom Yorke",
+    "id": "8ed2e0b3-aa4c-4e13-bec3-dc7393ed4d6b",
+    "country": "GB",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "sort-name": "Yorke, Thom",
+    "type": "Person"
+   },
+   "type-id": "59054b12-01ac-43ee-a618-285fd397e461"
+  },
+  {
+   "attributes": [
+    "strings"
+   ],
+   "source-credit": "",
+   "direction": "backward",
+   "type": "instrument arranger",
+   "attribute-values": {},
+   "attribute-credits": {},
+   "target-type": "artist",
+   "ended": false,
+   "attribute-ids": {
+    "strings": "32eca297-dde6-45d0-9305-ae479947c2a8"
+   },
+   "begin": null,
+   "artist": {
+    "country": "GB",
+    "disambiguation": "",
+    "name": "Radiohead",
+    "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+    "sort-name": "Radiohead",
+    "type": "Group",
+    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+   },
+   "type-id": "4820daa1-98d6-4f8b-aa4b-6895c5b79b27",
+   "end": null,
+   "target-credit": ""
+  },
+  {
+   "begin": null,
+   "type-id": "3e3102e1-1896-4f50-b5b2-dd9824e46efe",
+   "artist": {
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "sort-name": "Godrich, Nigel",
+    "type": "Person",
+    "name": "Nigel Godrich",
+    "id": "52de022d-5401-427f-8301-ff1b8be11a7a",
+    "disambiguation": "English record producer",
+    "country": "GB"
+   },
+   "end": null,
+   "target-credit": "",
+   "attribute-values": {},
+   "target-type": "artist",
+   "ended": false,
+   "attribute-ids": {},
+   "direction": "backward",
+   "type": "mix",
+   "attributes": [],
+   "source-credit": ""
+  },
+  {
+   "type-id": "5c0ceac3-feb4-41f0-868d-dc06f6e27fc0",
+   "artist": {
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "sort-name": "Godrich, Nigel",
+    "type": "Person",
+    "disambiguation": "English record producer",
+    "name": "Nigel Godrich",
+    "id": "52de022d-5401-427f-8301-ff1b8be11a7a",
+    "country": "GB"
+   },
+   "begin": null,
+   "target-credit": "",
+   "end": null,
+   "target-type": "artist",
+   "ended": false,
+   "attribute-ids": {},
+   "attribute-values": {},
+   "type": "producer",
+   "direction": "backward",
+   "source-credit": "",
+   "attributes": []
+  },
+  {
+   "artist": {
+    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+    "sort-name": "Radiohead",
+    "type": "Group",
+    "disambiguation": "",
+    "name": "Radiohead",
+    "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+    "country": "GB"
+   },
+   "type-id": "5c0ceac3-feb4-41f0-868d-dc06f6e27fc0",
+   "begin": null,
+   "target-credit": "",
+   "end": null,
+   "attribute-values": {},
+   "target-type": "artist",
+   "attribute-ids": {},
+   "ended": false,
+   "direction": "backward",
+   "type": "producer",
+   "attributes": [],
+   "source-credit": ""
+  },
+  {
+   "attribute-values": {},
+   "attribute-ids": {},
+   "ended": false,
+   "target-type": "artist",
+   "end": null,
+   "target-credit": "",
+   "begin": null,
+   "artist": {
+    "sort-name": "Yorke, Thom",
+    "type": "Person",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "country": "GB",
+    "name": "Thom Yorke",
+    "id": "8ed2e0b3-aa4c-4e13-bec3-dc7393ed4d6b",
+    "disambiguation": ""
+   },
+   "type-id": "36c50022-44e0-488d-994b-33f11d20301e",
+   "attributes": [],
+   "source-credit": "",
+   "direction": "backward",
+   "type": "programming"
+  },
+  {
+   "type": "recording",
+   "direction": "backward",
+   "source-credit": "",
+   "attributes": [],
+   "artist": {
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "type": "Person",
+    "sort-name": "Godrich, Nigel",
+    "id": "52de022d-5401-427f-8301-ff1b8be11a7a",
+    "name": "Nigel Godrich",
+    "disambiguation": "English record producer",
+    "country": "GB"
+   },
+   "type-id": "a01ee869-80a8-45ef-9447-c59e91aa7926",
+   "begin": null,
+   "target-credit": "",
+   "end": null,
+   "target-type": "artist",
+   "ended": false,
+   "attribute-ids": {},
+   "attribute-values": {}
+  },
+  {
+   "target-type": "artist",
+   "ended": false,
+   "attribute-ids": {},
+   "attribute-values": {},
+   "artist": {
+    "country": "GB",
+    "disambiguation": "",
+    "name": "Radiohead",
+    "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+    "sort-name": "Radiohead",
+    "type": "Group",
+    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b"
+   },
+   "type-id": "a01ee869-80a8-45ef-9447-c59e91aa7926",
+   "begin": null,
+   "target-credit": "",
+   "end": null,
+   "source-credit": "",
+   "attributes": [],
+   "type": "recording",
+   "direction": "backward"
+  },
+  {
+   "type": "vocal",
+   "direction": "backward",
+   "source-credit": "",
+   "attributes": [
+    "background vocals"
+   ],
+   "end": "1997-03",
+   "target-credit": "",
+   "begin": "1996-07",
+   "artist": {
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+    "sort-name": "O’Brien, Ed",
+    "type": "Person",
+    "disambiguation": "guitarist & songwriter in Radiohead",
+    "name": "Ed O’Brien",
+    "id": "309d9809-cf74-493a-b56b-1378258f20fd",
+    "country": "GB"
+   },
+   "type-id": "0fdbe3c6-7700-4a31-ae54-b53f06ae1cfa",
+   "ended": true,
+   "attribute-ids": {
+    "background vocals": "75052401-7340-4e5b-a71d-ea024a128849"
+   },
+   "target-type": "artist",
+   "attribute-credits": {},
+   "attribute-values": {}
+  },
+  {
+   "artist": {
+    "country": "GB",
+    "id": "8ed2e0b3-aa4c-4e13-bec3-dc7393ed4d6b",
+    "name": "Thom Yorke",
+    "disambiguation": "",
+    "type": "Person",
+    "sort-name": "Yorke, Thom",
+    "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+   },
+   "type-id": "0fdbe3c6-7700-4a31-ae54-b53f06ae1cfa",
+   "begin": "1996-07",
+   "target-credit": "",
+   "end": "1997-03",
+   "target-type": "artist",
+   "attribute-ids": {},
+   "ended": true,
+   "attribute-values": {},
+   "type": "vocal",
+   "direction": "backward",
+   "source-credit": "",
+   "attributes": []
+  },
+  {
+   "type": "performance",
+   "direction": "forward",
+   "source-credit": "",
+   "attributes": [],
+   "target-credit": "",
+   "end": "1997-03",
+   "type-id": "a3005666-a872-32c3-ad06-98af558e99b0",
+   "begin": "1996-07",
+   "attribute-ids": {},
+   "ended": true,
+   "target-type": "work",
+   "attribute-values": {},
+   "work": {
+    "title": "Airbag",
+    "type": "Song",
+    "type-id": "f061270a-2fd6-32f1-a641-f0f8676d14e6",
+    "language": "eng",
+    "iswcs": [
+     "T-010.257.770-7"
+    ],
+    "attributes": [],
+    "languages": [
+     "eng"
+    ],
+    "disambiguation": "",
+    "relations": [
+     {
+      "attributes": [],
+      "source-credit": "",
+      "direction": "backward",
+      "type": "writer",
+      "attribute-values": {},
+      "target-type": "artist",
+      "attribute-ids": {},
+      "ended": false,
+      "begin": null,
+      "artist": {
+       "country": "GB",
+       "disambiguation": "English bassist in Radiohead",
+       "name": "Colin Greenwood",
+       "id": "f23074f4-2c06-477a-bf1d-12fa66e087ee",
+       "sort-name": "Greenwood, Colin",
+       "type": "Person",
+       "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+      },
+      "type-id": "a255bca1-b157-4518-9108-7b147dc3fc68",
+      "end": null,
+      "target-credit": ""
+     },
+     {
+      "attribute-values": {},
+      "target-type": "artist",
+      "attribute-ids": {},
+      "ended": false,
+      "type-id": "a255bca1-b157-4518-9108-7b147dc3fc68",
+      "artist": {
+       "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+       "sort-name": "Greenwood, Jonny",
+       "type": "Person",
+       "disambiguation": "English musician and score composer",
+       "name": "Jonny Greenwood",
+       "id": "e9fcfbbf-1743-4f73-8744-ada8da7394ea",
+       "country": "GB"
+      },
+      "begin": null,
+      "target-credit": "",
+      "end": null,
+      "attributes": [],
+      "source-credit": "",
+      "direction": "backward",
+      "type": "writer"
+     },
+     {
+      "source-credit": "",
+      "attributes": [],
+      "type": "writer",
+      "direction": "backward",
+      "target-type": "artist",
+      "attribute-ids": {},
+      "ended": false,
+      "attribute-values": {},
+      "begin": null,
+      "artist": {
+       "id": "309d9809-cf74-493a-b56b-1378258f20fd",
+       "name": "Ed O’Brien",
+       "disambiguation": "guitarist & songwriter in Radiohead",
+       "country": "GB",
+       "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+       "type": "Person",
+       "sort-name": "O’Brien, Ed"
+      },
+      "type-id": "a255bca1-b157-4518-9108-7b147dc3fc68",
+      "end": null,
+      "target-credit": ""
+     },
+     {
+      "source-credit": "",
+      "attributes": [],
+      "type": "writer",
+      "direction": "backward",
+      "ended": false,
+      "attribute-ids": {},
+      "target-type": "artist",
+      "attribute-values": {},
+      "end": null,
+      "target-credit": "",
+      "begin": null,
+      "artist": {
+       "country": "GB",
+       "name": "Philip Selway",
+       "id": "4ab74d13-d1eb-4895-b874-6da5d8b1aac3",
+       "disambiguation": "drummer in Radiohead",
+       "sort-name": "Selway, Philip",
+       "type": "Person",
+       "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df"
+      },
+      "type-id": "a255bca1-b157-4518-9108-7b147dc3fc68"
+     },
+     {
+      "target-credit": "",
+      "end": null,
+      "type-id": "a255bca1-b157-4518-9108-7b147dc3fc68",
+      "artist": {
+       "sort-name": "Yorke, Thom",
+       "type": "Person",
+       "type-id": "b6e035f4-3ce9-331c-97df-83397230b0df",
+       "country": "GB",
+       "name": "Thom Yorke",
+       "id": "8ed2e0b3-aa4c-4e13-bec3-dc7393ed4d6b",
+       "disambiguation": ""
+      },
+      "begin": null,
+      "attribute-values": {},
+      "ended": false,
+      "attribute-ids": {},
+      "target-type": "artist",
+      "direction": "backward",
+      "type": "writer",
+      "attributes": [],
+      "source-credit": ""
+     }
+    ],
+    "id": "6bba3dc1-acc7-3319-84fd-c93883b1049c"
+   }
+  }
+ ],
+ "id": "4a7fea2e-545b-4c63-bc9a-9943cc3a29d7"
+}

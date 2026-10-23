@@ -8,18 +8,17 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
+from mediavocab.taxonomy import GENRE_ANIME, GENRE_MANGA
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-
-try:
-    import httpx
-except ImportError:  # pragma: no cover
-    httpx = None  # type: ignore[assignment]
+from metadatarr.catalog._http import ANILIST_INTERVAL
+from metadatarr.transport import make_session
 
 LOG = logging.getLogger("metadatarr.resolve.providers.anilist")
+_SESSION = make_session({"graphql.anilist.co": ANILIST_INTERVAL})
 
 _URL = "https://graphql.anilist.co"
 
@@ -62,16 +61,16 @@ class AniListProvider(MetadataProvider):
     """AniList — anime and manga, GraphQL, no credentials.
 
     Routes on (media_type, content_genres). Anime requires
-    ``EPISODIC_SERIES`` or ``MOVIE`` plus ``"anime"`` in
-    ``content_genres``; manga requires ``COMIC`` + ``"manga"``.
+    ``EPISODIC_SERIES`` or ``MOVIE`` plus ``GENRE_ANIME`` in
+    ``content_genres``; manga requires ``COMIC`` + ``GENRE_MANGA``.
     """
 
     name = "anilist"
     media = {MediaType.EPISODIC_SERIES, MediaType.MOVIE, MediaType.COMIC}
     # anime ⇒ VIDEO; manga ⇒ TEXT. Declare both; the `media` gate
     # naturally restricts each side to its own MediaType.
-    modality = {PlaybackModality.VIDEO, PlaybackModality.TEXT}
-    genre_filter = {"anime", "manga"}
+    playback_type = {PlaybackType.VIDEO, PlaybackType.PAGED}
+    genre_filter = {GENRE_ANIME, GENRE_MANGA}
 
     def is_available(self) -> bool:
         return True
@@ -81,18 +80,15 @@ class AniListProvider(MetadataProvider):
             return None
         if not self.matches(signals):
             return None
-        if httpx is None:
-            LOG.warning("httpx not installed — anilist provider unavailable")
-            return None
 
         is_manga = (
             signals.medium == MediaType.COMIC
-            or "manga" in (signals.content_genres or [])
+            or GENRE_MANGA in (signals.content_genres or [])
         )
         media_type = "MANGA" if is_manga else "ANIME"
 
         try:
-            resp = httpx.post(
+            resp = _SESSION.post(
                 _URL,
                 json={"query": _QUERY, "variables": {"search": signals.title, "type": media_type}},
                 timeout=10,
@@ -113,9 +109,9 @@ class AniListProvider(MetadataProvider):
         year = (media.get("startDate") or {}).get("year")
         # Map back to canonical mediavocab MediaType + genre tag.
         if media_type == "MANGA":
-            medium, genres = MediaType.COMIC, ["manga"]
+            medium, genres = MediaType.COMIC, [GENRE_MANGA]
         else:
-            medium, genres = MediaType.EPISODIC_SERIES, ["anime"]
+            medium, genres = MediaType.EPISODIC_SERIES, [GENRE_ANIME]
 
         relations: dict = {}
 

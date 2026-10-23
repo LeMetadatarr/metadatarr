@@ -16,15 +16,23 @@ from mediavocab import MediaType
 """
 from __future__ import annotations
 
+import contextvars
+import warnings
 from abc import ABC, abstractmethod
-from typing import ClassVar, Dict, List, Optional, Set
+from typing import Any, ClassVar, Dict, FrozenSet, List, Optional, Set, Tuple
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from metadatarr.resolve.entities import EntityRole, ProviderEntity
+from metadatarr.resolve._errors import LOG, ProviderError, trap
+from metadatarr.resolve.entities import (
+    EntityRole,
+    ProviderEntity,
+    _normalize_name,
+    allocate_entity_id,
+)
 from mediavocab.models import ExternalIds
 from metadatarr.resolve.mappings import apply_mappings
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals, SignalConflict, compare_signals as compare, merge_signals as merged
 
 
@@ -39,6 +47,64 @@ class ProviderMatch(BaseModel):
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
     relations: Dict[EntityRole, List[ProviderEntity]] = Field(default_factory=dict)
     variants: List[ProviderEntity] = Field(default_factory=list)
+
+
+class SearchCandidate(BaseModel):
+    """One provider's answer to a search for something of a named kind.
+
+    ``kind`` is the kind the caller asked for (``scene``, ``performer``,
+    ``studio``, ...) and ``title`` the item's title or the entity's name.
+    ``ids`` maps the provider's id schemes to values. ``poster``,
+    ``overview`` and ``aliases`` are filled when the provider knows them;
+    ``year`` stays ``None`` for entities that have none, such as people.
+    ``attributes`` is what the provider states about the entity, as on
+    :class:`ProviderEntity`.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    provider: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    kind: str
+    title: str
+    year: Optional[int] = None
+    ids: Dict[str, str] = Field(default_factory=dict)
+    poster: Optional[str] = None
+    overview: Optional[str] = None
+    aliases: List[str] = Field(default_factory=list)
+    medium: Optional[str] = None
+    attributes: Dict[str, str] = Field(default_factory=dict)
+
+    @classmethod
+    def from_match(cls, match: "ProviderMatch", kind: str) -> "SearchCandidate":
+        """The search-candidate view of a title match: its ids flattened
+        (``extra`` keys alongside the typed fields), its medium as a string."""
+        return cls(
+            provider=match.provider,
+            confidence=match.confidence,
+            kind=kind,
+            title=match.signals.title or "",
+            year=match.signals.year,
+            ids=flat_ids(match.external_ids),
+            medium=getattr(match.signals.medium, "value", match.signals.medium),
+        )
+
+
+class KindedProviderMatch(ProviderMatch, SearchCandidate):
+    """A title match answered for a media ``kind``: the full
+    :class:`ProviderMatch` plus the :class:`SearchCandidate` fields."""
+
+
+def flat_ids(external_ids: ExternalIds) -> Dict[str, str]:
+    """``{scheme: value}`` from an :class:`ExternalIds`: every set scalar
+    field plus every ``extra`` entry, values as strings."""
+    out: Dict[str, str] = {}
+    dumped: Dict[str, Any] = external_ids.model_dump(exclude_none=True)
+    extra = dumped.pop("extra", None) or {}
+    for key, value in [*dumped.items(), *extra.items()]:
+        if isinstance(value, (str, int, float)) and not isinstance(value, bool) and str(value).strip():
+            out[key] = str(value)
+    return out
 
 
 class ResolutionConflict(BaseModel):
@@ -77,6 +143,13 @@ class ResolveResult(BaseModel):
     """Contribution entities collected from accepted matches."""
     variants: List[ProviderEntity] = Field(default_factory=list)
     """Release-variant entities collected when ``signals.include_variants=True``."""
+    provider_errors: List[ProviderError] = Field(default_factory=list)
+    """Failures swallowed during fan-out, one entry per provider that raised.
+
+    Empty when every provider either matched or returned nothing cleanly. A
+    non-empty list means a provider raised — often a sign of upstream schema
+    drift — while the run continued with the remaining providers. Inspect it to
+    tell "no match" apart from "the lookup broke"."""
 
 
 class MetadataProvider(ABC):
@@ -88,15 +161,15 @@ class MetadataProvider(ABC):
 
         (no ``media``    declared OR signals.medium   in self.media)
         AND
-        (no ``modality`` declared OR signals.modality in self.modality)
+        (no ``modality`` declared OR signals.playback_type in self.playback_type)
         AND
         (no ``genre_filter`` declared OR self.genre_filter ∩ signals.content_genres)
 
     - ``media``: which ``MediaType`` values the provider serves.
-    - ``modality``: which ``PlaybackModality`` values (AUDIO / VIDEO /
+    - ``modality``: which ``PlaybackType`` values (AUDIO / VIDEO /
       INTERACTIVE / TEXT / UNKNOWN). Lets a caller route a
       ``MediaType.GENERIC`` query to audio-only providers via
-      ``Signals(modality=AUDIO)``.
+      ``Signals(playback_type=AUDIO)``.
     - ``genre_filter``: genre tags from ``mediavocab.taxonomy.genre``.
       Anime / manga gating uses this rather than a fake
       ``MediaType.ANIME`` (axiom 2).
@@ -104,8 +177,13 @@ class MetadataProvider(ABC):
 
     name: ClassVar[str] = ""
     media: ClassVar[Set[MediaType]] = set()
-    modality: ClassVar[Set[PlaybackModality]] = set()
+    playback_type: ClassVar[Set[PlaybackType]] = set()
     genre_filter: ClassVar[Set[str]] = set()
+    #: Kinds this provider answers a search by name for, beyond the title
+    #: fan-out every routed provider takes part in (``performer``,
+    #: ``studio``, ``scene``, ...). A candidates request for a kind outside
+    #: the media kinds reaches only the providers that list it here.
+    search_kinds: ClassVar[FrozenSet[str]] = frozenset()
 
     @abstractmethod
     def is_available(self) -> bool:
@@ -119,7 +197,7 @@ class MetadataProvider(ABC):
         """Default three-axis routing test — used by ``resolve`` to gate dispatch."""
         if self.media and signals.medium and signals.medium not in self.media:
             return False
-        if self.modality and signals.modality and signals.modality not in self.modality:
+        if self.playback_type and signals.playback_type and signals.playback_type not in self.playback_type:
             return False
         if self.genre_filter:
             tags = set(signals.content_genres or [])
@@ -137,6 +215,17 @@ class MetadataProvider(ABC):
         """
         match = self.lookup(signals)
         return [match] if match is not None else []
+
+    def search(self, kind: str, signals: Signals) -> List[SearchCandidate]:
+        """Candidates of ``kind`` whose name or title is ``signals.title``,
+        highest confidence first.
+
+        Called only for kinds in :attr:`search_kinds`. The default answers
+        with :meth:`lookup_candidates` seen as search candidates, which suits
+        a provider whose title search already returns that kind. Override it
+        for kinds a title lookup does not cover, such as people.
+        """
+        return [SearchCandidate.from_match(m, kind) for m in self.lookup_candidates(signals)]
 
     def list_variants(self, external_ids: ExternalIds,
                       signals: Optional[Signals] = None) -> List[ProviderEntity]:
@@ -162,6 +251,7 @@ class MetadataProvider(ABC):
 
 
 _REGISTRY: Dict[str, MetadataProvider] = {}
+_AVAILABILITY_FAILED: set = set()
 
 
 def register(provider: MetadataProvider) -> MetadataProvider:
@@ -177,21 +267,95 @@ def all_providers() -> Dict[str, MetadataProvider]:
     return dict(_REGISTRY)
 
 
-def active_providers(medium: Optional[MediaType] = None) -> List[MetadataProvider]:
+def _is_available(provider: MetadataProvider) -> bool:
+    """``provider.is_available()``, with a raising provider treated as unavailable."""
+    try:
+        return bool(provider.is_available())
+    except Exception as exc:
+        if provider.name not in _AVAILABILITY_FAILED:
+            _AVAILABILITY_FAILED.add(provider.name)
+            LOG.error("provider %r is_available() raised %s: %s; treating it as unavailable",
+                      provider.name, type(exc).__name__, exc)
+        return False
+
+
+def active_providers(medium: Optional[MediaType] = None,
+                     signals: Optional[Signals] = None) -> List[MetadataProvider]:
     """Return providers whose ``is_available()`` is True.
 
     If ``medium`` is given, only providers whose ``media`` set includes that
-    medium are returned.
+    medium are returned. If ``signals`` is given, only providers whose
+    three-axis routing :meth:`MetadataProvider.matches` it are returned.
     """
-    out = [p for p in _REGISTRY.values() if p.is_available()]
+    out = [p for p in list(_REGISTRY.values()) if _is_available(p)]
     if medium is not None:
         out = [p for p in out if not p.media or medium in p.media]
-    return out
+    return _routed(out, signals)
+
+
+def _routed(providers: List[MetadataProvider],
+            signals: Optional[Signals]) -> List[MetadataProvider]:
+    """Keep the providers whose declared routing axes match ``signals``."""
+    if signals is None:
+        return providers
+    return [p for p in providers if _matches(p, signals)]
+
+
+_MATCH_FAILED: Set[str] = set()
+
+
+def _matches(provider: MetadataProvider, signals: Signals) -> bool:
+    """``provider.matches(signals)``; a provider whose check raises does not match.
+
+    The failure is logged once per provider, so a broken ``matches()`` cannot
+    fail the fan-out or flood the log.
+    """
+    try:
+        return provider.matches(signals)
+    except Exception as exc:
+        if provider.name not in _MATCH_FAILED:
+            _MATCH_FAILED.add(provider.name)
+            LOG.warning("provider %s: matches() raised, treating as not matching: %s",
+                        provider.name, exc)
+        return False
 
 
 # ---------------------------------------------------------------------------
 # Match consolidation
 # ---------------------------------------------------------------------------
+
+def _aggregate_relations(
+    accepted: List[ProviderMatch],
+) -> Dict[EntityRole, List[ProviderEntity]]:
+    """Collect relation entities from accepted matches, deduped per role.
+
+    Two providers that point at the same entity (same canonical external id, or
+    same name when no id is known) collapse into one :class:`ProviderEntity`
+    with their ``external_ids`` and aliases merged.
+    """
+    out: Dict[EntityRole, List[ProviderEntity]] = {}
+    for match in accepted:
+        for role, entities in match.relations.items():
+            bucket = out.setdefault(role, [])
+            index: Dict[str, ProviderEntity] = {
+                allocate_entity_id(role, name=e.name, external_ids=e.external_ids): e
+                for e in bucket
+            }
+            for ent in entities:
+                eid = allocate_entity_id(
+                    role, name=ent.name, external_ids=ent.external_ids
+                )
+                existing = index.get(eid)
+                if existing is None:
+                    index[eid] = ent
+                    bucket.append(ent)
+                else:
+                    existing.external_ids = existing.external_ids.merge(ent.external_ids)
+                    existing.attributes = {**ent.attributes, **existing.attributes}
+                    if ent.name and ent.name != existing.name:
+                        existing.merge_alias(ent.name)
+    return out
+
 
 def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
     """Merge provider matches against a local signals bag.
@@ -248,6 +412,7 @@ def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
         accepted=accepted,
         dropped=dropped,
         conflicts=conflicts,
+        relations=_aggregate_relations(accepted),
     )
 
 
@@ -256,67 +421,290 @@ def consolidate(matches: List[ProviderMatch], local: Signals) -> ResolveResult:
 # ---------------------------------------------------------------------------
 
 def _gather_candidates(provider: "MetadataProvider",
-                       signals: Signals) -> List[ProviderMatch]:
+                       signals: Signals,
+                       sink: Optional[List[ProviderError]] = None,
+                       ) -> List[ProviderMatch]:
     """Internal: pull this provider's candidates via the cache when its
     `lookup_candidates` is the default (single-best wrapper); otherwise call
-    the override directly. Catches provider-side exceptions."""
+    the override directly. A provider that raises is trapped: the failure is
+    logged, recorded in ``sink``, and this returns ``[]``."""
     from metadatarr.resolve._cache import cached_lookup
 
     if type(provider).lookup_candidates is MetadataProvider.lookup_candidates:
-        single = cached_lookup(provider, signals)
-        return [single] if single is not None else []
-    try:
-        return provider.lookup_candidates(signals) or []
-    except Exception:
+        with trap(provider.name, "lookup", sink):
+            single = cached_lookup(provider, signals)
+            return [single] if single is not None else []
         return []
+    with trap(provider.name, "candidates", sink):
+        return provider.lookup_candidates(signals) or []
+    return []
+
+
+# Wall-clock budget for a single fan-out round (candidates/variants/enrich).
+# A provider that black-holes on connect never raises, so `trap()` never sees
+# it; without a deadline here `pool.map` (or `fut.result()`) waits forever and
+# the sync FastAPI handlers calling into this hang on uvicorn's threadpool,
+# eventually taking the whole process (incl. /healthz) down with them. This
+# bounds the *whole round*, not any single provider's request timeout.
+DEFAULT_FANOUT_DEADLINE: float = 20.0
 
 
 def _run_pool(providers: List["MetadataProvider"],
               fn,
-              max_workers: int) -> list:
-    """Bounded ThreadPoolExecutor.map wrapper. Empty in → empty out."""
-    from concurrent.futures import ThreadPoolExecutor
+              max_workers: int,
+              *,
+              deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE,
+              sink: Optional[List[ProviderError]] = None,
+              stage: str = "lookup") -> list:
+    """Bounded ThreadPoolExecutor wrapper with a wall-clock *deadline*.
+
+    Behaves like ``pool.map`` when *deadline* is ``None`` (waits for every
+    provider). When *deadline* is set, providers that haven't produced a
+    result within the budget are dropped from the returned list; if *sink* is
+    given, each dropped provider gets a :class:`ProviderError` (``stage`` /
+    ``"TimeoutError"``) appended so it surfaces in ``ResolveResult.provider_errors``
+    instead of the caller hanging indefinitely.
+
+    The underlying threads for timed-out providers are not force-killed
+    (Python threads can't be); the pool is shut down without waiting for them
+    so this call returns promptly, at the cost of leaking those threads until
+    their blocking call eventually returns or the process exits.
+    """
+    from concurrent.futures import ThreadPoolExecutor, wait
 
     if not providers:
         return []
     workers = max(1, min(max_workers, len(providers)))
-    with ThreadPoolExecutor(max_workers=workers) as pool:
-        return list(pool.map(fn, providers))
+    pool = ThreadPoolExecutor(max_workers=workers)
+    # dict preserves insertion order (py3.7+), so iterating `futures.items()`
+    # below walks the futures in the same order as `providers` was given.
+    # Each worker runs in a copy of the caller's context, so request-scoped
+    # context variables (e.g. ``transport.bypass_cache``) reach the providers.
+    futures = {pool.submit(contextvars.copy_context().run, fn, p): p for p in providers}
+    results: list = []
+    try:
+        done, _not_done = wait(futures, timeout=deadline)
+        # Iterate in *provider input order*, not `done`'s set-iteration
+        # order — `wait()` returns unordered sets, and consolidate()/
+        # candidates() do a stable sort on confidence, so equal-confidence
+        # matches tie-break on this function's output order. Set iteration
+        # order isn't guaranteed stable run-to-run, which would make that
+        # tie-break (and therefore which match gets accepted vs. dropped in
+        # conflict resolution) nondeterministic.
+        for fut, provider in futures.items():
+            if fut in done:
+                try:
+                    results.append(fut.result())
+                except Exception as exc:  # pragma: no cover - defensive
+                    # fn implementations trap their own exceptions; this is a
+                    # last-resort net so one bad future never sinks the batch.
+                    LOG.warning("provider %s failed during %s: %s",
+                                provider.name, stage, exc)
+                    if sink is not None:
+                        sink.append(ProviderError(
+                            provider=provider.name, stage=stage,
+                            error_type=exc.__class__.__name__,
+                            message=str(exc)[:500],
+                        ))
+            else:
+                LOG.warning("provider %s exceeded %ss fan-out deadline during %s",
+                            provider.name, deadline, stage)
+                if sink is not None:
+                    sink.append(ProviderError(
+                        provider=provider.name, stage=stage,
+                        error_type="TimeoutError",
+                        message=f"provider exceeded {deadline}s fan-out deadline",
+                    ))
+    finally:
+        pool.shutdown(wait=False, cancel_futures=True)
+    return results
 
 
-def search(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
+def candidates(signals: Signals, *, max_workers: int = 8,
+               sink: Optional[List[ProviderError]] = None,
+               deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE,
+               ) -> List[ProviderMatch]:
     """Fan out to every active provider, return the ranked candidate union.
 
+    The raw, *un-consolidated* counterpart to :func:`resolve`. Use this when
+    you want to see every provider's vote individually — a disambiguation UI,
+    a "did you mean…" list, or your own custom merge policy. Use
+    :func:`resolve` instead when you just want the single merged record.
+
     Same fan-out plumbing as :func:`resolve` (concurrent, cached, filtered
-    by `signals.medium`) but emits the raw candidate list instead of
+    by each provider's routing axes via :meth:`MetadataProvider.matches`) but emits the raw candidate list instead of
     consolidating into one record. Sorted by ``ProviderMatch.confidence``
     descending, ties broken by provider iteration order.
 
-    Pipeline:
-
     .. code-block:: python
 
-        # equivalent to today's resolve():
-        consolidate(search(signals), signals)
+        # equivalent to resolve():
+        consolidate(candidates(signals), signals)
 
         # top-N for a UI list:
-        search(signals)[:5]
+        candidates(signals)[:5]
     """
-    providers = active_providers(medium=signals.medium)
+    providers = _routed(active_providers(medium=signals.medium), signals)
     matches: List[ProviderMatch] = []
     for batch in _run_pool(providers,
-                           lambda p: _gather_candidates(p, signals),
-                           max_workers):
+                           lambda p: _gather_candidates(p, signals, sink),
+                           max_workers,
+                           deadline=deadline, sink=sink, stage="candidates"):
         matches.extend(batch)
     matches.sort(key=lambda m: m.confidence, reverse=True)
     return matches
 
 
-def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
+def _gather_kind(provider: "MetadataProvider", kind: str, signals: Signals,
+                 sink: Optional[List[ProviderError]] = None) -> List[SearchCandidate]:
+    """Internal: one provider's search candidates of ``kind``. The default
+    :meth:`MetadataProvider.search` goes through the cached title path; an
+    override is called directly. A raising provider is trapped like in
+    :func:`_gather_candidates`."""
+    if type(provider).search is MetadataProvider.search:
+        rows = [SearchCandidate.from_match(m, kind) for m in _gather_candidates(provider, signals, sink)]
+    else:
+        rows = []
+        with trap(provider.name, "search", sink):
+            rows = provider.search(kind, signals) or []
+    return [r for r in rows if r.kind == kind]
+
+
+def kind_candidates(kind: str, signals: Signals, *, max_workers: int = 8,
+                    sink: Optional[List[ProviderError]] = None,
+                    deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE,
+                    ) -> List[SearchCandidate]:
+    """Fan a search for ``kind`` out to the providers that declare it.
+
+    Only available providers listing ``kind`` in
+    :attr:`MetadataProvider.search_kinds` are asked, and each still passes
+    its three-axis routing against ``signals`` (a provider gated on a
+    content genre answers only when the caller sent that genre). The union
+    comes back sorted by confidence, ties in provider order, like
+    :func:`candidates`.
+    """
+    providers = [p for p in _routed(active_providers(medium=signals.medium), signals)
+                 if kind in p.search_kinds]
+    rows: List[SearchCandidate] = []
+    for batch in _run_pool(providers,
+                           lambda p: _gather_kind(p, kind, signals, sink),
+                           max_workers,
+                           deadline=deadline, sink=sink, stage="search"):
+        rows.extend(batch)
+    rows.sort(key=lambda r: r.confidence, reverse=True)
+    return rows
+
+
+def search(signals: Signals, *, max_workers: int = 8) -> List[ProviderMatch]:
+    """Deprecated alias for :func:`candidates`.
+
+    Kept for backward compatibility; new code should call
+    :func:`candidates`, which names the return value (ranked candidate
+    matches) more clearly. Behaviour is identical.
+    """
+    warnings.warn(
+        "search() is deprecated; use candidates() instead",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+    return candidates(signals, max_workers=max_workers)
+
+
+# Work/release-identity ExternalIds fields, in priority order.
+#
+# Variants are work-shaped entities (``EntityRole.OTHER``): they name a cut,
+# edition, or release of a work, not a person, artist, label, or channel. The
+# per-role ladder in ``entities._dominant_external_id`` is scoped to
+# contribution roles and does not cover this shape, so variant keying gets
+# its own, local, work-level ladder here instead of reusing that function.
+_VARIANT_ID_FIELDS: Tuple[str, ...] = (
+    "fanedit_id",                 # fan-edit / alternate-cut identifier
+    "musicbrainz_release",        # a specific release: one edition of a release-group
+    "musicbrainz_release_group",  # a release-group: a work grouping across editions
+    "musicbrainz_recording",      # a specific recording: one take of a work
+    "musicbrainz_work",           # the abstract musical work
+    "imdb",                       # IMDb title id (movie / show / episode)
+    "tmdb_movie",                 # TMDB movie id
+    "tmdb_tv",                    # TMDB tv-show id
+    "tvdb",                       # TheTVDB series/episode id
+    "tvmaze",                     # TVmaze show id
+    "trakt_id",                   # Trakt title id
+    "discogs_release",            # a Discogs release: a specific pressing/edition
+    "isbn_13",                    # book edition identifier
+    "isbn_10",                    # book edition identifier (legacy format)
+    "olid",                       # Open Library edition/work id
+    "google_books_id",            # Google Books volume id
+    "bluray_com_id",              # Blu-ray.com edition id
+    "dvdcompare_id",              # DVDCompare edition id
+    "audible_asin",               # Audible edition id
+    "librivox_id",                # LibriVox recording id
+    "podcast_index_id",           # Podcast Index feed id
+    "apple_podcast_id",           # Apple Podcasts feed id
+    "listen_notes_id",            # ListenNotes feed id
+    "anilist_id",                 # AniList media id
+    "mal_id",                     # MyAnimeList media id
+    "anidb_id",                   # AniDB media id
+    "audiodb_album_id",           # TheAudioDB album id
+    "audiodb_track_id",           # TheAudioDB track id
+    "metal_archives_release",     # Metal Archives release id
+    "metal_archives_song",        # Metal Archives song id
+    "opencritic_id",              # OpenCritic game id
+    "rawg_id",                    # RAWG game id
+    "igdb_id",                    # IGDB game id
+    "iheart_podcast_id",          # iHeart podcast feed id
+    "iheart_episode_id",          # iHeart episode id
+    "iheart_track_id",            # iHeart track id
+    "iheart_playlist_id",         # iHeart playlist id
+)
+
+
+def _variant_key(ent: ProviderEntity) -> object:
+    """Identity key for deduplicating :class:`ProviderEntity` variants.
+
+    A fan edit with no ``fanedit_id`` is keyed by its page address
+    (``fanedit_url``), which every IFDB listing carries and no two edits share;
+    one with a ``fanedit_id`` is keyed by that, so two records of one edit merge
+    whether or not both carry the page address. Otherwise keys by the first
+    populated field of :data:`_VARIANT_ID_FIELDS` (the work/release-identity
+    ladder). If none of those is set but some other
+    external id is populated, keys by the first populated field in the
+    model's declared field order instead of collapsing to name;
+    ``derived_from_imdb`` names the work a variant is derived from, shared by
+    all its variants, so it never keys one. Only when the entity carries no
+    other external ids does this fall back to the
+    normalized name, reusing the same normalization
+    :func:`metadatarr.resolve.entities.allocate_entity_id` uses for its
+    name-seeded path.
+
+    Two variants with different dominant-id fields that happen to share a
+    secondary id remain distinct here — that overlap is a mappings concern,
+    not this key's.
+    """
+    ids = ent.external_ids
+    url = (ids.extra or {}).get("fanedit_url")
+    if url and ids.fanedit_id is None:
+        return ("fanedit_url", url)
+    for field_name in _VARIANT_ID_FIELDS:
+        value = getattr(ids, field_name, None)
+        if value is not None:
+            return (field_name, value)
+    for field_name in type(ids).model_fields:
+        if field_name in ("extra", "derived_from_imdb"):
+            continue
+        value = getattr(ids, field_name, None)
+        if value is not None:
+            return (field_name, value)
+    return ("name", _normalize_name(ent.name))
+
+
+def resolve(signals: Signals, *, max_workers: int = 8,
+            deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE) -> ResolveResult:
     """Fan out to all active providers that cover *signals.medium*, consolidate.
 
-    Providers are filtered by ``medium`` before calling ``lookup()`` so a
-    music lookup never touches the TMDB movie provider, etc. Lookups run
+    Providers are filtered by :meth:`MetadataProvider.matches` (media,
+    modality and genre axes) before calling ``lookup()`` so a music lookup
+    never touches the TMDB movie provider and an ordinary movie lookup never
+    touches an adult-genre provider. Lookups run
     concurrently (bounded by *max_workers*) and pass through a cache that
     memoises both hits and misses keyed by
     ``(provider.name, signal_hash(signals))``. Providers with an empty
@@ -328,42 +716,52 @@ def resolve(signals: Signals, *, max_workers: int = 8) -> ResolveResult:
     ``result.variants``.
 
     Returns a :class:`ResolveResult` regardless of how many providers matched.
+
+    This is the **headline entry point**: it gives you one merged answer. When
+    you need the individual provider votes instead (disambiguation UI, custom
+    merge policy), call :func:`candidates`.
     """
-    result = consolidate(search(signals, max_workers=max_workers), signals)
+    sink: List[ProviderError] = []
+    result = consolidate(
+        candidates(signals, max_workers=max_workers, sink=sink,
+                   deadline=deadline), signals)
+    result.provider_errors = sink
     if signals.include_variants:
-        providers = active_providers(medium=signals.medium)
-
-        def _get_variants(p: "MetadataProvider") -> List[ProviderEntity]:
-            try:
-                return p.list_variants(result.external_ids, signals) or []
-            except Exception:
-                return []
-
-        def _variant_key(ent: ProviderEntity) -> object:
-            ids = ent.external_ids
-            if ids.fanedit_id is not None:
-                return ("fanedit", ids.fanedit_id)
-            if ids.musicbrainz_release:
-                return ("mbrelease", ids.musicbrainz_release)
-            return ("name", ent.name)
-
-        seen: dict = {}
-        # Seed from any variants already present in accepted matches.
-        for m in result.accepted:
-            for ent in m.variants:
-                seen.setdefault(_variant_key(ent), ent)
-        for batch in _run_pool(providers, _get_variants, max_workers):
-            for ent in batch:
-                seen.setdefault(_variant_key(ent), ent)
-        if seen:
-            result.variants = list(seen.values())
+        add_variants(result, signals, max_workers=max_workers, deadline=deadline)
     return result
+
+
+def add_variants(result: ResolveResult, signals: Signals, *, max_workers: int = 8,
+                 deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE) -> None:
+    """Fill ``result.variants`` from the accepted matches and every routed
+    provider's :meth:`MetadataProvider.list_variants`; failures go to
+    ``result.provider_errors``."""
+    sink = result.provider_errors
+    providers = _routed(active_providers(medium=signals.medium), signals)
+
+    def _get_variants(p: "MetadataProvider") -> List[ProviderEntity]:
+        with trap(p.name, "variants", sink):
+            return p.list_variants(result.external_ids, signals) or []
+        return []
+
+    seen: dict = {}
+    # Seed from any variants already present in accepted matches.
+    for m in result.accepted:
+        for ent in m.variants:
+            seen.setdefault(_variant_key(ent), ent)
+    for batch in _run_pool(providers, _get_variants, max_workers,
+                           deadline=deadline, sink=sink, stage="variants"):
+        for ent in batch:
+            seen.setdefault(_variant_key(ent), ent)
+    if seen:
+        result.variants = list(seen.values())
 
 
 def enrich(external_ids: ExternalIds, *,
            medium: Optional[MediaType] = None,
            apply_maps: bool = True,
-           max_workers: int = 8) -> ExternalIds:
+           max_workers: int = 8,
+           deadline: Optional[float] = DEFAULT_FANOUT_DEADLINE) -> ExternalIds:
     """Given some IDs, derive more IDs by consulting every active provider.
 
     Each provider's :meth:`MetadataProvider.enrich` is called with
@@ -386,14 +784,15 @@ def enrich(external_ids: ExternalIds, *,
 
     providers = active_providers(medium=medium)
     out = external_ids.model_copy(deep=True)
+    sink: List[ProviderError] = []
 
     def _call(p: "MetadataProvider") -> Optional[ExternalIds]:
-        try:
+        with trap(p.name, "enrich", sink):
             return cached_enrich(p, external_ids)
-        except Exception:
-            return None
+        return None
 
-    for enrichment in _run_pool(providers, _call, max_workers):
+    for enrichment in _run_pool(providers, _call, max_workers,
+                                deadline=deadline, sink=sink, stage="enrich"):
         if enrichment is not None:
             out = out.merge(enrichment)
 

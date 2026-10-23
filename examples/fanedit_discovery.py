@@ -12,7 +12,7 @@ Flow:
   4. Print per-film summary + rank by fanedit count
 
 Requires:
-    pip install metadatarr[fanedit]
+    pip install metadatarr   # pyfanedit is a core dependency, no extra needed
 """
 from __future__ import annotations
 
@@ -22,7 +22,6 @@ from typing import List
 
 import metadatarr.resolve.providers  # noqa: F401 — trigger provider self-registration
 from metadatarr.resolve import resolve
-from metadatarr.resolve.entities import Role
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
 
@@ -55,7 +54,7 @@ def discover(film: dict) -> FilmSummary:
         include_variants=True,
     ), max_workers=4)
 
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     # Everything in relations[RELEASE] comes from pyfanedit — all are fanedits.
     # fanedit_id from search() is None; the url lives in extra["fanedit_url"].
     return FilmSummary(

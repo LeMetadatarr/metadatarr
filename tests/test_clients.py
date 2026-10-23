@@ -5,10 +5,8 @@ import pytest
 
 from metadatarr import (
     ArrMetadataClient,
-    AudioDBClient,
     BookInfoClient,
     OpenLibraryClient,
-    TVmazeClient,
 )
 
 
@@ -35,7 +33,7 @@ def _patch_get(monkeypatch, target, payload, status=200):
 
 def test_arr_search_series(monkeypatch):
     payload = [{"title": "The Boys", "tvdbId": 355567, "year": 2019}]
-    _patch_get(monkeypatch, "metadatarr.client.requests.get", payload)
+    _patch_get(monkeypatch, "requests.sessions.Session.get", payload)
 
     client = ArrMetadataClient()
     series = client.search_series("The Boys")
@@ -44,7 +42,7 @@ def test_arr_search_series(monkeypatch):
 
 
 def test_arr_search_movie_handles_non_list(monkeypatch):
-    _patch_get(monkeypatch, "metadatarr.client.requests.get", {"error": "x"})
+    _patch_get(monkeypatch, "requests.sessions.Session.get", {"error": "x"})
 
     client = ArrMetadataClient()
     assert client.search_movie("nope") == []
@@ -60,7 +58,7 @@ def test_openlibrary_search(monkeypatch):
             "cover_i": 1,
         }],
     }
-    _patch_get(monkeypatch, "metadatarr.client.requests.get", payload)
+    _patch_get(monkeypatch, "requests.sessions.Session.get", payload)
 
     client = OpenLibraryClient()
     hits = client.search("hobbit")
@@ -77,54 +75,13 @@ def test_openlibrary_cover_url():
 
 def test_bookinfo_search(monkeypatch):
     payload = [{"bookId": 1, "workId": 2, "author": {"id": 3}}]
-    _patch_get(monkeypatch, "metadatarr.client.requests.get", payload)
+    _patch_get(monkeypatch, "requests.sessions.Session.get", payload)
 
     bi = BookInfoClient.goodreads()
     hits = bi.search("hobbit")
     assert hits and hits[0].author_id == 3
 
-
-def test_audiodb_search_artist(monkeypatch):
-    payload = {"artists": [{"idArtist": "111", "strArtist": "Daft Punk"}]}
-    monkeypatch.setattr(
-        "requests.Session.get",
-        lambda self, url, **kw: _FakeResponse(payload),
-    )
-
-    client = AudioDBClient()
-    artists = client.search_artist("Daft Punk")
-    assert len(artists) == 1
-    assert artists[0].id == "111"
-
-
-def test_audiodb_handles_no_artists(monkeypatch):
-    payload = {"artists": None}
-    monkeypatch.setattr(
-        "requests.Session.get",
-        lambda self, url, **kw: _FakeResponse(payload),
-    )
-    assert AudioDBClient().search_artist("nope") == []
-
-
-def test_tvmaze_singlesearch(monkeypatch):
-    payload = {"id": 1, "name": "The Boys", "type": "Scripted"}
-    monkeypatch.setattr(
-        "requests.Session.get",
-        lambda self, url, **kw: _FakeResponse(payload),
-    )
-
-    show = TVmazeClient().singlesearch("The Boys")
-    assert show is not None
-    assert show.id == 1
-    assert show.show_type == "Scripted"
-
-
-def test_tvmaze_search_shows_unwraps(monkeypatch):
-    payload = [{"score": 0.9, "show": {"id": 1, "name": "X"}}]
-    monkeypatch.setattr(
-        "requests.Session.get",
-        lambda self, url, **kw: _FakeResponse(payload),
-    )
-    out = TVmazeClient().search_shows("X")
-    assert len(out) == 1
-    assert out[0].id == 1
+# NOTE: AudioDBClient and TVmazeClient were extracted into the dedicated
+# ``pyaudiodb`` / ``pytvmaze`` packages; their client tests now live in those
+# repos. metadatarr's resolver consumes them via the providers (see
+# tests/test_enrich.py, tests/test_provider_error_contract.py).
