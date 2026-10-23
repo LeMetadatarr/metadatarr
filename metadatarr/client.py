@@ -1,6 +1,8 @@
+import ipaddress
 import logging
 import os
 import re
+import socket
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urljoin, urlsplit
 
@@ -789,6 +791,110 @@ def check_dvdcompare_url(url: Any) -> str:
         raise ValueError("dvdcompare_url must be an https://www.dvdcompare.net URL")
     return url
 
+
+_SOUNDCLOUD_HOST = re.compile(r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*soundcloud\.com")
+_HOSTNAME = re.compile(r"(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]{1,59})")
+_CGNAT = ipaddress.ip_network("100.64.0.0/10")
+_NAT64 = ipaddress.ip_network("64:ff9b::/96")
+_V6_REFUSED = (ipaddress.ip_network("::/96"), ipaddress.ip_network("fec0::/10"))
+
+#: ``extra`` keys that a provider hands to a library which fetches the URL.
+SOUNDCLOUD_URL_KEYS = ("soundcloud_track_url", "soundcloud_artist_url")
+BANDCAMP_URL_KEYS = ("bandcamp_track_url", "bandcamp_album_url", "bandcamp_artist_url")
+
+
+def _https_host(key: str, url: Any) -> str:
+    """Return the host of an https URL without userinfo and with port 443 or none."""
+    msg = f"{key} must be an https URL"
+    if (not isinstance(url, str) or not url.isascii() or not url.isprintable()
+            or " " in url or "\\" in url):
+        raise ValueError(msg)
+    parts = urlsplit(url)
+    host, sep, port = parts.netloc.partition(":")
+    if parts.scheme != "https" or (sep and port != "443"):
+        raise ValueError(msg)
+    return host
+
+
+def _lower_host(url: str, host: str) -> str:
+    """Return *url* with its host, and only its host, in lowercase."""
+    start = url.index("//") + 2
+    return url[:start] + host.lower() + url[start + len(host):]
+
+
+def check_soundcloud_url(url: Any, key: str = "soundcloud_url") -> str:
+    """Return *url* with a lowercase host when it is https on soundcloud.com or a subdomain of it.
+
+    A redirect that the library follows after this check is not covered.
+    """
+    host = _https_host(key, url)
+    if not _SOUNDCLOUD_HOST.fullmatch(host.lower()):
+        raise ValueError(f"{key} must be an https URL on soundcloud.com")
+    return _lower_host(url, host)
+
+
+def _is_global(address: str) -> bool:
+    ip = ipaddress.ip_address(address)
+    if ip.version == 6:
+        if ip.ipv4_mapped is not None:
+            ip = ip.ipv4_mapped
+        elif ip.sixtofour is not None:
+            ip = ip.sixtofour
+        elif ip in _NAT64:
+            ip = ipaddress.IPv4Address(int(ip) & 0xFFFFFFFF)
+    return (ip.is_global and not ip.is_multicast and ip not in _CGNAT
+            and not (ip.version == 6 and any(ip in net for net in _V6_REFUSED)))
+
+
+def check_bandcamp_url(url: Any, key: str = "bandcamp_url") -> str:
+    """Return *url* with a lowercase host when it is https on a public registered-looking host.
+
+    Bandcamp artists use custom domains, so the host is not pinned.  It must be
+    an ASCII DNS name with an alphabetic top-level label (no IP literal in any
+    notation, no single-label name, no localhost), and every address it
+    resolves to must be globally routable.  The libraries resolve the name
+    again when they fetch, so a DNS rebinding race stays open here, and a
+    redirect that the library follows after this check is not covered either.
+    """
+    raw_host = _https_host(key, url)
+    host = raw_host.lower()
+    if (not _HOSTNAME.fullmatch(host) or len(host) > 253
+            or host == "localhost" or host.endswith(".localhost")):
+        raise ValueError(f"{key} must be an https URL on a public host name")
+    try:
+        found = socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)
+    except (OSError, UnicodeError):
+        raise ValueError(f"{key} host does not resolve") from None
+    if not found or not all(_is_global(info[4][0]) for info in found):
+        raise ValueError(f"{key} host does not resolve to a public address")
+    return _lower_host(url, raw_host)
+
+
+_URL_CHECKS = {**{k: check_soundcloud_url for k in SOUNDCLOUD_URL_KEYS},
+               **{k: check_bandcamp_url for k in BANDCAMP_URL_KEYS}}
+
+
+def check_fetched_urls(extra: Any) -> None:
+    """Raise :class:`ValueError` for the first URL key of *extra* that may not be fetched.
+
+    ``None`` and the empty string mean absent.
+    """
+    if isinstance(extra, dict):
+        for key, check in _URL_CHECKS.items():
+            if extra.get(key) not in (None, ""):
+                check(extra[key], key)
+
+
+def fetchable_url(extra: Dict[str, Any], key: str) -> Optional[str]:
+    """Return ``extra[key]`` when it may be fetched, else ``None``."""
+    value = extra.get(key)
+    if value in (None, ""):
+        return None
+    try:
+        return _URL_CHECKS[key](value, key)
+    except ValueError as exc:
+        LOG.warning("%s", exc)
+        return None
 
 class DVDCompareClient:
     """HTML scraper for dvdcompare.net.  No API key required."""

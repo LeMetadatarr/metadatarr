@@ -22,6 +22,7 @@ from typing import Optional
 
 import requests
 
+from metadatarr.client import fetchable_url
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
@@ -178,8 +179,8 @@ class SoundCloudProvider(MetadataProvider):
             return None
 
         urls = external_ids.extra
-        artist_url = urls.get("soundcloud_artist_url")
-        track_url = urls.get("soundcloud_track_url")
+        artist_url = fetchable_url(urls, "soundcloud_artist_url")
+        track_url = fetchable_url(urls, "soundcloud_track_url")
         if not (artist_url or track_url):
             return None
 
