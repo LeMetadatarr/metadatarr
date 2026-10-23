@@ -27,6 +27,7 @@ from urllib.parse import urljoin
 
 import requests
 
+from metadatarr.client import fetchable_url
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from metadatarr.transport import make_session
@@ -242,9 +243,9 @@ class BandcampProvider(MetadataProvider):
             return None
 
         urls = external_ids.extra
-        artist_url = urls.get("bandcamp_artist_url")
-        track_url = urls.get("bandcamp_track_url")
-        album_url = urls.get("bandcamp_album_url")
+        artist_url = fetchable_url(urls, "bandcamp_artist_url")
+        track_url = fetchable_url(urls, "bandcamp_track_url")
+        album_url = fetchable_url(urls, "bandcamp_album_url")
         if not (artist_url or track_url or album_url):
             return None
 
