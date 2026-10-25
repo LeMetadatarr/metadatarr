@@ -1,0 +1,46 @@
+{
+ "id": 6384,
+ "name": "Keanu Reeves",
+ "imdb_id": "nm0000206",
+ "birthday": "1964-09-02",
+ "deathday": null,
+ "also_known_as": [
+  "Киану Ривз"
+ ],
+ "biography": "Keanu Charles Reeves...",
+ "profile_path": "/k.jpg",
+ "place_of_birth": "Beirut, Lebanon",
+ "known_for_department": "Acting",
+ "external_ids": {
+  "imdb_id": "nm0000206",
+  "wikidata_id": "Q43416"
+ },
+ "combined_credits": {
+  "cast": [
+   {
+    "id": 603,
+    "media_type": "movie",
+    "title": "The Matrix",
+    "release_date": "1999-03-31",
+    "character": "Neo"
+   },
+   {
+    "id": 1405,
+    "media_type": "tv",
+    "name": "Swedish Dicks",
+    "first_air_date": "2016-08-01",
+    "character": "Tex"
+   }
+  ],
+  "crew": [
+   {
+    "id": 9999,
+    "media_type": "movie",
+    "title": "Man of Tai Chi",
+    "release_date": "2013-07-05",
+    "job": "Director",
+    "department": "Directing"
+   }
+  ]
+ }
+}

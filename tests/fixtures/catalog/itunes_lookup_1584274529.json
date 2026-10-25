@@ -1,0 +1,45 @@
+{
+ "resultCount": 1,
+ "results": [
+  {
+   "wrapperType": "track",
+   "kind": "podcast",
+   "collectionId": 1584274529,
+   "trackId": 1584274529,
+   "artistName": "Podcast Index LLC",
+   "collectionName": "Podcasting 2.0",
+   "trackName": "Podcasting 2.0",
+   "collectionCensoredName": "Podcasting 2.0",
+   "trackCensoredName": "Podcasting 2.0",
+   "collectionViewUrl": "https://podcasts.apple.com/us/podcast/podcasting-2-0/id1584274529?uo=4",
+   "feedUrl": "https://feeds.podcastindex.org/pc20.xml",
+   "trackViewUrl": "https://podcasts.apple.com/us/podcast/podcasting-2-0/id1584274529?uo=4",
+   "artworkUrl30": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/75/16/2d/75162db9-1089-687d-7726-df2e4861ba24/mza_2968058896728768246.png/30x30bb.jpg",
+   "artworkUrl60": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/75/16/2d/75162db9-1089-687d-7726-df2e4861ba24/mza_2968058896728768246.png/60x60bb.jpg",
+   "artworkUrl100": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/75/16/2d/75162db9-1089-687d-7726-df2e4861ba24/mza_2968058896728768246.png/100x100bb.jpg",
+   "collectionPrice": 0.0,
+   "trackPrice": 0.0,
+   "collectionHdPrice": 0,
+   "releaseDate": "2026-10-02T19:18:00Z",
+   "collectionExplicitness": "notExplicit",
+   "trackExplicitness": "cleaned",
+   "trackCount": 212,
+   "trackTimeMillis": 5385,
+   "country": "USA",
+   "currency": "USD",
+   "primaryGenreName": "News",
+   "contentAdvisoryRating": "Clean",
+   "artworkUrl600": "https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/75/16/2d/75162db9-1089-687d-7726-df2e4861ba24/mza_2968058896728768246.png/600x600bb.jpg",
+   "genreIds": [
+    "1489",
+    "26",
+    "1318"
+   ],
+   "genres": [
+    "News",
+    "Podcasts",
+    "Technology"
+   ]
+  }
+ ]
+}

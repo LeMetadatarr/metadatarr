@@ -1,0 +1,513 @@
+{
+ "id": 169,
+ "url": "https://www.tvmaze.com/shows/169/breaking-bad",
+ "name": "Breaking Bad",
+ "type": "Scripted",
+ "language": "English",
+ "genres": [
+  "Drama",
+  "Crime",
+  "Thriller"
+ ],
+ "status": "Ended",
+ "runtime": 60,
+ "averageRuntime": 60,
+ "premiered": "2008-01-20",
+ "ended": "2019-10-11",
+ "officialSite": "http://www.amc.com/shows/breaking-bad",
+ "schedule": {
+  "time": "22:00",
+  "days": [
+   "Sunday"
+  ]
+ },
+ "rating": {
+  "average": 9.2
+ },
+ "weight": 100,
+ "network": {
+  "id": 20,
+  "name": "AMC",
+  "country": {
+   "name": "United States",
+   "code": "US",
+   "timezone": "America/New_York"
+  },
+  "officialSite": null
+ },
+ "webChannel": null,
+ "dvdCountry": null,
+ "externals": {
+  "tvrage": 18164,
+  "thetvdb": 81189,
+  "imdb": "tt0903747"
+ },
+ "image": {
+  "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/501/1253519.jpg",
+  "original": "https://static.tvmaze.com/uploads/images/original_untouched/501/1253519.jpg"
+ },
+ "summary": "<p><b>Breaking Bad</b> follows protagonist Walter White, a chemistry teacher who lives in New Mexico with his wife and teenage son who has cerebral palsy. White is diagnosed with Stage III cancer and given a prognosis of two years left to live. With a new sense of fearlessness based on his medical prognosis, and a desire to secure his family's financial security, White chooses to enter a dangerous world of drugs and crime and ascends to power in this world. The series explores how a fatal diagnosis such as White's releases a typical man from the daily concerns and constraints of normal society and follows his transformation from mild family man to a kingpin of the drug trade.</p>",
+ "updated": 1769198028,
+ "_links": {
+  "self": {
+   "href": "https://api.tvmaze.com/shows/169"
+  },
+  "previousepisode": {
+   "href": "https://api.tvmaze.com/episodes/2007806",
+   "name": "El Camino: A Breaking Bad Movie"
+  }
+ },
+ "_embedded": {
+  "seasons": [
+   {
+    "id": 753,
+    "url": "https://www.tvmaze.com/seasons/753/breaking-bad-season-1",
+    "number": 1,
+    "name": "",
+    "episodeOrder": 7,
+    "premiereDate": "2008-01-20",
+    "endDate": "2008-03-09",
+    "network": {
+     "id": 20,
+     "name": "AMC",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": null
+    },
+    "webChannel": null,
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/405/1012791.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012791.jpg"
+    },
+    "summary": "<p>Emmy award winner Bryan Cranston stars as Walt White is a down-on-his-luck chemistry teacher struggling to make ends meet for his wife (Anna Gunn) and physically challenged son (RJ Mitte). Everything changes when Walt receives a startling diagnosis: terminal lung cancer. With only a few years to live and nothing to lose, Walt uses his training as a chemist to cook and sell crystal meth with one of his former students (Aaron Paul). As his status grows, so do his lies, but Walt will stop at nothing to make sure his family is taken care of after he's gone, even if it means putting all their lives on the line. Executive produced by Vince Gilligan and Mark Johnson.</p>",
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/seasons/753"
+     }
+    }
+   },
+   {
+    "id": 754,
+    "url": "https://www.tvmaze.com/seasons/754/breaking-bad-season-2",
+    "number": 2,
+    "name": "",
+    "episodeOrder": 13,
+    "premiereDate": "2009-03-08",
+    "endDate": "2009-05-31",
+    "network": {
+     "id": 20,
+     "name": "AMC",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": null
+    },
+    "webChannel": null,
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/405/1012792.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012792.jpg"
+    },
+    "summary": "<p>As their partnership reaches new heights, Walt and Jesse begin to see the extremes of the drug trafficking business. Their trademark blue meth is making them rich, but it's getting more difficult than ever for Walt to conceal the truth from his wife Skyler, his son Walter Jr., and his DEA agent brother-in-law Hank. Walt struggles to maintain control of his life as he contends with vicious drug dealers, an increasingly distant wife and son, the impending birth of his daughter, and a strung-out business partner – all while battling terminal lung cancer.</p>",
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/seasons/754"
+     }
+    }
+   },
+   {
+    "id": 755,
+    "url": "https://www.tvmaze.com/seasons/755/breaking-bad-season-3",
+    "number": 3,
+    "name": "",
+    "episodeOrder": 13,
+    "premiereDate": "2010-03-21",
+    "endDate": "2010-06-13",
+    "network": {
+     "id": 20,
+     "name": "AMC",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": null
+    },
+    "webChannel": null,
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/405/1012793.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012793.jpg"
+    },
+    "summary": "<p>Abandoned by his wife, feuding with his reckless partner and hunted by a Mexican cartel, teacher-turned-meth-cook Walt faces an impossible choice: make a fortune working for a dangerous kingpin or walk away and risk everything he cares about.</p>",
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/seasons/755"
+     }
+    }
+   },
+   {
+    "id": 756,
+    "url": "https://www.tvmaze.com/seasons/756/breaking-bad-season-4",
+    "number": 4,
+    "name": "",
+    "episodeOrder": 13,
+    "premiereDate": "2011-07-17",
+    "endDate": "2011-10-09",
+    "network": {
+     "id": 20,
+     "name": "AMC",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": null
+    },
+    "webChannel": null,
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/405/1012794.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012794.jpg"
+    },
+    "summary": "<p>As his young accomplice, Jesse, turns increasingly distant and hostile, Walt must deal with his estranged wife, his relentless DEA agent brother-in-law, and the ruthless kingpin manipulating the entire operation.</p>",
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/seasons/756"
+     }
+    }
+   },
+   {
+    "id": 757,
+    "url": "https://www.tvmaze.com/seasons/757/breaking-bad-season-5",
+    "number": 5,
+    "name": "",
+    "episodeOrder": 16,
+    "premiereDate": "2012-07-15",
+    "endDate": "2019-10-11",
+    "network": {
+     "id": 20,
+     "name": "AMC",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "officialSite": null
+    },
+    "webChannel": null,
+    "image": {
+     "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/405/1012795.jpg",
+     "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012795.jpg"
+    },
+    "summary": "<p>With Gus Fring dead, Walt's transformation from well-meaning family man to ruthless drug kingpin is nearly complete. Forming a partnership with Jesse and Mike, Walt proceeds to make a killing in the meth business until the fruits of his murderous schemes are threatened by a new development in the investigation led by his relentless brother-in-law Hank.</p>",
+    "_links": {
+     "self": {
+      "href": "https://api.tvmaze.com/seasons/757"
+     }
+    }
+   }
+  ],
+  "cast": [
+   {
+    "person": {
+     "id": 14245,
+     "url": "https://www.tvmaze.com/people/14245/bryan-cranston",
+     "name": "Bryan Cranston",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "birthday": "1956-03-07",
+     "deathday": null,
+     "gender": "Male",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/195/488839.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/195/488839.jpg"
+     },
+     "updated": 1783041777,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/14245"
+      }
+     }
+    },
+    "character": {
+     "id": 45529,
+     "url": "https://www.tvmaze.com/characters/45529/breaking-bad-walter-white",
+     "name": "Walter White",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/0/2404.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/0/2404.jpg"
+     },
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/characters/45529"
+      }
+     }
+    },
+    "self": false,
+    "voice": false
+   },
+   {
+    "person": {
+     "id": 12328,
+     "url": "https://www.tvmaze.com/people/12328/aaron-paul",
+     "name": "Aaron Paul",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "birthday": "1979-08-27",
+     "deathday": null,
+     "gender": "Male",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/264/660079.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/264/660079.jpg"
+     },
+     "updated": 1782231788,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/12328"
+      }
+     }
+    },
+    "character": {
+     "id": 45531,
+     "url": "https://www.tvmaze.com/characters/45531/breaking-bad-jesse-pinkman",
+     "name": "Jesse Pinkman",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/0/2408.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/0/2408.jpg"
+     },
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/characters/45531"
+      }
+     }
+    },
+    "self": false,
+    "voice": false
+   },
+   {
+    "person": {
+     "id": 11207,
+     "url": "https://www.tvmaze.com/people/11207/anna-gunn",
+     "name": "Anna Gunn",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "birthday": "1968-08-11",
+     "deathday": null,
+     "gender": "Female",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/2/6596.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/2/6596.jpg"
+     },
+     "updated": 1767131447,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/11207"
+      }
+     }
+    },
+    "character": {
+     "id": 45530,
+     "url": "https://www.tvmaze.com/characters/45530/breaking-bad-skyler-white",
+     "name": "Skyler White",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/0/2409.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/0/2409.jpg"
+     },
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/characters/45530"
+      }
+     }
+    },
+    "self": false,
+    "voice": false
+   },
+   {
+    "person": {
+     "id": 31023,
+     "url": "https://www.tvmaze.com/people/31023/rj-mitte",
+     "name": "RJ Mitte",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "birthday": "1992-08-21",
+     "deathday": "2026-10-12",
+     "gender": "Male",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/3/8601.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/3/8601.jpg"
+     },
+     "updated": 1791907689,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/31023"
+      }
+     }
+    },
+    "character": {
+     "id": 45534,
+     "url": "https://www.tvmaze.com/characters/45534/breaking-bad-walter-white-jr",
+     "name": "Walter White Jr.",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/0/2405.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/0/2405.jpg"
+     },
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/characters/45534"
+      }
+     }
+    },
+    "self": false,
+    "voice": false
+   }
+  ],
+  "crew": [
+   {
+    "type": "Consulting Producer",
+    "person": {
+     "id": 3362,
+     "url": "https://www.tvmaze.com/people/3362/john-shiban",
+     "name": "John Shiban",
+     "country": null,
+     "birthday": null,
+     "deathday": null,
+     "gender": null,
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/137/344132.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/137/344132.jpg"
+     },
+     "updated": 1786739503,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/3362"
+      }
+     }
+    }
+   },
+   {
+    "type": "Director Of Photography",
+    "person": {
+     "id": 5009,
+     "url": "https://www.tvmaze.com/people/5009/michael-slovis",
+     "name": "Michael Slovis",
+     "country": {
+      "name": "United States",
+      "code": "US",
+      "timezone": "America/New_York"
+     },
+     "birthday": null,
+     "deathday": null,
+     "gender": "Male",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/475/1189859.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/475/1189859.jpg"
+     },
+     "updated": 1789296275,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/5009"
+      }
+     }
+    }
+   },
+   {
+    "type": "Co-Executive Producer",
+    "person": {
+     "id": 6332,
+     "url": "https://www.tvmaze.com/people/6332/thomas-schnauz",
+     "name": "Thomas Schnauz",
+     "country": null,
+     "birthday": null,
+     "deathday": null,
+     "gender": "Male",
+     "image": null,
+     "updated": 1760514982,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/6332"
+      }
+     }
+    }
+   },
+   {
+    "type": "Supervising Producer",
+    "person": {
+     "id": 6332,
+     "url": "https://www.tvmaze.com/people/6332/thomas-schnauz",
+     "name": "Thomas Schnauz",
+     "country": null,
+     "birthday": null,
+     "deathday": null,
+     "gender": "Male",
+     "image": null,
+     "updated": 1760514982,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/6332"
+      }
+     }
+    }
+   },
+   {
+    "type": "Producer",
+    "person": {
+     "id": 6332,
+     "url": "https://www.tvmaze.com/people/6332/thomas-schnauz",
+     "name": "Thomas Schnauz",
+     "country": null,
+     "birthday": null,
+     "deathday": null,
+     "gender": "Male",
+     "image": null,
+     "updated": 1760514982,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/6332"
+      }
+     }
+    }
+   },
+   {
+    "type": "Co-Executive Producer",
+    "person": {
+     "id": 10307,
+     "url": "https://www.tvmaze.com/people/10307/michelle-maclaren",
+     "name": "Michelle MacLaren",
+     "country": {
+      "name": "Canada",
+      "code": "CA",
+      "timezone": "America/Toronto"
+     },
+     "birthday": null,
+     "deathday": null,
+     "gender": "Female",
+     "image": {
+      "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/20/51350.jpg",
+      "original": "https://static.tvmaze.com/uploads/images/original_untouched/20/51350.jpg"
+     },
+     "updated": 1756052925,
+     "_links": {
+      "self": {
+       "href": "https://api.tvmaze.com/people/10307"
+      }
+     }
+    }
+   }
+  ]
+ }
+}

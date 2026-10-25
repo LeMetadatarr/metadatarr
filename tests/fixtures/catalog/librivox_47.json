@@ -1,0 +1,118 @@
+{
+ "books": [
+  {
+   "id": "47",
+   "title": "Count of Monte Cristo",
+   "description": "<i>The Count of Monte Cristo</i> (French: <i>Le Comte de Monte-Cristo</i>) is an adventure novel by Alexandre Dumas, père. It is often considered, along with <i>The Three Musketeers</i>, as Dumas's most popular work. The writing of the work was completed in 1844. Like many of his novels, it is expanded from the plot outlines suggested by his collaborating ghostwriter Auguste Maquet.<br /><br />The story takes place in France, Italy, islands in the Mediterranean and the Levant during the historical events of 1815–1838 (from just before the Hundred Days through the reign of Louis-Philippe of France). The historical setting is a fundamental element of the book. It is primarily concerned with themes of justice, vengeance, mercy, and forgiveness, and is told in the style of an adventure story. (Summary from Wikipedia)<br /><br />\nThis book contains alternate versions of a number of chapters – indicated by an alt after the file number. The Zip files contain both versions of these chapters.<br /><br />There are 2 versions of the M4Bs made , one containing the original files for these chapters (4 parts), the other containing the alternate files for the chapters (5 parts).",
+   "url_text_source": "https://www.gutenberg.org/etext/1184",
+   "language": "English",
+   "copyright_year": "1844",
+   "num_sections": "128",
+   "url_rss": "https://librivox.org/rss/47",
+   "url_zip_file": "https://archive.org/compress/count_monte_cristo_0711_librivox/formats=64KBPS MP3&file=/count_monte_cristo_0711_librivox.zip",
+   "url_project": "https://en.wikipedia.org/wiki/Count_of_Monte_Cristo",
+   "url_librivox": "https://librivox.org/the-count-of-monte-cristo-by-alexandre-dumas/",
+   "url_other": "",
+   "totaltime": "49:43:15",
+   "totaltimesecs": 178995,
+   "authors": [
+    {
+     "id": "431",
+     "first_name": "Alexandre",
+     "last_name": "Dumas",
+     "dob": "1802",
+     "dod": "1870"
+    }
+   ],
+   "url_iarchive": "https://www.archive.org/details/count_monte_cristo_0711_librivox",
+   "sections": [
+    {
+     "id": "121010",
+     "section_number": "1",
+     "title": "Marseilles–The Arrival ",
+     "listen_url": "https://www.archive.org/download/count_monte_cristo_0711_librivox/count_of_monte_cristo_001_dumas_64kb.mp3",
+     "language": "English",
+     "playtime": "1179",
+     "file_name": null,
+     "readers": [
+      {
+       "reader_id": "14",
+       "display_name": "Kristin LeMoine"
+      }
+     ]
+    },
+    {
+     "id": "121011",
+     "section_number": "2",
+     "title": "Father and Son",
+     "listen_url": "https://www.archive.org/download/count_monte_cristo_0711_librivox/count_of_monte_cristo_002_dumas_64kb.mp3",
+     "language": "English",
+     "playtime": "1157",
+     "file_name": null,
+     "readers": [
+      {
+       "reader_id": "17",
+       "display_name": "Gord Mackenzie"
+      }
+     ]
+    },
+    {
+     "id": "121012",
+     "section_number": "3",
+     "title": "The Catalans",
+     "listen_url": "https://www.archive.org/download/count_monte_cristo_0711_librivox/count_of_monte_cristo_003_dumas_64kb.mp3",
+     "language": "English",
+     "playtime": "1898",
+     "file_name": null,
+     "readers": [
+      {
+       "reader_id": "17",
+       "display_name": "Gord Mackenzie"
+      }
+     ]
+    },
+    {
+     "id": "121013",
+     "section_number": "4",
+     "title": "Conspiracy",
+     "listen_url": "https://www.archive.org/download/count_monte_cristo_0711_librivox/count_of_monte_cristo_004_dumas_64kb.mp3",
+     "language": "English",
+     "playtime": "1132",
+     "file_name": null,
+     "readers": [
+      {
+       "reader_id": "17",
+       "display_name": "Gord Mackenzie"
+      }
+     ]
+    },
+    {
+     "id": "121014",
+     "section_number": "5",
+     "title": "The Marriage-Feast",
+     "listen_url": "https://www.archive.org/download/count_monte_cristo_0711_librivox/count_of_monte_cristo_005_dumas_64kb.mp3",
+     "language": "English",
+     "playtime": "2013",
+     "file_name": null,
+     "readers": [
+      {
+       "reader_id": "32",
+       "display_name": "Betsie Bush"
+      }
+     ]
+    }
+   ],
+   "genres": [
+    {
+     "id": "20",
+     "name": "Literary Fiction"
+    },
+    {
+     "id": "53",
+     "name": "Published 1800 -1900"
+    }
+   ],
+   "translators": []
+  }
+ ]
+}

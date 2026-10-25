@@ -35,6 +35,7 @@ the providers themselves could never link.
 """
 from __future__ import annotations
 
+import logging
 import os
 import sys
 import threading
@@ -45,6 +46,8 @@ from urllib.parse import urlsplit
 
 from metadatarr.resolve.entities import EntityRole
 from mediavocab.models import ExternalIds
+
+LOG = logging.getLogger("metadatarr.resolve.mappings")
 
 # ---------------------------------------------------------------------------
 # TOML loading — stdlib tomllib (3.11+) or tomli shim
@@ -204,7 +207,7 @@ class MappingStore:
             val = getattr(external_ids, fname, None)
             if val is not None:
                 probe[fname] = str(val)
-        probe.update(external_ids.extra)
+        probe.update((k, v) for k, v in external_ids.extra.items() if isinstance(v, str))
 
         entry = self.lookup(role, probe)
         if entry is None or entry.score < min_score:
@@ -246,7 +249,8 @@ def _load_file(path: Path) -> List[MappingEntry]:
         with open(path, "rb") as fh:
             data = tomllib.load(fh)
         return _parse_toml(data)
-    except Exception:
+    except Exception as exc:
+        LOG.warning("ignoring malformed mappings file %s: %s", path, exc)
         return []
 
 

@@ -1,5 +1,5 @@
 """TVmaze show / season / cast lookup."""
-from metadatarr import TVmazeClient
+from pytvmaze import TVmazeClient
 
 
 def main() -> None:

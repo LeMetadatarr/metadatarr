@@ -11,6 +11,9 @@ Rate limit (unauthenticated): 20 requests / 10 seconds.
 | `singlesearch(query)`           | `/singlesearch/shows`     | `TVmazeShow`           |
 | `get_show(tvmaze_id)`           | `/shows/{id}`             | `TVmazeShow`           |
 | `lookup_by_thetvdb(thetvdb_id)` | `/lookup/shows?thetvdb=`  | `TVmazeShow`           |
+
+| Method                          | Upstream                  | Returns                |
+| --------------------------------- | ------------------------- | ---------------------- |
 | `lookup_by_imdb(imdb_id)`       | `/lookup/shows?imdb=`     | `TVmazeShow`           |
 | `get_seasons(tvmaze_id)`        | `/shows/{id}/seasons`     | `List[TVmazeSeason]`   |
 | `get_cast(tvmaze_id)`           | `/shows/{id}/cast`        | `List[TVmazeCastMember]` |
@@ -42,3 +45,6 @@ for member in c.get_cast(show.id):
   show payloads.
 - `TVmazeCastMember` flattens the nested `character.name` into
   `character_name` for convenience.
+
+---
+[← AudioDBClient](audiodb.md) · [Home](../README.md) · [BlurayComClient →](bluray-com.md)

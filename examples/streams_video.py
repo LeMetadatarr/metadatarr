@@ -4,7 +4,7 @@ User story: I want a YouTube URL I can pass directly to yt-dlp, mpv, or
 any other player for a movie or podcast episode.
 
 The YouTube provider runs on ``MediaType.MOVIE``, ``MediaType.EPISODIC_SERIES``,
-``MediaType.PODCAST``, and ``MediaType.OTHER`` (it deliberately skips
+``MediaType.PODCAST``, and ``MediaType.GENERIC`` (it deliberately skips
 ``MediaType.MUSIC`` to avoid polluting music resolves with video noise).
 It emits ``youtube_video_id`` (the upload ID) and ``youtube_channel_id``
 into ``ExternalIds.extra``.  ``ExternalIds.streams`` constructs the full
@@ -30,7 +30,7 @@ _MEDIUM_MAP = {
     "movie":   MediaType.MOVIE,
     "tv":      MediaType.EPISODIC_SERIES,
     "podcast": MediaType.PODCAST,
-    "other":   MediaType.OTHER,
+    "other":   MediaType.GENERIC,
 }
 
 DEMOS = [

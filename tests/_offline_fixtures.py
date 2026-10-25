@@ -1,0 +1,215 @@
+# SPDX-License-Identifier: Apache-2.0
+"""Small parquet shards in the real column layout of the LeData datasets, and
+the values each set must map them to. The expected values are written by hand
+from the rows, not computed by the mapping under test."""
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any, Dict, List
+
+import pyarrow as pa
+import pyarrow.parquet as pq
+
+# set -> (row, expected, query name that must find it)
+# expected: title, year, kind, ids, artist (optional), extra (a subset), rank (optional)
+SAMPLES: Dict[str, Dict[str, Any]] = {
+    "musicbrainz-artists": dict(
+        row={"mb_id": "24f1766e-9635-4d58-a4d4-9413f9f98a4c", "name": "Johann Sebastian Bach", "sort_name": "Bach, Johann Sebastian",
+             "type": "Person", "gender": "Male", "country": "DE", "area": "Germany", "begin_date": "1685-03-31",
+             "end_date": "1750-07-28", "ended": True, "disambiguation": "", "aliases": ["J. S. Bach", "Bach"],
+             "tags": ["baroque"], "ipi_codes": [], "isni_codes": ["0000000121394012"]},
+        expected=dict(title="Johann Sebastian Bach", year=1685, kind="artist",
+                      ids={"musicbrainz_artist": "24f1766e-9635-4d58-a4d4-9413f9f98a4c"},
+                      extra={"country": "DE", "tags": ["baroque"]}),
+        query="j s bach"),
+    "unified-artists": dict(
+        row={"mb_id": "24f1766e-9635-4d58-a4d4-9413f9f98a4c", "adb_id": "114265", "ma_id": "3540442600", "progarchives_id": "7",
+             "jazz_id": "bach-js", "classical_id": "2113", "bandcamp_id": "42", "soundcloud_id": "sc-9",
+             "soundcloud_username": "bach", "bandcamp_url": "https://bach.bandcamp.com", "sources": ["mb", "classical"],
+             "name": "Johann Sebastian Bach", "sort_name": "Bach, Johann Sebastian", "type": "Person", "gender": "Male",
+             "disambiguation": "", "ended": True, "aliases": ["Bach"], "country": "DE", "area": "Germany",
+             "begin_date": "1685-03-31", "end_date": "1750-07-28", "tags": ["baroque"], "style": "Baroque",
+             "mood": "", "classical_period": "Baroque", "biography_en": "German composer.", "members": "",
+             "ipi_codes": [], "isni_codes": [], "website": "", "prog_genre": "", "jazz_genre": "", "themes": [],
+             "label": "", "genres": ["classical"], "status": ""},
+        expected=dict(title="Johann Sebastian Bach", year=1685, kind="artist",
+                      ids={"musicbrainz_artist": "24f1766e-9635-4d58-a4d4-9413f9f98a4c", "audiodb_artist_id": "114265",
+                           "metal_archives_band": "3540442600", "progarchives_id": "7", "jazz_id": "bach-js",
+                           "classical_id": "2113", "bandcamp_band_id": "42", "soundcloud_user_id": "sc-9"},
+                      extra={"classical_period": "Baroque", "style": "Baroque"}, overview="German composer."),
+        query="bach"),
+    "artists": dict(
+        row={"mb_id": "24f1766e-9635-4d58-a4d4-9413f9f98a4c", "adb_id": "114265", "ma_id": None, "progarchives_id": None,
+             "jazz_id": None, "classical_id": 2113, "sources": ["mb"], "name": "Johann Sebastian Bach",
+             "sort_name": "Bach, Johann Sebastian", "type": "Person", "gender": "Male", "disambiguation": "",
+             "ended": True, "aliases": ["Bach"], "country": "DE", "area": "Germany", "begin_date": "1685-03-31",
+             "end_date": "1750-07-28", "tags": [], "style": "", "mood": "", "classical_period": "Baroque",
+             "biography_en": "", "members": "", "website": ""},
+        expected=dict(title="Johann Sebastian Bach", year=1685, kind="artist",
+                      ids={"musicbrainz_artist": "24f1766e-9635-4d58-a4d4-9413f9f98a4c", "audiodb_artist_id": "114265",
+                           "classical_id": "2113"},
+                      extra={"classical_period": "Baroque"}),
+        query="Bach"),
+    "wikidata-entities": dict(
+        row={"description_en": "German record label", "country_qid": "Q183", "entity_type": "label",
+             "wikidata_id": "Q1001380", "domain": "music", "label_en": "BudgeCo", "inception_year": 1980,
+             "dissolved_year": None, "country": "Germany", "website": "", "location": "Berlin"},
+        expected=dict(title="BudgeCo", year=1980, kind="entity", ids={"wikidata": "Q1001380"},
+                      extra={"entity_type": "label", "location": "Berlin"}, overview="German record label"),
+        query="budgeco"),
+    "openlibrary-books": dict(
+        row={"authors": ["Oscar Wilde"], "edition_count": 3012, "isbn_10": ["066577981X", "1543168574"],
+             "publisher": ["Penguin"], "title": "The Picture of Dorian Gray", "cover_i": 14314858,
+             "subjects": ["Fiction"], "first_publish_year": 1890, "has_fulltext": 1, "isbn_13": ["9781577658214"],
+             "language": ["eng"], "subtitle": None, "ebook_access": "public", "number_of_pages_median": 246,
+             "olid": "OL8193416W", "author_key": ["OL20646A"]},
+        expected=dict(title="The Picture of Dorian Gray", year=1890, kind="book",
+                      ids={"olid": "OL8193416W", "isbn_10": "066577981X", "isbn_13": "9781577658214"},
+                      artist="Oscar Wilde", extra={"edition_count": 3012, "language": ["eng"]},
+                      poster="https://covers.openlibrary.org/b/id/14314858-M.jpg"),
+        query="picture of dorian gray"),
+    "gutenberg-books": dict(
+        row={"gutenberg_id": "1342", "title": "Pride and Prejudice", "authors": ['{"name": "Austen, Jane"}'],
+             "translators": [], "subjects": ["Love stories"], "bookshelves": ["Best Books Ever Listings"],
+             "languages": ["en"], "copyright": False, "media_type": "Text", "download_count": 77000, "has_text": True,
+             "has_epub": True, "entity_type": "book"},
+        expected=dict(title="Pride and Prejudice", year=None, kind="book", ids={"gutenberg_id": "1342"},
+                      artist="Austen, Jane", extra={"languages": ["en"]}),
+        query="PRIDE and Prejudice"),
+    "librivox-audiobooks": dict(
+        row={"librivox_id": "47", "title": "Count of Monte Cristo", "description": "A novel.", "url_text_source": "",
+             "language": "English", "copyright_year": "1844", "num_sections": "128",
+             "url_rss": "https://librivox.org/rss/47", "url_zip_file": "", "url_project": "",
+             "url_librivox": "https://librivox.org/the-count-of-monte-cristo-by-alexandre-dumas/",
+             "totaltimesecs": 178995, "authors": [{"first_name": "Alexandre", "last_name": "Dumas", "dob": "1802",
+                                                    "dod": "1870"}]},
+        expected=dict(title="Count of Monte Cristo", year=1844, kind="audiobook", ids={"librivox_id": "47"},
+                      artist="Alexandre Dumas", extra={"language": "English"}, runtime=2983.25, overview="A novel."),
+        query="the count of monte cristo"),
+    "tvmaze-shows": dict(
+        row={"tvmaze_id": "1", "name": "Under the Dome", "type": "Scripted", "language": "English",
+             "genres": ["Drama"], "status": "Ended", "runtime": 60, "average_runtime": 60, "premiered": "2013-06-24",
+             "ended": "2015-09-10", "network_name": "CBS", "network_country": "US", "rating_average": 6.6,
+             "schedule_time": "22:00", "schedule_days": ["Thursday"], "summary": "<p>A small town.</p>",
+             "official_site": "http://www.cbs.com", "imdb_id": "tt1553656", "thetvdb_id": "264492",
+             "tvrage_id": "25988", "image_medium": "https://static.tvmaze.com/1.jpg"},
+        expected=dict(title="Under the Dome", year=2013, kind="series",
+                      ids={"tvmaze": "1", "imdb": "tt1553656", "tvdb": "264492", "tvrage_id": "25988"},
+                      extra={"network_name": "CBS"}, runtime=60, overview="<p>A small town.</p>",
+                      poster="https://static.tvmaze.com/1.jpg"),
+        query="UNDER THE DOME"),
+    "anilist-anime": dict(
+        row={"volumes": None, "format": "MOVIE", "studio_ids": ["4"], "average_score": 82, "country_of_origin": "JP",
+             "type": "ANIME", "title_english": "Cowboy Bebop: The Movie", "popularity": 82389,
+             "start_date": "2001-09-01", "title_romaji": "Cowboy Bebop: Tengoku no Tobira", "anilist_id": "5",
+             "studios": ["bones"], "status": "FINISHED", "season_year": 2001, "is_adult": 0, "episodes": 1,
+             "end_date": "2001-09-01", "chapters": None, "mal_id": "5", "genres": ["Action"], "duration": 115,
+             "title_native": "カウボーイビバップ天国の扉", "source_material": "ORIGINAL", "favourites": 1735,
+             "season": "SUMMER", "tags": ["Space"]},
+        expected=dict(title="Cowboy Bebop: The Movie", year=2001, kind="movie",
+                      ids={"anilist_id": "5", "mal_id": "5"}, extra={"format": "MOVIE", "episodes": 1},
+                      runtime=115),
+        query="Cowboy Bebop: Tengoku no Tobira"),
+    "jikan-manga": dict(
+        row={"mal_id": "2", "title": "Berserk", "title_english": "Berserk", "title_japanese": "ベルセルク",
+             "aliases": ["Berserk: The Prototype"], "type": "Manga", "status": "Publishing", "chapters": None,
+             "volumes": None, "published_from": "1989-08-25", "published_to": None,
+             "authors": ["Miura, Kentarou"], "serializations": ["Young Animal"], "genres": ["Action"],
+             "themes": ["Gore"], "demographics": ["Seinen"], "score": 9.46, "scored_by": 400731, "rank": 1,
+             "popularity": 1, "members": 800787, "synopsis": "Guts.", "background": "", "approved": True},
+        expected=dict(title="Berserk", year=1989, kind="book", ids={"mal_id": "2"}, artist="Miura, Kentarou",
+                      extra={"status": "Publishing"}, overview="Guts."),
+        query="ベルセルク"),
+    "podcastindex-podcasts": dict(
+        row={"genres": ["News"], "feed_url": "https://feeds.example/daily", "itunes_id": "1200361736",
+             "image": "https://img.example/daily.jpg", "description": "News daily.", "source": "charts",
+             "country_charts": ["us"], "url": "https://nyt.example", "explicit": 0, "episode_count": 2000,
+             "author": "The New York Times", "entity_type": "podcast", "title": "The Daily", "language": "en"},
+        expected=dict(title="The Daily", year=None, kind="show",
+                      ids={"apple_podcast_id": "1200361736", "feed_url": "https://feeds.example/daily"},
+                      artist="The New York Times", extra={"episode_count": 2000}, overview="News daily.",
+                      poster="https://img.example/daily.jpg"),
+        query="the daily"),
+    "listennotes-podcasts": dict(
+        row={"ln_id": "zSLtjH3bCPT", "ln_url": "https://listennotes.example/p/z", "title": "Hey Jonas!",
+             "author": None, "description": "Chat.", "image": "https://img.example/j.jpg", "language": None,
+             "genres": [], "episode_count": 12, "listen_score": 40, "global_rank": "1%", "website": None,
+             "entity_type": "podcast"},
+        expected=dict(title="Hey Jonas!", year=None, kind="show", ids={"listen_notes_id": "zSLtjH3bCPT"},
+                      extra={"episode_count": 12}, overview="Chat.", poster="https://img.example/j.jpg"),
+        query="hey jonas"),
+    "steam-games": dict(
+        row={"name": "Counter-Strike: Global Offensive", "price_usd": "0.00", "categories": ["Multi-player"],
+             "genres": ["Action"], "platforms_mac": "False", "steam_appid": 730, "negative_reviews": 10,
+             "publisher": "Valve", "is_free": "True", "platforms_linux": "True", "positive_reviews": 100,
+             "ccu": 1, "score_rank": 1, "discount_pct": "0", "release_date": "Aug 21, 2012", "developer": "Valve",
+             "short_description": "Shooter.", "owners": "1-2M", "average_playtime_forever": 1,
+             "median_playtime_forever": 1, "type": "game", "platforms_windows": "True",
+             "average_playtime_2weeks": 1, "metacritic_score": "83"},
+        expected=dict(title="Counter-Strike: Global Offensive", year=2012, kind="game", ids={"steam_appid": "730"},
+                      artist="Valve", extra={"publisher": "Valve"}, overview="Shooter."),
+        query="counter strike global offensive"),
+    "radiobrowser-stations": dict(
+        row={"stationuuid": "db93a00f-9191-46ab-9e87-ec9b373b3eee", "name": "Arrow Classic Rock",
+             "url": "http://a.example/s", "url_resolved": "http://a.example/r", "homepage": "http://a.example",
+             "favicon": "http://a.example/f.png", "country": "Netherlands", "countrycode": "NL", "state": "",
+             "language": "english", "language_codes": ["en"], "tags": ["rock"], "codec": "MP3", "bitrate": 128,
+             "hls": 0, "votes": 5, "clickcount": 3, "clicktrend": 0, "last_check_ok": 1, "entity_type": "station"},
+        expected=dict(title="Arrow Classic Rock", year=None, kind="station",
+                      ids={"stationuuid": "db93a00f-9191-46ab-9e87-ec9b373b3eee"}, extra={"codec": "MP3"},
+                      poster="http://a.example/f.png"),
+        query="arrow classic rock"),
+    "metal-archives": dict(
+        row={"formed_in": "1990", "band_id": "3540442600", "location": "Oslo", "themes": ["Death"],
+             "genres": ["Black Metal"], "comment": "", "name": "A // Solution", "years_active": ["1990-present"],
+             "url": "https://www.metal-archives.com/bands/x/3540442600", "status": "Active", "country": "Norway",
+             "current_label_id": "1", "current_label_name": "Label"},
+        expected=dict(title="A // Solution", year=None, kind="artist", ids={"metal_archives_band": "3540442600"},
+                      extra={"country": "Norway", "genres": ["Black Metal"]}),
+        query="a solution"),
+    "progarchives-artists": dict(
+        row={"artist_id": "12469", "name": "Å", "genre": "Avant", "country": "Sweden", "bio": "Band.",
+             "url": "http://progarchives.example/12469", "n_albums": 3},
+        expected=dict(title="Å", year=None, kind="artist", ids={"progarchives_id": "12469"},
+                      extra={"country": "Sweden"}, overview="Band."),
+        query="a"),
+    "jazz-artists": dict(
+        row={"artist_slug": "a-friend-in-vilnius", "name": "A FRIEND IN VILNIUS", "genres": ["Jazz"],
+             "genre": "Jazz", "country": None, "bio": "Quartet.", "url": "http://jazz.example/a", "n_albums": 1},
+        expected=dict(title="A FRIEND IN VILNIUS", year=None, kind="artist", ids={"jazz_id": "a-friend-in-vilnius"},
+                      extra={"genre": "Jazz"}, overview="Quartet."),
+        query="a friend in vilnius"),
+    "deezer-playlists": dict(
+        row={"creator_name": "Rudy", "description": "Calm.", "nb_tracks": 30, "fans": 900, "tracks": ["A - B"],
+             "deezer_id": "1904124402", "url": "https://deezer.example/p", "is_editorial": 1,
+             "duration_seconds": 6000, "source_genre": "pop", "genres": ["Pop"], "source": "deezer",
+             "creation_date": "2016-05-01 10:00:00", "creator_id": "7", "title": "Cozy Acoustic"},
+        expected=dict(title="Cozy Acoustic", year=2016, kind="playlist", ids={"deezer_playlist_id": "1904124402"},
+                      artist="Rudy", extra={"nb_tracks": 30}, overview="Calm."),
+        query="cozy acoustic"),
+    "ytmusic-playlists": dict(
+        row={"source": "ytm", "thumbnails": ["t"], "source_section": "s", "duration_seconds": 3600,
+             "title": "Coffee Shop Blend", "author": "YouTube Music", "privacy": "PUBLIC", "source_category": "chill",
+             "ytm_id": "RDCLAK5uy_x", "tracks": ["One - Two"], "description": "Beans.", "track_count": 40},
+        expected=dict(title="Coffee Shop Blend", year=None, kind="playlist", ids={"ytmusic_playlist_id": "RDCLAK5uy_x"},
+                      artist="YouTube Music", extra={"track_count": 40}, overview="Beans."),
+        query="coffee shop blend"),
+    "fanedits": dict(
+        row={"fanedit_id": "30090", "slug": "jaws-megalodon", "title": "Jaws: Megalodon", "url": "https://fanedit.example/1",
+             "cover_url": "https://fanedit.example/c.jpg", "faneditor": "Ryantology", "original_title": "Jaws",
+             "genre": ["Horror"], "franchise": [], "fanedit_type": "Re-edit", "original_release_date": "1975-06-20",
+             "original_running_time": "124", "imdb_id": "tt0073195", "fanedit_release_date": "2026-01-02",
+             "fanedit_running_time": "90", "time_cut": "34", "synopsis": "Bigger shark.", "editor_rating": 7.5,
+             "user_rating": 8.0},
+        expected=dict(title="Jaws: Megalodon", year=2026, kind="movie",
+                      ids={"fanedit_id": "30090", "derived_from_imdb": "tt0073195"}, artist="Ryantology",
+                      extra={"faneditor": "Ryantology"}, overview="Bigger shark.",
+                      poster="https://fanedit.example/c.jpg"),
+        query="jaws megalodon"),
+}
+
+
+def write_shard(path: Path, rows: List[Dict[str, Any]]) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    pq.write_table(pa.Table.from_pylist(rows), str(path))
+    return path

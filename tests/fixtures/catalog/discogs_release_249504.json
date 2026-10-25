@@ -1,0 +1,13 @@
+{
+  "id": 249504,
+  "status": "Accepted",
+  "year": 1987,
+  "resource_url": "https://api.discogs.com/releases/249504",
+  "uri": "https://www.discogs.com/release/249504-Placeholder-Artist-Placeholder-Album",
+  "artists": [{"name": "Placeholder Artist", "id": 1, "resource_url": "https://api.discogs.com/artists/1"}],
+  "title": "Placeholder Album",
+  "videos": [
+    {"uri": "https://www.youtube.com/watch?v=plcHldr0006", "title": "Placeholder Artist - Placeholder Track", "description": "Placeholder description", "duration": 213, "embed": true},
+    {"uri": "https://www.youtube.com/watch?v=plcHldr0007", "title": "Placeholder Artist - Placeholder Track (Live)", "description": "", "duration": 0, "embed": true}
+  ]
+}
