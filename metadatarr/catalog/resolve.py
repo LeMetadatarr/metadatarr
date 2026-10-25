@@ -60,6 +60,8 @@ class IdResolve:
     errors: List[ProviderError] = field(default_factory=list)
     unsupported: List[str] = field(default_factory=list)
     found: bool = False
+    #: Where the item found by id came from; ``None`` while the offline layer is off.
+    origin: Optional[Dict[str, Any]] = None
 
 
 def kind_for(signals: Signals, kind: Optional[str]) -> Optional[str]:
@@ -120,6 +122,7 @@ def _by_ids(ids: Dict[str, str], kind: Optional[str], refresh: bool, out: IdReso
         out.errors.extend(answer.errors)
         if answer.value is not None:
             out.providers.extend(answer.providers)
+            out.origin = answer.origin
             return answer.value.model_copy(deep=True)
     return None
 
@@ -156,7 +159,7 @@ def resolve(signals: Signals, ids: Dict[str, str], kind: Optional[str] = None, *
         out.result = ResolveResult(
             signals=found, external_ids=native, conflicts=out.result.conflicts,
             accepted=[ProviderMatch(provider=out.providers[0], confidence=round(confidence, 4), signals=found,
-                                    external_ids=native)])
+                                    external_ids=native, origin=out.origin)])
         out.match = {"item": item, "confidence": round(confidence, 4), "source": out.providers[0], "credits": [],
                      "id_conflicts": clashes}
         if signals.include_variants:

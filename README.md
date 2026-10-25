@@ -557,6 +557,7 @@ environment variables.
 |---|---|
 | [`docs/recipes.md`](docs/recipes.md) | End-to-end snippets for common tasks |
 | [`docs/transport.md`](docs/transport.md) | Shared HTTP session — rate limits, disk cache, env vars |
+| [`docs/offline.md`](docs/offline.md) | Local SQLite lookups built from the LeData datasets |
 | [`docs/physical-disc.md`](docs/physical-disc.md) | Blu-ray / DVD edition data |
 | [`docs/troubleshooting.md`](docs/troubleshooting.md) | Gotchas and FAQ |
 | [`docs/add-provider.md`](docs/add-provider.md) | Checklist for adding a new resolver provider |
