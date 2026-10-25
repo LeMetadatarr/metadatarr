@@ -487,7 +487,7 @@ BAD_ENRICH_IDS = {
     "musicbrainz_label": ["../..", "١" * 8 + MBID[8:]],
     "isbn_10": ["../..", "123", "١٢٣٤٥٦٧٨٩٠", "012345678\x00", "%2e%2e%2f", "9" * 4000, "0306406152/x"],
     "isbn_13": ["../..", "123", "٩٧٨٠٣٠٦٤٠٦١٥٧", "978030640615\x00", "9" * 4000, "978030640615"],
-    "olid": ["../..", "OL1A/../..", "%2e%2e%2f", "OL١A", "OL1A\x00", "OL" + "9" * 4000 + "W", "OL1", "ol1a", "OLA", "OL1Z", "OL45883W\n"],
+    "olid": ["../..", "OL1A/../..", "%2e%2e%2f", "OL١A", "OL1A\x00", "OL" + "9" * 4000 + "W", "OL1", "ol1a", "OLA", "OL1Z", "OL1X", "OL1B", "OL45883W\n"],
     "dvdcompare_id": ["../..", "16880/../..", "%2f", "١٦٨٨٠", "16880\x00", "9" * 4000, "1.5", "-1", "16880\n"],
 }
 
@@ -541,6 +541,11 @@ def test_enrich_forwards_an_isbn_with_a_trailing_newline_normalised(enriched, ro
 def test_check_external_ids_refuses_an_isbn_the_model_would_not_have_normalised(field, value):
     with pytest.raises(catalog.InvalidId):
         catalog_base.check_external_ids(SimpleNamespace(**{field: value}))
+
+
+@pytest.mark.parametrize("field,value", [("isbn_13", "978-0-306-40615-7"), ("isbn_10", "0-306-40615-2")])
+def test_check_external_ids_accepts_a_hyphenated_isbn(field, value):
+    catalog_base.check_external_ids(SimpleNamespace(**{field: value}))
 
 
 @pytest.mark.parametrize("route", ENRICH_ROUTES)
