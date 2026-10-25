@@ -59,6 +59,7 @@ from metadatarr.resolve.base import (
     resolve as run_resolve,
 )
 from metadatarr import catalog
+from metadatarr.offline import layer as offline
 from metadatarr.client import check_dvdcompare_url, check_fetched_urls
 from metadatarr.catalog import resolve as id_resolve
 from metadatarr.catalog.resolve import _KIND_MEDIUM as KIND_MEDIUM
@@ -335,6 +336,8 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
             return _error(404, "not found", errors=out.errors, unsupported=out.unsupported)
         payload = {**jsonable_encoder(out.result), "match": out.match, "providers": out.providers,
                    "errors": out.errors, "unsupported": out.unsupported}
+        if out.origin is not None:
+            payload["origin"] = out.origin
         return _cached_response(request, payload, config=config,
                                 degraded=bool(out.errors or out.result.provider_errors))
 
@@ -375,6 +378,8 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
         else:
             body = {"person": value.person, "credits": value.credits}
         body.update(providers=answer.providers, errors=answer.errors, truncated=answer.truncated)
+        if answer.origin is not None:
+            body["origin"] = answer.origin
         return _cached_response(request, body, config=config, degraded=bool(answer.errors),
                                 max_age=_catalog_max_age())
 
@@ -635,7 +640,7 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
         except catalog.InvalidId as e:
             return _error(422, "invalid id", message=str(e))
         try:
-            with bypass_cache(refresh):
+            with bypass_cache(refresh), offline.collect_origins() as served:
                 ids = run_enrich(
                     body.external_ids,
                     medium=medium,
@@ -646,7 +651,11 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
             LOG.exception("enrich failed")
             raise HTTPException(
                 status_code=500, detail="internal error during enrich") from None
-        return _cached_response(request, ids, config=config)
+        response = _cached_response(request, ids, config=config)
+        if offline.enabled():
+            response.headers["X-Metadatarr-Origin"] = (
+                ", ".join(f"offline {o['dataset']}@{o['revision']}" for o in served) or "live")
+        return response
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(request: Request, exc: RequestValidationError):

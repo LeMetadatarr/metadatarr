@@ -38,6 +38,8 @@ All optional — every keyless provider works out of the box.
 | `METADATARR_CATALOG_CACHE_TTL` | seconds the lookup, credits and person answers are kept in memory (default 3600); also their `max-age` |
 | `METADATARR_CATALOG_CACHE_SIZE` | most answers kept in that cache (default 1000; `0` = no cache) |
 | `METADATARR_CATALOG_TIMEOUT` | seconds each provider gets to answer a lookup, credits or person question (default 10) |
+| `METADATARR_OFFLINE_DIR` | directory of the SQLite files the [offline layer](offline.md) reads; unset = layer off |
+| `METADATARR_OFFLINE_MAX_AGE` | seconds after which an offline set counts as stale and live providers are asked (default 2592000; `0` = never) |
 
 Set them in `deploy/docker-compose.yml` (commented placeholders are there)
 or via `docker run -e ...`.

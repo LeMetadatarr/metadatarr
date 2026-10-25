@@ -281,6 +281,9 @@ class Answer:
     asked: List[str] = field(default_factory=list)
     errors: List[ProviderError] = field(default_factory=list)
     truncated: bool = False
+    #: ``{"source": "live"}`` or the dataset an offline row came from; ``None``
+    #: while the offline layer is off.
+    origin: Optional[Dict[str, Any]] = None
 
 
 _TRUNCATED: contextvars.ContextVar = contextvars.ContextVar("metadatarr_catalog_truncated", default=None)
@@ -425,6 +428,12 @@ def ask(method: str, scheme: str, value: str, kind: Optional[str] = None, *,
     sources = capable_sources(method, scheme, kind, provider)
     if method == "variants" and not (title or "").strip():
         raise ValueError("title is required for variants")
+    from metadatarr.offline import layer
+
+    if method == "lookup" and provider is None:
+        served = layer.front_lookup(scheme, value, kind, children, refresh)
+        if served is not None:
+            return Answer(value=served[0], providers=[layer.PROVIDER], asked=[layer.PROVIDER], origin=served[1])
     work = ((title or "").strip(), year)
     key = (method, provider, scheme, value, kind, explicit, children, work)
     store = cache()
@@ -443,6 +452,8 @@ def ask(method: str, scheme: str, value: str, kind: Optional[str] = None, *,
     finally:
         _TRUNCATED.reset(token)
         _FAILURES.reset(failures_token)
+    if layer.enabled():
+        answer.origin = layer.LIVE
     # An answer given while a better source was failing is not kept, so the
     # outage is not remembered for the whole cache lifetime.
     if answer.value is not None and not answer.errors:

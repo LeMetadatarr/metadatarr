@@ -21,7 +21,7 @@ import warnings
 from abc import ABC, abstractmethod
 from typing import Any, ClassVar, Dict, FrozenSet, List, Optional, Set, Tuple
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_serializer
 
 from metadatarr.resolve._errors import LOG, ProviderError, trap
 from metadatarr.resolve.entities import (
@@ -47,6 +47,17 @@ class ProviderMatch(BaseModel):
     external_ids: ExternalIds = Field(default_factory=ExternalIds)
     relations: Dict[EntityRole, List[ProviderEntity]] = Field(default_factory=dict)
     variants: List[ProviderEntity] = Field(default_factory=list)
+    origin: Optional[Dict[str, Any]] = None
+    """Where the match came from, set only while the offline layer is enabled:
+    ``{"source": "live"}``, or ``{"source": "offline", "dataset", "revision",
+    "built_at"}`` for a row read from a local SQLite file. Absent otherwise."""
+
+    @model_serializer(mode="wrap")
+    def _omit_absent_origin(self, handler):
+        data = handler(self)
+        if data.get("origin") is None:
+            data.pop("origin", None)
+        return data
 
 
 class SearchCandidate(BaseModel):
@@ -428,15 +439,20 @@ def _gather_candidates(provider: "MetadataProvider",
     `lookup_candidates` is the default (single-best wrapper); otherwise call
     the override directly. A provider that raises is trapped: the failure is
     logged, recorded in ``sink``, and this returns ``[]``."""
+    from metadatarr.offline import layer
     from metadatarr.resolve._cache import cached_lookup
 
+    with trap(provider.name, "offline", sink):
+        served = layer.front_candidates(provider.name, signals)
+        if served is not None:
+            return served
     if type(provider).lookup_candidates is MetadataProvider.lookup_candidates:
         with trap(provider.name, "lookup", sink):
             single = cached_lookup(provider, signals)
-            return [single] if single is not None else []
+            return layer.stamp_live([single] if single is not None else [])
         return []
     with trap(provider.name, "candidates", sink):
-        return provider.lookup_candidates(signals) or []
+        return layer.stamp_live(provider.lookup_candidates(signals) or [])
     return []
 
 
@@ -544,6 +560,8 @@ def candidates(signals: Signals, *, max_workers: int = 8,
         # top-N for a UI list:
         candidates(signals)[:5]
     """
+    from metadatarr.offline import layer
+
     providers = _routed(active_providers(medium=signals.medium), signals)
     matches: List[ProviderMatch] = []
     for batch in _run_pool(providers,
@@ -551,6 +569,8 @@ def candidates(signals: Signals, *, max_workers: int = 8,
                            max_workers,
                            deadline=deadline, sink=sink, stage="candidates"):
         matches.extend(batch)
+    with trap("ledata", "offline", sink):
+        matches.extend(layer.extra_candidates(signals))
     matches.sort(key=lambda m: m.confidence, reverse=True)
     return matches
 
@@ -780,6 +800,7 @@ def enrich(external_ids: ExternalIds, *,
       ``lookup_by_thetvdb``).
     - You have an ISBN and want the OpenLibrary OLID.
     """
+    from metadatarr.offline import layer
     from metadatarr.resolve._cache import cached_enrich
 
     providers = active_providers(medium=medium)
@@ -788,13 +809,18 @@ def enrich(external_ids: ExternalIds, *,
 
     def _call(p: "MetadataProvider") -> Optional[ExternalIds]:
         with trap(p.name, "enrich", sink):
-            return cached_enrich(p, external_ids)
+            served = layer.front_enrich(p, external_ids)
+            return served if served is not None else cached_enrich(p, external_ids)
         return None
 
     for enrichment in _run_pool(providers, _call, max_workers,
                                 deadline=deadline, sink=sink, stage="enrich"):
         if enrichment is not None:
             out = out.merge(enrichment)
+    with trap("ledata", "enrich", sink):
+        extra = layer.extra_enrich(external_ids)
+        if extra is not None:
+            out = out.merge(extra)
 
     if apply_maps:
         for role in EntityRole:
