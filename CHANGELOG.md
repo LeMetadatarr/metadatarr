@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.25.5a2](https://github.com/LeMetadatarr/metadatarr/tree/0.25.5a2) (2026-10-25)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.5a1...0.25.5a2)
+
+**Merged pull requests:**
+
+- test: pin the isbn hyphen strip and the olid suffix set in check\_external\_ids [\#100](https://github.com/LeMetadatarr/metadatarr/pull/100) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.25.5a1](https://github.com/LeMetadatarr/metadatarr/tree/0.25.5a1) (2026-10-23)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.4a1...0.25.5a1)
