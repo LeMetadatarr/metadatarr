@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.26.0a1) (2026-10-25)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.5a2...0.26.0a1)
+
+**Merged pull requests:**
+
+- feat: read-only local SQLite lookups built from the LeData datasets [\#102](https://github.com/LeMetadatarr/metadatarr/pull/102) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.25.5a2](https://github.com/LeMetadatarr/metadatarr/tree/0.25.5a2) (2026-10-25)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.5a1...0.25.5a2)
@@ -551,10 +559,6 @@
 ## [0.1.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.1.0a2) (2026-05-07)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/45444098ff4ede04e87009ceba33ed8978ee1218...0.1.0a2)
-
-**Merged pull requests:**
-
-- docs: rewrite README with full feature coverage and examples [\#1](https://github.com/LeMetadatarr/metadatarr/pull/1) ([JarbasAl](https://github.com/JarbasAl))
 
 
 
