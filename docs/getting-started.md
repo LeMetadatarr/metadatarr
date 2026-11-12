@@ -35,7 +35,7 @@ If anything goes wrong: DNS, 500, JSON parse error, schema mismatch: you get
 
 ## The mental model
 
-There are **nine** independent client classes. They share nothing except the
+There are **seven** independent client classes. They share nothing except the
 `metadatarr` namespace and the convention of returning Pydantic models:
 
 ```text
@@ -44,8 +44,6 @@ metadatarr
 ├── BookInfoClient       → rreading-glasses (Goodreads or Hardcover)
 ├── OpenLibraryClient    → OpenLibrary REST API
 ├── AnnasArchiveClient   → Anna's Archive HTML scraping (mirror rotation)
-├── AudioDBClient        → TheAudioDB artist / album / track
-├── TVmazeClient         → TVmaze TV show / season / cast
 │
 │   Physical disc (import from metadatarr.client, not the top-level package)
 ├── BlurayComClient      → blu-ray.com technical specs (HTML scraper)
@@ -54,8 +52,8 @@ metadatarr
 ```
 
 Plus a separate **resolve** subpackage (`metadatarr.resolve`) that fuses
-matches from many providers into one record: see
-[resolve.md](resolve.md).
+matches from many providers into one record, TVmaze and TheAudioDB
+among them: see [resolve.md](resolve.md).
 
 Pick the client by **what you have** and **what you want**:
 

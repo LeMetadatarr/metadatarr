@@ -36,8 +36,8 @@ python examples/fanedit_discovery.py   # needs network access
 | ------------------------------- | :-----: | ------------ |
 | `arr_search.py`                 | Yes | Sonarr / Radarr / Lidarr search via Servarr proxies |
 | `books.py`                      | Yes | OpenLibrary, BookInfo, Anna's Archive book lookups |
-| `music.py`                      | Yes | AudioDB artist + album lookup |
-| `video.py`                      | Yes | TVmaze show / season / cast lookup |
+| `music.py`                      | Yes | Resolve a track through the music providers, TheAudioDB among them |
+| `video.py`                      | Yes | Resolve a series through the TV providers, TVmaze among them |
 | `resolve_movie.py`              | Yes | Cross-source resolve walkthrough for a movie |
 | `resolve_artist_merge.py`       | Yes | Per-provider attribution for music across several bands |
 | `resolve_mapping_demo.py`       | Yes | Cross-platform track resolution from a single artist mapping |

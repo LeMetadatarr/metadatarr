@@ -80,8 +80,3 @@ def test_bookinfo_search(monkeypatch):
     bi = BookInfoClient.goodreads()
     hits = bi.search("hobbit")
     assert hits and hits[0].author_id == 3
-
-# NOTE: AudioDBClient and TVmazeClient were extracted into the dedicated
-# ``pyaudiodb`` / ``pytvmaze`` packages; their client tests now live in those
-# repos. metadatarr's resolver consumes them via the providers (see
-# tests/test_enrich.py, tests/test_provider_error_contract.py).
