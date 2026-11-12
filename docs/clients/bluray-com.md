@@ -171,4 +171,4 @@ class PatchedBlurayClient(BlurayComClient):
   across site updates.
 
 ---
-[← TVmazeClient](tvmaze.md) · [Home](../README.md) · [DVDCompareClient →](dvdcompare.md)
+[← AnnasArchiveClient](annas-archive.md) · [Home](../README.md) · [DVDCompareClient →](dvdcompare.md)

@@ -105,4 +105,4 @@ class StickyAnnas(AnnasArchiveClient):
   responsibly and in compliance with your local law.
 
 ---
-[← OpenLibraryClient](openlibrary.md) · [Home](../README.md) · [AudioDBClient →](audiodb.md)
+[← OpenLibraryClient](openlibrary.md) · [Home](../README.md) · [BlurayComClient →](bluray-com.md)

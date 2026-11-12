@@ -21,11 +21,9 @@ It is deliberately tiny: a single `requests`-based HTTP layer, a single
 | rreading-glasses (Hardcover) | `BookInfoClient.hardcover()` | Books | `hardcover.bookinfo.pro` |
 | OpenLibrary | `OpenLibraryClient` | Books | `openlibrary.org` |
 | Anna's Archive | `AnnasArchiveClient` | Books (search-by-mirror, HTML) | rotating mirrors |
-| TheAudioDB | `AudioDBClient` | Music | `theaudiodb.com` |
 
 | Provider | Class | Domain | Source |
 |---|---|---|---|
-| TVmaze | `TVmazeClient` | TV | `api.tvmaze.com` |
 | blu-ray.com | `BlurayComClient` | Physical disc (Blu-ray / 4K UHD) | `www.blu-ray.com` (HTML scraper) |
 | dvdcompare.net | `DVDCompareClient` | Physical disc (cut / version metadata) | `www.dvdcompare.net` (HTML scraper) |
 | Discogs | `DiscogsClient` | Physical disc (Blu-ray / DVD / VHS / LaserDisc) + label & catalogue data | `api.discogs.com` |
@@ -48,8 +46,6 @@ If you've never used metadatarr before, read in this order:
    - **[BookInfoClient](clients/bookinfo.md)**: Goodreads & Hardcover via rreading-glasses
    - **[OpenLibraryClient](clients/openlibrary.md)**: OpenLibrary REST API
    - **[AnnasArchiveClient](clients/annas-archive.md)**: Anna's Archive HTML scraping
-   - **[AudioDBClient](clients/audiodb.md)**: TheAudioDB artist/album/track
-   - **[TVmazeClient](clients/tvmaze.md)**: TVmaze TV show/season/cast
    - **[BlurayComClient](clients/bluray-com.md)**: blu-ray.com technical specs
    - **[DVDCompareClient](clients/dvdcompare.md)**: dvdcompare.net version/cut metadata
    - **[DiscogsClient](clients/discogs.md)**: Discogs label, catalogue number, VHS, LaserDisc
