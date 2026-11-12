@@ -22,6 +22,7 @@ from typing import Optional
 import requests
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
+from metadatarr.resolve.providers._audiodb_client import AudioDBClient
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, PlaybackType
@@ -36,7 +37,6 @@ class AudioDBProvider(MetadataProvider):
     playback_type = {PlaybackType.AUDIO}
 
     def __init__(self) -> None:
-        from pyaudiodb import AudioDBClient
         self._client = AudioDBClient()
 
     def is_available(self) -> bool:
