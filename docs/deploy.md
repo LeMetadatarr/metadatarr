@@ -34,7 +34,7 @@ All optional — every keyless provider works out of the box.
 | `METADATARR_RATE_LIMIT` | requests per minute per API key (per client address when keys are off); unset or `0` = no limit |
 | `METADATARR_RATE_LIMIT_BURST` | requests allowed at once before the limit applies (default: the per-minute rate) |
 | `METADATARR_AUDIO_ROOTS` | directories (separated by `:`) that `/api/v1/identify/audio?path=` may read; unset = uploads only |
-| `METADATARR_MAX_UPLOAD_BYTES` | largest audio upload accepted (default 50 MiB) |
+| `METADATARR_MAX_UPLOAD_BYTES` | largest audio upload or path-read file accepted (default 50 MiB) |
 | `METADATARR_CATALOG_CACHE_TTL` | seconds the lookup, credits and person answers are kept in memory (default 3600); also their `max-age` |
 | `METADATARR_CATALOG_CACHE_SIZE` | most answers kept in that cache (default 1000; `0` = no cache) |
 | `METADATARR_CATALOG_TIMEOUT` | seconds each provider gets to answer a lookup, credits or person question (default 10) |
@@ -71,7 +71,7 @@ paths.
 | `POST /api/v1/candidates` | every provider's match, ranked, without consolidation; takes a `kind` (see [Searching by kind](#searching-by-kind)) |
 | `POST /api/v1/enrich` | derive more ids from the ids given |
 | `POST /api/v1/identify/video` | `{"filename", "duration"?, "size"?, "hints"?}`: parse the file name as a library scan would (only its last path component; the server opens nothing), fill `runtime` from `duration` (seconds), apply `hints` (`Signals` fields), then resolve |
-| `POST /api/v1/identify/audio` | audio fingerprint, then resolve: a multipart `file` upload, or `?path=` naming a file under `METADATARR_AUDIO_ROOTS` (any other path is refused with `403`) |
+| `POST /api/v1/identify/audio` | audio fingerprint, then resolve: a multipart `file` upload, or `?path=` naming a file under `METADATARR_AUDIO_ROOTS` (any other path is refused with `403`; either source above `METADATARR_MAX_UPLOAD_BYTES` gets `413`) |
 
 ### Searching by kind
 

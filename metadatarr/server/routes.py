@@ -19,6 +19,7 @@ catalogue knows is ``404``, and every asked provider failing is ``502``.
 """
 from __future__ import annotations
 
+import asyncio
 import contextvars
 import hashlib
 import json
@@ -103,6 +104,13 @@ def _provider_counts() -> "tuple[int, int]":
         except Exception:  # pragma: no cover - defensive
             pass
     return available, len(registry)
+
+
+def _read_capped(path: str, limit: int) -> bytes:
+    """At most ``limit + 1`` bytes of *path*: one byte over the limit is
+    enough to tell the caller the file is too large."""
+    with open(path, "rb") as f:
+        return f.read(limit + 1)
 
 
 API_PREFIX = "/api/v1"
@@ -598,6 +606,12 @@ def register_routes(app, templates, config: Optional[ServerConfig] = None) -> No
                 source = resolve_allowed_path(path, config.audio_roots)
             except PathNotAllowed as e:
                 raise HTTPException(status_code=403, detail=str(e)) from None
+            try:
+                source = await asyncio.to_thread(_read_capped, source, config.max_upload_bytes)
+            except OSError:
+                raise HTTPException(status_code=403, detail="path is not readable") from None
+            if len(source) > config.max_upload_bytes:
+                raise HTTPException(status_code=413, detail="file too large")
 
         try:
             with bypass_cache(refresh):
