@@ -2,20 +2,16 @@
 TVDB, MB) when available.
 
 The two-step search (``wbsearchentities`` → ``wbgetentities``) plus the reverse
-``haswbstatement`` lookup all live in :class:`pywikidata.WikidataClient`. This
-provider adapts the client's :class:`pywikidata.models.WikidataExternalIds` into
-metadatarr's :class:`mediavocab.models.ExternalIds`, re-applying ISBN
-normalization (``mediavocab.text.normalize_isbn``) — a step the standalone
-client cannot perform because it does not depend on ``mediavocab``. That keeps
-resolver output byte-identical to the pre-extraction provider.
+``haswbstatement`` lookup live in ``_wikidata_client``. This provider adapts its
+:class:`WikidataIds` into :class:`mediavocab.models.ExternalIds`, normalising
+ISBNs with ``mediavocab.text.normalize_isbn``.
 """
 from __future__ import annotations
 
 import logging
 from typing import List, Optional
 
-from pywikidata import WikidataClient
-from pywikidata.models import WikidataExternalIds
+from metadatarr.resolve.providers._wikidata_client import WikidataClient, WikidataIds
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.transport import make_session
@@ -60,11 +56,11 @@ class WikidataProvider(MetadataProvider):
         return client
 
     # ------------------------------------------------------------------
-    # WikidataExternalIds -> mediavocab ExternalIds (with ISBN normalization)
+    # WikidataIds -> mediavocab ExternalIds (with ISBN normalization)
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _to_external_ids(wc: WikidataExternalIds) -> ExternalIds:
+    def _to_external_ids(wc: WikidataIds) -> ExternalIds:
         external = ExternalIds(wikidata=wc.wikidata)
         for field in _DIRECT_FIELDS:
             value = getattr(wc, field, None)
@@ -88,10 +84,10 @@ class WikidataProvider(MetadataProvider):
         return external
 
     @staticmethod
-    def _probe_from(external_ids: ExternalIds) -> WikidataExternalIds:
+    def _probe_from(external_ids: ExternalIds) -> WikidataIds:
         """Project metadatarr's ExternalIds onto the client's model so its
         reverse ``haswbstatement`` lookup can run."""
-        return WikidataExternalIds(
+        return WikidataIds(
             wikidata=external_ids.wikidata,
             imdb=external_ids.imdb,
             tmdb_movie=external_ids.tmdb_movie,

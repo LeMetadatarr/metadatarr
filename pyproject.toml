@@ -58,8 +58,7 @@ test = ["pytest>=7", "httpx<1", "jsonschema", "pyarrow>=15"]
 server = ["fastapi", "uvicorn[standard]", "jinja2", "python-multipart"]
 offline = ["pyarrow>=15"]
 tag = ["guessit>=3", "mutagen>=1.45"]
-# xazam isn't on PyPI yet — git dep bridge, same pattern as pytvmaze/pyaudiodb/
-# pytmdb/pywikidata above. TODO: switch to PyPI floor-pin once xazam is published.
+# xazam isn't on PyPI yet — git dependency. TODO: switch to a PyPI floor-pin once xazam is published.
 identify = ["xazam @ git+https://github.com/LeMetadatarr/xazam@dev"]
 
 [project.scripts]
