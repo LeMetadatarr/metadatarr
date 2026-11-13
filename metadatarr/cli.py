@@ -21,10 +21,11 @@ from metadatarr.version import __version__
 
 def cmd_serve(args: argparse.Namespace) -> int:
     from metadatarr.server.app import run
+    from metadatarr.server.config import ServerConfigError
 
     try:
         run(host=args.host, port=args.port)
-    except RuntimeError as e:
+    except (RuntimeError, ServerConfigError) as e:
         print(str(e), file=sys.stderr)
         return 1
     return 0

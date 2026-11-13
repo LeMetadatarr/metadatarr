@@ -8,6 +8,7 @@ open single-tenant homelab service. :meth:`ServerConfig.from_env` reads the
 from __future__ import annotations
 
 import ipaddress
+import math
 import os
 from dataclasses import dataclass, field
 from typing import List, Mapping, Optional, Tuple, Union
@@ -22,6 +23,26 @@ PRIVATE_NETWORKS: Tuple[str, ...] = (
 )
 
 DEFAULT_MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+
+
+class ServerConfigError(ValueError):
+    """A ``METADATARR_*`` variable holds a value the server cannot use."""
+
+
+def _number(env: Mapping[str, str], name: str, kind: type, default, *, minimum=0):
+    """The variable *name* as a number of *kind* that is finite and at least
+    *minimum*; *default* when it is unset or empty."""
+    raw = env.get(name, "").strip()
+    if not raw:
+        return default
+    try:
+        value = kind(raw)
+    except ValueError:
+        raise ServerConfigError(
+            f"{name}={raw!r} is not a valid {'integer' if kind is int else 'number'}") from None
+    if not math.isfinite(value) or value < minimum:
+        raise ServerConfigError(f"{name}={raw!r} must be a finite number of at least {minimum}")
+    return value
 
 
 def parse_networks(spec: str) -> List[IPNetwork]:
@@ -76,13 +97,16 @@ class ServerConfig:
         env = os.environ if env is None else env
         keys = [k.strip() for k in env.get("METADATARR_API_KEYS", "").split(",") if k.strip()]
         roots = [r for r in env.get("METADATARR_AUDIO_ROOTS", "").split(os.pathsep) if r.strip()]
-        burst_raw = env.get("METADATARR_RATE_LIMIT_BURST", "").strip()
+        try:
+            exempt = parse_networks(env.get("METADATARR_AUTH_EXEMPT", ""))
+        except ValueError as e:
+            raise ServerConfigError(f"METADATARR_AUTH_EXEMPT is not a list of networks: {e}") from None
         return cls(
             api_keys=keys,
-            exempt_networks=parse_networks(env.get("METADATARR_AUTH_EXEMPT", "")),
-            rate_limit_per_minute=float(env.get("METADATARR_RATE_LIMIT", "0") or 0),
-            rate_limit_burst=int(burst_raw) if burst_raw else None,
+            exempt_networks=exempt,
+            rate_limit_per_minute=_number(env, "METADATARR_RATE_LIMIT", float, 0.0),
+            rate_limit_burst=_number(env, "METADATARR_RATE_LIMIT_BURST", int, None, minimum=1),
             audio_roots=roots,
-            max_upload_bytes=int(env.get("METADATARR_MAX_UPLOAD_BYTES", "")
-                                 or DEFAULT_MAX_UPLOAD_BYTES),
+            max_upload_bytes=_number(env, "METADATARR_MAX_UPLOAD_BYTES", int,
+                                     DEFAULT_MAX_UPLOAD_BYTES, minimum=1),
         )

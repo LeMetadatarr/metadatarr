@@ -41,6 +41,8 @@ All optional — every keyless provider works out of the box.
 | `METADATARR_OFFLINE_DIR` | directory of the SQLite files the [offline layer](offline.md) reads; unset = layer off |
 | `METADATARR_OFFLINE_MAX_AGE` | seconds after which an offline set counts as stale and live providers are asked (default 2592000; `0` = never) |
 
+A malformed numeric or network setting stops the server at start-up with a message that names the variable. A burst or an upload cap of 0 or below is refused too.
+
 Set them in `deploy/docker-compose.yml` (commented placeholders are there)
 or via `docker run -e ...`.
 
