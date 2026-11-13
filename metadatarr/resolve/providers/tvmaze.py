@@ -14,6 +14,7 @@ import logging
 from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
+from metadatarr.resolve.providers._tvmaze_client import TVmazeClient
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals, match_quality
@@ -27,7 +28,6 @@ class TVmazeProvider(MetadataProvider):
     playback_type = {PlaybackType.VIDEO}
 
     def __init__(self) -> None:
-        from pytvmaze import TVmazeClient
         self._client = TVmazeClient()
 
     def is_available(self) -> bool:
