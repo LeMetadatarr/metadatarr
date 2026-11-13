@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.1a2](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a2) (2026-11-13)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a1...0.26.1a2)
+
+**Merged pull requests:**
+
+- refactor: inline the Wikidata client, drop pywikidata [\#105](https://github.com/LeMetadatarr/metadatarr/pull/105) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.26.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a1) (2026-11-13)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.0a1...0.26.1a1)
@@ -536,17 +544,9 @@
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.2.0a1...0.3.0a1)
 
-**Merged pull requests:**
-
-- feat: TMDB + TVDB canonical-id resolvers and HTTP cassette tests [\#5](https://github.com/LeMetadatarr/metadatarr/pull/5) ([JarbasAl](https://github.com/JarbasAl))
-
 ## [0.2.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.2.0a1) (2026-06-27)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.1.1a1...0.2.0a1)
-
-**Merged pull requests:**
-
-- feat: expand EntityRole taxonomy, entity-id anchors, relation aggregation [\#4](https://github.com/LeMetadatarr/metadatarr/pull/4) ([JarbasAl](https://github.com/JarbasAl))
 
 ## [0.1.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.1.1a1) (2026-06-27)
 
