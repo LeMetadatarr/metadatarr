@@ -9,12 +9,12 @@ aggregates those into a typed list of :class:`~mediavocab.models.Stream`
 objects, one per platform.  The caller can then pick by ``platform`` or
 ``media_type``, or just take the first result.
 
-Platform coverage (install the optional extras you want):
+Platform coverage:
 
-    pip install metadatarr[soundcloud,bandcamp,youtube]
+    pip install metadatarr
 
-Without any extras installed, only providers that need no optional deps
-(AudioDB music-video URL, …) will contribute.
+SoundCloud, Bandcamp, and YouTube support are core dependencies, so a plain
+install already covers all of them.
 
 Run it::
 
@@ -62,7 +62,6 @@ def main() -> None:
     result = _resolve_streams(title, artist)
     if result is None:
         print("\n  No providers returned a match.")
-        print("  Install streaming extras:  pip install metadatarr[soundcloud,bandcamp,youtube]")
         return
 
     streams = result.external_ids.streams

@@ -276,3 +276,155 @@ def test_to_mediavocab_role(ek, expected_role):
 def test_to_mediavocab_role_none_for_non_role_kinds():
     # OTHER is unknown — no relation role mapping.
     assert EntityRole.OTHER.to_mediavocab_role() is None
+
+
+# ---------------------------------------------------------------------------
+# New roles added in expansion
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize(
+    "ek, expected_kind",
+    [
+        (EntityRole.FEATURING,       MvEntityKind.GROUP),
+        (EntityRole.SCREENWRITER,    MvEntityKind.PERSON),
+        (EntityRole.CINEMATOGRAPHER, MvEntityKind.PERSON),
+        (EntityRole.EDITOR,          MvEntityKind.PERSON),
+        (EntityRole.LYRICIST,        MvEntityKind.PERSON),
+        (EntityRole.ILLUSTRATOR,     MvEntityKind.PERSON),
+        (EntityRole.TRANSLATOR,      MvEntityKind.PERSON),
+        (EntityRole.GUEST,           MvEntityKind.PERSON),
+        (EntityRole.CURATOR,         MvEntityKind.PERSON),
+        (EntityRole.DISTRIBUTOR,     MvEntityKind.ORGANISATION),
+    ],
+)
+def test_new_roles_to_mediavocab_kind(ek, expected_kind):
+    assert ek.to_mediavocab_kind() == expected_kind
+
+
+@pytest.mark.parametrize(
+    "ek, expected_role",
+    [
+        (EntityRole.FEATURING,       MvRelationRole.FEATURING),
+        (EntityRole.SCREENWRITER,    MvRelationRole.SCREENWRITER),
+        (EntityRole.CINEMATOGRAPHER, MvRelationRole.CINEMATOGRAPHER),
+        (EntityRole.EDITOR,          MvRelationRole.EDITOR),
+        (EntityRole.LYRICIST,        MvRelationRole.LYRICIST),
+        (EntityRole.ILLUSTRATOR,     MvRelationRole.ILLUSTRATOR),
+        (EntityRole.TRANSLATOR,      MvRelationRole.TRANSLATOR),
+        (EntityRole.GUEST,           MvRelationRole.GUEST),
+        (EntityRole.CURATOR,         MvRelationRole.CURATOR),
+        (EntityRole.DISTRIBUTOR,     MvRelationRole.DISTRIBUTOR),
+    ],
+)
+def test_new_roles_to_mediavocab_role(ek, expected_role):
+    assert ek.to_mediavocab_role() == expected_role
+
+
+# ---------------------------------------------------------------------------
+# image_url propagation through upsert_entity
+# ---------------------------------------------------------------------------
+
+def test_provider_entity_image_url_propagates_to_record():
+    from metadatarr.resolve import EntitySidecar, ProviderEntity, upsert_entity
+    side = EntitySidecar()
+    cand = ProviderEntity(
+        role=EntityRole.ARTIST, name="Daft Punk",
+        image_url="https://img.example.com/daftpunk.jpg",
+        external_ids=ExternalIds(musicbrainz_artist="mbid"),
+    )
+    eid = upsert_entity(side, cand)
+    assert side.entities[eid].image_url == "https://img.example.com/daftpunk.jpg"
+
+
+def test_image_url_not_overwritten_by_later_empty_upsert():
+    from metadatarr.resolve import EntitySidecar, ProviderEntity, upsert_entity
+    side = EntitySidecar()
+    cand1 = ProviderEntity(
+        role=EntityRole.ARTIST, name="X",
+        image_url="https://img.example.com/x.jpg",
+        external_ids=ExternalIds(musicbrainz_artist="mbid"),
+    )
+    cand2 = ProviderEntity(
+        role=EntityRole.ARTIST, name="X",
+        image_url=None,
+        external_ids=ExternalIds(musicbrainz_artist="mbid"),
+    )
+    eid = upsert_entity(side, cand1)
+    upsert_entity(side, cand2)
+    assert side.entities[eid].image_url == "https://img.example.com/x.jpg"
+
+
+def test_image_url_filled_by_later_upsert_when_empty():
+    from metadatarr.resolve import EntitySidecar, ProviderEntity, upsert_entity
+    side = EntitySidecar()
+    cand1 = ProviderEntity(
+        role=EntityRole.ARTIST, name="X",
+        external_ids=ExternalIds(musicbrainz_artist="mbid"),
+    )
+    cand2 = ProviderEntity(
+        role=EntityRole.ARTIST, name="X",
+        image_url="https://img.example.com/x.jpg",
+        external_ids=ExternalIds(musicbrainz_artist="mbid"),
+    )
+    eid = upsert_entity(side, cand1)
+    upsert_entity(side, cand2)
+    assert side.entities[eid].image_url == "https://img.example.com/x.jpg"
+
+
+# ---------------------------------------------------------------------------
+# _dominant_external_id uses first-class fields for promoted keys
+# ---------------------------------------------------------------------------
+
+def test_artist_dominant_uses_first_class_bandcamp():
+    a = allocate_entity_id(EntityRole.ARTIST,
+                           external_ids=ExternalIds(bandcamp_band_id=12345))
+    b = allocate_entity_id(EntityRole.ARTIST,
+                           external_ids=ExternalIds(bandcamp_band_id=12345))
+    assert a == b
+
+
+def test_artist_dominant_uses_first_class_soundcloud():
+    a = allocate_entity_id(EntityRole.ARTIST,
+                           external_ids=ExternalIds(soundcloud_user_id="my-band"))
+    b = allocate_entity_id(EntityRole.ARTIST,
+                           external_ids=ExternalIds(soundcloud_user_id="my-band"))
+    assert a == b
+
+
+def test_channel_dominant_uses_first_class_youtube_channel():
+    a = allocate_entity_id(EntityRole.CHANNEL,
+                           external_ids=ExternalIds(youtube_channel_id="UCxyz"))
+    b = allocate_entity_id(EntityRole.CHANNEL,
+                           external_ids=ExternalIds(youtube_channel_id="UCxyz"))
+    assert a == b
+
+
+def test_label_dominant_uses_first_class_musicbrainz_label():
+    a = allocate_entity_id(EntityRole.LABEL,
+                           external_ids=ExternalIds(musicbrainz_label="mb-label-uuid"))
+    b = allocate_entity_id(EntityRole.LABEL,
+                           external_ids=ExternalIds(musicbrainz_label="mb-label-uuid"))
+    assert a == b
+
+
+def test_iheart_station_in_external_ids():
+    ids = ExternalIds(iheart_station_id="7556")
+    d = ids.to_dict()
+    assert d["iheart_station_id"] == "7556"
+    ids2 = ExternalIds.from_dict(d)
+    assert ids2.iheart_station_id == "7556"
+
+
+def test_iheart_fields_round_trip():
+    ids = ExternalIds(
+        iheart_station_id="1",
+        iheart_podcast_id="2",
+        iheart_episode_id="3",
+        iheart_artist_id="4",
+    )
+    d = ids.to_dict()
+    ids2 = ExternalIds.from_dict(d)
+    assert ids2.iheart_station_id == "1"
+    assert ids2.iheart_podcast_id == "2"
+    assert ids2.iheart_episode_id == "3"
+    assert ids2.iheart_artist_id == "4"

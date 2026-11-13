@@ -2,6 +2,26 @@
 
 Things that commonly break, with diagnoses and fixes.
 
+## "A provider returns nothing"
+
+Before guessing why, check `result.provider_errors`. When a provider raises
+during `resolve()`, the failure is swallowed to keep the run going, but it is
+recorded there as a `ProviderError` (`provider`, `stage`, `error_type`,
+`message`):
+
+```python
+result = resolve(Signals(title="Dune", medium=MediaType.BOOK))
+for err in result.provider_errors:
+    print(err.provider, err.stage, err.error_type, err.message)
+```
+
+An empty `provider_errors` means every provider ran cleanly and genuinely had no
+match; a populated one points straight at the provider and stage that broke —
+usually upstream schema drift. See
+[`provider_errors`](resolve.md#provider-errors--resultprovider_errors) for the
+field reference. The same failures are logged under the `metadatarr.resolve`
+logger.
+
 ## "I get an empty list / `None` for everything"
 
 metadatarr [swallows all errors](getting-started.md#failure-modes) by design, so an
@@ -11,7 +31,7 @@ empty list can mean any of:
    - Sonarr: <https://skyhook.sonarr.tv/v1/tvdb/search/en/?term=...>
    - Radarr: <https://radarrapi.servarr.com/v1/search?q=...>
    - OpenLibrary: <https://openlibrary.org/search?q=...>
-2. **Provider down.** Same URLs as above — if the browser shows 502/timeout,
+2. **Provider down.** Same URLs as above: if the browser shows 502/timeout,
    the provider is the problem.
 3. **Schema drift.** The provider changed its JSON shape and Pydantic
    validation is failing silently. Bypass metadatarr to confirm:
@@ -47,7 +67,7 @@ client._get = loud
 Three possibilities:
 
 1. **All default mirrors are blocked from your network.** Try one in a
-   browser; if it loads but metadatarr returns `[]`, your DNS / VPN setup is
+   browser, if it loads but metadatarr returns `[]`, your DNS / VPN setup is
    different from your Python process.
 2. **The HTML structure changed.** `_parse_search_results` expects a
    `<table>` with rows of ≥10 columns. Pull a sample page and inspect:
@@ -65,9 +85,8 @@ Three possibilities:
 
 ## "Lidarr/Skyhook returns 500 on a name that should exist"
 
-Servarr proxies are public, unauthenticated, and occasionally unreliable —
-especially MusicInfo. Retry once after a few seconds. If it persists, the
-proxy is having an outage; nothing you can do client-side.
+Servarr proxies are public, unauthenticated, and occasionally unreliable: especially MusicInfo. Retry once after a few seconds. If it persists, the
+proxy is having an outage, nothing you can do client-side.
 
 ## "OpenLibrary cover URL returns a 1×1 transparent PNG"
 
@@ -96,7 +115,7 @@ edition = next((b for b in work.books if b.foreign_id == hit.book_id), None)
 ## "Hardcover and Goodreads results conflict"
 
 They will. Different ID spaces, different curation. Don't try to map IDs
-between them — match on `(title, author, publication_year)` if you must
+between them: match on `(title, author, publication_year)` if you must
 deduplicate. See [Recipes → Dedup](recipes.md#dedup-search-results-across-two-book-backends).
 
 ## "Pydantic validation error on a field that's clearly in the response"
@@ -144,3 +163,6 @@ OpenLibraryClient().search("dune")
 ```
 
 You'll see every HTTP request line and response status on stderr.
+
+---
+[← Recipes](recipes.md) · [Home](README.md) · [Adding a provider →](add-provider.md)

@@ -1,0 +1,8 @@
+{
+  "id": 603,
+  "results": [
+    {"iso_639_1": "en", "iso_3166_1": "US", "name": "Placeholder Official Trailer", "key": "plcHldr0001", "site": "YouTube", "size": 1080, "type": "Trailer", "official": true, "published_at": "2001-02-03T04:05:06.000Z", "id": "000000000000000000000001"},
+    {"iso_639_1": "en", "iso_3166_1": "GB", "name": "Placeholder Behind the Scenes", "key": "100000001", "site": "Vimeo", "size": 720, "type": "Behind the Scenes", "official": false, "published_at": "2002-03-04T05:06:07.000Z", "id": "000000000000000000000002"},
+    {"iso_639_1": "de", "iso_3166_1": "DE", "name": "Placeholder Bloopers", "key": "plcHldr0003", "site": "YouTube", "size": 480, "type": "Bloopers", "official": true, "published_at": "2003-04-05T06:07:08.000Z", "id": "000000000000000000000003"}
+  ]
+}

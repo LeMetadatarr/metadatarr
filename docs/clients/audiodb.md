@@ -1,6 +1,6 @@
 # AudioDBClient
 
-Wraps [TheAudioDB](https://www.theaudiodb.com/api_guide.php) — a free,
+Wraps [TheAudioDB](https://www.theaudiodb.com/api_guide.php): a free,
 unauthenticated music metadata API. Uses the public test key `123` (no
 account or env var required).
 
@@ -12,11 +12,20 @@ account or env var required).
 | `get_artist(id)`           | `artist.php?i=`         | `AudioDBArtist`        |
 | `get_artist_by_mbid(mbid)` | `artist-mb.php?i=`      | `AudioDBArtist`        |
 | `search_album(artist[, album])` | `searchalbum.php`  | `List[AudioDBAlbum]`   |
+
+| Method                     | Upstream                | Returns                |
+| -------------------------- | ----------------------- | ---------------------- |
 | `get_album(id)`            | `album.php?i=`          | `AudioDBAlbum`         |
+
+| Method                     | Upstream                | Returns                |
+| --------------------------- | ----------------------- | ---------------------- |
 | `get_album_by_mbid(mbid)`  | `album-mb.php?i=`       | `AudioDBAlbum`         |
 | `discography(artist)`      | `discography.php`       | `List[AudioDBAlbum]` (year + name) |
 | `search_track(artist, title)` | `searchtrack.php`    | `List[AudioDBTrack]`   |
 | `get_track(id)`            | `track.php?h=`          | `AudioDBTrack`         |
+
+| Method                     | Upstream                | Returns                |
+| --------------------------- | ----------------------- | ---------------------- |
 | `get_track_by_mbid(mbid)`  | `track-mb.php?i=`       | `AudioDBTrack`         |
 
 ## Example
@@ -37,7 +46,10 @@ for album in c.discography("Daft Punk"):
 
 - All methods return `[]` / `None` on network errors or empty payloads.
 - Album IDs and track IDs in `AudioDBTrack`/`AudioDBAlbum` are AudioDB's own
-  numeric ids — string-typed at the model level. MusicBrainz ids are
+  numeric ids: string-typed at the model level. MusicBrainz ids are
   separately exposed as `musicbrainz_id` / `musicbrainz_artist_id` /
   `musicbrainz_album_id`.
 - Free-tier `discography.php` returns only album name + year.
+
+---
+[← AnnasArchiveClient](annas-archive.md) · [Home](../README.md) · [TVmazeClient →](tvmaze.md)

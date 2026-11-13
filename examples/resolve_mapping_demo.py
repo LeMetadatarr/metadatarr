@@ -33,7 +33,7 @@ Tracks demoed:
 
 Run it::
 
-    pip install metadatarr[bandcamp,soundcloud]
+    pip install metadatarr
     python examples/resolve_mapping_demo.py
 """
 from __future__ import annotations
@@ -113,8 +113,7 @@ def main() -> None:
     available = {p.name: p for p in active_providers(medium=MediaType.MUSIC)}
     soundcloud = available.get("soundcloud")
     if soundcloud is None:
-        print("\nThe SoundCloud provider is not active. Install it with:")
-        print("  pip install metadatarr[soundcloud]")
+        print("\nThe SoundCloud provider is not active.")
         return
 
     for track in TRACKS:

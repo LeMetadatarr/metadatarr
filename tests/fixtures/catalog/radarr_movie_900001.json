@@ -1,0 +1,24 @@
+{
+ "TmdbId": 900001,
+ "ImdbId": "tt9000001",
+ "Title": "Placeholder Movie",
+ "Overview": "Placeholder overview.",
+ "OriginalTitle": "Placeholder Movie",
+ "OriginalLanguage": "en",
+ "Runtime": 136,
+ "Year": 2001,
+ "Premier": "1999-03-24T00:00:00Z",
+ "InCinema": "1999-03-31T00:00:00Z",
+ "Images": [],
+ "Genres": [
+  "Placeholder"
+ ],
+ "Studio": "Placeholder Studio",
+ "Status": null,
+ "Collection": null,
+ "YoutubeTrailerId": "plcHldr0008",
+ "Credits": {
+  "Cast": [],
+  "Crew": []
+ }
+}

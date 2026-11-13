@@ -8,18 +8,15 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-
-try:
-    import httpx
-except ImportError:  # pragma: no cover
-    httpx = None  # type: ignore[assignment]
+from metadatarr.transport import discard_cached, make_session
 
 LOG = logging.getLogger("metadatarr.resolve.providers.podcast_index")
+_SESSION = make_session()
 
 _ITUNES_SEARCH = "https://itunes.apple.com/search"
 
@@ -29,7 +26,7 @@ class ApplePodcastsProvider(MetadataProvider):
 
     name = "apple_podcasts"
     media = {MediaType.PODCAST, MediaType.AUDIO_DRAMA}
-    modality = {PlaybackModality.AUDIO}
+    playback_type = {PlaybackType.AUDIO}
 
     def is_available(self) -> bool:
         return True
@@ -40,29 +37,28 @@ class ApplePodcastsProvider(MetadataProvider):
         if signals.medium and signals.medium not in {MediaType.PODCAST, MediaType.AUDIO_DRAMA}:
             return None
 
-        if httpx is None:
-            LOG.warning("httpx not installed — apple_podcasts provider unavailable")
-            return None
-
         query = signals.title
         if signals.artist:
             query = f"{signals.title} {signals.artist}"
 
+        resp = None
         try:
-            resp = httpx.get(
+            resp = _SESSION.get(
                 _ITUNES_SEARCH,
                 params={"term": query, "media": "podcast", "limit": 5},
                 timeout=10,
-                follow_redirects=True,
             )
             resp.raise_for_status()
             data = resp.json()
         except Exception as exc:
             LOG.warning("apple_podcasts lookup failed: %s", exc)
+            if resp is not None:
+                discard_cached(_SESSION, resp)
             return None
 
         results = data.get("results") or []
         if not results:
+            discard_cached(_SESSION, resp)
             return None
 
         top = results[0]

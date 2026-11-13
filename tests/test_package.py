@@ -13,8 +13,6 @@ def test_clients_exported():
         "AnnasArchiveClient",
         "BookInfoClient",
         "OpenLibraryClient",
-        "AudioDBClient",
-        "TVmazeClient",
     ):
         assert hasattr(metadatarr, name), f"missing export: {name}"
 

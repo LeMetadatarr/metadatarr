@@ -1,0 +1,78 @@
+{
+ "release-group-count": 587,
+ "release-group-offset": 0,
+ "release-groups": [
+  {
+   "primary-type-id": "d6038452-8ee0-3f68-affc-2de9a1ede0b9",
+   "secondary-type-ids": [],
+   "primary-type": "Single",
+   "disambiguation": "",
+   "id": "03031fcb-cbcd-47f1-bae7-27582757120f",
+   "secondary-types": [],
+   "title": "Man of War",
+   "first-release-date": "2017-06-22"
+  },
+  {
+   "id": "03393cc5-d252-4a52-b777-e04861389dc0",
+   "secondary-types": [
+    "Remix"
+   ],
+   "disambiguation": "",
+   "secondary-type-ids": [
+    "0c60f497-ff81-3818-befd-abfc84a4858b"
+   ],
+   "primary-type": "Single",
+   "primary-type-id": "d6038452-8ee0-3f68-affc-2de9a1ede0b9",
+   "first-release-date": "2011",
+   "title": "Feral (Lone RMX) / Morning Mr Magpie (Pearson Sound Scavenger RMX) / Separator (Four Tet RMX)"
+  },
+  {
+   "title": "These Are My Twisted Words",
+   "first-release-date": "2009-08-17",
+   "disambiguation": "",
+   "secondary-types": [],
+   "id": "033e0907-9071-46af-b927-97584eb2c8b7",
+   "secondary-type-ids": [],
+   "primary-type-id": "d6038452-8ee0-3f68-affc-2de9a1ede0b9",
+   "primary-type": "Single"
+  },
+  {
+   "secondary-type-ids": [
+    "6fd474e2-6b58-3102-9d17-d6f7eb7da0a0"
+   ],
+   "primary-type-id": "d6038452-8ee0-3f68-affc-2de9a1ede0b9",
+   "primary-type": "Single",
+   "id": "07a88745-2798-4d9a-8624-637bf22a9f4f",
+   "secondary-types": [
+    "Live"
+   ],
+   "disambiguation": "",
+   "first-release-date": "2016-10-05",
+   "title": "The Numbers: Jonny, Thom & a CR78"
+  },
+  {
+   "title": "Live in Berlin (September 2016) #StayHome #WithMe",
+   "first-release-date": "2020-04-16",
+   "disambiguation": "",
+   "secondary-types": [
+    "Live"
+   ],
+   "id": "0c253d8d-2f26-42d4-93b2-3004d2937d39",
+   "secondary-type-ids": [
+    "6fd474e2-6b58-3102-9d17-d6f7eb7da0a0"
+   ],
+   "primary-type-id": "3b2e49e1-2875-37b8-9fa9-1f7cf3f49900",
+   "primary-type": "Broadcast"
+  },
+  {
+   "disambiguation": "",
+   "id": "0c2d2bb7-a2e5-4406-ae31-ce754659c581",
+   "secondary-types": [],
+   "primary-type": "Single",
+   "secondary-type-ids": [],
+   "primary-type-id": "d6038452-8ee0-3f68-affc-2de9a1ede0b9",
+   "title": "I Want None of This",
+   "first-release-date": "2020-01-20"
+  }
+ ]
+}

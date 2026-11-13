@@ -13,6 +13,11 @@ optional runtime deps (``pymetal``, ``py_bandcamp``, ``nuvem_de_som``,
 this loop logs at DEBUG and continues — so a single broken provider
 never takes down the registry.
 
+After the built-ins, installed distributions that declare entry points in
+the ``metadatarr.providers`` group are loaded (see ``_plugins.py``); a
+failing plugin is logged and skipped, and ``METADATARR_DISABLE_PLUGINS=1``
+turns plugin loading off.
+
 Use :func:`metadatarr.resolve.active_providers` to discover what's
 currently usable; :func:`all_providers` returns the full registry.
 """
@@ -36,3 +41,10 @@ def _autoload() -> None:
 
 
 _autoload()
+
+from metadatarr.resolve.providers._plugins import (  # noqa: E402
+    load_plugins as _load_plugins,
+    loaded_plugins,
+)
+
+_load_plugins()

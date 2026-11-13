@@ -5,6 +5,9 @@ keyed by ``(provider_name, signal_hash)``. Hits *and* misses are cached:
 a sentinel ``None`` records "this provider has nothing for this input"
 so we don't re-query the network for inputs we've already failed on.
 
+Inside :func:`metadatarr.transport.bypass_cache` reads are skipped and the
+fresh result replaces the cached one.
+
 The cache is opt-in. :func:`metadatarr.resolve.base.resolve` consults
 it via :func:`cached_lookup`; direct ``provider.lookup()`` calls remain
 uncached so unit tests stay deterministic.
@@ -18,6 +21,8 @@ from typing import TYPE_CHECKING, Optional, Tuple
 import hashlib
 
 from mediavocab.models.signals import Signals, signal_hash
+
+from metadatarr.transport import cache_bypassed
 
 if TYPE_CHECKING:
     from metadatarr.resolve.base import MetadataProvider, ProviderMatch
@@ -85,16 +90,14 @@ def cached_lookup(provider: "MetadataProvider",
                   signals: Signals) -> Optional["ProviderMatch"]:
     """Look up *signals* via *provider*, memoising both hits and misses."""
     key = (provider.name, signal_hash(signals))
-    hit = _CACHE.get(key)
+    hit = None if cache_bypassed() else _CACHE.get(key)
     if hit is _MISS:
         return None
     if hit is not None:
         return hit  # cached ProviderMatch
-    try:
-        result = provider.lookup(signals)
-    except Exception:
-        # Do not cache transient failures — allow retry on next call.
-        return None
+    result = provider.lookup(signals)
+    # A raising lookup unwinds before this line, so failures are never cached
+    # and the caller (the fan-out trap) sees the exception.
     _CACHE.put(key, result if result is not None else _MISS)
     return result
 
@@ -112,15 +115,13 @@ def cached_enrich(provider: "MetadataProvider",
     distinct ``"enrich:"``-prefixed key namespace so the two domains never
     collide."""
     key = ("enrich:" + provider.name, _external_ids_hash(external_ids))
-    hit = _CACHE.get(key)
+    hit = None if cache_bypassed() else _CACHE.get(key)
     if hit is _MISS:
         return None
     if hit is not None:
         return hit  # cached ExternalIds
-    try:
-        result = provider.enrich(external_ids)
-    except Exception:
-        # Do not cache transient failures — allow retry on next call.
-        return None
+    result = provider.enrich(external_ids)
+    # A raising enrich unwinds before this line, so failures are never cached
+    # and the caller (the fan-out trap) sees the exception.
     _CACHE.put(key, result if result is not None else _MISS)
     return result

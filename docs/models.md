@@ -60,10 +60,16 @@ Used by `BookInfoClient` (rreading-glasses).
 | `asin` | `Optional[str]` | Amazon ASIN |
 | `isbn13` | `Optional[str]` | |
 | `title` | `Optional[str]` | Edition-level title (often = work title) |
+
+| Field | Type | Notes |
+|---|---|---|
 | `description` | `Optional[str]` | Per-edition blurb |
 | `publisher` | `Optional[str]` | |
 | `release_date` | `Optional[str]` | ISO-ish, format varies |
 | `image_url` | `Optional[str]` | Cover URL |
+
+| Field | Type | Notes |
+|---|---|---|
 | `url` | `Optional[str]` | Upstream page |
 | `format` | `Optional[str]` | `"Hardcover"`, `"Paperback"`, `"ebook"`, etc. |
 | `language` | `Optional[str]` | |
@@ -77,10 +83,16 @@ Used by `BookInfoClient` (rreading-glasses).
 | `title` | `str` | Canonical title |
 | `full_title` | `Optional[str]` | Including subtitle / series number |
 | `short_title` | `Optional[str]` | Stripped form |
+
+| Field | Type | Notes |
+|---|---|---|
 | `url` | `Optional[str]` | Upstream page (Goodreads or Hardcover) |
 | `release_date` | `Optional[str]` | First-published, formatted |
 | `release_date_raw` | `Optional[str]` | First-published, raw `YYYY-MM-DD` |
 | `genres` | `list[str]` | Flat list |
+
+| Field | Type | Notes |
+|---|---|---|
 | `books` | `list[BookInfoBook]` | All known editions |
 | `related_works` | `list[int]` | IDs of related works (other in series, etc.) |
 
@@ -92,27 +104,36 @@ Used by `BookInfoClient` (rreading-glasses).
 | `name` | `str` | |
 | `description` | `Optional[str]` | Bio |
 | `url` | `Optional[str]` | |
+
+| Field | Type | Notes |
+|---|---|---|
 | `image_url` | `Optional[str]` | Author photo |
 | `works` | `list[BookInfoWork]` | All works by author (may be partial) |
-| `series` | `list[dict]` | Raw — series metadata schema is unstable, kept as `dict` |
+| `series` | `list[dict]` | Raw: series metadata schema is unstable, kept as `dict` |
 
 ## OpenLibrary
 
-Used by `OpenLibraryClient`. All `key` fields are bare OLIDs — leading
+Used by `OpenLibraryClient`. All `key` fields are bare OLIDs: leading
 `/works/`, `/authors/`, `/books/`, `/languages/` prefixes are stripped.
 
 ### `OpenLibrarySearchHit`
 
 | Field | Type | Source |
 |---|---|---|
-| `work_key` | `Optional[str]` | `key` (full path; bare ID via `.work_id` property) |
+| `work_key` | `Optional[str]` | `key` (full path, bare ID via `.work_id` property) |
 | `title` | `Optional[str]` | |
 | `author_names` | `list[str]` | `author_name` |
 | `author_keys` | `list[str]` | `author_key` (bare OLIDs) |
+
+| Field | Type | Source |
+|---|---|---|
 | `first_publish_year` | `Optional[int]` | |
 | `edition_count` | `Optional[int]` | |
-| `cover_id` | `Optional[int]` | `cover_i` — feed to `cover_url()` |
+| `cover_id` | `Optional[int]` | `cover_i`: feed to `cover_url()` |
 | `cover_edition_key` | `Optional[str]` | The OLID of the edition that has the cover |
+
+| Field | Type | Source |
+|---|---|---|
 | `isbn` | `list[str]` | All ISBNs across all known editions |
 | `language` | `list[str]` | |
 
@@ -127,11 +148,14 @@ Used by `OpenLibraryClient`. All `key` fields are bare OLIDs — leading
 | `title` | `str` | |
 | `description` | `Optional[str]` | Flattened from `str` or `{type, value}` |
 | `subjects` | `list[str]` | Free-form tags |
+
+| Field | Type | Notes |
+|---|---|---|
 | `covers` | `list[int]` | Cover IDs in priority order |
 | `first_publish_date` | `Optional[str]` | |
 | `author_keys` | `list[str]` | Bare `OL…A` IDs |
 
-> 💡 The author entries on a work are nested: each item is
+> Note: the author entries on a work are nested: each item is
 > `{"author": {"key": "/authors/OL…A"}, "type": {...}}`. The `from_api()`
 > classmethod walks that structure for you.
 
@@ -143,10 +167,16 @@ Used by `OpenLibraryClient`. All `key` fields are bare OLIDs — leading
 | `title` | `str` | |
 | `subtitle` | `Optional[str]` | |
 | `isbn_10` | `list[str]` | |
+
+| Field | Type | Notes |
+|---|---|---|
 | `isbn_13` | `list[str]` | |
 | `publishers` | `list[str]` | |
 | `publish_date` | `Optional[str]` | |
 | `number_of_pages` | `Optional[int]` | |
+
+| Field | Type | Notes |
+|---|---|---|
 | `languages` | `list[str]` | Bare codes (`"eng"`, not `"/languages/eng"`) |
 | `covers` | `list[int]` | |
 | `work_keys` | `list[str]` | Parent works (almost always 1) |
@@ -159,9 +189,12 @@ Used by `OpenLibraryClient`. All `key` fields are bare OLIDs — leading
 | `name` | `str` | Falls back to `personal_name` if `name` missing |
 | `personal_name` | `Optional[str]` | |
 | `bio` | `Optional[str]` | Flattened from `str` or `{type, value}` |
+
+| Field | Type | Notes |
+|---|---|---|
 | `birth_date` | `Optional[str]` | Free-form (`"31 July 1965"`, `"1920"`, …) |
 | `death_date` | `Optional[str]` | |
-| `photos` | `list[int]` | Photo IDs (negatives filtered out — OL uses `-1` as a sentinel) |
+| `photos` | `list[int]` | Photo IDs (negatives filtered out: OL uses `-1` as a sentinel) |
 
 ## Anna's Archive
 
@@ -173,6 +206,9 @@ Used by `OpenLibraryClient`. All `key` fields are bare OLIDs — leading
 | `author` | `str` | |
 | `formats` | `Optional[str]` | Uppercased |
 | `md5` | `str` | The durable identifier |
+
+| Field | Type | Notes |
+|---|---|---|
 | `cover_url` | `Optional[str]` | May be relative |
 | `language` | `Optional[str]` | |
 | `size` | `Optional[str]` | Human readable |
@@ -180,7 +216,7 @@ Used by `OpenLibraryClient`. All `key` fields are bare OLIDs — leading
 ## Physical disc
 
 Models for blu-ray.com, dvdcompare.net, and Discogs. All live in
-`metadatarr.models`; import them from `metadatarr.client` is not required
+`metadatarr.models`, import them from `metadatarr.client` is not required
 unless you are instantiating a client.
 
 ### `BlurayComAudioTrack`
@@ -192,9 +228,9 @@ A single audio track as reported by blu-ray.com.
 | `codec` | `Optional[str]` | `"Dolby Atmos"`, `"DTS-HD MA 7.1"`, `"PCM"`, etc. |
 | `channels` | `Optional[str]` | `"7.1"`, `"5.1"`, `"2.0"` |
 | `language` | `Optional[str]` | Human-readable language name |
-| `bitrate_kbps` | `Optional[int]` | Track bitrate; often `None` |
+| `bitrate_kbps` | `Optional[int]` | Track bitrate, often `None` |
 
-`BlurayComAudioTrack` — `/metadatarr/models.py:475`
+`BlurayComAudioTrack`: `/metadatarr/models.py:475`
 
 ### `BlurayComSearchHit`
 
@@ -207,10 +243,13 @@ A single result from a blu-ray.com search. Returned by
 | `title` | `str` | |
 | `year` | `Optional[int]` | |
 | `url` | `Optional[str]` | Full URL to the detail page |
+
+| Field | Type | Notes |
+|---|---|---|
 | `cover_url` | `Optional[str]` | Thumbnail image URL |
 | `rating` | `Optional[float]` | Community rating |
 
-`BlurayComSearchHit` — `/metadatarr/models.py:484`
+`BlurayComSearchHit`: `/metadatarr/models.py:484`
 
 ### `BlurayComEdition`
 
@@ -223,26 +262,41 @@ Full disc detail from a blu-ray.com movie page. Returned by
 | `title` | `str` | |
 | `year` | `Optional[int]` | |
 | `url` | `Optional[str]` | Detail page URL |
+
+| Field | Type | Notes |
+|---|---|---|
 | `cover_url` | `Optional[str]` | Front cover image |
 | `disc_format` | `Optional[str]` | `"Blu-ray"`, `"4K UHD Blu-ray"`, `"DVD"` |
 | `region` | `Optional[str]` | `"A"`, `"B"`, `"C"`, `"Free"` |
 | `disc_count` | `Optional[int]` | Number of discs |
+
+| Field | Type | Notes |
+|---|---|---|
 | `resolution` | `Optional[str]` | `"1080p"`, `"2160p"` |
 | `aspect_ratio` | `Optional[str]` | `"2.39:1"`, `"1.78:1"`, etc. |
 | `video_codec` | `Optional[str]` | `"HEVC"`, `"AVC"`, `"VC-1"` |
 | `video_bitrate_kbps` | `Optional[int]` | Average or max video bitrate |
+
+| Field | Type | Notes |
+|---|---|---|
 | `hdr` | `Optional[str]` | `"HDR10"`, `"Dolby Vision"`, `"HDR10+"` |
 | `audio_tracks` | `List[BlurayComAudioTrack]` | Per-track data |
 | `studio` | `Optional[str]` | Production studio |
 | `label` | `Optional[str]` | Distributor label (`"Criterion"`, `"Arrow"`, …) |
+
+| Field | Type | Notes |
+|---|---|---|
 | `release_date` | `Optional[str]` | Street date, format varies |
 | `runtime_minutes` | `Optional[int]` | |
 | `has_slipcover` | `Optional[bool]` | |
 | `imdb_id` | `Optional[str]` | `tt`-prefixed, scraped from page links |
+
+| Field | Type | Notes |
+|---|---|---|
 | `rating` | `Optional[float]` | Community rating |
 | `extras` | `List[str]` | Special feature titles |
 
-`BlurayComEdition` — `/metadatarr/models.py:495`
+`BlurayComEdition`: `/metadatarr/models.py:495`
 
 ### `DVDCompareEdition`
 
@@ -255,20 +309,29 @@ A regional disc edition from dvdcompare.net. Returned by
 | `title` | `str` | |
 | `url` | `Optional[str]` | Full URL to the comparison page |
 | `disc_format` | `Optional[str]` | `"Blu-ray"`, `"DVD"`, `"4K UHD"` |
+
+| Field | Type | Notes |
+|---|---|---|
 | `region` | `Optional[str]` | |
 | `country` | `Optional[str]` | |
 | `label` | `Optional[str]` | |
 | `release_date` | `Optional[str]` | |
+
+| Field | Type | Notes |
+|---|---|---|
 | `runtime_minutes` | `Optional[int]` | |
 | `aspect_ratio` | `Optional[str]` | |
 | `version` | `Optional[str]` | `"Director's Cut"`, `"Theatrical"`, `"Extended"`, etc. |
 | `version_differences` | `Optional[str]` | Free-text description of what differs |
-| `audio_tracks` | `List[str]` | Plain strings; not parsed into structured objects |
+
+| Field | Type | Notes |
+|---|---|---|
+| `audio_tracks` | `List[str]` | Plain strings, not parsed into structured objects |
 | `subtitles` | `List[str]` | Plain strings |
 | `extras` | `List[str]` | Special feature titles |
 | `imdb_id` | `Optional[str]` | `tt`-prefixed, scraped from page links |
 
-`DVDCompareEdition` — `/metadatarr/models.py:532`
+`DVDCompareEdition`: `/metadatarr/models.py:532`
 
 ### `DiscogsSearchHit`
 
@@ -277,17 +340,23 @@ A single hit from the Discogs database search API. Returned by
 
 | Field | Type | Notes |
 |---|---|---|
-| `id` | `int` | Discogs numeric release ID; use with `get_release` |
+| `id` | `int` | Discogs numeric release ID, use with `get_release` |
 | `title` | `str` | |
 | `url` | `Optional[str]` | Relative URI (e.g. `/releases/12345`) |
 | `cover_image` | `Optional[str]` | Thumbnail URL |
-| `year` | `Optional[int]` | Coerced from string; `None` if non-numeric |
+
+| Field | Type | Notes |
+|---|---|---|
+| `year` | `Optional[int]` | Coerced from string, `None` if non-numeric |
 | `format` | `List[str]` | Format names |
 | `label` | `List[str]` | Label name(s) |
 | `country` | `Optional[str]` | |
+
+| Field | Type | Notes |
+|---|---|---|
 | `catno` | `Optional[str]` | Catalogue number |
 
-`DiscogsSearchHit` — `/metadatarr/models.py:558`
+`DiscogsSearchHit`: `/metadatarr/models.py:558`
 
 ### `DiscogsRelease`
 
@@ -300,14 +369,23 @@ Full release detail from the Discogs releases API. Returned by
 | `title` | `str` | |
 | `uri` | `Optional[str]` | Relative URI |
 | `year` | `Optional[int]` | |
+
+| Field | Type | Notes |
+|---|---|---|
 | `released` | `Optional[str]` | Full date when known (`"2019-03-15"`) |
 | `country` | `Optional[str]` | |
 | `notes` | `Optional[str]` | Publisher notes |
 | `formats` | `List[dict]` | Raw Discogs format objects |
+
+| Field | Type | Notes |
+|---|---|---|
 | `labels` | `List[dict]` | Raw Discogs label objects |
 | `artists` | `List[dict]` | Raw Discogs artist objects |
 | `genres` | `List[str]` | |
 | `styles` | `List[str]` | |
+
+| Field | Type | Notes |
+|---|---|---|
 | `images` | `List[dict]` | Raw Discogs image objects |
 
 Convenience properties (avoid parsing the raw dicts manually):
@@ -319,9 +397,9 @@ Convenience properties (avoid parsing the raw dicts manually):
 | `artist_names` | `List[str]` | `name` from each artist dict |
 | `primary_image_url` | `Optional[str]` | URI of the `"primary"` image, or the first image |
 
-`DiscogsRelease` — `/metadatarr/models.py:580`
+`DiscogsRelease`: `/metadatarr/models.py:580`
 
-Also see [ExternalIds — physical disc fields](resolve.md#externalids):
+Also see [ExternalIds: physical disc fields](resolve.md#externalids):
 `discogs_release`, `bluray_com_id`, `dvdcompare_id`.
 
 ## Extending models
@@ -358,3 +436,6 @@ class FatArr(ArrMetadataClient):
         data = self._get(url, params={"term": term})
         return [FatSonarrSeries.model_validate(item) for item in data] if isinstance(data, list) else []
 ```
+
+---
+[← Provider catalogue](providers.md) · [Home](README.md) · [Recipes →](recipes.md)

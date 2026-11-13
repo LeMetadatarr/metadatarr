@@ -10,7 +10,6 @@ resolution, so it never pollutes the consolidated record.
 """
 import metadatarr.resolve.providers  # trigger provider self-registration
 from metadatarr.resolve import resolve
-from metadatarr.resolve.entities import Role
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
 
@@ -32,7 +31,7 @@ def main() -> None:
     if result.external_ids.extra:
         print(f"  extra              : {result.external_ids.extra}")
 
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     print(f"\n--- release variants ({len(releases)} found) ---")
     if not releases:
         print("  none (no network, or no fanedits indexed on IFDB for this title)")

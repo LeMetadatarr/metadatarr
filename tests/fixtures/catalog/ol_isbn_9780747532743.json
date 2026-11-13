@@ -1,0 +1,39 @@
+{
+ "works": [
+  {
+   "key": "/works/OL82563W"
+  }
+ ],
+ "title": "Harry Potter and the Philosopher's Stone",
+ "publishers": [
+  "Bloomsbury"
+ ],
+ "publish_date": "1997",
+ "key": "/books/OL61027603M",
+ "type": {
+  "key": "/type/edition"
+ },
+ "identifiers": {},
+ "isbn_10": [
+  "0747532745"
+ ],
+ "ocaid": "snj.harrypotterphilo0000jkro_t6f3",
+ "languages": [
+  {
+   "key": "/languages/eng"
+  }
+ ],
+ "covers": [
+  15155835
+ ],
+ "latest_revision": 3,
+ "revision": 3,
+ "created": {
+  "type": "/type/datetime",
+  "value": "2025-12-29T13:21:54.509282"
+ },
+ "last_modified": {
+  "type": "/type/datetime",
+  "value": "2025-12-29T13:23:32.134707"
+ }
+}

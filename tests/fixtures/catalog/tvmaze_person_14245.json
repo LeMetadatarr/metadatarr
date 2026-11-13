@@ -1,0 +1,23 @@
+{
+ "id": 14245,
+ "url": "https://www.tvmaze.com/people/14245/bryan-cranston",
+ "name": "Bryan Cranston",
+ "country": {
+  "name": "United States",
+  "code": "US",
+  "timezone": "America/New_York"
+ },
+ "birthday": "1956-03-07",
+ "deathday": null,
+ "gender": "Male",
+ "image": {
+  "medium": "https://static.tvmaze.com/uploads/images/medium_portrait/195/488839.jpg",
+  "original": "https://static.tvmaze.com/uploads/images/original_untouched/195/488839.jpg"
+ },
+ "updated": 1783041777,
+ "_links": {
+  "self": {
+   "href": "https://api.tvmaze.com/people/14245"
+  }
+ }
+}

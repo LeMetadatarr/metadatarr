@@ -10,15 +10,15 @@ from mediavocab.models import ExternalIds
 
 class TestStreamModel:
     def test_fields(self):
-        s = Stream(platform="soundcloud", url="https://soundcloud.com/x/y", media_type="track")
+        s = Stream(platform="soundcloud", url="https://soundcloud.com/x/y", kind="track")
         assert s.platform == "soundcloud"
         assert s.url == "https://soundcloud.com/x/y"
-        assert s.media_type == "track"
+        assert s.kind == "track"
         assert s.id is None
 
     def test_id_field(self):
         s = Stream(platform="youtube", url="https://www.youtube.com/watch?v=abc",
-                   media_type="video", id="abc")
+                   kind="video", id="abc")
         assert s.id == "abc"
 
 
@@ -32,7 +32,7 @@ class TestStreamsFromUrl:
         streams = ids.streams
         assert len(streams) == 1
         assert streams[0].platform == "soundcloud"
-        assert streams[0].media_type == "track"
+        assert streams[0].kind == "track"
         assert streams[0].url == "https://soundcloud.com/artist/track"
         assert streams[0].id is None
 
@@ -41,21 +41,21 @@ class TestStreamsFromUrl:
         streams = ids.streams
         assert len(streams) == 1
         assert streams[0].platform == "bandcamp"
-        assert streams[0].media_type == "track"
+        assert streams[0].kind == "track"
 
     def test_bandcamp_album(self):
         ids = ExternalIds(extra={"bandcamp_album_url": "https://artist.bandcamp.com/album/record"})
         streams = ids.streams
         assert len(streams) == 1
         assert streams[0].platform == "bandcamp"
-        assert streams[0].media_type == "album"
+        assert streams[0].kind == "album"
 
     def test_music_video_url(self):
         ids = ExternalIds(extra={"music_video_url": "https://www.youtube.com/watch?v=xyz"})
         streams = ids.streams
         assert len(streams) == 1
         assert streams[0].platform == "youtube"
-        assert streams[0].media_type == "video"
+        assert streams[0].kind == "video"
         assert streams[0].id is None   # passthrough, no template
 
     def test_radio_stream(self):
@@ -63,7 +63,7 @@ class TestStreamsFromUrl:
         streams = ids.streams
         assert len(streams) == 1
         assert streams[0].platform == "radio"
-        assert streams[0].media_type == "stream"
+        assert streams[0].kind == "stream"
         assert streams[0].url == "https://radio.example.com/stream.aac"
 
 
@@ -93,7 +93,7 @@ class TestStreamsFromId:
         streams = ids.streams
         assert len(streams) == 1
         assert streams[0].platform == "youtube_music"
-        assert streams[0].media_type == "playlist"
+        assert streams[0].kind == "playlist"
         assert streams[0].url == "https://music.youtube.com/playlist?list=PLxxx"
         assert streams[0].id == "PLxxx"
 

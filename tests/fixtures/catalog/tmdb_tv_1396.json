@@ -1,0 +1,89 @@
+{
+ "id": 1396,
+ "name": "Breaking Bad",
+ "original_name": "Breaking Bad",
+ "first_air_date": "2008-01-20",
+ "episode_run_time": [
+  45
+ ],
+ "overview": "Walter White...",
+ "poster_path": "/bb.jpg",
+ "status": "Ended",
+ "networks": [
+  {
+   "id": 174,
+   "name": "AMC"
+  }
+ ],
+ "genres": [
+  {
+   "id": 18,
+   "name": "Drama"
+  }
+ ],
+ "created_by": [
+  {
+   "id": 66633,
+   "name": "Vince Gilligan",
+   "profile_path": "/v.jpg"
+  }
+ ],
+ "production_companies": [
+  {
+   "id": 11073,
+   "name": "Sony Pictures Television Studios"
+  }
+ ],
+ "external_ids": {
+  "imdb_id": "tt0903747",
+  "tvdb_id": 81189,
+  "wikidata_id": "Q1079"
+ },
+ "seasons": [
+  {
+   "id": 3577,
+   "season_number": 0,
+   "name": "Specials",
+   "air_date": "2009-02-17",
+   "episode_count": 9
+  },
+  {
+   "id": 3572,
+   "season_number": 1,
+   "name": "Season 1",
+   "air_date": "2008-01-20",
+   "episode_count": 7,
+   "poster_path": "/s1.jpg"
+  }
+ ],
+ "aggregate_credits": {
+  "cast": [
+   {
+    "id": 17419,
+    "name": "Bryan Cranston",
+    "order": 0,
+    "roles": [
+     {
+      "character": "Walter White",
+      "episode_count": 62
+     }
+    ]
+   }
+  ],
+  "crew": [
+   {
+    "id": 66633,
+    "name": "Vince Gilligan",
+    "department": "Production",
+    "jobs": [
+     {
+      "job": "Executive Producer"
+     },
+     {
+      "job": "Writer"
+     }
+    ]
+   }
+  ]
+ }
+}

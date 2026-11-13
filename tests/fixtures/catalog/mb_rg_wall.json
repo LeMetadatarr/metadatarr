@@ -1,0 +1,75 @@
+{
+ "releases": [
+  {
+   "packaging": "Cardboard/Paper Sleeve",
+   "packaging-id": "f7101ce3-0384-39ce-9fde-fbbd0044d35f",
+   "date": "1979",
+   "artist-credit": [
+    {
+     "artist": {
+      "id": "83d91898-7763-47d7-b03b-b92132375c47",
+      "sort-name": "Pink Floyd",
+      "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+      "name": "Pink Floyd",
+      "type": "Group",
+      "country": "GB",
+      "disambiguation": ""
+     },
+     "joinphrase": "",
+     "name": "Pink Floyd"
+    }
+   ],
+   "release-events": [
+    {
+     "area": {
+      "disambiguation": "",
+      "sort-name": "Australia",
+      "id": "106e0bec-b638-3b37-b731-f53d507dc00e",
+      "iso-3166-1-codes": [
+       "AU"
+      ],
+      "type-id": null,
+      "name": "Australia",
+      "type": null
+     },
+     "date": "1979"
+    }
+   ],
+   "id": "ded45c32-17c1-4821-b52a-7d056be67442",
+   "barcode": null,
+   "status": "Official",
+   "status-id": "4e304316-386d-3409-af2e-78857eec5cfe",
+   "country": "AU",
+   "text-representation": {
+    "language": "eng",
+    "script": "Latn"
+   },
+   "title": "The Wall",
+   "quality": "normal",
+   "disambiguation": ""
+  }
+ ],
+ "id": "f2026101-945b-3d05-9ef4-aa718fc3feef",
+ "secondary-type-ids": [],
+ "primary-type-id": "f529b476-6e62-324f-b0aa-1f3e33d313fc",
+ "disambiguation": "",
+ "artist-credit": [
+  {
+   "name": "Pink Floyd",
+   "joinphrase": "",
+   "artist": {
+    "disambiguation": "",
+    "country": "GB",
+    "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+    "name": "Pink Floyd",
+    "type": "Group",
+    "id": "83d91898-7763-47d7-b03b-b92132375c47",
+    "sort-name": "Pink Floyd"
+   }
+  }
+ ],
+ "secondary-types": [],
+ "primary-type": "Album",
+ "title": "The Wall",
+ "first-release-date": "1979-11-30"
+}

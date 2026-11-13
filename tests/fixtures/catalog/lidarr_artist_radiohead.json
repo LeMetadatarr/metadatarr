@@ -1,0 +1,212 @@
+{
+ "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+ "artistname": "Radiohead",
+ "sortname": "Radiohead",
+ "artistaliases": [
+  "レディオヘッド",
+  "电台司令",
+  "Radiohead"
+ ],
+ "disambiguation": "",
+ "overview": "Radiohead are an English rock band formed in Abingdon, Oxfordshire, in 1985. The band members are Thom Yorke ; the brothers Jonny Greenwood and Colin Greenwood (bass); Ed O'Brien ; and Philip Selway (drums). They have worked with the producer Nigel Godrich and the cover artist Stanley Donwood since 1994. Radiohead's experimental approach is credited with advancing the sound of alternative rock.",
+ "links": [
+  {
+   "target": "http://www.radiohead.com/",
+   "type": "radiohead"
+  },
+  {
+   "target": "http://musicmoz.org/Bands_and_Artists/R/Radiohead/",
+   "type": "musicmoz"
+  }
+ ],
+ "images": [
+  {
+   "CoverType": "Poster",
+   "Url": "https://images.lidarr.audio/cache/https://assets.fanart.tv/fanart/radiohead-4faa76dca1bba.jpg",
+   "remoteUrl": "https://assets.fanart.tv/fanart/radiohead-4faa76dca1bba.jpg"
+  },
+  {
+   "CoverType": "Fanart",
+   "Url": "https://images.lidarr.audio/cache/https://assets.fanart.tv/fanart/radiohead-4e68f40838818.jpg",
+   "remoteUrl": "https://assets.fanart.tv/fanart/radiohead-4e68f40838818.jpg"
+  },
+  {
+   "CoverType": "Banner",
+   "Url": "https://images.lidarr.audio/cache/https://assets.fanart.tv/fanart/radiohead-503beb86c3395.jpg",
+   "remoteUrl": "https://assets.fanart.tv/fanart/radiohead-503beb86c3395.jpg"
+  },
+  {
+   "CoverType": "Logo",
+   "Url": "https://images.lidarr.audio/cache/https://assets.fanart.tv/fanart/radiohead-503bea2d9cbc8.png",
+   "remoteUrl": "https://assets.fanart.tv/fanart/radiohead-503bea2d9cbc8.png"
+  }
+ ],
+ "rating": {
+  "Count": 80,
+  "Value": 9.0
+ },
+ "status": "active",
+ "genres": [
+  "Alternative Rock",
+  "Art Rock",
+  "Rock",
+  "Experimental Rock",
+  "Electronic",
+  "Indie Rock",
+  "Experimental",
+  "Art Pop",
+  "Post-Britpop",
+  "Electronica",
+  "Britpop",
+  "Chamber Pop",
+  "Indietronica",
+  "Post-Grunge",
+  "Crossover Prog",
+  "Electronic Rock",
+  "Ambient Pop",
+  "Idm"
+ ],
+ "type": "Group",
+ "Albums": [
+  {
+   "Id": "e75c0549-ad55-39e3-8025-c72c5d4a3c5d",
+   "OldIds": [
+    "bbaa1179-8503-4d2a-8fd8-15ddf6f10cb5"
+   ],
+   "Title": "Kid A",
+   "Type": "Album",
+   "SecondaryTypes": [],
+   "ReleaseStatuses": [
+    "Official",
+    "Promotion"
+   ],
+   "ReleaseDate": "2000-08-03",
+   "Rating": null
+  },
+  {
+   "Id": "407aa2b5-b48b-434e-881f-072ea6690860",
+   "OldIds": [],
+   "Title": "Sail to Montreux",
+   "Type": "Album",
+   "SecondaryTypes": [
+    "Live"
+   ],
+   "ReleaseStatuses": [
+    "Bootleg"
+   ],
+   "ReleaseDate": null,
+   "Rating": null
+  },
+  {
+   "Id": "1f4d4fe7-ddb0-36b8-8fd9-283d40190c3b",
+   "OldIds": [
+    "fe7b9784-1173-384f-81f1-d7e30e15721f",
+    "38febb35-6da5-3732-aeab-6581ac748d84"
+   ],
+   "Title": "Paranoid Android",
+   "Type": "Single",
+   "SecondaryTypes": [],
+   "ReleaseStatuses": [
+    "Official",
+    "Promotion"
+   ],
+   "ReleaseDate": "1997-05-26",
+   "Rating": null
+  },
+  {
+   "Id": "6a212cfa-0627-3a69-9e3d-457546b9ffad",
+   "OldIds": [],
+   "Title": "Interview Disc: The Unauthorised Edition",
+   "Type": "Other",
+   "SecondaryTypes": [
+    "Interview"
+   ],
+   "ReleaseStatuses": [
+    "Bootleg"
+   ],
+   "ReleaseDate": null,
+   "Rating": null
+  },
+  {
+   "Id": "bca9280e-28b4-327f-8fe0-fd918579e486",
+   "OldIds": [
+    "cace92a2-fec0-45b4-b494-f7642873d350"
+   ],
+   "Title": "Amnesiac",
+   "Type": "Album",
+   "SecondaryTypes": [],
+   "ReleaseStatuses": [
+    "Official",
+    "Promotion"
+   ],
+   "ReleaseDate": "2001-05-30",
+   "Rating": null
+  },
+  {
+   "Id": "408b32ef-6387-334f-a44d-b8c3ea6cdb10",
+   "OldIds": [],
+   "Title": "Amnesiac",
+   "Type": "Single",
+   "SecondaryTypes": [],
+   "ReleaseStatuses": [
+    "Promotion"
+   ],
+   "ReleaseDate": null,
+   "Rating": null
+  },
+  {
+   "Id": "7b39ccb5-b49c-37e1-80ec-5ac0b2a89fe4",
+   "OldIds": [],
+   "Title": "Airbag / How Am I Driving?",
+   "Type": "EP",
+   "SecondaryTypes": [],
+   "ReleaseStatuses": [
+    "Official"
+   ],
+   "ReleaseDate": "1998-04-21",
+   "Rating": null
+  },
+  {
+   "Id": "d76a7a67-824e-430e-b4d9-45c98e104ee0",
+   "OldIds": [],
+   "Title": "Idioteque",
+   "Type": "Single",
+   "SecondaryTypes": [],
+   "ReleaseStatuses": [
+    "Promotion"
+   ],
+   "ReleaseDate": null,
+   "Rating": null
+  },
+  {
+   "Id": "63b2aeb3-146b-343e-bbb5-0317c8a1e328",
+   "OldIds": [],
+   "Title": "Itch",
+   "Type": "EP",
+   "SecondaryTypes": [],
+   "ReleaseStatuses": [
+    "Official",
+    "Pseudo-Release"
+   ],
+   "ReleaseDate": "1994-06-01",
+   "Rating": null
+  },
+  {
+   "Id": "0b1fce60-47b8-4664-8f59-3d7520456ae2",
+   "OldIds": [],
+   "Title": "BBC in Concert 601: Glastonbury Festival 1994",
+   "Type": "Album",
+   "SecondaryTypes": [
+    "Live"
+   ],
+   "ReleaseStatuses": [
+    "Promotion"
+   ],
+   "ReleaseDate": null,
+   "Rating": null
+  }
+ ],
+ "oldids": [
+  "f108d105-aa71-4859-9770-46c2cd89bbcc"
+ ]
+}

@@ -1,0 +1,262 @@
+{
+ "tvdbId": 81189,
+ "title": "Breaking Bad",
+ "overview": "When Walter White, a chemistry teacher, is diagnosed with Stage III cancer and given a prognosis of two years left to live, he chooses to enter a dangerous world of drugs and crime with the intent to secure his family's financial security.",
+ "slug": "breaking-bad",
+ "originalCountry": "usa",
+ "originalLanguage": "eng",
+ "language": "eng",
+ "firstAired": "2008-01-20",
+ "lastAired": "2013-09-29",
+ "tvRageId": 18164,
+ "tvMazeId": 169,
+ "tmdbId": 1396,
+ "imdbId": "tt0903747",
+ "malIds": [],
+ "anidbIds": [],
+ "aniListIds": [],
+ "lastUpdated": "2026-10-05T10:49:50Z",
+ "status": "Ended",
+ "runtime": 48,
+ "timeOfDay": {
+  "hours": 21,
+  "minutes": 0
+ },
+ "originalNetwork": "AMC",
+ "network": "AMC",
+ "genres": [
+  "Crime",
+  "Drama",
+  "Thriller",
+  "Western"
+ ],
+ "contentRating": "TV-MA",
+ "rating": {
+  "count": 2690329,
+  "value": "9.5"
+ },
+ "actors": [
+  {
+   "name": "Bryan Cranston",
+   "character": "Walter White",
+   "image": "https://artworks.thetvdb.com/banners/person/255211/68e688c12965e.jpg"
+  },
+  {
+   "name": "Anna Gunn",
+   "character": "Skyler White",
+   "image": "https://artworks.thetvdb.com/banners/v4/actor/269404/photo/61138b8f549b0.jpg"
+  },
+  {
+   "name": "Aaron Paul",
+   "character": "Jesse Pinkman",
+   "image": "https://artworks.thetvdb.com/banners/person/275750/primary.jpg"
+  },
+  {
+   "name": "Dean Norris",
+   "character": "Hank Schrader",
+   "image": "https://artworks.thetvdb.com/banners/v4/actor/248280/photo/64ed5a8bda865.jpg"
+  },
+  {
+   "name": "Betsy Brandt",
+   "character": "Marie Schrader",
+   "image": "https://artworks.thetvdb.com/banners/v4/actor/325833/photo/651bd7cfcd801.jpg"
+  },
+  {
+   "name": "RJ Mitte",
+   "character": "Walter White Jr.",
+   "image": "https://artworks.thetvdb.com/banners/v4/actor/472989/photo/630f6bebea0f3.jpg"
+  },
+  {
+   "name": "Giancarlo Esposito",
+   "character": "Gustavo Fring",
+   "image": "https://artworks.thetvdb.com/banners/v4/actor/272968/photo/6696465832f3c.jpg"
+  },
+  {
+   "name": "Bob Odenkirk",
+   "character": "Saul Goodman",
+   "image": "https://artworks.thetvdb.com/banners/person/290451/primary.jpg"
+  },
+  {
+   "name": "Jonathan Banks",
+   "character": "Mike Ehrmantraut",
+   "image": "https://artworks.thetvdb.com/banners/v4/actor/293588/photo/651bd47df1599.jpg"
+  }
+ ],
+ "images": [
+  {
+   "coverType": "Banner",
+   "url": "https://artworks.thetvdb.com/banners/graphical/81189-g21.jpg"
+  },
+  {
+   "coverType": "Poster",
+   "url": "https://artworks.thetvdb.com/banners/posters/81189-10.jpg"
+  },
+  {
+   "coverType": "Fanart",
+   "url": "https://artworks.thetvdb.com/banners/fanart/original/81189-21.jpg"
+  },
+  {
+   "coverType": "Clearlogo",
+   "url": "https://artworks.thetvdb.com/banners/v4/series/81189/clearlogo/611b4df33bac5.png"
+  }
+ ],
+ "seasons": [
+  {
+   "seasonNumber": 0,
+   "images": [
+    {
+     "coverType": "Poster",
+     "url": "https://artworks.thetvdb.com/banners/seasons/81189-0.jpg"
+    }
+   ]
+  },
+  {
+   "seasonNumber": 1,
+   "images": [
+    {
+     "coverType": "Poster",
+     "url": "https://artworks.thetvdb.com/banners/seasons/81189-1-3.jpg"
+    },
+    {
+     "coverType": "Banner",
+     "url": "https://artworks.thetvdb.com/banners/seasonswide/81189-1.jpg"
+    }
+   ]
+  },
+  {
+   "seasonNumber": 2,
+   "images": [
+    {
+     "coverType": "Poster",
+     "url": "https://artworks.thetvdb.com/banners/seasons/81189-2-17.jpg"
+    },
+    {
+     "coverType": "Banner",
+     "url": "https://artworks.thetvdb.com/banners/seasonswide/81189-2.jpg"
+    }
+   ]
+  }
+ ],
+ "episodes": [
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 3859781,
+   "seasonNumber": 0,
+   "episodeNumber": 1,
+   "airedBeforeSeasonNumber": 2,
+   "airedBeforeEpisodeNumber": 1,
+   "title": "Good Cop / Bad Cop",
+   "airDate": "2009-02-17",
+   "airDateUtc": "2009-02-18T02:00:00Z",
+   "runtime": 3,
+   "overview": "Hank and Marie try to spice up their relationship on Valentine's Day.",
+   "image": "https://artworks.thetvdb.com/banners/episodes/81189/3859781.jpg"
+  },
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 3859791,
+   "seasonNumber": 0,
+   "episodeNumber": 2,
+   "airedBeforeSeasonNumber": 2,
+   "airedBeforeEpisodeNumber": 1,
+   "title": "Wedding Day",
+   "airDate": "2009-02-17",
+   "airDateUtc": "2009-02-18T02:00:00Z",
+   "runtime": 5,
+   "overview": "Walt and Hank have a talk before Hank gets married.",
+   "image": "https://artworks.thetvdb.com/banners/episodes/81189/3859791.jpg"
+  },
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 349232,
+   "seasonNumber": 1,
+   "episodeNumber": 1,
+   "absoluteEpisodeNumber": 1,
+   "title": "Pilot",
+   "airDate": "2008-01-20",
+   "airDateUtc": "2008-01-21T02:00:00Z",
+   "runtime": 58,
+   "overview": "When an unassuming high school chemistry teacher discovers he has a rare form of lung cancer, he decides to team up with a former student and create a top of the line crystal meth in a used RV, to provide for his family once he is gone.",
+   "image": "https://artworks.thetvdb.com/banners/episodes/81189/6421d9584f9dd.jpg"
+  },
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 349233,
+   "seasonNumber": 1,
+   "episodeNumber": 2,
+   "absoluteEpisodeNumber": 2,
+   "title": "Cat's in the Bag...",
+   "airDate": "2008-01-27",
+   "airDateUtc": "2008-01-28T02:00:00Z",
+   "runtime": 48,
+   "overview": "Walt and Jesse attempt to tie up loose ends. The desperate situation gets more complicated with the flip of a coin. Walt's wife, Skyler, becomes suspicious of Walt's strange behavior.",
+   "image": "https://artworks.thetvdb.com/banners/episodes/81189/642203f37c277.jpg"
+  },
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 349235,
+   "seasonNumber": 1,
+   "episodeNumber": 3,
+   "absoluteEpisodeNumber": 3,
+   "title": "...And the Bag's in the River",
+   "airDate": "2008-02-10",
+   "airDateUtc": "2008-02-11T02:00:00Z",
+   "runtime": 48,
+   "overview": "Walter fights with Jesse over his drug use, causing him to leave Walter alone with their captive, Krazy-8. Meanwhile, Hank has a scared straight moment with Walter Jr..",
+   "image": "https://artworks.thetvdb.com/banners/series/81189/episodes/5ea716c6a773d.jpg"
+  },
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 349236,
+   "seasonNumber": 1,
+   "episodeNumber": 4,
+   "absoluteEpisodeNumber": 4,
+   "title": "Cancer Man",
+   "airDate": "2008-02-17",
+   "airDateUtc": "2008-02-18T02:00:00Z",
+   "runtime": 48,
+   "overview": "Walter finally tells his family that he has cancer. Meanwhile, the DEA believes Albuquerque has a new, big time player to worry about. Jesse makes a surprise visit to his parents home.",
+   "image": "https://artworks.thetvdb.com/banners/episodes/81189/64232be19ffa2.jpg"
+  },
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 349238,
+   "seasonNumber": 1,
+   "episodeNumber": 5,
+   "absoluteEpisodeNumber": 5,
+   "title": "Gray Matter",
+   "airDate": "2008-02-24",
+   "airDateUtc": "2008-02-25T02:00:00Z",
+   "runtime": 48,
+   "overview": "Walter and Skyler attend a former colleague's birthday party. Jesse tries to free himself from drugs, while Skyler organizes an intervention.",
+   "image": "https://artworks.thetvdb.com/banners/series/81189/episodes/5ea71ca4d8cf8.jpg"
+  },
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 355100,
+   "seasonNumber": 1,
+   "episodeNumber": 6,
+   "absoluteEpisodeNumber": 6,
+   "title": "Crazy Handful of Nothin'",
+   "airDate": "2008-03-02",
+   "airDateUtc": "2008-03-03T02:00:00Z",
+   "runtime": 48,
+   "overview": "The side effects of chemo begin to plague Walt. Meanwhile, the DEA rounds up suspected dealers.",
+   "image": "https://artworks.thetvdb.com/banners/series/81189/episodes/5ea72a5bd991e.jpg"
+  },
+  {
+   "tvdbShowId": 81189,
+   "tvdbId": 352534,
+   "seasonNumber": 1,
+   "episodeNumber": 7,
+   "absoluteEpisodeNumber": 7,
+   "title": "A No-Rough-Stuff-Type Deal",
+   "airDate": "2008-03-09",
+   "airDateUtc": "2008-03-10T01:00:00Z",
+   "runtime": 48,
+   "finaleType": "season",
+   "overview": "Walter accepts his new identity as a drug dealer. Elsewhere, Jesse decides to put his aunt's house on the market and Marie throws Skyler a baby shower.",
+   "image": "https://artworks.thetvdb.com/banners/series/81189/episodes/5ea8700bb5d18.jpg"
+  }
+ ]
+}

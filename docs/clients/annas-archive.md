@@ -2,8 +2,8 @@
 
 Searches [Anna's Archive](https://annas-archive.org/) by scraping the HTML
 search results page across a rotating list of mirrors. Unlike the other
-clients in metadatarr, this one does **not** call a JSON API — Anna's Archive
-does not publish one — and so the failure modes are different.
+clients in metadatarr, this one does **not** call a JSON API: Anna's Archive
+does not publish one: and so the failure modes are different.
 
 ```python
 from metadatarr import AnnasArchiveClient
@@ -17,7 +17,7 @@ books = aa.search("Project Hail Mary")
 2. For each, fetches `{mirror}/search?q={query}&display=table`.
 3. On the first 2xx response, parses the HTML table with BeautifulSoup.
 4. Stores the working mirror on `self.working_mirror` for subsequent calls
-   (no auto-rotation between calls — see [Caveats](#caveats)).
+   (no auto-rotation between calls: see [Caveats](#caveats)).
 5. Returns `list[AnnasArchiveBook]`.
 
 If every mirror fails or returns non-2xx, `search` returns `[]`.
@@ -54,7 +54,10 @@ aa = AnnasArchiveClient(mirrors=[
 | `title` | `str` | As displayed in the search table |
 | `author` | `str` | Comma-separated authors, raw |
 | `formats` | `Optional[str]` | Uppercase, e.g. `"PDF"`, `"EPUB"`. Sometimes a comma list |
-| `md5` | `str` | The unique MD5 hash — stable across mirrors |
+| `md5` | `str` | The unique MD5 hash: stable across mirrors |
+
+| Field | Type | Notes |
+|---|---|---|
 | `cover_url` | `Optional[str]` | Often a relative URL on the mirror |
 | `language` | `Optional[str]` | Two-letter or full name, depends on Anna's input |
 | `size` | `Optional[str]` | Human readable, e.g. `"3.4 MB"` |
@@ -78,7 +81,7 @@ aa.search("a")  # first call probes mirrors; sets aa.working_mirror
 print("using:", aa.working_mirror)
 ```
 
-Subsequent calls **still iterate from the top of `aa.mirrors`** — there's no
+Subsequent calls **still iterate from the top of `aa.mirrors`**: there's no
 sticky-mirror logic. If you want sticky behaviour:
 
 ```python
@@ -100,3 +103,6 @@ class StickyAnnas(AnnasArchiveClient):
 - **No rate limit awareness.** Hammer at your peril.
 - **Legal context.** Anna's Archive aggregates shadow library content. Use
   responsibly and in compliance with your local law.
+
+---
+[← OpenLibraryClient](openlibrary.md) · [Home](../README.md) · [AudioDBClient →](audiodb.md)
