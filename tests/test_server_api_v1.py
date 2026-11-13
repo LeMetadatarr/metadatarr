@@ -332,6 +332,72 @@ def test_identify_audio_path_outside_root_is_refused(fake_xazam, audio_tree, mak
     assert fake_xazam == [], "a refused path was read"
 
 
+def test_identify_audio_path_over_upload_cap_is_refused(fake_xazam, audio_tree):
+    root, _, _ = audio_tree
+    size = len(b"inside")
+    client = _client(ServerConfig(audio_roots=[str(root)], max_upload_bytes=size - 1))
+    resp = client.post("/api/v1/identify/audio", params={"path": str(root / "track.mp3")})
+    assert resp.status_code == 413, resp.text
+    assert resp.json()["detail"] == "file too large"
+    assert fake_xazam == []
+
+
+def test_identify_audio_path_exactly_at_upload_cap_is_read(fake_xazam, audio_tree):
+    root, _, _ = audio_tree
+    client = _client(ServerConfig(audio_roots=[str(root)], max_upload_bytes=len(b"inside")))
+    resp = client.post("/api/v1/identify/audio", params={"path": str(root / "track.mp3")})
+    assert resp.status_code == 200, resp.text
+    assert fake_xazam == [b"inside"]
+
+
+def test_identify_audio_path_that_grows_after_listing_is_cut_at_the_cap(fake_xazam, audio_tree):
+    root, _, _ = audio_tree
+    real_open = open
+    sizes = []
+
+    class _Endless:
+        def __init__(self, f):
+            self._f = f
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            self._f.close()
+
+        def read(self, n=-1):
+            sizes.append(n)
+            return b"x" * (n if n >= 0 else 10**9)
+
+    def fake_open(path, mode="r", *a, **kw):
+        f = real_open(path, mode, *a, **kw)
+        return _Endless(f) if str(path).endswith("track.mp3") else f
+
+    client = _client(ServerConfig(audio_roots=[str(root)], max_upload_bytes=10))
+    with mock.patch("builtins.open", fake_open):
+        resp = client.post("/api/v1/identify/audio", params={"path": str(root / "track.mp3")})
+    assert resp.status_code == 413, resp.text
+    assert sizes == [11]
+    assert fake_xazam == []
+
+
+def test_identify_audio_path_that_cannot_be_opened_is_forbidden(fake_xazam, audio_tree):
+    root, _, _ = audio_tree
+    real_open = open
+
+    def fake_open(path, mode="r", *a, **kw):
+        if str(path).endswith("track.mp3"):
+            raise PermissionError(13, "denied")
+        return real_open(path, mode, *a, **kw)
+
+    client = _client(ServerConfig(audio_roots=[str(root)]))
+    with mock.patch("builtins.open", fake_open):
+        resp = client.post("/api/v1/identify/audio", params={"path": str(root / "track.mp3")})
+    assert resp.status_code == 403, resp.text
+    assert resp.json()["detail"] == "path is not readable"
+    assert fake_xazam == []
+
+
 def test_identify_audio_path_refused_without_roots(fake_xazam, audio_tree):
     root, outside, _ = audio_tree
     resp = _client().post("/identify/audio", params={"path": str(outside)})
