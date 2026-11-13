@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a1) (2026-11-13)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.0a1...0.26.1a1)
+
+**Merged pull requests:**
+
+- fix: cap file size for identify/audio path lookups [\#104](https://github.com/LeMetadatarr/metadatarr/pull/104) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.26.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.26.0a1) (2026-10-25)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.25.5a2...0.26.0a1)
@@ -163,10 +171,6 @@
 ## [0.19.0a2](https://github.com/LeMetadatarr/metadatarr/tree/0.19.0a2) (2026-09-01)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.19.0a1...0.19.0a2)
-
-**Merged pull requests:**
-
-- chore: Configure Renovate [\#2](https://github.com/LeMetadatarr/metadatarr/pull/2) ([renovate[bot]](https://github.com/apps/renovate))
 
 ## [0.19.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.19.0a1) (2026-08-05)
 
@@ -547,10 +551,6 @@
 ## [0.1.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.1.1a1) (2026-06-27)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.1.0...0.1.1a1)
-
-**Merged pull requests:**
-
-- chore: migrate to mediavocab 1.0 [\#3](https://github.com/LeMetadatarr/metadatarr/pull/3) ([JarbasAl](https://github.com/JarbasAl))
 
 ## [0.1.0](https://github.com/LeMetadatarr/metadatarr/tree/0.1.0) (2026-05-07)
 
