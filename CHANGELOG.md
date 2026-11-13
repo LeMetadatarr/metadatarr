@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.1a4](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a4) (2026-11-13)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a3...0.26.1a4)
+
+**Merged pull requests:**
+
+- refactor: inline the AudioDB client, drop pyaudiodb [\#107](https://github.com/LeMetadatarr/metadatarr/pull/107) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.26.1a3](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a3) (2026-11-13)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a2...0.26.1a3)
