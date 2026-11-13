@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.1a3](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a3) (2026-11-13)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a2...0.26.1a3)
+
+**Merged pull requests:**
+
+- refactor: inline the TVmaze client, drop pytvmaze [\#106](https://github.com/LeMetadatarr/metadatarr/pull/106) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.26.1a2](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a2) (2026-11-13)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a1...0.26.1a2)
@@ -535,10 +543,6 @@
 ## [0.4.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.4.0a1) (2026-06-27)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.3.0a1...0.4.0a1)
-
-**Merged pull requests:**
-
-- feat: anime metadata providers \(pymal, hanime\) [\#6](https://github.com/LeMetadatarr/metadatarr/pull/6) ([JarbasAl](https://github.com/JarbasAl))
 
 ## [0.3.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.3.0a1) (2026-06-27)
 
