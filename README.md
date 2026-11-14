@@ -169,8 +169,6 @@ Each client is a thin, typed wrapper around one data source.
 
 | Client | Source | What you get |
 |---|---|---|
-| `AudioDBClient` | theaudiodb.com | Artists, albums, tracks |
-| `TVmazeClient` | tvmaze.com | Shows, seasons, episodes, cast, people |
 | `BlurayComClient` | blu-ray.com | Physical Blu-ray specs: audio tracks, region codes, extras |
 | `DVDCompareClient` | dvdcompare.net | Regional release comparison, cut runtimes, version notes |
 
@@ -179,7 +177,7 @@ Each client is a thin, typed wrapper around one data source.
 | `DiscogsClient` | discogs.com | Vinyl, CD, cassette releases, `search_video()` for LaserDiscs / concert VHS / music DVDs |
 
 ```python
-from metadatarr import ArrMetadataClient, OpenLibraryClient, AudioDBClient, TVmazeClient
+from metadatarr import ArrMetadataClient, OpenLibraryClient
 
 # Movies & TV via Servarr proxies
 arr = ArrMetadataClient()
@@ -192,16 +190,6 @@ print(movie.tmdb_id, series.tvdb_id, artist.mb_id)
 ol  = OpenLibraryClient()
 hit = ol.search("The Hobbit", limit=1)[0]
 print(hit.key, hit.first_publish_year)
-
-# Music
-db  = AudioDBClient()
-alb = db.search_album("Voimasta ja Kunniasta")[0]
-print(alb.id_album, alb.str_genre)
-
-# TV
-tv   = TVmazeClient()
-show = tv.singlesearch("Severance")
-print(show.id, show.network.name)
 ```
 
 ---

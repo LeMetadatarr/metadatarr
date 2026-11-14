@@ -18,7 +18,7 @@ Tests live in `tests/` (configured via `[tool.pytest.ini_options]`, `addopts = -
 Ruff is enabled via CI (`.github/workflows/lint.yml` -> gh-automations `lint.yml@dev` with `ruff: true`). Run `ruff check .` locally. No mypy config. Coverage config in `pyproject.toml` excludes `resolve/providers/*` (those are integration-tested via `examples/`).
 
 ## Layout
-- `metadatarr/client.py` — direct typed clients (`ArrMetadataClient`, `OpenLibraryClient`, `BookInfoClient`, `AnnasArchiveClient`, `AudioDBClient`, `TVmazeClient`).
+- `metadatarr/client.py` — direct typed clients (`ArrMetadataClient`, `OpenLibraryClient`, `BookInfoClient`, `AnnasArchiveClient`).
 - `metadatarr/models.py` — Pydantic V2 response models for the direct clients (Sonarr/Radarr/Lidarr, OpenLibrary, BookInfo, DVDCompare, etc.).
 - `metadatarr/resolve/base.py` — resolver core: `MetadataProvider` ABC, `ProviderMatch`, `ResolveResult`, three-axis routing (media/modality/genre), the process-global provider registry (`register`), and `consolidate`/`resolve`.
 - `metadatarr/resolve/providers/` — ~35 provider shims, one per source; self-register on import. Each maps a source's response into `ProviderMatch` with `ExternalIds`.

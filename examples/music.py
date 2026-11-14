@@ -1,22 +1,12 @@
-"""AudioDB artist + album lookup."""
-from pyaudiodb import AudioDBClient
+"""Resolve a track through the music providers, TheAudioDB among them."""
+from metadatarr.resolve import MediaType, Signals, active_providers
 
 
 def main() -> None:
-    client = AudioDBClient()
-
-    print("--- AudioDB: artist 'Daft Punk' ---")
-    artists = client.search_artist("Daft Punk")
-    if not artists:
-        print("  no results")
-        return
-    artist = artists[0]
-    print(f"  {artist.name}  id={artist.id}  mbid={artist.musicbrainz_id}")
-    print(f"  formed={artist.formed_year}  country={artist.country}")
-
-    print("\n--- AudioDB: discography ---")
-    for album in client.discography("Daft Punk")[:5]:
-        print(f"  {album.year}  {album.name}")
+    signals = Signals(title="Around the World", artist="Daft Punk", medium=MediaType.MUSIC)
+    for provider in active_providers(medium=MediaType.MUSIC):
+        match = provider.lookup(signals)
+        print(f"{provider.name}: {match.external_ids if match else 'no match'}")
 
 
 if __name__ == "__main__":
