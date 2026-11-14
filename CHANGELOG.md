@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.2a2](https://github.com/LeMetadatarr/metadatarr/tree/0.26.2a2) (2026-11-14)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.2a1...0.26.2a2)
+
+**Merged pull requests:**
+
+- docs: remove pages for clients that are not importable [\#109](https://github.com/LeMetadatarr/metadatarr/pull/109) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.26.2a1](https://github.com/LeMetadatarr/metadatarr/tree/0.26.2a1) (2026-11-14)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a5...0.26.2a1)
@@ -551,10 +559,6 @@
 ## [0.4.1a2](https://github.com/LeMetadatarr/metadatarr/tree/0.4.1a2) (2026-06-27)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.4.1a1...0.4.1a2)
-
-**Merged pull requests:**
-
-- feat: candidates\(\) headline entry point + search\(\) alias [\#15](https://github.com/LeMetadatarr/metadatarr/pull/15) ([JarbasAl](https://github.com/JarbasAl))
 
 ## [0.4.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.4.1a1) (2026-06-27)
 
