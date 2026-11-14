@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.1a5](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a5) (2026-11-14)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a4...0.26.1a5)
+
+**Merged pull requests:**
+
+- refactor: inline the TMDB client, drop pytmdb [\#108](https://github.com/LeMetadatarr/metadatarr/pull/108) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.26.1a4](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a4) (2026-11-13)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a3...0.26.1a4)
