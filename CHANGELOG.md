@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.26.2a1](https://github.com/LeMetadatarr/metadatarr/tree/0.26.2a1) (2026-11-14)
+
+[Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a5...0.26.2a1)
+
+**Merged pull requests:**
+
+- fix: name the variable when a server setting is malformed [\#110](https://github.com/LeMetadatarr/metadatarr/pull/110) ([JarbasAl](https://github.com/JarbasAl))
+
 ## [0.26.1a5](https://github.com/LeMetadatarr/metadatarr/tree/0.26.1a5) (2026-11-14)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.26.1a4...0.26.1a5)
@@ -551,10 +559,6 @@
 ## [0.4.1a1](https://github.com/LeMetadatarr/metadatarr/tree/0.4.1a1) (2026-06-27)
 
 [Full Changelog](https://github.com/LeMetadatarr/metadatarr/compare/0.4.0a1...0.4.1a1)
-
-**Merged pull requests:**
-
-- fix: repair stale example imports + compile guard, README TL;DR [\#13](https://github.com/LeMetadatarr/metadatarr/pull/13) ([JarbasAl](https://github.com/JarbasAl))
 
 ## [0.4.0a1](https://github.com/LeMetadatarr/metadatarr/tree/0.4.0a1) (2026-06-27)
 
