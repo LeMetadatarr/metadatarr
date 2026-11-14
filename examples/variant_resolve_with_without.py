@@ -6,7 +6,7 @@ same title."
 
 Demonstrates:
 - Baseline resolve: external_ids, signals, accepted providers
-- With include_variants: same baseline PLUS result.relations[Role.RELEASE]
+- With include_variants: same baseline PLUS result.variants
 - Runtime cost: the variant fan-out is a second pass of network calls
 - The baseline result is unchanged — variants are additive
 """
@@ -14,7 +14,6 @@ import time
 
 import metadatarr.resolve.providers  # trigger self-registration
 from metadatarr.resolve import resolve
-from metadatarr.resolve.entities import Role
 from mediavocab import MediaType
 from mediavocab.models.signals import Signals
 
@@ -24,7 +23,7 @@ def _summarise(label: str, result, elapsed: float) -> None:
     print(f"  accepted  : {[m.provider for m in result.accepted]}")
     ids = result.external_ids.model_dump(exclude_none=True, exclude={"extra"})
     print(f"  ids       : {ids}")
-    releases = result.relations.get(Role.RELEASE, [])
+    releases = result.variants
     print(f"  variants  : {len(releases)}")
     for r in releases[:5]:
         v_ids = r.external_ids.model_dump(exclude_none=True, exclude={"extra"})

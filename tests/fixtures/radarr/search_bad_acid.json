@@ -1,0 +1,1844 @@
+[
+ {
+  "TmdbId": 1004423,
+  "ImdbId": "tt15527070",
+  "Title": "Bad Acid",
+  "Overview": "Sheila is a self-obsessed aerobics fanatic who accidentally ingests some toxic hair gel while doing her usual morning workout to Aerobisexy Vol. 14, transporting her into the world of Aerobics Cult Leader John Flexi. Executive Produced by writer/director Sam Fox's Foxy Films and Candice Molayem of Animal Crackers Clothing. Produced by Greatgrandma Film Collective and featuring Bonavega, Number One Popstar and music from DJ Harvey.",
+  "OriginalTitle": "Bad Acid",
+  "OriginalLanguage": "en",
+  "TitleSlug": "1004423",
+  "Runtime": 6,
+  "Popularity": 1.5126,
+  "Year": 2022,
+  "Premier": "2022-07-22T00:00:00Z",
+  "InCinema": null,
+  "PhysicalRelease": null,
+  "DigitalRelease": null,
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/r5Qh0wBqtDaXJCgeCskYU7o3bQ7.jpg"
+   },
+   {
+    "CoverType": "Fanart",
+    "Url": "https://image.tmdb.org/t/p/original/wwfuXHgrCAZRo40ZNikEyh2f45R.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 3,
+    "Value": 4.3,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 3,
+    "Value": 4.3,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 48,
+    "Value": 5.9,
+    "Type": "User"
+   },
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": {
+    "Count": 2,
+    "Value": 5,
+    "Type": "User"
+   }
+  },
+  "Genres": [
+   "Comedy",
+   "Music",
+   "Fantasy"
+  ],
+  "Keywords": [
+   "1990s",
+   "80s style",
+   "aerobics",
+   "dance workout",
+   "psychedelics",
+   "tv show in film",
+   "workout"
+  ],
+  "AlternativeTitles": [],
+  "Translations": [
+   {
+    "Title": "Bad Acid",
+    "Overview": "Sheila is a self-obsessed aerobics fanatic who accidentally ingests some toxic hair gel while doing her usual morning workout to Aerobisexy Vol. 14, transporting her into the world of Aerobics Cult Leader John Flexi. Executive Produced by writer/director Sam Fox's Foxy Films and Candice Molayem of Animal Crackers Clothing. Produced by Greatgrandma Film Collective and featuring Bonavega, Number One Popstar and music from DJ Harvey.",
+    "Language": "en-US"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 400160,
+    "Title": "The SpongeBob Movie: Sponge on the Run"
+   },
+   {
+    "TmdbId": 1368881,
+    "Title": "Ladies First"
+   },
+   {
+    "TmdbId": 1493859,
+    "Title": "Pizza Movie"
+   },
+   {
+    "TmdbId": 465078,
+    "Title": "God: Serengeti"
+   },
+   {
+    "TmdbId": 1371727,
+    "Title": "Sing: Thriller"
+   },
+   {
+    "TmdbId": 13192,
+    "Title": "Moonwalker"
+   },
+   {
+    "TmdbId": 30074,
+    "Title": "Scooby-Doo! and the Legend of the Vampire"
+   },
+   {
+    "TmdbId": 63700,
+    "Title": "My Babysitter's a Vampire"
+   },
+   {
+    "TmdbId": 325189,
+    "Title": "Teen Beach 2"
+   },
+   {
+    "TmdbId": 16084,
+    "Title": "Freaky Friday"
+   }
+  ],
+  "Credits": {
+   "Cast": [
+    {
+     "Name": "Kate Hollowell",
+     "Order": 0,
+     "Character": "Sheila",
+     "TmdbId": 3235472,
+     "CreditId": "62e1b90b15dea00054d3918a",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/fcSBt0tUGjPM3w7RKI2MVfv0afV.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Bonavega",
+     "Order": 1,
+     "Character": "John Flexi",
+     "TmdbId": 3639835,
+     "CreditId": "62e1b8d77707000055c06e80",
+     "Images": []
+    },
+    {
+     "Name": "Caileigh Knapp",
+     "Order": 2,
+     "Character": "Stacy",
+     "TmdbId": 3639848,
+     "CreditId": "62e1b98cda10f00136c7e0d4",
+     "Images": []
+    },
+    {
+     "Name": "Willie Larson",
+     "Order": 3,
+     "Character": "Tracy",
+     "TmdbId": 1913786,
+     "CreditId": "62e1b997fe5c91004fe64019",
+     "Images": []
+    }
+   ],
+   "Crew": [
+    {
+     "Name": "Sam Fox",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 1646290,
+     "CreditId": "62e1b9fbbbcae0005579da96",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/vXeM7XSHbNYTPvEwmUh74CX8b4l.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Desiree Staples",
+     "Order": 1,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 2827139,
+     "CreditId": "62e1ba52fe5c91004cdc483e",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/yfzusCyEGnSvB2QBiTQwVk6fXas.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Sam Fox",
+     "Order": 2,
+     "Job": "Story",
+     "Department": "Writing",
+     "TmdbId": 1646290,
+     "CreditId": "62e1bafea44d0918845da205",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/vXeM7XSHbNYTPvEwmUh74CX8b4l.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Sam Fox",
+     "Order": 3,
+     "Job": "Sound Designer",
+     "Department": "Sound",
+     "TmdbId": 1646290,
+     "CreditId": "62e1bc05bbcae00050151812",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/vXeM7XSHbNYTPvEwmUh74CX8b4l.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Asa Fox",
+     "Order": 4,
+     "Job": "Colorist",
+     "Department": "Editing",
+     "TmdbId": 2265692,
+     "CreditId": "62e1bb9be18e3f0060dc3d9f",
+     "Images": []
+    },
+    {
+     "Name": "Alex Knell",
+     "Order": 5,
+     "Job": "Creative Producer",
+     "Department": "Writing",
+     "TmdbId": 2609111,
+     "CreditId": "62e1ba33e9da6927465e54b7",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/gnkRyYPJLG6ZH83QeG06tsnciVn.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Alex Knell",
+     "Order": 6,
+     "Job": "Editor",
+     "Department": "Editing",
+     "TmdbId": 2609111,
+     "CreditId": "62e1ba3f47c9fb0169385d42",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/gnkRyYPJLG6ZH83QeG06tsnciVn.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Alex Knell",
+     "Order": 7,
+     "Job": "VFX Editor",
+     "Department": "Visual Effects",
+     "TmdbId": 2609111,
+     "CreditId": "62e1bc235ca7042619f46b61",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/gnkRyYPJLG6ZH83QeG06tsnciVn.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Carver Koella",
+     "Order": 8,
+     "Job": "VFX Artist",
+     "Department": "Visual Effects",
+     "TmdbId": 3639889,
+     "CreditId": "62e1bc2efe5c91004cdc48b9",
+     "Images": []
+    },
+    {
+     "Name": "Candice Molayem",
+     "Order": 9,
+     "Job": "Production Design",
+     "Department": "Art",
+     "TmdbId": 3639857,
+     "CreditId": "62e1ba0d25a536004c4eb9ac",
+     "Images": []
+    },
+    {
+     "Name": "Candice Molayem",
+     "Order": 10,
+     "Job": "Wardrobe Designer",
+     "Department": "Costume & Make-Up",
+     "TmdbId": 3639857,
+     "CreditId": "62e1ba1ffe5c91004cdc482e",
+     "Images": []
+    },
+    {
+     "Name": "Candice Molayem",
+     "Order": 11,
+     "Job": "Story",
+     "Department": "Writing",
+     "TmdbId": 3639857,
+     "CreditId": "62e1bb0977070000500da930",
+     "Images": []
+    },
+    {
+     "Name": "Cinzia Nichols",
+     "Order": 12,
+     "Job": "Makeup Artist",
+     "Department": "Costume & Make-Up",
+     "TmdbId": 3639873,
+     "CreditId": "62e1bb7b77070000500da96a",
+     "Images": []
+    },
+    {
+     "Name": "Mimi Meyer",
+     "Order": 13,
+     "Job": "Makeup Department Head",
+     "Department": "Costume & Make-Up",
+     "TmdbId": 3639870,
+     "CreditId": "62e1bb64afe224004fa1e263",
+     "Images": []
+    },
+    {
+     "Name": "Danny Perez",
+     "Order": 14,
+     "Job": "VFX Artist",
+     "Department": "Visual Effects",
+     "TmdbId": 1962268,
+     "CreditId": "62e1bc5cda10f0013530edd2",
+     "Images": []
+    },
+    {
+     "Name": "Tom Leduc",
+     "Order": 15,
+     "Job": "Gaffer",
+     "Department": "Lighting",
+     "TmdbId": 2321244,
+     "CreditId": "62e1bc6f15dea00054d3926a",
+     "Images": []
+    },
+    {
+     "Name": "William Perls",
+     "Order": 16,
+     "Job": "Cinematography",
+     "Department": "Crew",
+     "TmdbId": 3639881,
+     "CreditId": "62e1bbbc15dea0004fadec5f",
+     "Images": []
+    },
+    {
+     "Name": "Chase Levy",
+     "Order": 17,
+     "Job": "Assistant Director",
+     "Department": "Directing",
+     "TmdbId": 2317661,
+     "CreditId": "62e1bba7da10f0013530ed9e",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/7UqQ7cakDu4hsHQqa8IKxfYn8bu.jpg"
+      }
+     ]
+    }
+   ]
+  },
+  "Studio": "Foxy Films",
+  "YoutubeTrailerId": "UoqPD1o9ouI",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ },
+ {
+  "TmdbId": 218821,
+  "ImdbId": "tt0475220",
+  "Title": "Bad Acid",
+  "Overview": "If you think it's funny to watch a drunkard, think of the fun you'll have watching someone on acid. This movie follows a doomed character who can't seem to go a day without tripping, venturing into one misadventure after another. Yes, taking acid can make a normal routine, like going to work, seem like an odyssey, complete with monsters (toilet sharks), perils (the sidewalk turning into an inferno), and beautiful maidens. Peter Steele from Type O Negative guest stars in this unusual comedy.",
+  "OriginalTitle": "Bad Acid",
+  "OriginalLanguage": "en",
+  "TitleSlug": "218821",
+  "Runtime": 75,
+  "Popularity": 0.7952,
+  "Year": 2005,
+  "Premier": null,
+  "InCinema": null,
+  "PhysicalRelease": "2005-08-07T00:00:00Z",
+  "DigitalRelease": null,
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/96fr1HySy6384SNnJSYLlCOIGCz.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 4,
+    "Value": 5.5,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 4,
+    "Value": 5.5,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 138,
+    "Value": 3.7,
+    "Type": "User"
+   },
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": {
+    "Count": 2,
+    "Value": 1.5,
+    "Type": "User"
+   }
+  },
+  "Genres": [
+   "Comedy"
+  ],
+  "Keywords": [
+   "drugs",
+   "heavy metal"
+  ],
+  "AlternativeTitles": [],
+  "Translations": [
+   {
+    "Title": "Bad Acid",
+    "Overview": "If you think it's funny to watch a drunkard, think of the fun you'll have watching someone on acid. This movie follows a doomed character who can't seem to go a day without tripping, venturing into one misadventure after another. Yes, taking acid can make a normal routine, like going to work, seem like an odyssey, complete with monsters (toilet sharks), perils (the sidewalk turning into an inferno), and beautiful maidens. Peter Steele from Type O Negative guest stars in this unusual comedy.",
+    "Language": "en-US"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 408648,
+    "Title": "Batman and Harley Quinn"
+   },
+   {
+    "TmdbId": 11381,
+    "Title": "Tommy Boy"
+   },
+   {
+    "TmdbId": 862551,
+    "Title": "Me Time"
+   },
+   {
+    "TmdbId": 1417677,
+    "Title": "Bill Burr: Drop Dead Years"
+   },
+   {
+    "TmdbId": 5709,
+    "Title": "Amazon Women on the Moon"
+   },
+   {
+    "TmdbId": 104859,
+    "Title": "Mac & Devin Go to High School"
+   },
+   {
+    "TmdbId": 133790,
+    "Title": "Clear History"
+   },
+   {
+    "TmdbId": 1312150,
+    "Title": "Ricky Gervais: Mortality"
+   },
+   {
+    "TmdbId": 13612,
+    "Title": "Cheech & Chong's Next Movie"
+   },
+   {
+    "TmdbId": 18287,
+    "Title": "Support Your Local Gunfighter"
+   }
+  ],
+  "Credits": {
+   "Cast": [
+    {
+     "Name": "Freddie Dingo",
+     "Order": 0,
+     "Character": "Walter",
+     "TmdbId": 1261897,
+     "CreditId": "6926f9fe1a5c802c1cd9ca0f",
+     "Images": []
+    },
+    {
+     "Name": "Dave Howarth",
+     "Order": 1,
+     "Character": "Viking",
+     "TmdbId": 5826151,
+     "CreditId": "6926fa07b8ebbf3ee73716ea",
+     "Images": []
+    },
+    {
+     "Name": "Peter Steele",
+     "Order": 2,
+     "Character": "Peter Steele",
+     "TmdbId": 1355729,
+     "CreditId": "6926fa0db8ebbf3ee73716ee",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/3mKMFA2SkIXc5nDN0BmtwadkEf1.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Bill Zebub",
+     "Order": 3,
+     "Character": "Bill Zebub",
+     "TmdbId": 99005,
+     "CreditId": "6926fa1433220d1d62d9cab0",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/bhZNgeH9PbnxFCsKeOZEzBVewQ1.jpg"
+      }
+     ]
+    }
+   ],
+   "Crew": [
+    {
+     "Name": "Bill Zebub",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 99005,
+     "CreditId": "5ac42d6c92514127120425be",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/bhZNgeH9PbnxFCsKeOZEzBVewQ1.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Bill Zebub",
+     "Order": 1,
+     "Job": "Writer",
+     "Department": "Writing",
+     "TmdbId": 99005,
+     "CreditId": "5ac42d78c3a3682d9a04186a",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/bhZNgeH9PbnxFCsKeOZEzBVewQ1.jpg"
+      }
+     ]
+    }
+   ]
+  },
+  "Studio": "Bill Zebub Productions",
+  "YoutubeTrailerId": "",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ },
+ {
+  "TmdbId": 725652,
+  "ImdbId": "tt4883224",
+  "Title": "Bad Acid",
+  "Overview": "Marvin Maskelyn, a washed up TV hypnotist and magician desperate to recapture his fame acquires a magic lamp and some LSD. His vision of fame is not quite what he anticipated.",
+  "OriginalTitle": "Bad Acid",
+  "OriginalLanguage": "en",
+  "TitleSlug": "725652",
+  "Runtime": 0,
+  "Popularity": 0.5192,
+  "Year": 0,
+  "Premier": null,
+  "InCinema": null,
+  "PhysicalRelease": null,
+  "DigitalRelease": null,
+  "Images": [],
+  "Ratings": [
+   {
+    "Count": 0,
+    "Value": 0,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 0,
+    "Value": 0,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 21,
+    "Value": 6.5,
+    "Type": "User"
+   },
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": null
+  },
+  "Genres": [],
+  "Keywords": [],
+  "AlternativeTitles": [],
+  "Translations": [
+   {
+    "Title": "Bad Acid",
+    "Overview": "Marvin Maskelyn, a washed up TV hypnotist and magician desperate to recapture his fame acquires a magic lamp and some LSD. His vision of fame is not quite what he anticipated.",
+    "Language": "en-US"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 1878,
+    "Title": "Fear and Loathing in Las Vegas"
+   },
+   {
+    "TmdbId": 10025,
+    "Title": "Just My Luck"
+   },
+   {
+    "TmdbId": 103332,
+    "Title": "Ruby Sparks"
+   },
+   {
+    "TmdbId": 10537,
+    "Title": "The Doors"
+   },
+   {
+    "TmdbId": 901,
+    "Title": "City Lights"
+   },
+   {
+    "TmdbId": 3509,
+    "Title": "A Scanner Darkly"
+   },
+   {
+    "TmdbId": 1323475,
+    "Title": "Champagne Problems"
+   },
+   {
+    "TmdbId": 85889,
+    "Title": "Filth"
+   },
+   {
+    "TmdbId": 229297,
+    "Title": "Magic in the Moonlight"
+   },
+   {
+    "TmdbId": 522,
+    "Title": "Ed Wood"
+   }
+  ],
+  "Credits": {
+   "Cast": [],
+   "Crew": []
+  },
+  "Studio": "",
+  "YoutubeTrailerId": "",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ },
+ {
+  "TmdbId": 1435542,
+  "ImdbId": null,
+  "Title": "Bad Acid",
+  "Overview": "Bad Acid tells a blood-soaked and violent story. It begins when a group of young people, while going upstairs, encounter a grotesque, deformed man. Acting on impulse, they attack him, unaware that their actions will trigger a terrifying chain of events. The deformed man seeks revenge, hunting them down one by one with brutal and imaginative methods.",
+  "OriginalTitle": "怪鸡",
+  "OriginalLanguage": "cn",
+  "TitleSlug": "1435542",
+  "Runtime": 29,
+  "Popularity": 0.4208,
+  "Year": 2019,
+  "Premier": null,
+  "InCinema": null,
+  "PhysicalRelease": "2019-01-01T00:00:00Z",
+  "DigitalRelease": null,
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/jxDS79lfdWVuDTVxKcsdwWJoTUe.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 0,
+    "Value": 0,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 0,
+    "Value": 0,
+    "Type": "User"
+   },
+   "Imdb": null,
+   "Metacritic": null,
+   "RottenTomatoes": null,
+   "Trakt": null
+  },
+  "Genres": [
+   "Horror"
+  ],
+  "Keywords": [],
+  "AlternativeTitles": [],
+  "Translations": [
+   {
+    "Title": "Bad Acid",
+    "Overview": "Bad Acid tells a blood-soaked and violent story. It begins when a group of young people, while going upstairs, encounter a grotesque, deformed man. Acting on impulse, they attack him, unaware that their actions will trigger a terrifying chain of events. The deformed man seeks revenge, hunting them down one by one with brutal and imaginative methods.",
+    "Language": "en-US"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 532408,
+    "Title": "The Boogeyman"
+   },
+   {
+    "TmdbId": 814889,
+    "Title": "Never Let Go"
+   },
+   {
+    "TmdbId": 1043197,
+    "Title": "Dust Bunny"
+   },
+   {
+    "TmdbId": 17898,
+    "Title": "Silver Bullet"
+   },
+   {
+    "TmdbId": 1242937,
+    "Title": "The Dreadful"
+   },
+   {
+    "TmdbId": 1118595,
+    "Title": "The Jester"
+   },
+   {
+    "TmdbId": 296271,
+    "Title": "The Devil Conspiracy"
+   },
+   {
+    "TmdbId": 845783,
+    "Title": "Baghead"
+   },
+   {
+    "TmdbId": 687340,
+    "Title": "Abigail Haunting"
+   },
+   {
+    "TmdbId": 589594,
+    "Title": "Abduction"
+   }
+  ],
+  "Credits": {
+   "Cast": [],
+   "Crew": [
+    {
+     "Name": "Joe Choi",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 3519042,
+     "CreditId": "67b2c37ca40d04bc939fa831",
+     "Images": []
+    }
+   ]
+  },
+  "Studio": "",
+  "YoutubeTrailerId": "",
+  "Certifications": [],
+  "Status": null,
+  "Collection": null,
+  "Homepage": ""
+ },
+ {
+  "TmdbId": 790496,
+  "ImdbId": "tt14033502",
+  "Title": "Bad Luck Banging or Loony Porn",
+  "Overview": "Emi, a school teacher, finds her career and reputation under threat after a personal sex tape is leaked on the Internet. Forced to meet the parents demanding her dismissal, Emi refuses to surrender to their pressure.",
+  "OriginalTitle": "Babardeala cu bucluc sau porno balamuc",
+  "OriginalLanguage": "ro",
+  "TitleSlug": "790496",
+  "Runtime": 106,
+  "Popularity": 0.553,
+  "Year": 2021,
+  "Premier": "2021-03-10T00:00:00Z",
+  "InCinema": "2021-04-29T00:00:00Z",
+  "PhysicalRelease": "2022-07-05T00:00:00Z",
+  "DigitalRelease": "2021-03-01T00:00:00Z",
+  "Images": [
+   {
+    "CoverType": "Poster",
+    "Url": "https://image.tmdb.org/t/p/original/zUTkjET8VUwvbvSHtn0Lou7xwyZ.jpg"
+   },
+   {
+    "CoverType": "Fanart",
+    "Url": "https://image.tmdb.org/t/p/original/wP28rWRjcD1994uSLXAg0MZmUK7.jpg"
+   }
+  ],
+  "Ratings": [
+   {
+    "Count": 282,
+    "Value": 6.402,
+    "Origin": "Tmdb",
+    "Type": "User"
+   }
+  ],
+  "MovieRatings": {
+   "Tmdb": {
+    "Count": 282,
+    "Value": 6.402,
+    "Type": "User"
+   },
+   "Imdb": {
+    "Count": 12125,
+    "Value": 6.5,
+    "Type": "User"
+   },
+   "Metacritic": {
+    "Count": 0,
+    "Value": 74,
+    "Type": "User"
+   },
+   "RottenTomatoes": {
+    "Count": 0,
+    "Value": 90,
+    "Type": "User"
+   },
+   "Trakt": {
+    "Count": 488,
+    "Value": 6.09016,
+    "Type": "User"
+   }
+  },
+  "Genres": [
+   "Comedy",
+   "Drama"
+  ],
+  "Keywords": [
+   "audacious",
+   "cancel culture",
+   "critical",
+   "independent film",
+   "ironic",
+   "irreverent",
+   "porno",
+   "teacher",
+   "unintended consequences"
+  ],
+  "AlternativeTitles": [
+   {
+    "Title": "Kohatu kepp ehk meeletu porno",
+    "Type": "Tmdb",
+    "Language": "en"
+   },
+   {
+    "Title": "Безумное кино для взрослых",
+    "Type": "Tmdb",
+    "Language": "ru"
+   },
+   {
+    "Title": "배드 럭 뱅잉",
+    "Type": "Tmdb",
+    "Language": "ko"
+   },
+   {
+    "Title": "倒楣性愛與瘋狂A片",
+    "Type": "Tmdb",
+    "Language": "en"
+   },
+   {
+    "Title": "Un polvo desafortunado o porno loco",
+    "Type": "Tmdb",
+    "Language": "es"
+   },
+   {
+    "Title": "Kaçık Porno",
+    "Type": "Tmdb",
+    "Language": "en"
+   },
+   {
+    "Title": "春宮 野史 大批鬥",
+    "Type": "Tmdb",
+    "Language": "zh"
+   },
+   {
+    "Title": "行衰運色情電影",
+    "Type": "Tmdb",
+    "Language": "zh"
+   },
+   {
+    "Title": "アンラッキー・セックス またはイカれたポルノ",
+    "Type": "Tmdb",
+    "Language": "ja"
+   },
+   {
+    "Title": "Неудачный трах, или Безумное порно",
+    "Type": "Tmdb",
+    "Language": "ru"
+   }
+  ],
+  "Translations": [
+   {
+    "Title": "Bad Luck Banging or Loony Porn",
+    "Overview": "Emi, a school teacher, finds her career and reputation under threat after a personal sex tape is leaked on the Internet. Forced to meet the parents demanding her dismissal, Emi refuses to surrender to their pressure.",
+    "Language": "en-US"
+   },
+   {
+    "Title": "Sesso sfortunato o follie porno",
+    "Overview": "Emi, un'insegnante di scuola, vede la sua carriera e la sua reputazione in pericolo dopo che un suo video spinto amatoriale finisce on line. Costretta a incontrare i genitori che chiedono il suo licenziamento, si rifiuta di cedere alle loro pressioni.",
+    "Language": "it-IT"
+   },
+   {
+    "Title": "배드 럭 뱅잉",
+    "Overview": "남편과 합의 하에 찍은 섹스 비디오가 포르노 사이트에 유출된 사실을 뒤늦게 발견한 교사 에미. 학생들 사이에서 비디오가 금세 퍼졌고, 이를 알게 된 동료 교사들과 학부모들이 에미를 해임하기 위해 긴급 회의를 소집한다. 심판대에 서서 온갖 조롱과 모욕을 당하던 에미는 결국 분노를 대폭발시키는데...",
+    "Language": "ko-KR"
+   },
+   {
+    "Title": "倒霉性爱，发狂黄片",
+    "Overview": "　　一段视频被病毒式传播，视频中，一男一女戴着面具做爱。不过，这名女子还是被认出来了。更糟的是，她是一名教师，本应当是一个榜样。而且这是在一个后社会主义社会，即将迷失在一个社会网络话语中，其中有治愈洁癖的态度，有伪政治万事通，有神圣沙文主义，有怪诞阴谋论。每个人都有自己的意见。辩论变成了一个法庭，关于双方同意的性、色情等等。拉杜·裘德（Radu Jude）一如既往地致力于创新的电影实验，在这个星座中精心制作了一个聪明的、讽刺性的三部曲：第一部分以不紧不慢的精准镜头对准布加勒斯特街头日常熙攘生活中的疯狂幽默，向我们展示纪录-虚构界面的当代电影的样子。第二部分是一系列平淡无奇的静态影像，旨在作为我们这个时代符号的百科全书。影片的大结局（虽然是开放式的）是在学校举行的讨论，对女主角的存在的理由作出裁决。",
+    "Language": "zh-CN"
+   },
+   {
+    "Title": "Babardeala cu bucluc sau porno balamuc",
+    "Overview": "Filmul analizează raporturile dintre individ şi societate, având ca punct de plecare schimbările pe care un clip porno de amatori încărcat de o profesoară de şcoală generală pe un site specializat le provoacă în viaţa acesteia.",
+    "Language": "ro-RO"
+   },
+   {
+    "Title": "Babardeala cu bucluc sau porno balamuc",
+    "Overview": "إيمي ، معلمة مدرسة ، تجد حياتها المهنية وسمعتها تحت التهديد بعد تسريب شريط جنسي شخصي على الإنترنت. أُجبرت إيمي على مقابلة والديها المطالبين بفصلها ، وترفض الاستسلام لضغوطهما.",
+    "Language": "ar-SA"
+   },
+   {
+    "Title": "Безумное кино для взрослых",
+    "Overview": "Эми — школьная учительница, чья карьера и репутация оказываются под угрозой, когда в интернет попадает интимное видео с её участием. Возмущённые до глубины души родители требуют её немедленного увольнения. Но Эми не собирается так легко сдаваться.",
+    "Language": "ru-RU"
+   },
+   {
+    "Title": "Smolný pich aneb Pitomý porno",
+    "Overview": "Emi, uznávaná učitelka na prestižním gymnáziu, čelí pobouření z jejího virálního domácího sex videa, které uniklo na PornHub. Zdánlivá tříaktovka vytéká z formy. Od dokumentaristicky zachycené Eminy pěší pouti Bukureští na obávanou schůzi rodičovského sdružení se přelévá k powerpointově laděné expozici autorských komentářů k aktuálním tématům rezonujícím (nejen) v rumunské společnosti. Příběh kulminuje posledním dějstvím na oné obávané schůzi, na které Emi čelí tlaku rodičů na její odchod ze školy. Průběh setkání postupně obnažuje předsudky a pokrytectví panoptikálních rodičů Eminých studentů.",
+    "Language": "cs-CZ"
+   },
+   {
+    "Title": "Niefortunny numerek lub szalone porno",
+    "Overview": "\"Niefortunny numerek…\" opowiada o wycieku seks-taśmy i konsekwencjach, jakie upublicznienie małżeńskich zabaw w sypialni będzie miało dla Emi, nauczycielki w prestiżowym liceum. Prowokacyjny, błyskotliwy, kipiący gniewem i nieodparcie przy tym zabawny film Radu Jude bierze na warsztat zjawisko paniki moralnej, obnażając towarzyszącą jej hipokryzję, ignorancję i autorytarne ciągoty. Co tu jest bowiem \"naprawdę\" obsceniczne: widok osób uprawiających za obopólną zgodą seks czy może sportretowana tu nędza miasta, zdewastowanego przez dziki kapitalizm i nacjonalistyczną ideologię? Czy perwersyjna jest nauczycielka, czy może samozwańczy trybunał święcie oburzonych rodziców, który zebrał się w szkole, by ją osądzić? Wypełniony archiwaliami \"Niefortunny numerek…\" jest katalogiem tej prawdziwej pornografii: politycznej, religijnej, klasowej, szerzącej się bezwstydnie pod szlachetnymi hasłami.",
+    "Language": "pl-PL"
+   },
+   {
+    "Title": "Невдалий трах, або Шалене порно",
+    "Overview": "У вчительки елітної бухарестської школи Емі велика проблема — чоловік навіщось злив в інтернет їх спільне відео інтимного характеру. Спроби зупинити розповсюдження порноролика ні до чого не приводять: інтернет, як то кажуть, все пам’ятає. На фоні цього директриса скликає батьківські збори, щоб на них вирішити долю Емі — виганяти її з роботи або ж залишити, забувши про це непорозуміння. Думки, звісно ж, розбігаються.",
+    "Language": "uk-UA"
+   },
+   {
+    "Title": "Bad Luck Banging or Loony Porn",
+    "Overview": "Ein Sex-Tape gelangt ins Internet und geht dort viral. Es zeigt eine Frau und einen Mann, die beide Masken tragen, beim Geschlechtsakt. Doch die Frau in dem Video lässt sich als Emi (Katia Pascariu) identifizieren - eine Lehrerin. Emis Ruf und Karriere geraten in Bedrängnis, als die Eltern ihrer Schüler ihren augenblicklichen Rücktritt fordern. Doch die Lehrerin weigert sich, dem öffentlichen Druck nachzugeben, nur weil die anderen ihre Vorbild-Funktion anzweifeln.",
+    "Language": "de-DE"
+   },
+   {
+    "Title": "Un polvo desafortunado o porno loco",
+    "Overview": "Emi, una maestra de escuela, encuentra su carrera y reputación amenazadas después de que se filtró una cinta sexual personal en Internet. Obligada a encontrarse con los padres exigiendo su despido, Emi se niega a rendirse a su presión. Radu Jude (¡Aferim!) Ofrece una mezcla incendiaria de formas poco convencionales, humor irreverente y comentarios mordaces sobre la hipocresía y los prejuicios en nuestras sociedades.",
+    "Language": "es-ES"
+   },
+   {
+    "Title": "Bad Luck Banging or Loony Porn",
+    "Overview": "Emi is een docent wiens carrière onder druk komt te staan nadat een sekstape is uitgelekt. De ouders van haar leerlingen zijn namelijk woedend en eisen haar vertrek. Maar ondanks de druk die op haar wordt uitgeoefend, weigert Emi zich daarbij neer te leggen.",
+    "Language": "nl-NL"
+   },
+   {
+    "Title": "Má Sorte no Sexo ou Pornô Acidental",
+    "Overview": "Emi, uma professora, vê sua carreira e reputação ameaçadas depois que uma fita de sexo pessoal vazou na Internet. Forçada a encontrar os pais exigindo sua demissão, Emi se recusa a ceder à pressão deles. Radu Jude (Aferim!) Oferece uma mistura incendiária de forma não convencional, humor irreverente e comentários mordazes sobre hipocrisia e preconceito em nossas sociedades.",
+    "Language": "pt-BR"
+   },
+   {
+    "Title": "Bad Luck Banging or Loony Porn",
+    "Overview": "Årets vinner av Gullbjørnen under Berlinalen er ikke for sarte sjeler. Den begynner rett på sak med en svært grafisk sex-scene med Emi og hennes ektemann. Emi jobber som lærer på en videregående skole, og når sex-tapen de laget av akten blir lekket på nettet, noe som heller ikke går upåaktet hen hos elever og foreldre, står hele karrieren hennes på spill. Det som følger er forvirring og fordommer, samt et foreldremøte fra helvete. Denne spinnville filmen tar historien om kjønnsorganer, politikk, koronaviruset og Romanias historie inn i et samkvem av absurde dimensjoner. Den kombinerer fiksjon (og til og med dokumentar) i et grensesprengende format. Helt usensurert. (Sakset fra omtale, Filmfestivalen i Haugesund)",
+    "Language": "no-NO"
+   },
+   {
+    "Title": "倒楣性愛和瘋狂A片",
+    "Overview": "女教師艾咪的性愛影片外流，正逢家長大會決議教師是否適任，夫妻倆一時狂野歡愛的身心，在校方與家長們有色的眼光與道德鞭笞下，終因過度操用而筋疲力盡。她成為羅馬尼亞街頭另一具無魂有體的夢遊者，對喧騰周身或大或小的災情再也高潮無能，徹底冷感。",
+    "Language": "zh-TW"
+   },
+   {
+    "Title": "Ατυχές Πήδημα ή Παλαβό Πορνό",
+    "Overview": "Η Έμι, καθηγήτρια ιστορίας σε ένα πολύ καθώς πρέπει σχολείο, βλέπει την καριέρα και την υπόληψή της να απειλούνται όταν διαρρέει στο ίντερνετ μια ερασιτεχνική ταινία ερωτικού περιεχομένου στην οποία πρωταγωνιστεί. Οργισμένοι γονείς απαιτούν την απόλυσή της, η Έμι όμως αρνείται να παραδώσει τα όπλα. Το «Ατυχές Πήδημα ή Παλαβό Πορνό» είναι μια ταινία σε τρία, αφαιρετικά συνδεδεμένα μέρη: μια βόλτα στο Βουκουρέστι του σήμερα, ένα παιχνιδιάρικο γλωσσάρι από παραδοξολογίες κι αισχρότητες, που κορυφώνονται στο τρίτο μέρος, μία εκρηκτική κωμική αναμέτρηση.",
+    "Language": "el-GR"
+   },
+   {
+    "Title": "Kaçık Porno",
+    "Overview": "Genç bir kadın olan Emi, bir okulda öğretmenlik yapar. Onun hayatı, kişisel görüntülerinin yer aldığı bir kasetin internete yayılmasıyla bambaşka bir hal alır. Öğrencilerin aileleri, Emi’nin okuldan ayrılmasını ister. Kendisinin görevden alınmasını isteyen ebeveynlerle buluşmaya zorlanan Emi, onların baskılarına teslim olmamaya karar verir.",
+    "Language": "tr-TR"
+   },
+   {
+    "Title": "Bad Luck Banging or Loony Porn",
+    "Overview": "Emi, une enseignante, voit sa carrière et sa réputation menacées après la diffusion sur Internet d’une sextape tournée avec son mari. Forcée de rencontrer les parents d'élèves qui exigent son renvoi, Emi refuse de céder à leur pression, questionnant ce qui est obscène dans nos sociétés.",
+    "Language": "fr-FR"
+   },
+   {
+    "Title": "מין חסר מזל או פורנו משוגעים",
+    "Overview": "אמי היא מורה בבית ספר שתדמיתה המקצועית סופגת מהלומה אנושה לאחר שסרטון וידאו פרטי שבו היא מתועדת בעיצומו של אקט מיני סוער דולף לאינטרנט. היא נאלצת לעמוד בפני הורי התלמידים ולעבור שימוע המוני, אך מסרבת להיכנע.",
+    "Language": "he-IL"
+   },
+   {
+    "Title": "Zűrös kettyintés, avagy pornó a diliházban",
+    "Overview": "Emit utoléri a múltja, amikor egy róla készült szexvideó kezd terjedni az interneten. A nő valószínűleg kénytelen lesz otthagyni a tanári pályát, ám nem hajlandó csak úgy feladni a harcot, és a távozását követelő szülőkkel is szembe akar nézni.",
+    "Language": "hu-HU"
+   },
+   {
+    "Title": "უიღბლო ჟიმაობა, ანუ გადარეული პორნო",
+    "Overview": "სკოლის მასწავლებლის ემის კარიერასა და რეპუტაციას საფრთხე შეექმნა მას შემდეგ, რაც ინტერნეტში მისი პირადი ცხოვრების ამსახველი კადრები გავრცელდა. იგი იძულებულია,  შეხვდეს მოსწავლეების მშობლებს, რომლებიც მის გათავისუფლებას მოითხოვენ, თუმცა ემი მათ მოთხოვნას ეწინააღმდეგება.",
+    "Language": "ka-GE"
+   },
+   {
+    "Title": "春宮 野史 大批鬥",
+    "Overview": "女教師自拍性愛影片流出，知名人士與社會大眾忙不迭針對他人小小道德缺失大肆批評，平時衣冠楚楚的面具應聲而落。隨女教師走在布加勒斯特市內醜陋不堪的街頭，惡劣環境烘托她準備向學生家長交待的焦躁不安。劇情突然中斷，來一段過癮野史環節，尖刻影像，由資料片、物件，到新拍短片，無不嘲諷今昔社會道德。最後回歸校園名為「處境喜劇」，實為終極大批鬥，一場性別、種族、階級偏見盡現的馬騮戲。",
+    "Language": "zh-HK"
+   },
+   {
+    "Title": "Bad Luck Banging or Loony Porn",
+    "Overview": "Hemmaporr på villovägar skapar kaos för stram lärarinna i unikt organiserad komedi som vann guldbjörnen på Berlins filmfestival. När privatskolelärarinnan Emis pornografiska amatörvideo plötsligt dyker upp på nätet skakas hennes liv om i grunden. Men vilka regler har hon egentligen brutit mot? Radu Jude utforskar idéer om sexualitet, kapitalism och kontroll i ett lika kakafoniskt som tankeväckande mästerverk. Genom en oblyg sexskildring (ja, det är väldigt explicit), en pandemisk stadssymfoni, en intellektuell associationslek och filmhistoriens mest urartade föräldramöte fogar Jude samman fyra helt olika filmer till ett enda briljant stycke filmkonst. Bad Luck Banging or Loony Porn är en oförglömlig filmupplevelse som inte liknar något annat.",
+    "Language": "sv-SE"
+   },
+   {
+    "Title": "Un clau desafortunat o porno boig",
+    "Overview": "Una sàtira àcida i gloriosament lliure sobre una professora de secundària que veu la seva vida posada potes enlaire quan es filtra a Internet un vídeo pornogràfic protagonitzat per ella.",
+    "Language": "ca-ES"
+   },
+   {
+    "Title": "Slabo pokanje ali nora pornografija",
+    "Overview": "Emi, šolska učiteljica, ugotovi, da sta njena kariera in ugled ogrožena, potem ko je na internet pricurljal posnetek osebnega seksa. Prisiljena je spoznati starše, ki zahtevajo njeno odpoved, toda Emi se noče predati njihovemu pritisku.",
+    "Language": "sl-SI"
+   },
+   {
+    "Title": "アンラッキー・セックス またはイカれたポルノ",
+    "Overview": "",
+    "Language": "ja-JP"
+   },
+   {
+    "Title": "Drāziens ar izgāšanos jeb dullais porno",
+    "Overview": "",
+    "Language": "lv-LV"
+   },
+   {
+    "Title": "Má Sorte no Sexo ou Porno Acidental",
+    "Overview": "A professora Emi vê a sua carreira e reputação ameaçadas depois de uma ‘sex tape’ pessoal ir parar acidentalmente à Internet. Forçada a enfrentar os pais dos seus alunos que exigem a sua demissão, Emi recusa-se a ceder à pressão.",
+    "Language": "pt-PT"
+   }
+  ],
+  "Recommendations": [
+   {
+    "TmdbId": 28339,
+    "Title": "Hard to Die"
+   },
+   {
+    "TmdbId": 14166,
+    "Title": "Pretty Persuasion"
+   },
+   {
+    "TmdbId": 34482,
+    "Title": "The Clique"
+   },
+   {
+    "TmdbId": 1417677,
+    "Title": "Bill Burr: Drop Dead Years"
+   },
+   {
+    "TmdbId": 172631,
+    "Title": "Family Weekend"
+   },
+   {
+    "TmdbId": 1219926,
+    "Title": "South Park (Not Suitable for Children)"
+   },
+   {
+    "TmdbId": 283698,
+    "Title": "Hungry Hearts"
+   },
+   {
+    "TmdbId": 14262,
+    "Title": "Desperate Living"
+   },
+   {
+    "TmdbId": 59917,
+    "Title": "Cotton Comes to Harlem"
+   },
+   {
+    "TmdbId": 10683,
+    "Title": "Happiness"
+   }
+  ],
+  "Credits": {
+   "Cast": [
+    {
+     "Name": "Katia Pascariu",
+     "Order": 0,
+     "Character": "Emilia Cilibiu",
+     "TmdbId": 1547403,
+     "CreditId": "602c675897fdec003ef57fe8",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/dBZbp65TeVikic7eBKQjMpXNT6X.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Claudia Ieremia",
+     "Order": 1,
+     "Character": "Headmistress",
+     "TmdbId": 2080404,
+     "CreditId": "602c676344ea54003fd3a7d4",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/ctHHPosOJnnYhM6TDXR9shw8qJ7.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Olimpia Mălai",
+     "Order": 2,
+     "Character": "Mrs. Lucia",
+     "TmdbId": 1871780,
+     "CreditId": "602c676c8ac3d0003ecaf3b7",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/8UmEIODnVzMCcS4jyULP5DJdFVp.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Nicodim Ungureanu",
+     "Order": 3,
+     "Character": "Lt. Gheorghescu",
+     "TmdbId": 592234,
+     "CreditId": "602c677ec669ad0040df4b6a",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/t35jTdqQ3uTbCEHPhpAxapsRgnj.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Alexandru Potocean",
+     "Order": 4,
+     "Character": "Marius Buzdrugovici",
+     "TmdbId": 39960,
+     "CreditId": "602c67888e2ba6003d13311f",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/ez05oJrNIeKyj60ygfyJfWnEQO7.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Andi Vasluianu",
+     "Order": 5,
+     "Character": "Mr. Otopeanu",
+     "TmdbId": 85230,
+     "CreditId": "602c67746743fa003fe2f9cc",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/6aqImm4O1A3a51modGhC2aJnXFF.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Oana Maria Zaharia",
+     "Order": 6,
+     "Character": "Blonde Nudist Parent",
+     "TmdbId": 3044670,
+     "CreditId": "607010dad1444300293dafcb",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/fcXPNZcaj35oHlXmlZhv15eFIrE.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Gabriel Spahiu",
+     "Order": 7,
+     "Character": "Priest Parent",
+     "TmdbId": 60422,
+     "CreditId": "60701073c525c400781bca98",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/nHrRS4bVpVJX18lNR40ntL1kgKg.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Florin Petrescu",
+     "Order": 8,
+     "Character": "Axinte - A Parent",
+     "TmdbId": 2372488,
+     "CreditId": "6070108c629b2c002941df5c",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/oMFmPNM3YIulpBGcaP54j0TUBcd.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ştefan Steel",
+     "Order": 9,
+     "Character": "Eugen Cilibiu",
+     "TmdbId": 2843634,
+     "CreditId": "605007664ca676003d26aa91",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/7jtWIqOE1arZnEWC3QZlBkKwJ2n.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "David Bejgui",
+     "Order": 10,
+     "Character": "",
+     "TmdbId": 3414529,
+     "CreditId": "61fedd61e18e3f006b16b3df",
+     "Images": []
+    },
+    {
+     "Name": "Alexandru Bogdan",
+     "Order": 11,
+     "Character": "Parent with Money",
+     "TmdbId": 1683771,
+     "CreditId": "607011e2d1444300293db056",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/gF3F02DTDj3NObqFpzng91CJNIL.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Kristina Cepraga",
+     "Order": 12,
+     "Character": "Selfie Fanatic",
+     "TmdbId": 111569,
+     "CreditId": "602c678fe33f83003fdf7a80",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/fxeukcgWT4rBwKNrSZlvVOEIfrR.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ana Ciontea",
+     "Order": 13,
+     "Character": "Grandmother",
+     "TmdbId": 1031119,
+     "CreditId": "607011fb924ce500563fc1dc",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/p9t1B66qy0zzS4jO8Orp43aXhfh.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ion Dichiseanu",
+     "Order": 14,
+     "Character": "Ion Dichiseanu",
+     "TmdbId": 1161949,
+     "CreditId": "6070120e0929f6002924ce52",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/nju92bPrWb65biWa4PB93jULYCX.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Cristina Draghici",
+     "Order": 15,
+     "Character": "",
+     "TmdbId": 3414536,
+     "CreditId": "61fede939f5dfb008f08e306",
+     "Images": []
+    },
+    {
+     "Name": "Paul Dunca",
+     "Order": 16,
+     "Character": "Paula Dunker",
+     "TmdbId": 2395200,
+     "CreditId": "6070122a68929c007977f7f0",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/6hhbMWxNBB5RgtEKbgItN2303Ra.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Adrian Enache",
+     "Order": 17,
+     "Character": "Parent",
+     "TmdbId": 1426595,
+     "CreditId": "6070123b0816c7002a75ff71",
+     "Images": []
+    },
+    {
+     "Name": "Luminița Erga",
+     "Order": 18,
+     "Character": "Parent",
+     "TmdbId": 1259222,
+     "CreditId": "6070124de92d8300578941d0",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/3PgNLBy230lOT7wUBNjaxpusURA.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Tudorel Filimon",
+     "Order": 19,
+     "Character": "Obsessed Parent",
+     "TmdbId": 1088975,
+     "CreditId": "602c67968ac3d0003fcafc1c",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/b6GadaHkgCg2hAdOJPrrVNSHMhL.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Alexandru Georgescu",
+     "Order": 20,
+     "Character": "Pharmacy Client",
+     "TmdbId": 588825,
+     "CreditId": "607012651ad93b0057e3ad4e",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/baz7E7JcR6EOqZhhg5NsEdyFOOF.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Silviu Gherman",
+     "Order": 21,
+     "Character": "Book Antiquarian",
+     "TmdbId": 2397513,
+     "CreditId": "607012740816c7006f5a654e",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/rK3PnKOYmMeN9GQpMe6hFrns1zE.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ilinca Harnut",
+     "Order": 22,
+     "Character": "Parent",
+     "TmdbId": 1650662,
+     "CreditId": "607012870816c7005890b698",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/bCEidsn9iDSsXR4IUZgppZlgp5A.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Thea Iacob",
+     "Order": 23,
+     "Character": "",
+     "TmdbId": 3414533,
+     "CreditId": "61fedd9be18e3f006b16b433",
+     "Images": []
+    },
+    {
+     "Name": "Nicoleta Lefter",
+     "Order": 24,
+     "Character": "Parent",
+     "TmdbId": 1547411,
+     "CreditId": "60701291dff66e005703959d",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/khbGLYPz1H0T3E3up8YnoGLPBHr.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ilinca Manolache",
+     "Order": 25,
+     "Character": "Tour Guide Parent",
+     "TmdbId": 2080407,
+     "CreditId": "602c679fcedac400415043b9",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/vXRVhPBxAfDW1CdnulzGUSZbej2.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Daniela Ionita Marcu",
+     "Order": 26,
+     "Character": "Parent",
+     "TmdbId": 2980829,
+     "CreditId": "602c67a797fdec003ef5805b",
+     "Images": []
+    },
+    {
+     "Name": "Marcela Motoc",
+     "Order": 27,
+     "Character": "Mother in Apartment",
+     "TmdbId": 2170805,
+     "CreditId": "607012a4e92d83006de51715",
+     "Images": []
+    },
+    {
+     "Name": "Petra Nesvačilová",
+     "Order": 28,
+     "Character": "Czech Parent",
+     "TmdbId": 1113245,
+     "CreditId": "607012b4d144430078fe2b35",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/y7rx0dDdbOcvJQpEFHD36XVW59p.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Șerban Pavlu",
+     "Order": 29,
+     "Character": "Father in Apartment",
+     "TmdbId": 592227,
+     "CreditId": "607012c89979d200401de3ec",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/chjRlUImZyZzDmyp5n7QmWpmqv2.jpg"
+      }
+     ]
+    }
+   ],
+   "Crew": [
+    {
+     "Name": "Radu Jude",
+     "Order": 0,
+     "Job": "Director",
+     "Department": "Directing",
+     "TmdbId": 588822,
+     "CreditId": "60107b3b92e55b004069ece0",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/2z85VQFtx4739hRFAERHKKKE7MJ.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Radu Jude",
+     "Order": 1,
+     "Job": "Screenplay",
+     "Department": "Writing",
+     "TmdbId": 588822,
+     "CreditId": "602c66bbd55697003f58164d",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/2z85VQFtx4739hRFAERHKKKE7MJ.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ada Solomon",
+     "Order": 2,
+     "Job": "Producer",
+     "Department": "Production",
+     "TmdbId": 60407,
+     "CreditId": "60107b5accde04003f25d17a",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/7NjdcEuPcaL1mAGh4UvY4AbG0Um.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Carla Fotea",
+     "Order": 3,
+     "Job": "Executive Producer",
+     "Department": "Production",
+     "TmdbId": 2223917,
+     "CreditId": "602c66d7e86017003ffdc11d",
+     "Images": []
+    },
+    {
+     "Name": "Marius Panduru",
+     "Order": 4,
+     "Job": "Director of Photography",
+     "Department": "Camera",
+     "TmdbId": 931382,
+     "CreditId": "60107bbe458199003e1f7e28",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/8UYKQLTBvqmCaThnwbOlBRWHFQ.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ken Nnganyadi",
+     "Order": 5,
+     "Job": "Foley Recordist",
+     "Department": "Sound",
+     "TmdbId": 2204898,
+     "CreditId": "61fedb24e92d83008c358893",
+     "Images": []
+    },
+    {
+     "Name": "Andreas Roald",
+     "Order": 6,
+     "Job": "Associate Producer",
+     "Department": "Production",
+     "TmdbId": 1058165,
+     "CreditId": "61fed8f2e62719001bd9c844",
+     "Images": []
+    },
+    {
+     "Name": "Andrei Zikieli",
+     "Order": 7,
+     "Job": "Focus Puller",
+     "Department": "Camera",
+     "TmdbId": 2475355,
+     "CreditId": "61fedc15af9590006ac49b1d",
+     "Images": []
+    },
+    {
+     "Name": "Andreea Nedelcu",
+     "Order": 8,
+     "Job": "Online Editor",
+     "Department": "Editing",
+     "TmdbId": 1702748,
+     "CreditId": "61fedc3969c70f010ff82113",
+     "Images": []
+    },
+    {
+     "Name": "Dan Wechsler",
+     "Order": 9,
+     "Job": "Associate Producer",
+     "Department": "Production",
+     "TmdbId": 1031992,
+     "CreditId": "61fed940564ec700df0a91dc",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/2ujcIXiTPgaZ1ZDKLh0R8s2QX0j.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Adrien Chef",
+     "Order": 10,
+     "Job": "Co-Producer",
+     "Department": "Production",
+     "TmdbId": 2421186,
+     "CreditId": "61fed8b881140f00a5b4d9a2",
+     "Images": []
+    },
+    {
+     "Name": "Paul Thiltges",
+     "Order": 11,
+     "Job": "Co-Producer",
+     "Department": "Production",
+     "TmdbId": 1285598,
+     "CreditId": "61fed9151f3e600105506522",
+     "Images": []
+    },
+    {
+     "Name": "Dana Bunescu",
+     "Order": 12,
+     "Job": "Sound Designer",
+     "Department": "Sound",
+     "TmdbId": 20700,
+     "CreditId": "602de7320f3655003d272dbc",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/3YsuCeMAWMPnA5bUGaTLwxEdlo6.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Isabela Tent",
+     "Order": 13,
+     "Job": "First Assistant Director",
+     "Department": "Directing",
+     "TmdbId": 2697383,
+     "CreditId": "61feda3f22931a001c73d8a0",
+     "Images": []
+    },
+    {
+     "Name": "Diana Caravia",
+     "Order": 14,
+     "Job": "Production Coordinator",
+     "Department": "Production",
+     "TmdbId": 2697386,
+     "CreditId": "61fedcaf69c70f010ff82186",
+     "Images": []
+    },
+    {
+     "Name": "Andrei Karastanef",
+     "Order": 15,
+     "Job": "Clapper Loader",
+     "Department": "Camera",
+     "TmdbId": 2471363,
+     "CreditId": "61fedbfe22931a001c73daff",
+     "Images": []
+    },
+    {
+     "Name": "Catalin Cristutiu",
+     "Order": 16,
+     "Job": "Editor",
+     "Department": "Editing",
+     "TmdbId": 1437664,
+     "CreditId": "602c66c7e86017003efdbce3",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/n9pHKeOzHKQmIj9EHQXi793YSvl.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Ankica Jurić Tilić",
+     "Order": 17,
+     "Job": "Co-Producer",
+     "Department": "Production",
+     "TmdbId": 1058616,
+     "CreditId": "61fed8ccdd731b008df5e8d5",
+     "Images": []
+    },
+    {
+     "Name": "Andreea Popa",
+     "Order": 18,
+     "Job": "Art Direction",
+     "Department": "Art",
+     "TmdbId": 135160,
+     "CreditId": "6096b24a5ed8e9003bd5b49b",
+     "Images": []
+    },
+    {
+     "Name": "Adeline Andreea Badescu",
+     "Order": 19,
+     "Job": "Art Direction",
+     "Department": "Art",
+     "TmdbId": 3083341,
+     "CreditId": "6096b23fa055ef0040bcdcc3",
+     "Images": []
+    },
+    {
+     "Name": "Christian Niculescu",
+     "Order": 20,
+     "Job": "Production Design",
+     "Department": "Art",
+     "TmdbId": 997132,
+     "CreditId": "602de7438e2ba6003f163c7f",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/xB7FXb3St2hptq2St7PsCwbz1uq.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Valentino Rudolf",
+     "Order": 21,
+     "Job": "Line Producer",
+     "Department": "Production",
+     "TmdbId": 2330308,
+     "CreditId": "61fed901564ec700df0a919a",
+     "Images": []
+    },
+    {
+     "Name": "Jamal Zeinal Zade",
+     "Order": 22,
+     "Job": "Associate Producer",
+     "Department": "Production",
+     "TmdbId": 2031302,
+     "CreditId": "61fed9500ce1bc0042c98d16",
+     "Images": []
+    },
+    {
+     "Name": "Jiří Konečný",
+     "Order": 23,
+     "Job": "Co-Producer",
+     "Department": "Production",
+     "TmdbId": 1425608,
+     "CreditId": "61fed8dcad59b50067fddc68",
+     "Images": [
+      {
+       "CoverType": "Headshot",
+       "Url": "https://image.tmdb.org/t/p/original/rP6TrMgYNkhBBVJrIIknlOLUBJ.jpg"
+      }
+     ]
+    },
+    {
+     "Name": "Alexandru Stoica",
+     "Order": 24,
+     "Job": "Online Editor",
+     "Department": "Editing",
+     "TmdbId": 3414515,
+     "CreditId": "61fedc540ce1bc00b2694c7c",
+     "Images": []
+    },
+    {
+     "Name": "Michel Schillings",
+     "Order": 25,
+     "Job": "Sound Re-Recording Mixer",
+     "Department": "Sound",
+     "TmdbId": 1622817,
+     "CreditId": "6096b275cf4b8b003ca1bf5a",
+     "Images": []
+    },
+    {
+     "Name": "Hrvoje Radnić",
+     "Order": 26,
+     "Job": "Sound",
+     "Department": "Sound",
+     "TmdbId": 3083343,
+     "CreditId": "61fedb330cb335006c603dae",
+     "Images": []
+    },
+    {
+     "Name": "Bianca Micu",
+     "Order": 27,
+     "Job": "On Set Props",
+     "Department": "Art",
+     "TmdbId": 3245919,
+     "CreditId": "61fedaa7b3e627008d5f3289",
+     "Images": []
+    },
+    {
+     "Name": "Andreea Catalina Dumitrescu",
+     "Order": 28,
+     "Job": "Post Production Supervisor",
+     "Department": "Crew",
+     "TmdbId": 2471367,
+     "CreditId": "61fed9f70cb335006c603c36",
+     "Images": []
+    },
+    {
+     "Name": "Sebastian Zsemlye",
+     "Order": 29,
+     "Job": "Foley Editor",
+     "Department": "Sound",
+     "TmdbId": 1413599,
+     "CreditId": "61fedb5ae18e3f00d8cf560c",
+     "Images": []
+    }
+   ]
+  },
+  "Studio": "Paul Thiltges Distributions",
+  "YoutubeTrailerId": "RNKKwXbqkjY",
+  "Certifications": [
+   {
+    "Country": "AU",
+    "Certification": "R18+"
+   },
+   {
+    "Country": "BR",
+    "Certification": "18"
+   },
+   {
+    "Country": "FI",
+    "Certification": "K-18"
+   },
+   {
+    "Country": "FR",
+    "Certification": "16"
+   },
+   {
+    "Country": "GB",
+    "Certification": "18"
+   },
+   {
+    "Country": "GR",
+    "Certification": "Κ-18"
+   },
+   {
+    "Country": "HK",
+    "Certification": "III"
+   },
+   {
+    "Country": "IE",
+    "Certification": "18"
+   },
+   {
+    "Country": "IT",
+    "Certification": "VM18"
+   },
+   {
+    "Country": "JP",
+    "Certification": "R15+"
+   },
+   {
+    "Country": "KR",
+    "Certification": "18"
+   },
+   {
+    "Country": "PT",
+    "Certification": "M/18"
+   },
+   {
+    "Country": "RO",
+    "Certification": "18+"
+   },
+   {
+    "Country": "RU",
+    "Certification": "18+"
+   },
+   {
+    "Country": "SE",
+    "Certification": "15"
+   },
+   {
+    "Country": "US",
+    "Certification": "NR"
+   }
+  ],
+  "Status": null,
+  "Collection": null,
+  "Homepage": "http://badluckbanging.com"
+ }
+]

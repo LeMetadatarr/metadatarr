@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from _common import fail, pass_
-from mediavocab import MediaType, Release, VariantKind, Work
+from mediavocab import MediaType, Release, ReleasePackaging, VariantKind, Work
 from mediavocab.helpers import best_release, episodes_of
 
 
@@ -18,10 +18,12 @@ def main() -> int:
         return fail(f"episodes_of did not order: {[e.episode for e in eps]}")
 
     w = Work(title="Blade Runner", media_type=MediaType.MOVIE)
+    w_dc = Work(title="Blade Runner", media_type=MediaType.MOVIE,
+                variant_kind=VariantKind.DIRECTORS)
     sd = Release(work=w, resolution="480p")
-    uhd = Release(work=w, resolution="2160p",
-                  variant_kind=VariantKind.DIRECTORS)
-    boot = Release(work=w, resolution="2160p", variant_kind=VariantKind.BOOTLEG)
+    uhd = Release(work=w_dc, resolution="2160p")
+    boot = Release(work=w, resolution="2160p",
+                   packaging=ReleasePackaging.BOOTLEG)
     best = best_release(sd, uhd, boot)
     if best is not uhd:
         return fail(f"best_release picked the wrong release")

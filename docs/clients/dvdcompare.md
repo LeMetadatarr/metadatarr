@@ -17,7 +17,7 @@ from metadatarr.client import DVDCompareClient
 client = DVDCompareClient(timeout=15)
 ```
 
-`timeout` — seconds before the underlying `requests.Session` raises. Defaults
+`timeout`: seconds before the underlying `requests.Session` raises. Defaults
 to `15`.
 
 ## Endpoints covered
@@ -68,14 +68,23 @@ if results:
 | `title` | `str` | |
 | `url` | `Optional[str]` | Full URL to the comparison page |
 | `disc_format` | `Optional[str]` | `"Blu-ray"`, `"DVD"`, `"4K UHD"` |
+
+| Field | Type | Notes |
+|---|---|---|
 | `region` | `Optional[str]` | DVD/Blu-ray region code |
 | `country` | `Optional[str]` | Country of release |
 | `label` | `Optional[str]` | Distributor label |
 | `release_date` | `Optional[str]` | Date string, format varies |
+
+| Field | Type | Notes |
+|---|---|---|
 | `runtime_minutes` | `Optional[int]` | |
 | `aspect_ratio` | `Optional[str]` | |
 | `version` | `Optional[str]` | `"Director's Cut"`, `"Theatrical"`, `"Extended"`, etc. |
 | `version_differences` | `Optional[str]` | Free-text description of what differs |
+
+| Field | Type | Notes |
+|---|---|---|
 | `audio_tracks` | `List[str]` | Each element is a plain string (e.g. `"English DTS-HD MA 5.1"`) |
 | `subtitles` | `List[str]` | Each element is a plain string (e.g. `"English SDH"`) |
 | `extras` | `List[str]` | Special feature titles |
@@ -97,12 +106,15 @@ keyword matching:
 | `"theatrical"` | `THEATRICAL` |
 | `"extended"` | `EXTENDED` |
 | `"remaster"` | `REMASTERED` |
+
+| `version` contains | `VariantKind` |
+|---|---|
 | `"regional"` | `REGIONAL` |
 
-If none of these keywords match, `variant_kind` is left unset — the candidate
+If none of these keywords match, `variant_kind` is left unset: the candidate
 still participates in consolidation without constraining which cut is selected.
 
-`_infer_variant` — `/metadatarr/resolve/providers/dvdcompare.py:32`
+`_infer_variant`: `/metadatarr/resolve/providers/dvdcompare.py:32`
 
 ## Notes
 
@@ -115,3 +127,6 @@ still participates in consolidation without constraining which cut is selected.
 - `dvdcompare_id` is derived from the URL slug and may change if the site
   reorganises its URL structure. It is not a stable numeric ID. Store the URL
   (`dvdcompare_url` extra key) as the durable reference if you persist results.
+
+---
+[← BlurayComClient](bluray-com.md) · [Home](../README.md) · [DiscogsClient →](discogs.md)

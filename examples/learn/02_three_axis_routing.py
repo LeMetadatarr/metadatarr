@@ -4,7 +4,7 @@ The resolver picks providers by gating on three orthogonal axes
 (mediavocab spec axiom 13). Watch which providers fire when you change
 each axis independently.
 """
-from mediavocab import MediaType, PlaybackModality, Signals
+from mediavocab import MediaType, PlaybackType, Signals
 from metadatarr.resolve import active_providers
 
 
@@ -27,10 +27,10 @@ def main() -> None:
     # Axis 2: modality (orthogonal)
     show("MOVIE + AUDIO modality (\"play me a movie\"):",
          Signals(title="x", medium=MediaType.MOVIE,
-                 modality=PlaybackModality.AUDIO))
+                 playback_type=PlaybackType.AUDIO))
     show("MOVIE + VIDEO modality (\"watch a movie\"):",
          Signals(title="x", medium=MediaType.MOVIE,
-                 modality=PlaybackModality.VIDEO))
+                 playback_type=PlaybackType.VIDEO))
 
     # Axis 3: genre_filter (anime gating)
     show("EPISODIC_SERIES + anime genre:",

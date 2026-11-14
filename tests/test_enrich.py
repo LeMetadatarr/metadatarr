@@ -273,7 +273,7 @@ def test_musicbrainz_enrich_walks_url_relations(monkeypatch):
         def json(self): return self._p
 
     monkeypatch.setattr(
-        "metadatarr.resolve.providers.musicbrainz.requests.get",
+        "metadatarr.resolve.providers.musicbrainz._SESSION.get",
         lambda *a, **kw: _Resp(payload),
     )
     p = MusicBrainzProvider()
@@ -351,6 +351,8 @@ def test_bandcamp_enrich_track_via_from_url(monkeypatch):
         "py_bandcamp.BandcampTrack.from_url",
         staticmethod(lambda url: FakeTrack()),
     )
+    monkeypatch.setattr("socket.getaddrinfo", lambda *a, **kw: [
+        (2, 1, 6, "", ("93.184.216.34", 443))])
     p = BandcampProvider()
     p._available = True
     out = p.enrich(ExternalIds(extra={

@@ -1,0 +1,137 @@
+{
+ "links": {
+  "self": "/authors/OL23919A/works.json?limit=50",
+  "author": "/authors/OL23919A",
+  "next": "/authors/OL23919A/works.json?limit=50&offset=50"
+ },
+ "size": 421,
+ "entries": [
+  {
+   "title": "Harry potter hila piedra filosofal",
+   "authors": [
+    {
+     "author": {
+      "key": "/authors/OL23919A"
+     },
+     "type": {
+      "key": "/type/author_role"
+     }
+    }
+   ],
+   "key": "/works/OL46092343W",
+   "type": {
+    "key": "/type/work"
+   },
+   "latest_revision": 1,
+   "revision": 1,
+   "created": {
+    "type": "/type/datetime",
+    "value": "2026-10-08T00:57:39.684149"
+   },
+   "last_modified": {
+    "type": "/type/datetime",
+    "value": "2026-10-08T00:57:39.684149"
+   }
+  },
+  {
+   "title": "Harry potter hila piedra filosofal",
+   "authors": [
+    {
+     "author": {
+      "key": "/authors/OL23919A"
+     },
+     "type": {
+      "key": "/type/author_role"
+     }
+    }
+   ],
+   "key": "/works/OL46092342W",
+   "type": {
+    "key": "/type/work"
+   },
+   "latest_revision": 1,
+   "revision": 1,
+   "created": {
+    "type": "/type/datetime",
+    "value": "2026-10-08T00:57:39.146015"
+   },
+   "last_modified": {
+    "type": "/type/datetime",
+    "value": "2026-10-08T00:57:39.146015"
+   }
+  },
+  {
+   "title": "Harry potter hila piedra filosofal",
+   "authors": [
+    {
+     "author": {
+      "key": "/authors/OL23919A"
+     },
+     "type": {
+      "key": "/type/author_role"
+     }
+    }
+   ],
+   "key": "/works/OL46092341W",
+   "type": {
+    "key": "/type/work"
+   },
+   "latest_revision": 1,
+   "revision": 1,
+   "created": {
+    "type": "/type/datetime",
+    "value": "2026-10-08T00:57:37.418698"
+   },
+   "last_modified": {
+    "type": "/type/datetime",
+    "value": "2026-10-08T00:57:37.418698"
+   }
+  },
+  {
+   "type": {
+    "key": "/type/work"
+   },
+   "title": "Bèsties fantàstiques. Els secrets de Dumbledore",
+   "authors": [
+    {
+     "type": {
+      "key": "/type/author_role"
+     },
+     "author": {
+      "key": "/authors/OL23919A"
+     }
+    },
+    {
+     "type": {
+      "key": "/type/author_role"
+     },
+     "author": {
+      "key": "/authors/OL6302146A"
+     }
+    },
+    {
+     "type": {
+      "key": "/type/author_role"
+     },
+     "author": {
+      "key": "/authors/OL557774A"
+     }
+    }
+   ],
+   "covers": [
+    13925683
+   ],
+   "key": "/works/OL34974873W",
+   "latest_revision": 5,
+   "revision": 5,
+   "created": {
+    "type": "/type/datetime",
+    "value": "2023-04-13T05:10:02.330346"
+   },
+   "last_modified": {
+    "type": "/type/datetime",
+    "value": "2026-09-01T18:43:09.846706"
+   }
+  }
+ ]
+}

@@ -116,6 +116,9 @@ information. It maps to `VariantKind` in the resolve system as follows:
 | `"theatrical"` | `THEATRICAL` |
 | `"extended"` | `EXTENDED` |
 | `"remaster"` | `REMASTERED` |
+
+| `version` contains | `VariantKind` set by provider |
+|---|---|
 | `"regional"` | `REGIONAL` |
 
 ### Worked example: Director's Cut vs Theatrical
@@ -149,10 +152,10 @@ print("Version from dvdcompare:", dc_version)
 
 When you pass `variant_kind=VariantKind.DIRECTORS`, `consolidate()` drops any
 provider match that returns a conflicting `variant_kind` (e.g. `THEATRICAL`).
-A match with no `variant_kind` set is never dropped on this basis — it simply
+A match with no `variant_kind` set is never dropped on this basis: it simply
 doesn't vote on the cut.
 
-See [resolve.md — VariantKind](resolve.md#variantkind) for the full conflict
+See [resolve.md: VariantKind](resolve.md#variantkind) for the full conflict
 detection rules.
 
 ## Technical spec deep-dive
@@ -238,7 +241,7 @@ if discogs_id:
         print("Cover:", enriched.extra.get("discogs_cover"))
 ```
 
-`DiscogsProvider.enrich` — `/metadatarr/resolve/providers/discogs.py:109`
+`DiscogsProvider.enrich`: `/metadatarr/resolve/providers/discogs.py:109`
 
 ## VHS and LaserDisc
 
@@ -378,8 +381,8 @@ class PatchedClient(BlurayComClient):
         ...
 ```
 
-`BlurayComClient._parse_edition_page` — `/metadatarr/client.py:562`
-`DVDCompareClient._parse_edition_page` — `/metadatarr/client.py:762`
+`BlurayComClient._parse_edition_page`: `/metadatarr/client.py:562`
+`DVDCompareClient._parse_edition_page`: `/metadatarr/client.py:762`
 
 ## Rate limits and politeness
 
@@ -396,3 +399,6 @@ scraping, but do not return a documented error code.
 
 See [troubleshooting.md](troubleshooting.md) for empty results and debug
 patterns.
+
+---
+[← DiscogsClient](clients/discogs.md) · [Home](README.md) · [Entity resolution →](resolve.md)

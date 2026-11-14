@@ -5,15 +5,14 @@ identity to a single resolved record:
 
 - ``musicbrainz``     → MusicBrainz IDs (artist + recording + release MBID)
 - ``metal_archives``  → Encyclopaedia Metallum band/release/label IDs
-- ``metadatarr``      → Lidarr's public metadata server (api.lidarr.audio,
+- ``skyhook``         → Lidarr's public metadata server (api.lidarr.audio,
                         wrapped by ``ArrMetadataClient``) — MusicBrainz
                         artist MBID coming back from a different angle
 - ``wikidata``        → Wikidata Q-id + cross-references (IMDb, MusicBrainz)
 
 For each test band, the script:
 
-1. Lists which of the four providers are available in this process
-   (Metal Archives needs ``pip install metadatarr[metal_archives]``);
+1. Lists which of the four providers are available in this process;
 2. Calls each provider individually so you can see the partial responses;
 3. Calls ``consolidate()`` to fuse them into one ``ResolveResult`` and
    prints which fields came from which provider.
@@ -129,9 +128,8 @@ def main() -> None:
           ", ".join(sorted(all_providers().keys())))
     providers = _spotlit_providers()
     if not providers:
-        print("\nNo target provider is active right now. Install metal_archives if")
-        print("you want it:  pip install metadatarr[metal_archives]")
-        print("(musicbrainz, metadatarr, and wikidata are always available)")
+        print("\nNo target provider is active right now.")
+        print("(musicbrainz, skyhook, and wikidata are always available)")
         return
 
     for artist, title in BANDS:

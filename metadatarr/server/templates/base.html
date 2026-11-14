@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}metadatarr{% endblock %}</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/htmx.min.js"></script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand"><span class="logo">🧩</span> metadatarr</div>
+      <nav class="nav">
+        <a href="/" class="{% if active == 'resolve' %}active{% endif %}">Resolver Playground</a>
+        <a href="/ui/providers" class="{% if active == 'providers' %}active{% endif %}">Providers</a>
+        <a href="/ui/mappings" class="{% if active == 'mappings' %}active{% endif %}">Mappings</a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="health">
+          <span id="health-dot" class="health-dot" hx-get="/healthz" hx-trigger="load, every 30s" hx-swap="none"></span>
+          <span>server</span>
+        </div>
+        <div>v{{ version }}</div>
+      </div>
+    </aside>
+    <div class="main">
+      <header class="header">
+        <h1>{% block heading %}metadatarr{% endblock %}</h1>
+        <button id="theme-toggle" class="btn-ghost btn" type="button" aria-label="Toggle theme">🖥️</button>
+      </header>
+      <main class="content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

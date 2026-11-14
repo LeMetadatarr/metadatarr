@@ -1,0 +1,131 @@
+{
+ "id": "a74b1b7f-71a5-4011-9441-d0b5e4122711",
+ "isnis": [
+  "0000000115475162"
+ ],
+ "relations": [
+  {
+   "source-credit": "",
+   "attributes": [],
+   "type": "discogs",
+   "direction": "forward",
+   "ended": false,
+   "attribute-ids": {},
+   "target-type": "url",
+   "attribute-values": {},
+   "url": {
+    "id": "f49de6eb-d9db-4474-9406-f3b02ec95b42",
+    "resource": "https://www.discogs.com/artist/3840"
+   },
+   "target-credit": "",
+   "end": null,
+   "type-id": "04a5b104-a4c2-4bac-99a1-7b837c37d9e4",
+   "begin": null
+  },
+  {
+   "source-credit": "",
+   "attributes": [],
+   "type": "wikidata",
+   "direction": "forward",
+   "attribute-ids": {},
+   "ended": false,
+   "target-type": "url",
+   "attribute-values": {},
+   "url": {
+    "id": "0d8cb250-f92f-4481-bb00-a0b40391912b",
+    "resource": "https://www.wikidata.org/wiki/Q44190"
+   },
+   "end": null,
+   "target-credit": "",
+   "begin": null,
+   "type-id": "689870a4-a1e4-4912-b17f-7b2664215698"
+  },
+  {
+   "type": "allmusic",
+   "direction": "forward",
+   "source-credit": "",
+   "attributes": [],
+   "url": {
+    "id": "a049e9f0-b290-461d-8977-031464a00ead",
+    "resource": "https://www.allmusic.com/artist/mn0000326249"
+   },
+   "begin": null,
+   "type-id": "6b3e3c85-0002-4f34-aca6-80ace0d7e846",
+   "end": null,
+   "target-credit": "",
+   "target-type": "url",
+   "attribute-ids": {},
+   "ended": false,
+   "attribute-values": {}
+  }
+ ],
+ "area": {
+  "disambiguation": "",
+  "id": "8a754a16-0027-3a29-b6d7-2b40ea0481ed",
+  "name": "United Kingdom",
+  "type": null,
+  "iso-3166-1-codes": [
+   "GB"
+  ],
+  "sort-name": "United Kingdom",
+  "type-id": null
+ },
+ "gender-id": null,
+ "type-id": "e431f5f6-b5d2-343d-8b36-72607fffb74b",
+ "gender": null,
+ "sort-name": "Radiohead",
+ "life-span": {
+  "begin": "1991",
+  "end": null,
+  "ended": false
+ },
+ "name": "Radiohead",
+ "disambiguation": "",
+ "country": "GB",
+ "ipis": [],
+ "begin-area": {
+  "type-id": null,
+  "sort-name": "Abingdon-on-Thames",
+  "type": null,
+  "name": "Abingdon-on-Thames",
+  "id": "d840d4b3-8987-4626-928b-398de760cc24",
+  "disambiguation": ""
+ },
+ "aliases": [
+  {
+   "type": "Search hint",
+   "primary": null,
+   "sort-name": "Radio Head",
+   "type-id": "1937e404-b981-3cb7-8151-4c86ebfc8d8e",
+   "begin": null,
+   "end": null,
+   "ended": false,
+   "name": "Radio Head",
+   "locale": null
+  },
+  {
+   "name": "Radiohead",
+   "locale": "en",
+   "ended": false,
+   "begin": null,
+   "type-id": "894afba6-2816-3c24-8072-eadb66bd04bc",
+   "end": null,
+   "sort-name": "Radiohead",
+   "primary": true,
+   "type": "Artist name"
+  },
+  {
+   "type": "Search hint",
+   "primary": null,
+   "sort-name": "Radiohead & Thom Yorke",
+   "end": null,
+   "type-id": "1937e404-b981-3cb7-8151-4c86ebfc8d8e",
+   "begin": null,
+   "ended": false,
+   "locale": null,
+   "name": "Radiohead & Thom Yorke"
+  }
+ ],
+ "end-area": null,
+ "type": "Group"
+}

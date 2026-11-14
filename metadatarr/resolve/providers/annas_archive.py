@@ -19,7 +19,7 @@ from typing import Optional
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals, match_quality
 
 LOG = logging.getLogger("metadatarr.resolve.providers.annas_archive")
@@ -28,7 +28,7 @@ LOG = logging.getLogger("metadatarr.resolve.providers.annas_archive")
 class AnnasArchiveProvider(MetadataProvider):
     name = "annas_archive"
     media = {MediaType.BOOK}
-    modality = {PlaybackModality.TEXT}
+    playback_type = {PlaybackType.PAGED}
     # Books are not classified by tutubo ContentType values; leave empty so
     # content_type filtering never excludes book results.
     content_types: set = set()

@@ -1,0 +1,87 @@
+{% if error %}
+<div class="card">
+  <p class="section-title">Error</p>
+  <div class="kv" style="color:var(--err,#c00)">{{ error }}</div>
+</div>
+{% endif %}
+
+<div class="card">
+  <p class="section-title">Consolidated result</p>
+  {% if result.signals %}
+  <div class="grid">
+    <div class="stat"><div class="num">{{ result.accepted | length }}</div><div class="label">accepted votes</div></div>
+    <div class="stat"><div class="num">{{ result.dropped | length }}</div><div class="label">dropped votes</div></div>
+    <div class="stat"><div class="num">{{ result.conflicts | length }}</div><div class="label">conflicts</div></div>
+    <div class="stat"><div class="num">{{ result.provider_errors | length }}</div><div class="label">provider errors</div></div>
+  </div>
+  <p class="section-title" style="margin-top:16px">Merged external ids</p>
+  {% set ids = ids_items(result.external_ids) %}
+  {% if ids %}
+  <div class="scroll-x">
+    <table class="table">
+      <thead><tr><th>field</th><th>value</th></tr></thead>
+      <tbody>
+        {% for k, v in ids %}
+        <tr><td><code>{{ k }}</code></td><td class="kv">{{ v }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">No external ids resolved.</div>
+  {% endif %}
+  {% else %}
+  <div class="empty">No consolidated result — accepted matches irreconcilably conflicted with each other. See conflicts below.</div>
+  {% endif %}
+</div>
+
+{% if result.conflicts %}
+<div class="card">
+  <p class="section-title">Conflicts</p>
+  {% for c in result.conflicts %}
+  <div class="pmatch" style="margin-bottom:10px">
+    <div class="pmatch-head">
+      <span class="pmatch-name">{{ c.provider }}</span>
+      <span class="badge badge-err">vs {{ c.against }}</span>
+    </div>
+    {% for f in c.fields %}
+    <div class="kv">{{ f }}</div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+{% if result.provider_errors %}
+<div class="card">
+  <p class="section-title">Provider errors</p>
+  {% for e in result.provider_errors %}
+  <div class="kv" style="margin-bottom:6px">{{ e }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<div class="card">
+  <p class="section-title">Ranked candidates ({{ candidates | length }})</p>
+  {% if candidates %}
+  {% for m in candidates %}
+  <div class="pmatch" style="padding:10px 0; {% if not loop.last %}border-bottom:1px solid var(--border);{% endif %}">
+    <div class="pmatch-head">
+      <span class="pmatch-name">{{ m.provider }}</span>
+      <span class="pmatch-conf">{{ "%.0f" | format(m.confidence * 100) }}%</span>
+    </div>
+    <div class="bar"><div class="bar-fill" style="width: {{ (m.confidence * 100) | round(1) }}%"></div></div>
+    {% set msig = signal_items(m.signals) %}
+    {% if msig %}
+    <div class="kv">{% for k, v in msig %}{{ k }}={{ v }}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+    {% endif %}
+    {% set mids = ids_items(m.external_ids) %}
+    {% if mids %}
+    <div class="kv">{% for k, v in mids %}{{ k }}={{ v }}{% if not loop.last %}, {% endif %}{% endfor %}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty">No provider returned a candidate for these signals.</div>
+  {% endif %}
+</div>

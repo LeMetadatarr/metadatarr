@@ -1,0 +1,73 @@
+{
+ "birth_date": "31 July 1965",
+ "fuller_name": "Joanne \"Jo\" Rowling",
+ "photos": [
+  5543033,
+  -1
+ ],
+ "entity_type": "person",
+ "personal_name": "J. K. Rowling",
+ "title": "OBE",
+ "key": "/authors/OL23919A",
+ "bio": {
+  "type": "/type/text",
+  "value": "Joanne \"Jo\" Murray, OBE (née Rowling), better known under the pen name J. K. Rowling, is a British author best known as the creator of the Harry Potter fantasy series, the idea for which was conceived whilst on a train trip from Manchester to London in 1990. The Potter books have gained worldwide attention, won multiple awards, sold more than 400 million copies, and been the basis for a popular series of films."
+ },
+ "alternate_names": [
+  "Joanne Rowling",
+  "Joanne K. Rowling",
+  "Jo Murray",
+  "Kennilworthy Whisp",
+  "JK Rowling",
+  "Robert Galbraith",
+  "Джоан Роулінг",
+  "Dzhoan Rouling",
+  "J.K. Rowling",
+  "ROWLING",
+  "روبرت غالبريث - Robert Galbraith",
+  "Rouling Dzh.K.",
+  "Newt Scamander",
+  "Newton Scamander",
+  "J. K Rowling (creator) Jack Thorne",
+  "J.k. Rowling",
+  "Rowling.J.K.",
+  "J K Rowling",
+  "J. K Rowling",
+  "J-K Rowling",
+  "Joanne K Rowling",
+  "J. K. ROWLING",
+  "JK.Rowling",
+  "J. K. Rowling Miles",
+  "K. Rowling Joanne,K.Rowling",
+  "J. K. J.K. Rowling",
+  "j.k. rowling",
+  "J.K... Rowling"
+ ],
+ "remote_ids": {
+  "viaf": "116796842",
+  "goodreads": "1077326",
+  "storygraph": "6ca9e5f3-d270-4ecf-a0eb-226d334c095e",
+  "isni": "000000012148628X",
+  "librarything": "rowlingjk",
+  "amazon": "B000AP9A6K",
+  "wikidata": "Q34660",
+  "imdb": "nm0746830",
+  "musicbrainz": "569c0d90-28dd-413b-83e4-aaa7c27e667b",
+  "lc_naf": "n97108433",
+  "opac_sbn": "RAVV104836"
+ },
+ "type": {
+  "key": "/type/author"
+ },
+ "name": "J. K. Rowling",
+ "latest_revision": 130,
+ "revision": 130,
+ "created": {
+  "type": "/type/datetime",
+  "value": "2008-04-01T03:28:50.625462"
+ },
+ "last_modified": {
+  "type": "/type/datetime",
+  "value": "2026-01-12T17:50:44.063267"
+ }
+}

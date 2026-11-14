@@ -9,18 +9,16 @@ from __future__ import annotations
 import logging
 from typing import Optional
 
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
+from mediavocab.taxonomy import GENRE_ANIME, GENRE_MANGA
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
 from mediavocab.models import ExternalIds
 from mediavocab.models.signals import Signals
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
-
-try:
-    import httpx
-except ImportError:  # pragma: no cover
-    httpx = None  # type: ignore[assignment]
+from metadatarr.transport import discard_cached, make_session
 
 LOG = logging.getLogger("metadatarr.resolve.providers.jikan")
+_SESSION = make_session()
 
 _BASE = "https://api.jikan.moe/v4"
 
@@ -42,8 +40,8 @@ class JikanAnimeProvider(MetadataProvider):
 
     name = "jikan_anime"
     media = {MediaType.EPISODIC_SERIES, MediaType.MOVIE}
-    modality = {PlaybackModality.VIDEO}
-    genre_filter = {"anime"}
+    playback_type = {PlaybackType.VIDEO}
+    genre_filter = {GENRE_ANIME}
 
     def is_available(self) -> bool:
         return True
@@ -53,12 +51,10 @@ class JikanAnimeProvider(MetadataProvider):
             return None
         if not self.matches(signals):
             return None
-        if httpx is None:
-            LOG.warning("httpx not installed — jikan_anime provider unavailable")
-            return None
 
+        resp = None
         try:
-            resp = httpx.get(
+            resp = _SESSION.get(
                 f"{_BASE}/anime",
                 params={"q": signals.title, "limit": 5},
                 timeout=10,
@@ -67,9 +63,12 @@ class JikanAnimeProvider(MetadataProvider):
             items = resp.json().get("data") or []
         except Exception as exc:
             LOG.warning("jikan_anime lookup failed: %s", exc)
+            if resp is not None:
+                discard_cached(_SESSION, resp)
             return None
 
         if not items:
+            discard_cached(_SESSION, resp)
             return None
 
         # Year-filter when we have a hint
@@ -103,7 +102,7 @@ class JikanAnimeProvider(MetadataProvider):
         return ProviderMatch(
             provider=self.name,
             confidence=0.85,
-            signals=Signals(title=title, year=year, medium=MediaType.EPISODIC_SERIES, content_genres=["anime"]),
+            signals=Signals(title=title, year=year, medium=MediaType.EPISODIC_SERIES, content_genres=[GENRE_ANIME]),
             external_ids=ExternalIds(mal_id=mal_id, extra=extra),
             relations=relations,
         )
@@ -114,8 +113,8 @@ class JikanMangaProvider(MetadataProvider):
 
     name = "jikan_manga"
     media = {MediaType.COMIC}
-    modality = {PlaybackModality.TEXT}
-    genre_filter = {"manga"}
+    playback_type = {PlaybackType.PAGED}
+    genre_filter = {GENRE_MANGA}
 
     def is_available(self) -> bool:
         return True
@@ -125,12 +124,10 @@ class JikanMangaProvider(MetadataProvider):
             return None
         if not self.matches(signals):
             return None
-        if httpx is None:
-            LOG.warning("httpx not installed — jikan_manga provider unavailable")
-            return None
 
+        resp = None
         try:
-            resp = httpx.get(
+            resp = _SESSION.get(
                 f"{_BASE}/manga",
                 params={"q": signals.title, "limit": 5},
                 timeout=10,
@@ -139,9 +136,12 @@ class JikanMangaProvider(MetadataProvider):
             items = resp.json().get("data") or []
         except Exception as exc:
             LOG.warning("jikan_manga lookup failed: %s", exc)
+            if resp is not None:
+                discard_cached(_SESSION, resp)
             return None
 
         if not items:
+            discard_cached(_SESSION, resp)
             return None
 
         if signals.year is not None:
@@ -181,7 +181,7 @@ class JikanMangaProvider(MetadataProvider):
         return ProviderMatch(
             provider=self.name,
             confidence=0.85,
-            signals=Signals(title=title, year=year, medium=MediaType.COMIC, content_genres=["manga"]),
+            signals=Signals(title=title, year=year, medium=MediaType.COMIC, content_genres=[GENRE_MANGA]),
             external_ids=ExternalIds(mal_id=mal_id, extra=extra),
             relations=relations,
         )

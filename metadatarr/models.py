@@ -1,3 +1,4 @@
+import re
 from typing import List, Optional
 from pydantic import BaseModel, Field, AliasChoices, AliasPath, ConfigDict, field_validator, model_validator
 
@@ -21,6 +22,12 @@ class SonarrSeries(BaseMetadata):
 class RadarrMovie(BaseMetadata):
     tmdb_id: int = Field(validation_alias=AliasChoices("tmdbId", "TmdbId"))
     year: Optional[int] = Field(None, validation_alias=AliasChoices("year", "Year"))
+    imdb_id: Optional[str] = Field(None, validation_alias=AliasChoices("imdbId", "ImdbId"))
+
+    @field_validator("imdb_id", mode="before")
+    @classmethod
+    def _valid_imdb_id(cls, v):
+        return v if isinstance(v, str) and re.fullmatch(r"tt\d+", v) else None
 
 class LidarrArtist(BaseMetadata):
     id: str = Field(validation_alias=AliasChoices(AliasPath("Artist", "Id"), "id", "artistId", "Id"))

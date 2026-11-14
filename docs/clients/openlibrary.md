@@ -1,7 +1,7 @@
 # OpenLibraryClient
 
 Wraps the [OpenLibrary REST API](https://openlibrary.org/developers/api).
-OpenLibrary is the Internet Archive's open book metadata project — fully
+OpenLibrary is the Internet Archive's open book metadata project: fully
 public, no key, generous rate limits (be polite anyway).
 
 ```python
@@ -29,6 +29,9 @@ Search returns work-level hits with a hint at the best cover edition.
 | `get_work(OLID)` | `OpenLibraryWork \| None` | `GET /works/{id}.json` |
 | `get_edition(OLID)` | `OpenLibraryEdition \| None` | `GET /books/{id}.json` |
 | `get_edition_by_isbn(isbn)` | `OpenLibraryEdition \| None` | `GET /isbn/{isbn}.json` |
+
+| Method | Returns | Upstream |
+|---|---|---|
 | `get_author(OLID)` | `OpenLibraryAuthor \| None` | `GET /authors/{id}.json` |
 | `cover_url(cover_id, size)` *(staticmethod)* | `str` | `https://covers.openlibrary.org/b/id/{id}-{S\|M\|L}.jpg` |
 
@@ -53,7 +56,7 @@ print("subjects:", work.subjects[:5])
 # 3. Author bio
 if work.author_keys:
     author = ol.get_author(work.author_keys[0])
-    print(author.name, author.birth_date, "—", author.death_date)
+    print(author.name, author.birth_date, "-", author.death_date)
     print((author.bio or "")[:200])
 
 # 4. Resolve a specific edition by ISBN
@@ -79,7 +82,7 @@ edition.work_keys   # ["OL45804W", ...]
 edition.languages   # ["eng", ...]        (not ["/languages/eng", ...])
 ```
 
-`get_work`, `get_edition`, and `get_author` all accept either form — they
+`get_work`, `get_edition`, and `get_author` all accept either form: they
 call `.split("/")[-1]` defensively.
 
 ## Description / bio normalisation
@@ -114,7 +117,7 @@ For ISBN-based covers (when you don't have a `cover_i`):
 f"https://covers.openlibrary.org/b/isbn/{isbn}-L.jpg"
 ```
 
-(This isn't wrapped in a method — it's a one-liner and OpenLibrary's URL is
+(This isn't wrapped in a method: it's a one-liner and OpenLibrary's URL is
 stable.)
 
 ## Search query syntax
@@ -129,7 +132,7 @@ ol.search("subject:cyberpunk first_publish_year:[1980 TO 1995]")
 
 The `OpenLibrarySearchHit` model exposes only the most-used fields. If you
 need more (`ia` archive identifiers, `ratings_average`, etc.) extend the
-model — see [Extending models](../models.md#extending-models).
+model: see [Extending models](../models.md#extending-models).
 
 ## Models
 
@@ -141,8 +144,11 @@ See [Models reference → OpenLibrary*](../models.md#openlibrary).
   Always pass a tight `limit=` and supply `author:` or `isbn:` qualifiers
   when you have them.
 - **`get_edition_by_isbn` may 302 to a canonical edition.** `requests`
-  follows redirects by default; you'll get the canonical edition, which is
+  follows redirects by default, you'll get the canonical edition, which is
   almost always what you want.
 - **OpenLibrary data is community-edited.** Expect some records to have
   obviously wrong dates, missing publishers, or duplicate works. Treat it
   as a strong-but-not-authoritative source.
+
+---
+[← BookInfoClient](bookinfo.md) · [Home](../README.md) · [AnnasArchiveClient →](annas-archive.md)

@@ -1,0 +1,205 @@
+[
+ {
+  "id": 12192,
+  "url": "https://www.tvmaze.com/episodes/12192/breaking-bad-1x01-pilot",
+  "name": "Pilot",
+  "season": 1,
+  "number": 1,
+  "type": "regular",
+  "airdate": "2008-01-20",
+  "airtime": "22:00",
+  "airstamp": "2008-01-21T03:00:00+00:00",
+  "runtime": 60,
+  "rating": {
+   "average": 8.3
+  },
+  "image": {
+   "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/405/1012681.jpg",
+   "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012681.jpg"
+  },
+  "summary": "<p>A high-school chemistry teacher (Bryan Cranston) is diagnosed with a deadly cancer, so he puts his expertise to use and teams with an ex-student (Aaron Paul) to manufacture top-grade crystal meth in hopes of providing for his family after he's gone.</p>",
+  "_links": {
+   "self": {
+    "href": "https://api.tvmaze.com/episodes/12192"
+   },
+   "show": {
+    "href": "https://api.tvmaze.com/shows/169",
+    "name": "Breaking Bad"
+   }
+  }
+ },
+ {
+  "id": 12193,
+  "url": "https://www.tvmaze.com/episodes/12193/breaking-bad-1x02-cats-in-the-bag",
+  "name": "Cat's in the Bag...",
+  "season": 1,
+  "number": 2,
+  "type": "regular",
+  "airdate": "2008-01-27",
+  "airtime": "22:00",
+  "airstamp": "2008-01-28T03:00:00+00:00",
+  "runtime": 60,
+  "rating": {
+   "average": 7.9
+  },
+  "image": {
+   "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/405/1012682.jpg",
+   "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012682.jpg"
+  },
+  "summary": "<p>After the accident in the desert, Walter and Jesse need to dispose of the unfortunate mess in their rolling lab of an RV, and Skyler begins to suspect that Walter and Jesse are involved in some mysterious goings-on.</p>",
+  "_links": {
+   "self": {
+    "href": "https://api.tvmaze.com/episodes/12193"
+   },
+   "show": {
+    "href": "https://api.tvmaze.com/shows/169",
+    "name": "Breaking Bad"
+   }
+  }
+ },
+ {
+  "id": 12194,
+  "url": "https://www.tvmaze.com/episodes/12194/breaking-bad-1x03-and-the-bags-in-the-river",
+  "name": "...and the Bag's in the River",
+  "season": 1,
+  "number": 3,
+  "type": "regular",
+  "airdate": "2008-02-10",
+  "airtime": "22:00",
+  "airstamp": "2008-02-11T03:00:00+00:00",
+  "runtime": 60,
+  "rating": {
+   "average": 8.1
+  },
+  "image": {
+   "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/405/1012683.jpg",
+   "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012683.jpg"
+  },
+  "summary": "<p>Walter and Jesse fight about the latter's drug use, so he leaves, forcing Walter to deal with their captive, Krazy-8 (Max Arciniega); Hank uses scared-straight tactics with Walter Jr. when his aunt suspects he's smoking pot; Skyler is furious when Walter stays away from home.</p>",
+  "_links": {
+   "self": {
+    "href": "https://api.tvmaze.com/episodes/12194"
+   },
+   "show": {
+    "href": "https://api.tvmaze.com/shows/169",
+    "name": "Breaking Bad"
+   }
+  }
+ },
+ {
+  "id": 12195,
+  "url": "https://www.tvmaze.com/episodes/12195/breaking-bad-1x04-cancer-man",
+  "name": "Cancer Man",
+  "season": 1,
+  "number": 4,
+  "type": "regular",
+  "airdate": "2008-02-17",
+  "airtime": "22:00",
+  "airstamp": "2008-02-18T03:00:00+00:00",
+  "runtime": 60,
+  "rating": {
+   "average": 7.6
+  },
+  "image": {
+   "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/405/1012684.jpg",
+   "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012684.jpg"
+  },
+  "summary": "<p>Walter announces to the family that he has cancer; the DEA believes there is a new big-time player in the Albuquerque drug business; a depressed Walter takes his anger out on a worthy recipient; Jesse pays a surprise visit to his parents' house.</p>",
+  "_links": {
+   "self": {
+    "href": "https://api.tvmaze.com/episodes/12195"
+   },
+   "show": {
+    "href": "https://api.tvmaze.com/shows/169",
+    "name": "Breaking Bad"
+   }
+  }
+ },
+ {
+  "id": 12196,
+  "url": "https://www.tvmaze.com/episodes/12196/breaking-bad-1x05-gray-matter",
+  "name": "Gray Matter",
+  "season": 1,
+  "number": 5,
+  "type": "regular",
+  "airdate": "2008-02-24",
+  "airtime": "22:00",
+  "airstamp": "2008-02-25T03:00:00+00:00",
+  "runtime": 60,
+  "rating": {
+   "average": 7.8
+  },
+  "image": {
+   "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/405/1012685.jpg",
+   "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012685.jpg"
+  },
+  "summary": "<p>At a birthday party for a successful former science colleague, Walter is offered a job; Jesse tries gaining legitimate employment but winds up back cooking meth, and an inferior kind at that; Skyler assembles the family for an intervention to get Walter to agree to chemotherapy, but he's concerned about quality-of-life issues and their financial difficulties.</p>",
+  "_links": {
+   "self": {
+    "href": "https://api.tvmaze.com/episodes/12196"
+   },
+   "show": {
+    "href": "https://api.tvmaze.com/shows/169",
+    "name": "Breaking Bad"
+   }
+  }
+ },
+ {
+  "id": 12197,
+  "url": "https://www.tvmaze.com/episodes/12197/breaking-bad-1x06-crazy-handful-of-nothin",
+  "name": "Crazy Handful of Nothin'",
+  "season": 1,
+  "number": 6,
+  "type": "regular",
+  "airdate": "2008-03-02",
+  "airtime": "22:00",
+  "airstamp": "2008-03-03T03:00:00+00:00",
+  "runtime": 60,
+  "rating": {
+   "average": 8.8
+  },
+  "image": {
+   "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/405/1012686.jpg",
+   "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012686.jpg"
+  },
+  "summary": "<p>Walter, in the throes of his chemotherapy treatment and needing money more than ever, agrees to cook more crystal meth with Jesse; Skinny Pete hooks Jesse up with an important new contact, while the DEA intensifies its investigation of Albuquerque's new drug kingpin.</p>",
+  "_links": {
+   "self": {
+    "href": "https://api.tvmaze.com/episodes/12197"
+   },
+   "show": {
+    "href": "https://api.tvmaze.com/shows/169",
+    "name": "Breaking Bad"
+   }
+  }
+ },
+ {
+  "id": 12198,
+  "url": "https://www.tvmaze.com/episodes/12198/breaking-bad-1x07-a-no-rough-stuff-type-deal",
+  "name": "A No-Rough-Stuff-Type Deal",
+  "season": 1,
+  "number": 7,
+  "type": "regular",
+  "airdate": "2008-03-09",
+  "airtime": "22:00",
+  "airstamp": "2008-03-10T02:00:00+00:00",
+  "runtime": 60,
+  "rating": {
+   "average": 8
+  },
+  "image": {
+   "medium": "https://static.tvmaze.com/uploads/images/medium_landscape/405/1012687.jpg",
+   "original": "https://static.tvmaze.com/uploads/images/original_untouched/405/1012687.jpg"
+  },
+  "summary": "<p>Walter and Jesse do business with a new partner-in-crime, but immediately run into \"production problems,\" which necessitates a nearly impossible mission to knock off a chemical-supply house. Meanwhile, Marie throws a baby shower for Skyler and presents her with an unusual gift that shows a different side of the aunt-to-be.</p>",
+  "_links": {
+   "self": {
+    "href": "https://api.tvmaze.com/episodes/12198"
+   },
+   "show": {
+    "href": "https://api.tvmaze.com/shows/169",
+    "name": "Breaking Bad"
+   }
+  }
+ }
+]

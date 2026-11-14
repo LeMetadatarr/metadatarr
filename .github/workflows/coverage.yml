@@ -12,5 +12,5 @@ jobs:
       python_version: '3.11'
       coverage_source: 'metadatarr'
       test_path: 'tests/'
-      install_extras: ''
+      install_extras: 'test,server,tag'
       min_coverage: 0

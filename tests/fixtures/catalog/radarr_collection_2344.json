@@ -1,0 +1,166 @@
+{
+ "TmdbId": 2344,
+ "Name": "The Matrix Collection",
+ "Overview": "The Matrix collection depicts a complex science fiction story incorporating many philosophical elements. Written and directed by the Wachowskis and produced by Joel Silver.",
+ "Images": [
+  {
+   "CoverType": "Poster",
+   "Url": "https://image.tmdb.org/t/p/original/bV9qTVHTVf0gkW0j7p7M0ILD4pG.jpg"
+  },
+  {
+   "CoverType": "Fanart",
+   "Url": "https://image.tmdb.org/t/p/original/bRm2DEgUiYciDw3myHuYFInD7la.jpg"
+  }
+ ],
+ "Parts": [
+  {
+   "TmdbId": 603,
+   "ImdbId": "tt0133093",
+   "Title": "The Matrix",
+   "Overview": "Set in the 22nd century, The Matrix tells the story of a computer hacker who joins a group of underground insurgents fighting the vast and powerful computers who now rule the earth.",
+   "OriginalTitle": "The Matrix",
+   "OriginalLanguage": "en",
+   "Runtime": 136,
+   "Year": 1999,
+   "Premier": "1999-03-24T00:00:00Z",
+   "InCinema": "1999-03-31T00:00:00Z",
+   "Images": [
+    {
+     "CoverType": "Poster",
+     "Url": "https://image.tmdb.org/t/p/original/aOIuZAjPaRIE6CMzbazvcHuHXDc.jpg"
+    },
+    {
+     "CoverType": "Fanart",
+     "Url": "https://image.tmdb.org/t/p/original/lrtSb1skJayPydZk0OSMAKjBOVe.jpg"
+    }
+   ],
+   "Genres": [
+    "Action",
+    "Science Fiction"
+   ],
+   "Studio": "Village Roadshow Pictures",
+   "Status": null,
+   "Collection": {
+    "TmdbId": 2344,
+    "Name": "The Matrix Collection",
+    "Images": null,
+    "Overview": null,
+    "Translations": null,
+    "Parts": null
+   }
+  },
+  {
+   "TmdbId": 604,
+   "ImdbId": "tt0234215",
+   "Title": "The Matrix Reloaded",
+   "Overview": "The Resistance builds in numbers as humans are freed from the Matrix and brought to the city of Zion. Neo discovers his superpowers, including the ability to see the code inside the Matrix. With machine sentinels digging to Zion in 72 hours, Neo, Morpheus and Trinity must find the Keymaker to ultimately reach the Source.",
+   "OriginalTitle": "The Matrix Reloaded",
+   "OriginalLanguage": "en",
+   "Runtime": 138,
+   "Year": 2003,
+   "Premier": "2003-05-07T00:00:00Z",
+   "InCinema": "2003-05-15T00:00:00Z",
+   "Images": [
+    {
+     "CoverType": "Poster",
+     "Url": "https://image.tmdb.org/t/p/original/aA5qHS0FbSXO8PxcxUIHbDrJyuh.jpg"
+    },
+    {
+     "CoverType": "Fanart",
+     "Url": "https://image.tmdb.org/t/p/original/ihOJcrorpDQtHTzIOrobbOhpJsj.jpg"
+    }
+   ],
+   "Genres": [
+    "Adventure",
+    "Action",
+    "Thriller",
+    "Science Fiction"
+   ],
+   "Studio": "Village Roadshow Pictures",
+   "Status": null,
+   "Collection": {
+    "TmdbId": 2344,
+    "Name": "The Matrix Collection",
+    "Images": null,
+    "Overview": null,
+    "Translations": null,
+    "Parts": null
+   }
+  },
+  {
+   "TmdbId": 605,
+   "ImdbId": "tt0242653",
+   "Title": "The Matrix Revolutions",
+   "Overview": "The human city of Zion defends itself against the massive invasion of the machines as Neo fights to end the war at another front while also opposing the rogue Agent Smith.",
+   "OriginalTitle": "The Matrix Revolutions",
+   "OriginalLanguage": "en",
+   "Runtime": 129,
+   "Year": 2003,
+   "Premier": "2003-10-27T00:00:00Z",
+   "InCinema": "2003-11-05T00:00:00Z",
+   "Images": [
+    {
+     "CoverType": "Poster",
+     "Url": "https://image.tmdb.org/t/p/original/qEWiBXJGXK28jGBAm8oFKKTB0WD.jpg"
+    },
+    {
+     "CoverType": "Fanart",
+     "Url": "https://image.tmdb.org/t/p/original/533xAMhhVyjTy8hwMUFEt5TuDfR.jpg"
+    }
+   ],
+   "Genres": [
+    "Adventure",
+    "Action",
+    "Thriller",
+    "Science Fiction"
+   ],
+   "Studio": "Village Roadshow Pictures",
+   "Status": null,
+   "Collection": {
+    "TmdbId": 2344,
+    "Name": "The Matrix Collection",
+    "Images": null,
+    "Overview": null,
+    "Translations": null,
+    "Parts": null
+   }
+  },
+  {
+   "TmdbId": 624860,
+   "ImdbId": "tt10838180",
+   "Title": "The Matrix Resurrections",
+   "Overview": "Plagued by strange memories, Neo's life takes an unexpected turn when he finds himself back inside the Matrix.",
+   "OriginalTitle": "The Matrix Resurrections",
+   "OriginalLanguage": "en",
+   "Runtime": 148,
+   "Year": 2021,
+   "Premier": "2021-12-18T00:00:00Z",
+   "InCinema": "2021-12-16T00:00:00Z",
+   "Images": [
+    {
+     "CoverType": "Poster",
+     "Url": "https://image.tmdb.org/t/p/original/8c4a8kE7PizaGQQnditMmI1xbRp.jpg"
+    },
+    {
+     "CoverType": "Fanart",
+     "Url": "https://image.tmdb.org/t/p/original/eNI7PtK6DEYgZmHWP9gQNuff8pv.jpg"
+    }
+   ],
+   "Genres": [
+    "Science Fiction",
+    "Action",
+    "Adventure"
+   ],
+   "Studio": "Warner Bros. Pictures",
+   "Status": null,
+   "Collection": {
+    "TmdbId": 2344,
+    "Name": "The Matrix Collection",
+    "Images": null,
+    "Overview": null,
+    "Translations": null,
+    "Parts": null
+   }
+  }
+ ]
+}

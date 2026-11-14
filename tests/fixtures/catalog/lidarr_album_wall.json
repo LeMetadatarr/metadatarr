@@ -1,0 +1,777 @@
+{
+ "id": "f2026101-945b-3d05-9ef4-aa718fc3feef",
+ "oldids": [
+  "315901d1-6491-48f1-861b-906f68f1e035",
+  "a67a459e-8eec-463c-9296-27c7a1f326c2",
+  "cb4d7ba9-b45c-4603-9d0f-b856c9958fa8",
+  "f8631fa9-db01-45d7-ab34-7b99ca69fd71",
+  "f49e00ef-7a48-442c-a79c-71646122be28",
+  "53b0f1b3-99bd-4263-9cc2-621177c1b906",
+  "9323d303-0660-4d96-a020-ccaa35864e4e",
+  "d4875eb9-bfde-42ab-aec2-d54129f20191"
+ ],
+ "disambiguation": "",
+ "title": "The Wall",
+ "aliases": [
+  "The Wall (DTS)",
+  "The Wall: Immersion Edition Promotional Sampler",
+  "The Wall: The High Resolution Remasters"
+ ],
+ "type": "Album",
+ "secondarytypes": [],
+ "releasedate": "1979-11-30",
+ "artistid": "83d91898-7763-47d7-b03b-b92132375c47",
+ "rating": {
+  "Count": 76,
+  "Value": 9.0
+ },
+ "links": [
+  {
+   "target": "https://www.discogs.com/master/11329",
+   "type": "discogs"
+  }
+ ],
+ "genres": [
+  "Progressive Rock",
+  "Rock",
+  "Art Rock",
+  "Classic Rock",
+  "Psychedelic Rock",
+  "Hard Rock",
+  "Pop",
+  "Alternative Rock",
+  "Symphonic Rock",
+  "Rock Opera",
+  "Electronic",
+  "Blues",
+  "Ambient",
+  "Space Rock",
+  "House",
+  "Trance",
+  "Jazz",
+  "Classical"
+ ],
+ "images": [
+  {
+   "CoverType": "Cover",
+   "Url": "https://images.lidarr.audio/cache/https://coverartarchive.org/release/57af82e7-3bea-4789-ab4f-d2084555c2fb/20640052040-1200.jpg",
+   "remoteUrl": "https://coverartarchive.org/release/57af82e7-3bea-4789-ab4f-d2084555c2fb/20640052040-1200.jpg"
+  },
+  {
+   "CoverType": "Disc",
+   "Url": "https://images.lidarr.audio/cache/https://coverartarchive.org/release/57af82e7-3bea-4789-ab4f-d2084555c2fb/20640056490-1200.jpg",
+   "remoteUrl": "https://coverartarchive.org/release/57af82e7-3bea-4789-ab4f-d2084555c2fb/20640056490-1200.jpg"
+  }
+ ],
+ "Releases": [
+  {
+   "Id": "14db3839-4007-3b46-9e7c-619f37ac19a4",
+   "OldIds": [
+    "918c0da2-5378-3333-9cb6-e4d3c7f3391b"
+   ],
+   "Title": "The Wall",
+   "Status": "Official",
+   "Disambiguation": "“written by Roger Waters”",
+   "Country": [
+    "Germany"
+   ],
+   "Label": [
+    "EMI Electrola",
+    "Harvest"
+   ],
+   "Media": [
+    {
+     "Position": 1,
+     "Name": "",
+     "Format": "12\" Vinyl"
+    },
+    {
+     "Position": 2,
+     "Name": "",
+     "Format": "12\" Vinyl"
+    }
+   ],
+   "ReleaseDate": "1979-11-30",
+   "TrackCount": 26,
+   "Tracks": [
+    {
+     "Id": "a4198cc9-eaf4-38ca-ad09-e41f98a90fc3",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "1be4459a-4bda-4530-bf8e-421fdddbdbfc",
+     "TrackName": "In the Flesh?",
+     "TrackNumber": "A1",
+     "TrackPosition": 1,
+     "DurationMs": 199560,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "0d14149b-5cab-3c96-a43a-1f5564124cce",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "eff36e5e-5abb-4f7e-a0aa-64c154c5b28d",
+     "TrackName": "The Thin Ice",
+     "TrackNumber": "A2",
+     "TrackPosition": 2,
+     "DurationMs": 149906,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "ed9940df-d9ea-386d-9a2f-a09c41d2257e",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "82d8444b-3478-480c-8652-bf8aa6cb3dc5",
+     "TrackName": "Another Brick in the Wall, Part 1",
+     "TrackNumber": "A3",
+     "TrackPosition": 3,
+     "DurationMs": 190800,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "7c3aadb5-880f-3abc-8b15-83c28741b76c",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "84978bae-46e2-4d9d-b390-5bd8a1c31983",
+     "TrackName": "The Happiest Days of Our Lives",
+     "TrackNumber": "A4",
+     "TrackPosition": 4,
+     "DurationMs": 111093,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "e4984bd4-3899-3d3f-8ba4-087aa005a4db",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "597eae0b-ccb6-4076-b997-0ce940586076",
+     "TrackName": "Another Brick in the Wall, Part 2",
+     "TrackNumber": "A5",
+     "TrackPosition": 5,
+     "DurationMs": 240733,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "ee2961c4-f013-379e-b89c-c8a602d9564d",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "2423ca5e-99d3-4b49-be53-542e6ee38a82",
+     "TrackName": "Mother",
+     "TrackNumber": "A6",
+     "TrackPosition": 6,
+     "DurationMs": 333706,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "91ad0672-e3ef-315a-ac60-8e7a0eb5e10f",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "bb0d3c16-b684-4a5a-a107-e12bbd4f3041",
+     "TrackName": "Goodbye Blue Sky",
+     "TrackNumber": "B1",
+     "TrackPosition": 7,
+     "DurationMs": 169933,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "a1f19823-ab33-371c-898c-8b2af01b85f7",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "b56432a2-6231-4c6f-af00-2656804a95d1",
+     "TrackName": "Empty Spaces",
+     "TrackNumber": "B2",
+     "TrackPosition": 8,
+     "DurationMs": 127160,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "7860ad20-3955-3a67-8463-7338bb662fe1",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "919dd9f4-cd78-4359-8e89-195abd9b79cf",
+     "TrackName": "Young Lust",
+     "TrackNumber": "B3",
+     "TrackPosition": 9,
+     "DurationMs": 213066,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "7223133a-93df-36d9-9f68-6226800bc6b4",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "7003ec02-7bc2-4054-b477-f739efd6df45",
+     "TrackName": "One of My Turns",
+     "TrackNumber": "B4",
+     "TrackPosition": 10,
+     "DurationMs": 214706,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "a553630c-d290-3df9-8eb8-5087b149719e",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "c0a217dc-4c2c-45f9-afd4-9b5f366386ef",
+     "TrackName": "Don’t Leave Me Now",
+     "TrackNumber": "B5",
+     "TrackPosition": 11,
+     "DurationMs": 256760,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "1daf429f-8797-3939-a013-d9813c1ac401",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "ae5096a0-4b53-455a-ac9c-0348108208c3",
+     "TrackName": "Another Brick in the Wall, Part 3",
+     "TrackNumber": "B6",
+     "TrackPosition": 12,
+     "DurationMs": 77533,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "9de4db42-528c-31a0-a3a1-4ac67326ee13",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "bc3448ee-53bb-412a-99d6-ea6cc862928a",
+     "TrackName": "Goodbye Cruel World",
+     "TrackNumber": "B7",
+     "TrackPosition": 13,
+     "DurationMs": 74640,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "1720ca7b-3ac1-3335-bbfe-020a3de12900",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "daebd800-fe8a-48bf-bfb4-d8655a895dff",
+     "TrackName": "Hey You",
+     "TrackNumber": "C1",
+     "TrackPosition": 1,
+     "DurationMs": 284000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "8faad67c-eeac-3455-ba38-7d0c31b4fd85",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "5893b2c3-243c-4b79-bfbf-c6624770a97b",
+     "TrackName": "Is There Anybody Out There?",
+     "TrackNumber": "C2",
+     "TrackPosition": 2,
+     "DurationMs": 163000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "02edd977-b476-3683-b3f2-180bfd84d204",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "cfc2fb95-2fc0-4129-acf3-5a5dfb9bceef",
+     "TrackName": "Nobody Home",
+     "TrackNumber": "C3",
+     "TrackPosition": 3,
+     "DurationMs": 207000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "4944172d-dc78-3e10-ab55-a95eb888c83f",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "eb2fbdca-089e-493b-ae03-bb24cdf2b176",
+     "TrackName": "Vera",
+     "TrackNumber": "C4",
+     "TrackPosition": 4,
+     "DurationMs": 96000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "14a7e08a-4c5a-3004-a691-fa6a28841cb7",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "e7840a7d-38e4-4d69-b666-0ee4c92fe832",
+     "TrackName": "Bring the Boys Back Home",
+     "TrackNumber": "C5",
+     "TrackPosition": 5,
+     "DurationMs": 89000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "4bcea73c-61a6-3358-91a5-3799c312310d",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "9ffabbe4-e078-4906-80a7-3a02b537e251",
+     "TrackName": "Comfortably Numb",
+     "TrackNumber": "C6",
+     "TrackPosition": 6,
+     "DurationMs": 386000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "5212c8a2-07c5-36cb-9708-00911e0e4eef",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "e90a6932-b238-4cc0-8331-6637469b7a34",
+     "TrackName": "The Show Must Go On",
+     "TrackNumber": "D1",
+     "TrackPosition": 7,
+     "DurationMs": 98000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "a6ad3f2b-7815-3548-b908-7dc17ff6aefb",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "89881237-8c35-43b7-af8f-950fb6183fee",
+     "TrackName": "In the Flesh",
+     "TrackNumber": "D2",
+     "TrackPosition": 8,
+     "DurationMs": 260000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "344c3dff-08f1-3643-b42b-5615929281b0",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "d36e0b66-a91c-44ee-98c1-881ac8157439",
+     "TrackName": "Run Like Hell",
+     "TrackNumber": "D3",
+     "TrackPosition": 9,
+     "DurationMs": 267000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "be568d42-d735-3581-87b3-0f4e4a563937",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "da31bbd5-d020-41d8-8ed5-908c18c13c55",
+     "TrackName": "Waiting for the Worms",
+     "TrackNumber": "D4",
+     "TrackPosition": 10,
+     "DurationMs": 240000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "fc8997a5-cecb-38bc-954f-ed6a048dac04",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "92e2cb40-de60-47e4-80bc-60595fb5a488",
+     "TrackName": "Stop",
+     "TrackNumber": "D5",
+     "TrackPosition": 11,
+     "DurationMs": 32000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "6fbada46-ba80-338d-ac55-54cd483f030f",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "a362cf52-5d85-4f34-8a69-e830ef87b5cb",
+     "TrackName": "The Trial",
+     "TrackNumber": "D6",
+     "TrackPosition": 12,
+     "DurationMs": 322000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "2bb779a9-c7d5-31bb-b99b-7bb33f638d7d",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "a0545de0-0c68-4301-8cd4-1b77e4b0dc3e",
+     "TrackName": "Outside the Wall",
+     "TrackNumber": "D7",
+     "TrackPosition": 13,
+     "DurationMs": 104000,
+     "MediumNumber": 2
+    }
+   ]
+  },
+  {
+   "Id": "0942a54a-70a6-432e-a832-d45571542b02",
+   "OldIds": [
+    "d9ba81fa-6c0c-4854-b33d-743e5cdbc2f7"
+   ],
+   "Title": "The Wall",
+   "Status": "Official",
+   "Disambiguation": "",
+   "Country": [
+    "Brazil"
+   ],
+   "Label": [
+    "Columbia"
+   ],
+   "Media": [
+    {
+     "Position": 1,
+     "Name": "",
+     "Format": "CD"
+    },
+    {
+     "Position": 2,
+     "Name": "",
+     "Format": "CD"
+    }
+   ],
+   "ReleaseDate": "0001-01-01",
+   "TrackCount": 26,
+   "Tracks": [
+    {
+     "Id": "c0c023a5-c96d-3a50-aee6-18a4c748bdad",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "1be4459a-4bda-4530-bf8e-421fdddbdbfc",
+     "TrackName": "In the Flesh?",
+     "TrackNumber": "1",
+     "TrackPosition": 1,
+     "DurationMs": 195013,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "1257194b-f49e-30f2-adf5-918cf1dae8bf",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "eff36e5e-5abb-4f7e-a0aa-64c154c5b28d",
+     "TrackName": "The Thin Ice",
+     "TrackNumber": "2",
+     "TrackPosition": 2,
+     "DurationMs": 145346,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "3fd4e252-5490-34ac-8e3c-a05651595d0b",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "82d8444b-3478-480c-8652-bf8aa6cb3dc5",
+     "TrackName": "Another Brick in the Wall, Part 1",
+     "TrackNumber": "3",
+     "TrackPosition": 3,
+     "DurationMs": 186040,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "e3a099e4-9d24-3c27-83f8-895413127297",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "84978bae-46e2-4d9d-b390-5bd8a1c31983",
+     "TrackName": "The Happiest Days of Our Lives",
+     "TrackNumber": "4",
+     "TrackPosition": 4,
+     "DurationMs": 106413,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "114df8fc-f048-3528-b2a7-e0c6dfa2955f",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "597eae0b-ccb6-4076-b997-0ce940586076",
+     "TrackName": "Another Brick in the Wall, Part 2",
+     "TrackNumber": "5",
+     "TrackPosition": 5,
+     "DurationMs": 235346,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "4bcf98d1-0636-36ed-bd5d-78cb408c3260",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "2423ca5e-99d3-4b49-be53-542e6ee38a82",
+     "TrackName": "Mother",
+     "TrackNumber": "6",
+     "TrackPosition": 6,
+     "DurationMs": 331746,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "ffbf2dd9-d323-38ca-a3e2-768d1866f06a",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "bb0d3c16-b684-4a5a-a107-e12bbd4f3041",
+     "TrackName": "Goodbye Blue Sky",
+     "TrackNumber": "7",
+     "TrackPosition": 7,
+     "DurationMs": 162520,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "c235093e-4e26-3776-a650-ab9950eee4b1",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "b56432a2-6231-4c6f-af00-2656804a95d1",
+     "TrackName": "Empty Spaces",
+     "TrackNumber": "8",
+     "TrackPosition": 8,
+     "DurationMs": 125106,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "a9e7da2c-9cdd-3060-8fc0-bcf100913c38",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "919dd9f4-cd78-4359-8e89-195abd9b79cf",
+     "TrackName": "Young Lust",
+     "TrackNumber": "9",
+     "TrackPosition": 9,
+     "DurationMs": 206586,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "a63fc5e6-b333-3ac2-85f5-dae38a4cbcdb",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "7003ec02-7bc2-4054-b477-f739efd6df45",
+     "TrackName": "One of My Turns",
+     "TrackNumber": "10",
+     "TrackPosition": 10,
+     "DurationMs": 212106,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "8a8f8d2f-98b2-3f35-80a8-c2ade63bc9c8",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "c0a217dc-4c2c-45f9-afd4-9b5f366386ef",
+     "TrackName": "Don’t Leave Me Now",
+     "TrackNumber": "11",
+     "TrackPosition": 11,
+     "DurationMs": 252280,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "e31f2638-49bc-3264-b8b6-81191692cc2c",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "ae5096a0-4b53-455a-ac9c-0348108208c3",
+     "TrackName": "Another Brick in the Wall, Part 3",
+     "TrackNumber": "12",
+     "TrackPosition": 12,
+     "DurationMs": 70453,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "d1c66d03-9688-3ff3-ac5b-38a353c1c272",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "bc3448ee-53bb-412a-99d6-ea6cc862928a",
+     "TrackName": "Goodbye Cruel World",
+     "TrackNumber": "13",
+     "TrackPosition": 13,
+     "DurationMs": 74866,
+     "MediumNumber": 1
+    },
+    {
+     "Id": "ec4080e6-1364-38d0-8fa3-4546498cfc83",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "daebd800-fe8a-48bf-bfb4-d8655a895dff",
+     "TrackName": "Hey You",
+     "TrackNumber": "1",
+     "TrackPosition": 1,
+     "DurationMs": 280000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "91349877-47ab-304c-ad59-418bdca5980a",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "5893b2c3-243c-4b79-bfbf-c6624770a97b",
+     "TrackName": "Is There Anybody Out There?",
+     "TrackNumber": "2",
+     "TrackPosition": 2,
+     "DurationMs": 160000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "bd131810-8f89-3197-95fb-fdb6ef933aed",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "cfc2fb95-2fc0-4129-acf3-5a5dfb9bceef",
+     "TrackName": "Nobody Home",
+     "TrackNumber": "3",
+     "TrackPosition": 3,
+     "DurationMs": 204000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "8edb7f24-0a9f-3d4f-9f8f-f817b0042b1b",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "eb2fbdca-089e-493b-ae03-bb24cdf2b176",
+     "TrackName": "Vera",
+     "TrackNumber": "4",
+     "TrackPosition": 4,
+     "DurationMs": 93000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "d7b774ef-7072-3d3c-b0c0-88fc04015f76",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "e7840a7d-38e4-4d69-b666-0ee4c92fe832",
+     "TrackName": "Bring the Boys Back Home",
+     "TrackNumber": "5",
+     "TrackPosition": 5,
+     "DurationMs": 87000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "c931c2ae-e1f3-3dfb-94d5-32ea854dada0",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "9ffabbe4-e078-4906-80a7-3a02b537e251",
+     "TrackName": "Comfortably Numb",
+     "TrackNumber": "6",
+     "TrackPosition": 6,
+     "DurationMs": 385000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "e7b8e969-c952-3475-895b-99d47596442c",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "e90a6932-b238-4cc0-8331-6637469b7a34",
+     "TrackName": "The Show Must Go On",
+     "TrackNumber": "7",
+     "TrackPosition": 7,
+     "DurationMs": 96000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "80502a7d-4467-3be2-919e-3a4f1a0e33c6",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "89881237-8c35-43b7-af8f-950fb6183fee",
+     "TrackName": "In the Flesh",
+     "TrackNumber": "8",
+     "TrackPosition": 8,
+     "DurationMs": 256000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "5c4e27c5-ad40-35f0-abf1-c7a2b3f7bc56",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "d36e0b66-a91c-44ee-98c1-881ac8157439",
+     "TrackName": "Run Like Hell",
+     "TrackNumber": "9",
+     "TrackPosition": 9,
+     "DurationMs": 264000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "ff27eb43-3f23-331f-9f27-dd32d074057c",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "da31bbd5-d020-41d8-8ed5-908c18c13c55",
+     "TrackName": "Waiting for the Worms",
+     "TrackNumber": "10",
+     "TrackPosition": 10,
+     "DurationMs": 237000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "d9ff7991-8a1c-3ea3-8df9-d073af917d8a",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "92e2cb40-de60-47e4-80bc-60595fb5a488",
+     "TrackName": "Stop",
+     "TrackNumber": "11",
+     "TrackPosition": 11,
+     "DurationMs": 30000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "6d8bb7b5-3a2f-3f9c-9045-8ea310afd131",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "a362cf52-5d85-4f34-8a69-e830ef87b5cb",
+     "TrackName": "The Trial",
+     "TrackNumber": "12",
+     "TrackPosition": 12,
+     "DurationMs": 319000,
+     "MediumNumber": 2
+    },
+    {
+     "Id": "77b8d0d4-0e64-390e-8284-5fa9f787f69c",
+     "ArtistId": "83d91898-7763-47d7-b03b-b92132375c47",
+     "RecordingId": "a0545de0-0c68-4301-8cd4-1b77e4b0dc3e",
+     "TrackName": "Outside the Wall",
+     "TrackNumber": "13",
+     "TrackPosition": 13,
+     "DurationMs": 104000,
+     "MediumNumber": 2
+    }
+   ]
+  }
+ ],
+ "overview": null,
+ "artists": [
+  {
+   "artistaliases": [
+    "Gilmour",
+    "David Gilmore",
+    "Dave Gilmour",
+    "D. Gilmour",
+    "デヴィッド・ギルモア"
+   ],
+   "artistname": "David Gilmour",
+   "disambiguation": "Pink Floyd",
+   "genres": [
+    "Progressive Rock",
+    "Blues Rock",
+    "Rock",
+    "Psychedelic Rock",
+    "Art Rock",
+    "Soft Rock",
+    "Hard Rock",
+    "Ambient Dub",
+    "Classic Rock",
+    "Singer-Songwriter"
+   ],
+   "id": "1dce970e-34bc-48b2-ab51-48d87544a4c2",
+   "images": [],
+   "links": [
+    {
+     "target": "https://myspace.com/davidgilmour",
+     "type": "myspace"
+    }
+   ],
+   "oldids": [
+    "3948e327-dcbe-4e6c-84de-36ed5074eb3f"
+   ],
+   "rating": {
+    "Count": 6,
+    "Value": 9.0
+   },
+   "sortname": "Gilmour, David",
+   "status": "active",
+   "type": "Person"
+  },
+  {
+   "artistaliases": [
+    "핑크 플로이드",
+    "Pink Floyd",
+    "ピンク・フロイド"
+   ],
+   "artistname": "Pink Floyd",
+   "disambiguation": "",
+   "genres": [
+    "Progressive Rock",
+    "Psychedelic Rock",
+    "Rock",
+    "Art Rock",
+    "Space Rock",
+    "Progressive",
+    "Rock Opera",
+    "Classic Rock",
+    "Psychedelic",
+    "Blues Rock",
+    "Experimental Rock",
+    "Psychedelic Pop",
+    "Acid Rock",
+    "Symphonic Rock"
+   ],
+   "id": "83d91898-7763-47d7-b03b-b92132375c47",
+   "images": [],
+   "links": [
+    {
+     "target": "https://www.discogs.com/artist/45467",
+     "type": "discogs"
+    }
+   ],
+   "oldids": [],
+   "rating": {
+    "Count": 81,
+    "Value": 8.9
+   },
+   "sortname": "Pink Floyd",
+   "status": "ended",
+   "type": "Group"
+  },
+  {
+   "artistaliases": [
+    "Waters",
+    "ロジャー・ウォーターズ"
+   ],
+   "artistname": "Roger Waters",
+   "disambiguation": "",
+   "genres": [
+    "Progressive Rock",
+    "Rock",
+    "Art Rock",
+    "Opera",
+    "Folk Rock",
+    "Blues Rock",
+    "Crossover Prog"
+   ],
+   "id": "0f50beab-d77d-4f0f-ac26-0b87d3e9b11b",
+   "images": [],
+   "links": [
+    {
+     "target": "https://www.bbc.co.uk/music/artists/0f50beab-d77d-4f0f-ac26-0b87d3e9b11b",
+     "type": "bbc"
+    }
+   ],
+   "oldids": [
+    "8f665058-c7ca-434b-997c-3b6f38df99a0"
+   ],
+   "rating": {
+    "Count": 6,
+    "Value": 9.7
+   },
+   "sortname": "Waters, Roger",
+   "status": "active",
+   "type": "Person"
+  }
+ ],
+ "releasestatuses": [
+  "Bootleg",
+  "Official",
+  "Promotion",
+  "Withdrawn"
+ ]
+}

@@ -27,13 +27,16 @@ from urllib.parse import urljoin
 
 import requests
 
+from metadatarr.client import fetchable_url
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
 from metadatarr.resolve.entities import EntityRole, ProviderEntity
+from metadatarr.transport import make_session
 from mediavocab.models import ExternalIds
-from mediavocab import MediaType, PlaybackModality
+from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals
 
 LOG = logging.getLogger("metadatarr.resolve.providers.bandcamp")
+_SESSION = make_session()
 
 
 def _safe_int_year(value) -> Optional[int]:
@@ -94,7 +97,7 @@ def confirm_track_url(url: str, *, timeout: float = 10.0) -> bool:
     if not url:
         return False
     try:
-        resp = requests.head(url, allow_redirects=True, timeout=timeout)
+        resp = _SESSION.head(url, allow_redirects=True, timeout=timeout)
     except requests.RequestException:
         return False
     return 200 <= resp.status_code < 400
@@ -103,7 +106,7 @@ def confirm_track_url(url: str, *, timeout: float = 10.0) -> bool:
 class BandcampProvider(MetadataProvider):
     name = "bandcamp"
     media = {MediaType.MUSIC}
-    modality = {PlaybackModality.AUDIO}
+    playback_type = {PlaybackType.AUDIO}
 
     def __init__(self) -> None:
         try:
@@ -130,8 +133,11 @@ class BandcampProvider(MetadataProvider):
         query = f"{signals.artist} {signals.title}" if signals.artist else signals.title
         try:
             hits = list(self._client.search_tracks(query))
-        except Exception as exc:
-            LOG.warning("bandcamp search failed: %s", exc)
+        except requests.RequestException as exc:
+            LOG.warning("bandcamp search failed query=%r: %s", query, exc)
+            return None
+        except Exception:
+            LOG.exception("bandcamp search unexpected error query=%r", query)
             return None
 
         if not hits:
@@ -237,9 +243,9 @@ class BandcampProvider(MetadataProvider):
             return None
 
         urls = external_ids.extra
-        artist_url = urls.get("bandcamp_artist_url")
-        track_url = urls.get("bandcamp_track_url")
-        album_url = urls.get("bandcamp_album_url")
+        artist_url = fetchable_url(urls, "bandcamp_artist_url")
+        track_url = fetchable_url(urls, "bandcamp_track_url")
+        album_url = fetchable_url(urls, "bandcamp_album_url")
         if not (artist_url or track_url or album_url):
             return None
 

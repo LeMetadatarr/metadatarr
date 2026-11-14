@@ -15,7 +15,7 @@ from typing import Dict, List, Optional
 from tutubo import classify_video_dict, parse_title
 from tutubo.content_type import ContentType
 
-from metadatarr import signals_from_title
+from metadatarr.resolve.title_parser import signals_from_title
 from metadatarr.resolve.base import resolve
 from mediavocab import MediaType
 from mediavocab.models.signals import signal_hash
