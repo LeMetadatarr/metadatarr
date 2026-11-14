@@ -6,8 +6,8 @@ Genre-gating is intentionally left empty so the provider responds to any
 ``MediaType.MOVIE`` query regardless of genre tags.
 
 The HTTP call, response parsing, and the title/year confidence heuristic all
-live in :class:`pytmdb.TMDBClient` (``best_match``); this provider only adapts
-its result into a :class:`ProviderMatch`.
+live in ``_tmdb_client`` (``best_match``); this provider only adapts its result
+into a :class:`ProviderMatch`.
 """
 from __future__ import annotations
 
@@ -16,9 +16,9 @@ import os
 from typing import Optional
 
 from unblock_requests import CloudflareSession
-from pytmdb import TMDBClient
 
 from metadatarr.resolve.base import MetadataProvider, ProviderMatch, register
+from metadatarr.resolve.providers._tmdb_client import TMDBClient
 from mediavocab.models import ExternalIds
 from mediavocab import MediaType, PlaybackType
 from mediavocab.models.signals import Signals
